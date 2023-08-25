@@ -94,13 +94,13 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
         if (direction == null) {
             // dummy
             bb = new AABB(getBlockPos().getX() + a, getBlockPos().getY() + a, getBlockPos().getZ() + a,
-                    getBlockPos().getX() + a, getBlockPos().getY() + a, getBlockPos().getZ() + a);
+                getBlockPos().getX() + a, getBlockPos().getY() + a, getBlockPos().getZ() + a);
         } else if (direction.getAxis() == Direction.Axis.X) {
             bb = new AABB(getBlockPos().getX() - c + a, getBlockPos().getY() + a, getBlockPos().getZ() + a,
-                    getBlockPos().getX() + c + a, getBlockPos().getY() + a, getBlockPos().getZ() + a);
+                getBlockPos().getX() + c + a, getBlockPos().getY() + a, getBlockPos().getZ() + a);
         } else {
             bb = new AABB(getBlockPos().getX() + a, getBlockPos().getY() + a, getBlockPos().getZ() - c + a,
-                    getBlockPos().getX() + a, getBlockPos().getY() + a, getBlockPos().getZ() + c + a);
+                getBlockPos().getX() + a, getBlockPos().getY() + a, getBlockPos().getZ() + c + a);
         }
         directionBox = Box.apply(bb.move(Vec3.atLowerCornerOf(direction.getNormal()).scale(a)), 1d / 8d, 1d / 8d, 1d / 8d, true, true);
     }
@@ -132,9 +132,9 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-                "Direction: " + direction,
-                "Min: " + min,
-                "Max: " + max
+            "Direction: " + direction,
+            "Min: " + min,
+            "Max: " + max
         ).map(Component::literal).toList();
     }
 

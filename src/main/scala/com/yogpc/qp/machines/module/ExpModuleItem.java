@@ -33,11 +33,11 @@ public class ExpModuleItem extends QPItem implements QuarryModuleProvider.Item {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(stack, level, list, flag);
         Stream.ofNullable(stack.getTag())
-                .mapToInt(t -> t.getInt(KEY_AMOUNT))
-                .filter(i -> i >= 0)
-                .mapToObj(i -> "Exp: " + i)
-                .map(Component::literal)
-                .forEach(list::add);
+            .mapToInt(t -> t.getInt(KEY_AMOUNT))
+            .filter(i -> i >= 0)
+            .mapToObj(i -> "Exp: " + i)
+            .map(Component::literal)
+            .forEach(list::add);
     }
 
     @Override

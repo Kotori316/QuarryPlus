@@ -1,12 +1,5 @@
 package com.yogpc.qp.machines;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
@@ -27,6 +20,7 @@ import java.security.SecureClassLoader;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public final class TraceQuarryWork {

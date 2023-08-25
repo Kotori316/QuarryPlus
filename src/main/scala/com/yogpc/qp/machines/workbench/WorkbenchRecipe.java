@@ -22,9 +22,9 @@ public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
     @VisibleForTesting
     static RecipeFinder recipeFinder = new DefaultFinder();
     public static final Comparator<WorkbenchRecipe> COMPARATOR =
-            Comparator.comparingLong(WorkbenchRecipe::getRequiredEnergy)
-                    .thenComparingInt(r -> Item.getId(r.output.getItem()))
-                    .thenComparing(WorkbenchRecipe::getId);
+        Comparator.comparingLong(WorkbenchRecipe::getRequiredEnergy)
+            .thenComparingInt(r -> Item.getId(r.output.getItem()))
+            .thenComparing(WorkbenchRecipe::getId);
 
     private final ResourceLocation location;
     public final ItemStack output;

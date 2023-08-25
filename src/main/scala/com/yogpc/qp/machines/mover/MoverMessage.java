@@ -41,10 +41,10 @@ public final class MoverMessage implements IMessage {
 
     public static void onReceive(MoverMessage message, Supplier<NetworkEvent.Context> supplier) {
         supplier.get().enqueueWork(() ->
-                PacketHandler.getPlayer(supplier.get())
-                        .map(p -> p.containerMenu)
-                        .filter(m -> m.containerId == message.windowId)
-                        .flatMap(MapMulti.optCast(ContainerMover.class))
-                        .ifPresent(c -> c.moveEnchant(ForgeRegistries.ENCHANTMENTS.getValue(message.enchantment))));
+            PacketHandler.getPlayer(supplier.get())
+                .map(p -> p.containerMenu)
+                .filter(m -> m.containerId == message.windowId)
+                .flatMap(MapMulti.optCast(ContainerMover.class))
+                .ifPresent(c -> c.moveEnchant(ForgeRegistries.ENCHANTMENTS.getValue(message.enchantment))));
     }
 }

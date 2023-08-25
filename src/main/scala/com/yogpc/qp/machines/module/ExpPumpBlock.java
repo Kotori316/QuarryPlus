@@ -24,10 +24,10 @@ public class ExpPumpBlock extends QPBlock implements EntityBlock, QuarryModulePr
 
     public ExpPumpBlock() {
         super(Properties.of()
-                .mapColor(MapColor.METAL)
-                .pushReaction(PushReaction.BLOCK).strength(3.0f), NAME);
+            .mapColor(MapColor.METAL)
+            .pushReaction(PushReaction.BLOCK).strength(3.0f), NAME);
         registerDefaultState(getStateDefinition().any()
-                .setValue(WORKING, false));
+            .setValue(WORKING, false));
     }
 
     @Override

@@ -41,7 +41,7 @@ public class Sprites {
 
     private TextureAtlasSprite getSprite(String name) {
         return spriteMap.computeIfAbsent(name, s ->
-                Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(getSpriteLocation(s)));
+            Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(getSpriteLocation(s)));
     }
 
     @NotNull

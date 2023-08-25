@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TileAdvPump extends PowerTile
-        implements MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments,
-        CheckerLog, ClientSync, ModuleInventory.HasModuleInventory {
+    implements MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments,
+    CheckerLog, ClientSync, ModuleInventory.HasModuleInventory {
 
     private final MachineStorage storage = new MachineStorage();
     private int y;
@@ -90,7 +90,7 @@ public class TileAdvPump extends PowerTile
             if (pump.target == null) {
                 var initPos = pos.atY(pump.y);
                 pump.target = Target.getTarget(world, initPos, pump.enchantmentEfficiency.rangePredicate(initPos),
-                        pump::isReplaceBlock, pump.enchantmentEfficiency.areaSize());
+                    pump::isReplaceBlock, pump.enchantmentEfficiency.areaSize());
                 world.setBlock(pos, state.setValue(BlockAdvPump.WORKING, true), Block.UPDATE_ALL);
             }
             if (pump.target.hasNext()) {
@@ -101,8 +101,8 @@ public class TileAdvPump extends PowerTile
                         break;
                     if (pump.placeFrame)
                         Direction.Plane.HORIZONTAL.stream().map(target::relative)
-                                .filter(pump.target.getPredicate().negate())
-                                .forEach(p -> pump.pumpFluid(world, p, f -> Holder.BLOCK_FRAME.getDammingState(), false));
+                            .filter(pump.target.getPredicate().negate())
+                            .forEach(p -> pump.pumpFluid(world, p, f -> Holder.BLOCK_FRAME.getDammingState(), false));
                 }
             } else {
                 // Go to next y
@@ -120,7 +120,7 @@ public class TileAdvPump extends PowerTile
                     } else {
                         // Go to the next Y.
                         pump.target = Target.getTarget(world, nextPos, pump.enchantmentEfficiency.rangePredicate(nextPos),
-                                pump::isReplaceBlock, pump.enchantmentEfficiency.areaSize());
+                            pump::isReplaceBlock, pump.enchantmentEfficiency.areaSize());
                     }
                 }
             }
@@ -184,7 +184,7 @@ public class TileAdvPump extends PowerTile
 
     private BlockState getStateForReplace(FluidState f) {
         return getReplaceModuleState()
-                .orElse(f.is(FluidTags.WATER) ? Holder.BLOCK_DUMMY.defaultBlockState() : Blocks.AIR.defaultBlockState());
+            .orElse(f.is(FluidTags.WATER) ? Holder.BLOCK_DUMMY.defaultBlockState() : Blocks.AIR.defaultBlockState());
     }
 
     private boolean isReplaceBlock(BlockState state) {
@@ -210,15 +210,15 @@ public class TileAdvPump extends PowerTile
     @Override
     public List<? extends Component> getDebugLogs() {
         var fluidSummery = this.storage.getFluidMap().entrySet().stream()
-                .map(e -> "%s: %d mB".formatted(e.getKey().getId(), e.getValue()))
-                .map(Component::literal)
-                .toList();
+            .map(e -> "%s: %d mB".formatted(e.getKey().getId(), e.getValue()))
+            .map(Component::literal)
+            .toList();
         var fluidMessage = fluidSummery.isEmpty() ? List.of(Component.literal("No Fluid.")) : fluidSummery;
         return Stream.concat(fluidMessage.stream(), Stream.of(
-                "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
-                "%sRemove:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, deleteFluid),
-                "%sFrame:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, placeFrame),
-                energyString()
+            "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
+            "%sRemove:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, deleteFluid),
+            "%sFrame:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, placeFrame),
+            energyString()
         ).map(Component::literal)).toList();
     }
 
@@ -240,8 +240,8 @@ public class TileAdvPump extends PowerTile
     void updateModule() {
         // Blocks
         Set<QuarryModule> blockModules = level != null
-                ? QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
-                : Collections.emptySet();
+            ? QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
+            : Collections.emptySet();
 
         // Module Inventory
         var itemModules = moduleInventory.getModules();
@@ -270,11 +270,11 @@ public class TileAdvPump extends PowerTile
 
         public AdvPumpCache() {
             replaceModuleState = CacheEntry.supplierCache(5, () ->
-                    getReplacerModule()
-                            .map(ReplacerModule::getState)
-                            .filter(Predicate.not(BlockState::isAir))
-                            .filter(b -> !b.is(Holder.BLOCK_DUMMY_REPLACER))
-                            .or(() -> hasFillerModule() ? Optional.of(Blocks.STONE.defaultBlockState()) : Optional.empty()));
+                getReplacerModule()
+                    .map(ReplacerModule::getState)
+                    .filter(Predicate.not(BlockState::isAir))
+                    .filter(b -> !b.is(Holder.BLOCK_DUMMY_REPLACER))
+                    .or(() -> hasFillerModule() ? Optional.of(Blocks.STONE.defaultBlockState()) : Optional.empty()));
         }
     }
 }

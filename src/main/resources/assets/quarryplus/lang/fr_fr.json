@@ -111,6 +111,7 @@
   "quarryplus.chat.pump_range.quarry": "Actuellement, PompePump recherche l'aire en chunks de la Carrière",
   "quarryplus.chat.quarry.restart": "Carrière Relancée",
   "quarryplus.chat.quarry_mode": "Mode Carrière",
+  "quarryplus.chat.replacer_module": "Replacer Module: %s.",
   "quarryplus.chat.warn_area": "[QuarryPlus] Area is too small.",
   "quarryplus.chat.warn_cd_limit": "Area is too bigger than limit value in config.",
   "quarryplus.chat.warn_protected_area": "Area contains protected chunks. Quarry has stopped.",

@@ -39,7 +39,7 @@ public class ExpPumpTile extends BlockEntity implements CheckerLog {
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-                "Exp: " + module.getExp()
+            "Exp: " + module.getExp()
         ).map(Component::literal).toList();
     }
 

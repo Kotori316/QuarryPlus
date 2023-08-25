@@ -36,8 +36,8 @@ class EnchantmentEfficiency {
 
     static int getLevel(List<EnchantmentLevel> enchantments, Enchantment enchantment) {
         return enchantments.stream()
-                .filter(e -> enchantment.equals(e.enchantment()))
-                .mapToInt(EnchantmentLevel::level).max().orElse(0);
+            .filter(e -> enchantment.equals(e.enchantment()))
+            .mapToInt(EnchantmentLevel::level).max().orElse(0);
     }
 
     CompoundTag toNbt() {
@@ -66,10 +66,10 @@ class EnchantmentEfficiency {
 
     static EnchantmentEfficiency fromNbt(CompoundTag tag) {
         var enchantmentLevels = tag.getAllKeys().stream()
-                .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, tag::getInt))
-                .map(EnchantmentLevel::new)
-                .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
-                .toList();
+            .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, tag::getInt))
+            .map(EnchantmentLevel::new)
+            .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
+            .toList();
         return new EnchantmentEfficiency(enchantmentLevels);
     }
 

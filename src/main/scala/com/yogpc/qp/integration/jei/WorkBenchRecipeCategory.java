@@ -71,8 +71,8 @@ class WorkBenchRecipeCategory implements IRecipeCategory<WorkbenchRecipe> {
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, WorkbenchRecipe recipe, IFocusGroup focuses) {
         var input = recipe.inputs().stream()
-                .map(IngredientList::stackList)
-                .toList();
+            .map(IngredientList::stackList)
+            .toList();
         var output = Collections.singletonList(recipe.output);
 
         int x0 = 4;
@@ -82,9 +82,9 @@ class WorkBenchRecipeCategory implements IRecipeCategory<WorkbenchRecipe> {
             int yIndex = i / 9;
             var slotInput = input.get(i);
             builder.addSlot(RecipeIngredientRole.INPUT, x0 + o * xIndex - xOff, x0 + o * yIndex - yOff)
-                    .addItemStacks(slotInput);
+                .addItemStacks(slotInput);
         }
         builder.addSlot(RecipeIngredientRole.OUTPUT, x0 - xOff, x0 + 64 - yOff)
-                .addItemStacks(output);
+            .addItemStacks(output);
     }
 }

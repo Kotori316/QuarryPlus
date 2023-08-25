@@ -28,7 +28,7 @@ public class Box {
     final double offZ;
     final double maxSize;
 
-    public void render(final VertexConsumer buffer, final PoseStack matrixStack, final TextureAtlasSprite sprite, final ColorBox colorBox) {
+    void render(final VertexConsumer buffer, final PoseStack matrixStack, final TextureAtlasSprite sprite, final ColorBox colorBox) {
         double n1X = this.dx;
         double n1Y = Box.normalY(this.dx, this.dy, this.dz);
         double n1Z = this.dz;
@@ -37,7 +37,7 @@ public class Box {
         double n2Z = this.dx * n1Y - this.dy * n1X;
         double n2Size = Math.sqrt(n2X * n2X + n2Z * n2Z);
         this.renderInternal(buffer, matrixStack, sprite, n1X / n1Size / (double) 2, n1Y / n1Size / (double) 2, n1Z / n1Size / (double) 2,
-                n2X / n2Size / (double) 2, n2Z / n2Size / (double) 2, colorBox.alpha(), colorBox.red(), colorBox.green(), colorBox.blue());
+            n2X / n2Size / (double) 2, n2Z / n2Size / (double) 2, colorBox.alpha(), colorBox.red(), colorBox.green(), colorBox.blue());
     }
 
     @SuppressWarnings({"UnnecessaryLocalVariable", "DuplicatedCode"})
@@ -102,7 +102,7 @@ public class Box {
     public boolean equals(final Object obj) {
         if (obj instanceof Box var4) {
             return this.startX == var4.startX && this.startY == var4.startY && this.startZ == var4.startZ && this.endX == var4.endX && this.endY == var4.endY && this.endZ == var4.endZ
-                    && this.sizeX == var4.sizeX && this.sizeY == var4.sizeY && this.sizeZ == var4.sizeZ && this.firstSide == var4.firstSide && this.endSide == var4.endSide;
+                && this.sizeX == var4.sizeX && this.sizeY == var4.sizeY && this.sizeZ == var4.sizeZ && this.firstSide == var4.firstSide && this.endSide == var4.endSide;
         } else {
             return false;
         }
@@ -111,7 +111,7 @@ public class Box {
     @Override
     public int hashCode() {
         return (int) (this.startX + this.startY + this.startZ + this.endX + this.endY + this.endZ + this.sizeX + this.sizeY + this.sizeZ +
-                (double) (this.firstSide ? 1 : 0) + (double) (this.endSide ? 1 : 0));
+            (double) (this.firstSide ? 1 : 0) + (double) (this.endSide ? 1 : 0));
     }
 
     public Box(final double startX, final double startY, final double startZ, final double endX, final double endY, final double endZ,
@@ -149,10 +149,10 @@ public class Box {
     public static Box apply(final double startX, final double startY, final double startZ, final double endX, final double endY, final double endZ,
                             final double sizeX, final double sizeY, final double sizeZ, final boolean firstSide, final boolean endSide) {
         return startY == endY ? (startX == endX ? new BoxZ(startZ, endZ, endX, endY, sizeX, sizeY, sizeZ, firstSide, endSide)
-                : (startZ == endZ ? new BoxX(startX, endX, endY, endZ, sizeX, sizeY, sizeZ, firstSide, endSide)
-                : new BoxXZ(startX, startZ, endX, endY, endZ, sizeX, sizeY, sizeZ, firstSide, endSide)))
-                : (startZ == endZ && startX == endX ? new BoxY(startY, endY, endX, endZ, sizeX, sizeY, sizeZ, firstSide, endSide)
-                : new Box(startX, startY, startZ, endX, endY, endZ, sizeX, sizeY, sizeZ, firstSide, endSide));
+            : (startZ == endZ ? new BoxX(startX, endX, endY, endZ, sizeX, sizeY, sizeZ, firstSide, endSide)
+            : new BoxXZ(startX, startZ, endX, endY, endZ, sizeX, sizeY, sizeZ, firstSide, endSide)))
+            : (startZ == endZ && startX == endX ? new BoxY(startY, endY, endX, endZ, sizeX, sizeY, sizeZ, firstSide, endSide)
+            : new Box(startX, startY, startZ, endX, endY, endZ, sizeX, sizeY, sizeZ, firstSide, endSide));
     }
 
 }

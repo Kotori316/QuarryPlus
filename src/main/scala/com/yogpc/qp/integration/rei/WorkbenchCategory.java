@@ -33,19 +33,19 @@ final class WorkbenchCategory implements DisplayCategory<WorkbenchDisplay> {
             var x = 18 * (i % 9) + bounds.x + offset;
             var y = 18 * (i / 9) + bounds.y + offset;
             var slot = Widgets.createSlot(new Point(x, y))
-                    .entries(ingredient)
-                    .markInput();
+                .entries(ingredient)
+                .markInput();
             widgets.add(slot);
         }
 
         widgets.add(Widgets.createResultSlotBackground(new Point(bounds.getCenterX() - 9, bounds.getMaxY() - 18 - offset * 2)));
         var output = Widgets.createSlot(new Point(bounds.getCenterX() - 9, bounds.getMaxY() - 18 - offset * 2))
-                .entries(display.getOutputEntries().get(0))
-                .markOutput()
-                .disableBackground();
+            .entries(display.getOutputEntries().get(0))
+            .markOutput()
+            .disableBackground();
         widgets.add(output);
         widgets.add(Widgets.createLabel(new Point(bounds.x + offset, bounds.getMaxY() - 18 - offset * 2),
-                Component.literal("%d FE".formatted(display.energy / PowerTile.ONE_FE))).leftAligned());
+            Component.literal("%d FE".formatted(display.energy / PowerTile.ONE_FE))).leftAligned());
         return widgets;
     }
 

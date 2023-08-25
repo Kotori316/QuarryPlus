@@ -32,10 +32,10 @@ public final class FilterModule implements QuarryModule {
     public static List<ItemKey> getFromTag(@Nullable ListTag tag) {
         if (tag == null || tag.isEmpty()) return List.of();
         return tag.stream()
-                .mapMulti(MapMulti.cast(CompoundTag.class))
-                .map(ItemKey::fromNbt)
-                .distinct()
-                .toList();
+            .mapMulti(MapMulti.cast(CompoundTag.class))
+            .map(ItemKey::fromNbt)
+            .distinct()
+            .toList();
     }
 
     public static ListTag getFromItems(List<ItemStack> stacks) {

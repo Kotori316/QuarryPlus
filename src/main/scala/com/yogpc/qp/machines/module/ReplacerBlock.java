@@ -16,14 +16,14 @@ public class ReplacerBlock extends QPBlock implements QuarryModuleProvider.Block
 
     public ReplacerBlock() {
         super(Properties.of()
-                .mapColor(MapColor.METAL)
-                .pushReaction(PushReaction.BLOCK).strength(3.0f), NAME);
+            .mapColor(MapColor.METAL)
+            .pushReaction(PushReaction.BLOCK).strength(3.0f), NAME);
     }
 
     @Override
     public ReplacerModule getModule(@NotNull Level level, BlockPos pos, BlockState state) {
         Predicate<BlockState> accept = ReplacerModule.rejects
-                .stream().reduce(s -> false, Predicate::or).negate();
+            .stream().reduce(s -> false, Predicate::or).negate();
         return new ReplacerModule(() -> {
             var up = level.getBlockState(pos.above());
             return accept.test(up) ? up : Holder.BLOCK_DUMMY_REPLACER.defaultBlockState();

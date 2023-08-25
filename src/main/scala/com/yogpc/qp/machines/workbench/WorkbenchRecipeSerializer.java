@@ -17,7 +17,7 @@ public class WorkbenchRecipeSerializer implements RecipeSerializer<WorkbenchReci
 
     WorkbenchRecipeSerializer() {
         serializeMap = Map.of(
-                "default", new IngredientRecipeSerialize()
+            "default", new IngredientRecipeSerialize()
         );
     }
 

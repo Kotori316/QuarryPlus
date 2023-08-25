@@ -39,9 +39,9 @@ public abstract class EnergyCounter {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{" +
-                "name='" + name + '\'' +
-                ", logInterval=" + logInterval +
-                '}';
+            "name='" + name + '\'' +
+            ", logInterval=" + logInterval +
+            '}';
     }
 
     private static class Debug extends EnergyCounter {
@@ -62,8 +62,8 @@ public abstract class EnergyCounter {
                 var get = getCounter.values().stream().collect(Collectors.summarizingLong(Long::longValue));
                 if (use.getSum() != 0 && get.getSum() != 0)
                     LOGGER.info(MARKER_TICK, "{}: Used {} FE in {} ticks({} FE/t). Got {} FE in {} ticks({} FE/t).", name,
-                            formatEnergyInFE(use.getSum()), use.getCount(), formatEnergyInFE(use.getAverage() / PowerTile.ONE_FE),
-                            formatEnergyInFE(get.getSum()), get.getCount(), formatEnergyInFE(get.getAverage() / PowerTile.ONE_FE));
+                        formatEnergyInFE(use.getSum()), use.getCount(), formatEnergyInFE(use.getAverage() / PowerTile.ONE_FE),
+                        formatEnergyInFE(get.getSum()), get.getCount(), formatEnergyInFE(get.getAverage() / PowerTile.ONE_FE));
                 useCounter.clear();
                 getCounter.clear();
             }
@@ -72,8 +72,8 @@ public abstract class EnergyCounter {
         @Override
         public void logUsageMap() {
             usageMap.entrySet().stream()
-                    .map(e -> "%s -> %s".formatted(e.getKey(), formatEnergyInFE(e.getValue())))
-                    .forEach(s -> LOGGER.info(MARKER_FINAL, s));
+                .map(e -> "%s -> %s".formatted(e.getKey(), formatEnergyInFE(e.getValue())))
+                .forEach(s -> LOGGER.info(MARKER_FINAL, s));
             usageMap.clear();
         }
 

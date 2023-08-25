@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @OnlyIn(Dist.CLIENT)
 public class GuiController extends Screen implements Button.OnPress {
     private static final Comparator<ResourceLocation> RESOURCE_LOCATION_COMPARATOR =
-            Comparator.comparing(ResourceLocation::getNamespace).thenComparing(ResourceLocation::getPath);
+        Comparator.comparing(ResourceLocation::getNamespace).thenComparing(ResourceLocation::getPath);
     private GuiSlotEntities slot;
     private EditBox search;
     List<ResourceLocation> names;
@@ -100,7 +100,7 @@ public class GuiController extends Screen implements Button.OnPress {
         }
     }
 
-    public void buildModList(Consumer<GuiSlotEntities.Entry> modListViewConsumer, Function<ResourceLocation, GuiSlotEntities.Entry> newEntry) {
+    void buildModList(Consumer<GuiSlotEntities.Entry> modListViewConsumer, Function<ResourceLocation, GuiSlotEntities.Entry> newEntry) {
         names.stream().map(newEntry).forEach(modListViewConsumer);
     }
 
@@ -110,10 +110,10 @@ public class GuiController extends Screen implements Button.OnPress {
             try {
                 Pattern pattern = Pattern.compile(text);
                 collect = allEntities.stream().filter(l -> pattern.matcher(l.toString()).find())
-                        .sorted(RESOURCE_LOCATION_COMPARATOR).collect(Collectors.toList());
+                    .sorted(RESOURCE_LOCATION_COMPARATOR).collect(Collectors.toList());
             } catch (PatternSyntaxException e) {
                 collect = allEntities.stream().filter(l -> l.toString().contains(text))
-                        .sorted(RESOURCE_LOCATION_COMPARATOR).collect(Collectors.toList());
+                    .sorted(RESOURCE_LOCATION_COMPARATOR).collect(Collectors.toList());
             }
         } else {
             collect = allEntities.stream().sorted(RESOURCE_LOCATION_COMPARATOR).collect(Collectors.toList());

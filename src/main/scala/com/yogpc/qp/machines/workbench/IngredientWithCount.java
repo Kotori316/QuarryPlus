@@ -40,9 +40,9 @@ public record IngredientWithCount(Ingredient ingredient, int count) implements P
 
     public List<ItemStack> stackList() {
         return Arrays.stream(ingredient.getItems())
-                .filter(Predicate.not(ItemStack::isEmpty))
-                .map(stack -> ItemHandlerHelper.copyStackWithSize(stack, count))
-                .toList();
+            .filter(Predicate.not(ItemStack::isEmpty))
+            .map(stack -> ItemHandlerHelper.copyStackWithSize(stack, count))
+            .toList();
     }
 
     public JsonElement toJson() {
@@ -63,9 +63,9 @@ public record IngredientWithCount(Ingredient ingredient, int count) implements P
     public static List<IngredientWithCount> getSeq(JsonElement jsonElement) {
         if (jsonElement instanceof JsonArray jsonArray) {
             return StreamSupport.stream(jsonArray.spliterator(), false)
-                    .map(JsonElement::getAsJsonObject)
-                    .map(IngredientWithCount::new)
-                    .toList();
+                .map(JsonElement::getAsJsonObject)
+                .map(IngredientWithCount::new)
+                .toList();
         } else {
             return List.of(new IngredientWithCount(jsonElement.getAsJsonObject()));
         }

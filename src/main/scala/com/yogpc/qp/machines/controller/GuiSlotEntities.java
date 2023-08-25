@@ -38,8 +38,8 @@ final class GuiSlotEntities extends ObjectSelectionList<GuiSlotEntities.Entry> {
 
             assert minecraft.screen != null;
             graphics.drawString(minecraft.font, name,
-                    (minecraft.screen.width - minecraft.font.width(name)) >> 1,
-                    top + 2, 0xFFFFFF, false);
+                (minecraft.screen.width - minecraft.font.width(name)) >> 1,
+                top + 2, 0xFFFFFF, false);
         }
 
         @Override

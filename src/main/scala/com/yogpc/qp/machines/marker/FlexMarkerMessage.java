@@ -47,11 +47,11 @@ public final class FlexMarkerMessage implements IMessage {
     public static void onReceive(FlexMarkerMessage message, Supplier<NetworkEvent.Context> supplier) {
         var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
         supplier.get().enqueueWork(() ->
-                world.map(w -> w.getBlockEntity(message.pos))
-                        .flatMap(MapMulti.optCast(TileFlexMarker.class))
-                        .ifPresent(m -> {
-                            m.move(message.movable, message.amount);
-                            PacketHandler.sendToClient(new TileMessage(m), Objects.requireNonNull(m.getLevel()));
-                        }));
+            world.map(w -> w.getBlockEntity(message.pos))
+                .flatMap(MapMulti.optCast(TileFlexMarker.class))
+                .ifPresent(m -> {
+                    m.move(message.movable, message.amount);
+                    PacketHandler.sendToClient(new TileMessage(m), Objects.requireNonNull(m.getLevel()));
+                }));
     }
 }

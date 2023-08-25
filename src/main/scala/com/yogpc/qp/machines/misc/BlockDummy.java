@@ -22,13 +22,13 @@ public class BlockDummy extends AbstractGlassBlock {
 
     public BlockDummy() {
         super(Properties.of()
-                .mapColor(MapColor.NONE)
-                .noOcclusion()
-                .noLootTable()
-                .isValidSpawn((state, world, pos, type) -> false)
-                .isSuffocating((state, world, pos) -> false)
-                .isRedstoneConductor((state, world, pos) -> false)
-                .isViewBlocking((state, world, pos) -> false)
+            .mapColor(MapColor.NONE)
+            .noOcclusion()
+            .noLootTable()
+            .isValidSpawn((state, world, pos, type) -> false)
+            .isSuffocating((state, world, pos) -> false)
+            .isRedstoneConductor((state, world, pos) -> false)
+            .isViewBlocking((state, world, pos) -> false)
         );
         blockItem = new BlockItem(this, new Item.Properties());
     }

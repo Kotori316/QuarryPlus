@@ -60,8 +60,8 @@ public final class FillerEntity extends PowerTile implements CheckerLog, PowerCo
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-                "Iterator: %s".formatted(this.fillerAction.iterator),
-                energyString()
+            "Iterator: %s".formatted(this.fillerAction.iterator),
+            energyString()
         ).map(Component::literal).toList();
     }
 
@@ -88,14 +88,14 @@ public final class FillerEntity extends PowerTile implements CheckerLog, PowerCo
         if (!this.fillerAction.isFinished()) return;
         assert level != null;
         Stream.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST)
-                .map(getBlockPos()::relative)
-                .map(level::getBlockEntity)
-                .mapMulti(MapMulti.cast(QuarryMarker.class))
-                .findFirst()
-                .ifPresent(m -> {
-                    this.fillerAction.setIterator(m.getArea().map(a -> new SkipIterator(a, fillerAction.iteratorProvider)).orElse(null));
-                    m.removeAndGetItems().forEach(stack -> Block.popResource(level, getBlockPos().above(), stack));
-                });
+            .map(getBlockPos()::relative)
+            .map(level::getBlockEntity)
+            .mapMulti(MapMulti.cast(QuarryMarker.class))
+            .findFirst()
+            .ifPresent(m -> {
+                this.fillerAction.setIterator(m.getArea().map(a -> new SkipIterator(a, fillerAction.iteratorProvider)).orElse(null));
+                m.removeAndGetItems().forEach(stack -> Block.popResource(level, getBlockPos().above(), stack));
+            });
     }
 
     @Override

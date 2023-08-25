@@ -198,10 +198,10 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-                "%sRecipe:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, currentRecipe),
-                "%sWorkContinue:%s %b".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, workContinue),
-                "%sRecipe List:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, recipesList),
-                energyString()
+            "%sRecipe:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, currentRecipe),
+            "%sWorkContinue:%s %b".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, workContinue),
+            "%sRecipe List:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, recipesList),
+            energyString()
         ).map(Component::literal).toList();
     }
 
@@ -255,7 +255,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
      */
     public void setCurrentRecipe(ResourceLocation recipeName) {
         this.currentRecipe = recipesList.stream().filter(r -> recipeName.equals(r.getId()))
-                .findFirst().orElse(WorkbenchRecipe.dummyRecipe());
+            .findFirst().orElse(WorkbenchRecipe.dummyRecipe());
         setMaxEnergy(Math.max(this.currentRecipe.getRequiredEnergy(), 5));
         if (QuarryPlus.config.common.noEnergy.get()) {
             setEnergy(0, true);

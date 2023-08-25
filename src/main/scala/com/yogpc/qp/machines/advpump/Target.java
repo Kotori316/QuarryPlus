@@ -36,15 +36,15 @@ class Target implements Iterator<BlockPos> {
 
     boolean checkAllFluidsRemoved(Level world, BlockPos center) {
         var stillFluid = posList.stream().<BlockPos>mapMulti((pos, consumer) -> {
-                    consumer.accept(pos);
-                    consumer.accept(pos.above());
-                })
-                .filter(p -> !world.getFluidState(p).isEmpty())
-                .filter(inRange)
-                .distinct()
-                .sorted(Comparator.comparingInt(Vec3i::getY).reversed()
-                        .thenComparing(Comparator.comparingInt(center::distManhattan).reversed()))
-                .toList();
+                consumer.accept(pos);
+                consumer.accept(pos.above());
+            })
+            .filter(p -> !world.getFluidState(p).isEmpty())
+            .filter(inRange)
+            .distinct()
+            .sorted(Comparator.comparingInt(Vec3i::getY).reversed()
+                .thenComparing(Comparator.comparingInt(center::distManhattan).reversed()))
+            .toList();
         if (stillFluid.isEmpty()) {
             return false;
         } else {
@@ -56,7 +56,7 @@ class Target implements Iterator<BlockPos> {
     static Target getTarget(Level world, BlockPos initPos, Predicate<BlockPos> inRange, Predicate<BlockState> isReplaceBlock, int sizeHint) {
         var result = search(world, Set.of(initPos), inRange, isReplaceBlock, sizeHint);
         result.sort(Comparator.comparingInt(Vec3i::getY).reversed()
-                .thenComparing(Comparator.comparingInt(initPos::distManhattan).reversed()));
+            .thenComparing(Comparator.comparingInt(initPos::distManhattan).reversed()));
         return new Target(result, inRange);
     }
 
@@ -75,10 +75,10 @@ class Target implements Iterator<BlockPos> {
                     if (counted.add(pos)) {
                         if (isFluid) result.add(pos);
                         directions.stream()
-                                .map(pos::relative)
-                                .filter(inRange)
-                                .filter(Predicate.not(checked::contains))
-                                .forEach(nextSearch::add);
+                            .map(pos::relative)
+                            .filter(inRange)
+                            .filter(Predicate.not(checked::contains))
+                            .forEach(nextSearch::add);
                     }
                 }
             }

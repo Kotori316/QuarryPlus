@@ -14,9 +14,9 @@ record WorkConfig(boolean startImmediately, boolean placeAreaFrame, boolean chun
 
     WorkConfig(CompoundTag tag) {
         this(
-                getBool(tag, "startImmediately", true),
-                getBool(tag, "placeAreaFrame", true),
-                getBool(tag, "chunkByChunk", false)
+            getBool(tag, "startImmediately", true),
+            getBool(tag, "placeAreaFrame", true),
+            getBool(tag, "chunkByChunk", false)
         );
     }
 
@@ -26,9 +26,9 @@ record WorkConfig(boolean startImmediately, boolean placeAreaFrame, boolean chun
 
     WorkConfig(FriendlyByteBuf buf) {
         this(
-                buf.readBoolean(), // startImmediately
-                buf.readBoolean(), // placeAreaFrame
-                buf.readBoolean() // chunkByChunk
+            buf.readBoolean(), // startImmediately
+            buf.readBoolean(), // placeAreaFrame
+            buf.readBoolean() // chunkByChunk
         );
     }
 

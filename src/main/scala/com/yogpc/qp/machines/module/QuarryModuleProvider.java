@@ -20,9 +20,9 @@ public interface QuarryModuleProvider {
 
         static Set<QuarryModule> getModulesInWorld(@NotNull Level level, @NotNull BlockPos pos) {
             return Arrays.stream(Direction.values())
-                    .map(pos::relative)
-                    .mapMulti(findModule(level))
-                    .collect(Collectors.toSet());
+                .map(pos::relative)
+                .mapMulti(findModule(level))
+                .collect(Collectors.toSet());
         }
 
         private static BiConsumer<BlockPos, Consumer<QuarryModule>> findModule(@NotNull Level level) {

@@ -46,8 +46,8 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
 
     public PlacerBlock() {
         super(Properties.of()
-                .mapColor(MapColor.METAL)
-                .pushReaction(PushReaction.BLOCK).strength(1.2f), NAME);
+            .mapColor(MapColor.METAL)
+            .pushReaction(PushReaction.BLOCK).strength(1.2f), NAME);
         registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(TRIGGERED, Boolean.FALSE));
     }
 
@@ -69,7 +69,7 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
                     });
                 } else {
                     world.getBlockEntity(pos, Holder.PLACER_TYPE).ifPresent(o ->
-                            NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
+                        NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
                 }
             }
             return InteractionResult.SUCCESS;
@@ -146,13 +146,13 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
         boolean poweredOld = state.getValue(TRIGGERED);
         if (poweredNow && !poweredOld) {
             if (worldIn.getBlockEntity(pos, Holder.PLACER_TYPE)
-                    .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
+                .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
                 worldIn.scheduleTick(pos, this, 1);
             }
             worldIn.setBlock(pos, state.setValue(TRIGGERED, Boolean.TRUE), Block.UPDATE_INVISIBLE);
         } else if (!poweredNow && poweredOld) {
             if (worldIn.getBlockEntity(pos, Holder.PLACER_TYPE)
-                    .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
+                .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
                 worldIn.scheduleTick(pos, this, 1);
             }
             worldIn.setBlock(pos, state.setValue(TRIGGERED, Boolean.FALSE), Block.UPDATE_INVISIBLE);
@@ -163,7 +163,7 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
 
     public static boolean isPoweredToWork(Level worldIn, BlockPos pos, @Nullable Direction currentFacing) {
         return Arrays.stream(DIRECTIONS).filter(Predicate.isEqual(currentFacing).negate())
-                .anyMatch(f -> worldIn.hasSignal(pos.relative(f), f)) || worldIn.hasNeighborSignal(pos.above());
+            .anyMatch(f -> worldIn.hasSignal(pos.relative(f), f)) || worldIn.hasNeighborSignal(pos.above());
     }
 
 }

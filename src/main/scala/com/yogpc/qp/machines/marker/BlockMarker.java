@@ -67,7 +67,7 @@ public class BlockMarker extends QPBlock implements EntityBlock {
             if (world.getBlockEntity(pos) instanceof TileMarker marker) {
                 marker.tryConnect(true);
                 marker.getArea().ifPresent(area ->
-                        player.displayClientMessage(Component.literal("%sMarker Area%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, area)), false));
+                    player.displayClientMessage(Component.literal("%sMarker Area%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, area)), false));
             }
         }
         return InteractionResult.SUCCESS;

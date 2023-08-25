@@ -44,25 +44,25 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
         for (int i = 0; i < upSide; i++) {
             for (int j = 0; j < mp.length; j++) {
                 addRenderableWidget(Button.builder(mp[j], this::actionPerformed)
-                        .pos(this.getGuiLeft() + imageWidth / 2 - 4 * w * upSide / 2 + w * j, this.getGuiTop() + top)
-                        .size(w, h)
-                        .build());
+                    .pos(this.getGuiLeft() + imageWidth / 2 - 4 * w * upSide / 2 + w * j, this.getGuiTop() + top)
+                    .size(w, h)
+                    .build());
             }
         }
         for (int i = 0; i < center; i++) {
             for (int j = 0; j < mp.length; j++) {
                 addRenderableWidget(Button.builder(mp[j], this::actionPerformed)
-                        .pos(this.getGuiLeft() + imageWidth / 2 - 4 * w * center / 2 + i * w * mp.length + w * j, this.getGuiTop() + top + yOffsetCenter)
-                        .size(w, h)
-                        .build());
+                    .pos(this.getGuiLeft() + imageWidth / 2 - 4 * w * center / 2 + i * w * mp.length + w * j, this.getGuiTop() + top + yOffsetCenter)
+                    .size(w, h)
+                    .build());
             }
         }
         for (int i = 0; i < downSide; i++) {
             for (int j = 0; j < mp.length; j++) {
                 addRenderableWidget(Button.builder(mp[j], this::actionPerformed)
-                        .pos(this.getGuiLeft() + imageWidth / 2 - 4 * w * downSide / 2 + w * j, this.getGuiTop() + top + yOffsetBottom)
-                        .size(w, h)
-                        .build());
+                    .pos(this.getGuiLeft() + imageWidth / 2 - 4 * w * downSide / 2 + w * j, this.getGuiTop() + top + yOffsetBottom)
+                    .size(w, h)
+                    .build());
             }
         }
     }

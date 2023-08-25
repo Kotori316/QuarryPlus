@@ -107,9 +107,9 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-                "Size: " + size,
-                "Min: " + min(),
-                "Max: " + max()
+            "Size: " + size,
+            "Min: " + min(),
+            "Max: " + max()
         ).map(Component::literal).toList();
     }
 

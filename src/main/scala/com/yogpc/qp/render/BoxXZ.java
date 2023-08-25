@@ -11,7 +11,7 @@ class BoxXZ extends Box {
     }
 
     @Override
-    public void render(final VertexConsumer buffer, PoseStack matrixStack, final TextureAtlasSprite sprite, final ColorBox colorBox) {
+    void render(final VertexConsumer buffer, PoseStack matrixStack, final TextureAtlasSprite sprite, final ColorBox colorBox) {
         double n2Size = this.length;
         this.renderInternal(buffer, matrixStack, sprite, 0.0D, 0.5D, 0.0D, -this.dz / n2Size / (double) 2, this.dx / n2Size / (double) 2, colorBox.alpha(), colorBox.red(), colorBox.green(), colorBox.blue());
     }

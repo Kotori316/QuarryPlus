@@ -1,12 +1,5 @@
 package com.yogpc.qp.machines;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import net.minecraft.core.BlockPos;
@@ -28,7 +21,10 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class QPBlock extends Block {
     public static final BooleanProperty WORKING = BooleanProperty.create("working");

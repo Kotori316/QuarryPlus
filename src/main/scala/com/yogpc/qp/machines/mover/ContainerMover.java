@@ -65,9 +65,9 @@ public class ContainerMover extends AbstractContainerMenu {
         super.removed(playerIn);
         if (!worldObj.isClientSide) {
             IntStream.range(0, craftMatrix.getContainerSize())
-                    .mapToObj(craftMatrix::removeItemNoUpdate)
-                    .filter(Predicate.not(ItemStack::isEmpty))
-                    .forEach(playerIn.getInventory()::placeItemBackInInventory);
+                .mapToObj(craftMatrix::removeItemNoUpdate)
+                .filter(Predicate.not(ItemStack::isEmpty))
+                .forEach(playerIn.getInventory()::placeItemBackInInventory);
         }
     }
 
@@ -80,9 +80,9 @@ public class ContainerMover extends AbstractContainerMenu {
         var from = craftMatrix.getItem(0);
         var to = craftMatrix.getItem(1);
         if (from.isEmpty() ||
-                to.isEmpty() ||
-                from.getEnchantmentTags().isEmpty() ||
-                !(to.getItem() instanceof EnchantableItem)) {
+            to.isEmpty() ||
+            from.getEnchantmentTags().isEmpty() ||
+            !(to.getItem() instanceof EnchantableItem)) {
             movable = Collections.emptyList();
             selected = null;
         } else {
@@ -101,17 +101,17 @@ public class ContainerMover extends AbstractContainerMenu {
     static List<Enchantment> getMovable(ItemStack from, ItemStack to, Predicate<Enchantment> predicate) {
         var given = EnchantmentHelper.getEnchantments(to);
         return EnchantmentLevel.fromItem(from).stream()
-                .map(EnchantmentLevel::enchantment)
-                .filter(e -> canMoveEnchantment(predicate, given, e))
-                .toList();
+            .map(EnchantmentLevel::enchantment)
+            .filter(e -> canMoveEnchantment(predicate, given, e))
+            .toList();
     }
 
     @VisibleForTesting
     static boolean canMoveEnchantment(@Nullable Predicate<Enchantment> predicate, Map<Enchantment, Integer> given, Enchantment toMove) {
         return
-                (predicate == null || predicate.test(toMove)) &&
-                        given.getOrDefault(toMove, 0) < toMove.getMaxLevel() &&
-                        given.keySet().stream().filter(Predicate.isEqual(toMove).negate()).allMatch(toMove::isCompatibleWith);
+            (predicate == null || predicate.test(toMove)) &&
+                given.getOrDefault(toMove, 0) < toMove.getMaxLevel() &&
+                given.keySet().stream().filter(Predicate.isEqual(toMove).negate()).allMatch(toMove::isCompatibleWith);
     }
 
     public Optional<Enchantment> getEnchantment() {
@@ -226,7 +226,7 @@ class SlotMover extends Slot {
     @Override
     public boolean mayPlace(ItemStack stack) {
         switch (this.getSlotIndex()) {
-            case 0:
+            case 0 -> {
                 if (stack.getEnchantmentTags().isEmpty())
                     return false;
                 if (stack.getItem() instanceof TieredItem tieredItem) {
@@ -240,8 +240,10 @@ class SlotMover extends Slot {
                 } else {
                     return stack.getItem() instanceof BowItem;
                 }
-            case 1:
+            }
+            case 1 -> {
                 return stack.getItem() instanceof EnchantableItem;
+            }
         }
         return false;
     }

@@ -12,9 +12,9 @@ public record Direction8(Vec3i vec) {
 
     static {
         DIRECTIONS = BlockPos.betweenClosedStream(-1, -1, -1, 1, 1, 1)
-                .map(BlockPos::immutable)
-                .filter(Predicate.isEqual(BlockPos.ZERO).negate())
-                .map(Direction8::new)
-                .toList();
+            .map(BlockPos::immutable)
+            .filter(Predicate.isEqual(BlockPos.ZERO).negate())
+            .map(Direction8::new)
+            .toList();
     }
 }

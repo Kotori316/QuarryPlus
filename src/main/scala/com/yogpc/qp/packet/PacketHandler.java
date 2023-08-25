@@ -38,10 +38,10 @@ import java.util.function.Supplier;
 public class PacketHandler {
     private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(QuarryPlus.modID, "main"),
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals
+        new ResourceLocation(QuarryPlus.modID, "main"),
+        () -> PROTOCOL_VERSION,
+        PROTOCOL_VERSION::equals,
+        PROTOCOL_VERSION::equals
     );
     private static final Proxy PROXY = ProxyProvider.getInstance();
 
@@ -79,16 +79,16 @@ public class PacketHandler {
     @NotNull
     public static ResourceKey<Level> getDimension(@Nullable BlockEntity entity) {
         return Optional.ofNullable(entity)
-                .map(BlockEntity::getLevel)
-                .map(Level::dimension)
-                .orElse(Level.OVERWORLD);
+            .map(BlockEntity::getLevel)
+            .map(Level::dimension)
+            .orElse(Level.OVERWORLD);
     }
 
     @NotNull
     public static Optional<Level> getWorld(@NotNull NetworkEvent.Context context, @NotNull BlockPos pos, @NotNull ResourceKey<Level> expectedDim) {
         return PROXY.getPacketWorld(context)
-                .filter(l -> l.dimension().equals(expectedDim))
-                .filter(l -> l.isLoaded(pos));
+            .filter(l -> l.dimension().equals(expectedDim))
+            .filter(l -> l.isLoaded(pos));
     }
 
     @NotNull

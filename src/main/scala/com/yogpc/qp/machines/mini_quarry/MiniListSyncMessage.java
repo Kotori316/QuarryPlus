@@ -27,7 +27,7 @@ public final class MiniListSyncMessage implements IMessage {
     private final Collection<BlockStatePredicate> allowList;
     private final Collection<BlockStatePredicate> denyList;
 
-    public MiniListSyncMessage(BlockPos pos, ResourceKey<Level> dim, Collection<BlockStatePredicate> denyList, Collection<BlockStatePredicate> allowList) {
+    MiniListSyncMessage(BlockPos pos, ResourceKey<Level> dim, Collection<BlockStatePredicate> denyList, Collection<BlockStatePredicate> allowList) {
         this.pos = pos;
         this.dim = dim;
         this.allowList = allowList;
@@ -43,16 +43,16 @@ public final class MiniListSyncMessage implements IMessage {
         this.dim = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
         int allowListSize = buf.readInt();
         this.allowList = Stream.generate(buf::readNbt)
-                .limit(allowListSize)
-                .filter(Objects::nonNull)
-                .map(BlockStatePredicate::fromTag)
-                .toList();
+            .limit(allowListSize)
+            .filter(Objects::nonNull)
+            .map(BlockStatePredicate::fromTag)
+            .toList();
         int denyListSize = buf.readInt();
         this.denyList = Stream.generate(buf::readNbt)
-                .limit(denyListSize)
-                .filter(Objects::nonNull)
-                .map(BlockStatePredicate::fromTag)
-                .toList();
+            .limit(denyListSize)
+            .filter(Objects::nonNull)
+            .map(BlockStatePredicate::fromTag)
+            .toList();
     }
 
     @Override
@@ -74,21 +74,21 @@ public final class MiniListSyncMessage implements IMessage {
     static void inServer(MiniListSyncMessage message, Supplier<NetworkEvent.Context> supplier) {
         // Set lists.
         supplier.get().enqueueWork(() ->
-                PacketHandler.getWorld(supplier.get(), message.pos, message.dim)
-                        .flatMap(w -> w.getBlockEntity(message.pos, Holder.MINI_QUARRY_TYPE))
-                        .ifPresent(t -> {
-                            t.allowList = message.allowList;
-                            t.denyList = message.denyList;
-                        }));
+            PacketHandler.getWorld(supplier.get(), message.pos, message.dim)
+                .flatMap(w -> w.getBlockEntity(message.pos, Holder.MINI_QUARRY_TYPE))
+                .ifPresent(t -> {
+                    t.allowList = message.allowList;
+                    t.denyList = message.denyList;
+                }));
     }
 
     @OnlyIn(Dist.CLIENT)
     static void inClient(MiniListSyncMessage message, Supplier<NetworkEvent.Context> supplier) {
         // Open GUI of current list.
         supplier.get().enqueueWork(() ->
-                PacketHandler.getWorld(supplier.get(), message.pos, message.dim)
-                        .flatMap(w -> w.getBlockEntity(message.pos, Holder.MINI_QUARRY_TYPE))
-                        .ifPresent(t ->
-                                Minecraft.getInstance().pushGuiLayer(new MiniQuarryListGui(t, message.allowList, message.denyList))));
+            PacketHandler.getWorld(supplier.get(), message.pos, message.dim)
+                .flatMap(w -> w.getBlockEntity(message.pos, Holder.MINI_QUARRY_TYPE))
+                .ifPresent(t ->
+                    Minecraft.getInstance().pushGuiLayer(new MiniQuarryListGui(t, message.allowList, message.denyList))));
     }
 }

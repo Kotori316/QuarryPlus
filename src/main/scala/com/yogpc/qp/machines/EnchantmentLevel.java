@@ -31,7 +31,7 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
 
         default int getLevel(Enchantment enchantment) {
             return getEnchantments().stream().filter(e -> e.enchantment() == enchantment)
-                    .mapToInt(EnchantmentLevel::level).findFirst().orElse(0);
+                .mapToInt(EnchantmentLevel::level).findFirst().orElse(0);
         }
 
         default int efficiencyLevel() {
@@ -83,21 +83,21 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
 
     public static List<EnchantmentLevel> fromMap(Map<Enchantment, Integer> enchantmentMap) {
         return enchantmentMap.entrySet().stream()
-                .map(EnchantmentLevel::new)
-                .sorted(QUARRY_ENCHANTMENT_COMPARATOR)
-                .toList();
+            .map(EnchantmentLevel::new)
+            .sorted(QUARRY_ENCHANTMENT_COMPARATOR)
+            .toList();
     }
 
     public static final Comparator<EnchantmentLevel> COMPARATOR =
-            Comparator.comparing(EnchantmentLevel::enchantmentID)
-                    .thenComparingInt(EnchantmentLevel::level);
+        Comparator.comparing(EnchantmentLevel::enchantmentID)
+            .thenComparingInt(EnchantmentLevel::level);
     public static final Comparator<EnchantmentLevel> QUARRY_ENCHANTMENT_COMPARATOR =
-            Comparator.comparing(EnchantmentLevel::enchantment,
-                    ManualOrder.builder(Comparator.comparing(ForgeRegistries.ENCHANTMENTS::getKey))
-                            .add(Enchantments.BLOCK_EFFICIENCY)
-                            .add(Enchantments.UNBREAKING)
-                            .add(Enchantments.BLOCK_FORTUNE)
-                            .add(Enchantments.SILK_TOUCH)
-                            .build()
-            ).thenComparingInt(EnchantmentLevel::level);
+        Comparator.comparing(EnchantmentLevel::enchantment,
+            ManualOrder.builder(Comparator.comparing(ForgeRegistries.ENCHANTMENTS::getKey))
+                .add(Enchantments.BLOCK_EFFICIENCY)
+                .add(Enchantments.UNBREAKING)
+                .add(Enchantments.BLOCK_FORTUNE)
+                .add(Enchantments.SILK_TOUCH)
+                .build()
+        ).thenComparingInt(EnchantmentLevel::level);
 }

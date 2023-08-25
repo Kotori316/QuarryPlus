@@ -136,7 +136,7 @@ public final class FillerAction {
     private static BlockState getStateFromItem(BlockItem blockItem, DirectionalPlaceContext context) {
         try {
             return (BlockState) ObfuscationReflectionHelper.findMethod(BlockItem.class, "m_5965_", BlockPlaceContext.class)
-                    .invoke(blockItem, context);
+                .invoke(blockItem, context);
         } catch (ReflectiveOperationException e) {
             LOGGER.error("Caught exception in Filler", e);
             return null;

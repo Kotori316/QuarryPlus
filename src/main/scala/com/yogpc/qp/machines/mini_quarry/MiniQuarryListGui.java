@@ -28,7 +28,7 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
     EntryList list;
     boolean whiteListFlag = true;
 
-    public MiniQuarryListGui(MiniQuarryTile tile, Collection<BlockStatePredicate> whiteList, Collection<BlockStatePredicate> blackList) {
+    MiniQuarryListGui(MiniQuarryTile tile, Collection<BlockStatePredicate> whiteList, Collection<BlockStatePredicate> blackList) {
         super(tile.getDisplayName());
         this.whiteList = whiteList.stream().sorted(Comparator.comparing(Object::toString)).collect(Collectors.toList());
         this.blackList = blackList.stream().sorted(Comparator.comparing(Object::toString)).collect(Collectors.toList());
@@ -60,7 +60,7 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
         graphics.drawCenteredString(this.font, title, this.width / 2, 8, 0xFFFFFF);
     }
 
-    public List<BlockStatePredicate> getEntries() {
+    List<BlockStatePredicate> getEntries() {
         if (whiteListFlag)
             return whiteList;
         else
@@ -92,13 +92,13 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
                 }
                 case 1 -> onClose();
                 case 2 -> getMinecraft().pushGuiLayer(new MiniQuarryAddEntryGui(this, // New Entry
-                        e -> {
-                            if (MiniQuarryTile.canAddInList(whiteListFlag, e)) {
-                                getEntries().add(e);
-                                list.updateList();
-                                PacketHandler.sendToServer(new MiniListSyncMessage(pos, dim, blackList, whiteList));
-                            }
-                        }));
+                    e -> {
+                        if (MiniQuarryTile.canAddInList(whiteListFlag, e)) {
+                            getEntries().add(e);
+                            list.updateList();
+                            PacketHandler.sendToServer(new MiniListSyncMessage(pos, dim, blackList, whiteList));
+                        }
+                    }));
                 case 3 -> { // Delete
                     MiniQuarryListEntry selected = list.getSelected(); // getSelected
                     if (selected != null) {
@@ -154,7 +154,7 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
             //render
             String name = data.toString();
             graphics.drawString(Minecraft.getInstance().font, name,
-                    (parent.width - Minecraft.getInstance().font.width(name)) / 2, top + 2, 0xFFFFFF, false);
+                (parent.width - Minecraft.getInstance().font.width(name)) / 2, top + 2, 0xFFFFFF, false);
         }
 
         @Override

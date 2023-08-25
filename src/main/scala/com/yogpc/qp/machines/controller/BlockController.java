@@ -47,7 +47,7 @@ public class BlockController extends QPBlock {
 
     public BlockController() {
         super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak()
-                .strength(1.0f), NAME);
+            .strength(1.0f), NAME);
         registerDefaultState(getStateDefinition().any().setValue(WORKING, false));
     }
 
@@ -59,8 +59,8 @@ public class BlockController extends QPBlock {
 
     private static Optional<Pair<BaseSpawner, BlockPos>> getSpawner(Level level, BlockPos pos) {
         return Stream.of(Direction.values()).map(pos::relative).map(level::getBlockEntity)
-                .mapMulti(MapMulti.cast(SpawnerBlockEntity.class))
-                .map(s -> Pair.of(s.getSpawner(), s.getBlockPos())).findFirst();
+            .mapMulti(MapMulti.cast(SpawnerBlockEntity.class))
+            .map(s -> Pair.of(s.getSpawner(), s.getBlockPos())).findFirst();
     }
 
     @Override
@@ -77,18 +77,18 @@ public class BlockController extends QPBlock {
                 if (player.getItemInHand(hand).is(Holder.ITEM_CHECKER)) {
                     // Tell spawner info
                     getSpawner(level, pos)
-                            .map(Pair::getLeft)
-                            .flatMap(BlockController::getEntityId)
-                            .map(ResourceLocation::toString)
-                            .map(s -> "Spawner Mob: " + s)
-                            .map(Component::literal)
-                            .ifPresent(s -> player.displayClientMessage(s, false));
+                        .map(Pair::getLeft)
+                        .flatMap(BlockController::getEntityId)
+                        .map(ResourceLocation::toString)
+                        .map(s -> "Spawner Mob: " + s)
+                        .map(Component::literal)
+                        .ifPresent(s -> player.displayClientMessage(s, false));
                 } else {
                     // Open GUI
                     var entries = ForgeRegistries.ENTITY_TYPES.getValues().stream()
-                            .filter(BlockController::canSpawnFromSpawner)
-                            .map(ForgeRegistries.ENTITY_TYPES::getKey)
-                            .collect(Collectors.toList());
+                        .filter(BlockController::canSpawnFromSpawner)
+                        .map(ForgeRegistries.ENTITY_TYPES::getKey)
+                        .collect(Collectors.toList());
                     PacketHandler.sendToClientPlayer(new ControllerOpenMessage(pos, level.dimension(), entries), (ServerPlayer) player);
                 }
             }
@@ -100,10 +100,10 @@ public class BlockController extends QPBlock {
     private static Optional<ResourceLocation> getEntityId(BaseSpawner spawner) {
         try {
             return Optional.ofNullable(logic_nextSpawnData.get(spawner))
-                    .flatMap(MapMulti.optCast(SpawnData.class))
-                    .map(SpawnData::getEntityToSpawn)
-                    .flatMap(EntityType::by)
-                    .map(ForgeRegistries.ENTITY_TYPES::getKey);
+                .flatMap(MapMulti.optCast(SpawnData.class))
+                .map(SpawnData::getEntityToSpawn)
+                .flatMap(EntityType::by)
+                .map(ForgeRegistries.ENTITY_TYPES::getKey);
         } catch (ReflectiveOperationException e) {
             LOGGER.error("Exception occurred in getting entity id.", e);
             return Optional.empty();
@@ -119,9 +119,9 @@ public class BlockController extends QPBlock {
     public static void setSpawnerEntity(Level world, BlockPos pos, ResourceLocation name) {
         getSpawner(world, pos).ifPresent(logic -> {
             Optional.of(name)
-                    .map(ForgeRegistries.ENTITY_TYPES::getValue)
-                    .filter(BlockController::canSpawnFromSpawner)
-                    .ifPresent(entityType -> logic.getLeft().setEntityId(entityType, world, world.getRandom(), pos));
+                .map(ForgeRegistries.ENTITY_TYPES::getValue)
+                .filter(BlockController::canSpawnFromSpawner)
+                .ifPresent(entityType -> logic.getLeft().setEntityId(entityType, world, world.getRandom(), pos));
             Optional.ofNullable(logic.getLeft().getSpawnerBlockEntity()).ifPresent(BlockEntity::setChanged);
             BlockState state = world.getBlockState(logic.getRight());
             world.sendBlockUpdated(logic.getRight(), state, state, Block.UPDATE_INVISIBLE);
@@ -139,7 +139,7 @@ public class BlockController extends QPBlock {
                     try {
                         logic_spawnDelay.setInt(logic.getLeft(), 0);
                     } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                        LOGGER.warn(e);
                         return;
                     }
                     FakePlayer fakePlayer = FakePlayerFactory.getMinecraft((ServerLevel) level);

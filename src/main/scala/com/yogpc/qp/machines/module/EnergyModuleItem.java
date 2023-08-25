@@ -54,10 +54,10 @@ public class EnergyModuleItem extends QPItem implements QuarryModuleProvider.Ite
 
     public static <T extends PowerTile & ModuleInventory.HasModuleInventory> BlockEntityTicker<T> energyModuleTicker() {
         return (w, p, s, blockEntity) ->
-                blockEntity.getLoadedModules().stream()
-                        .mapMulti(MapMulti.cast(EnergyModule.class))
-                        .max(Comparator.comparingInt(EnergyModule::energy))
-                        .ifPresent(e -> blockEntity.addEnergy(e.energy * PowerTile.ONE_FE, false));
+            blockEntity.getLoadedModules().stream()
+                .mapMulti(MapMulti.cast(EnergyModule.class))
+                .max(Comparator.comparingInt(EnergyModule::energy))
+                .ifPresent(e -> blockEntity.addEnergy(e.energy * PowerTile.ONE_FE, false));
     }
 
     public record EnergyModule(int energy) implements QuarryModule {

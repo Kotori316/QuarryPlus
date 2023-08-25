@@ -111,6 +111,7 @@
   "quarryplus.chat.pump_range.quarry": "現在、この改良型ポンプは改良型採掘機の採掘範囲を探索します",
   "quarryplus.chat.quarry.restart": "クァーリーが再開しました。",
   "quarryplus.chat.quarry_mode": "クァーリーモード",
+  "quarryplus.chat.replacer_module": "Replacer Module: %s.",
   "quarryplus.chat.warn_area": "[QuarryPlus] 採掘エリアが狭すぎます。",
   "quarryplus.chat.warn_cd_limit": "コンフィグの設定範囲よりもエリアが広すぎます。",
   "quarryplus.chat.warn_protected_area": "保護されたチャンクが採掘範囲に含まれているため動作を中止します",

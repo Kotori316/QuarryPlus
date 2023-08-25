@@ -21,11 +21,11 @@ public final class ConfigCommand {
     @SubscribeEvent
     public static void register(RegisterCommandsEvent event) {
         var parent =
-                Commands.literal(QuarryPlus.modID).requires(source -> source.hasPermission(Commands.LEVEL_GAMEMASTERS));
+            Commands.literal(QuarryPlus.modID).requires(source -> source.hasPermission(Commands.LEVEL_GAMEMASTERS));
         var configCommand = Commands.literal("config").executes(ConfigCommand::getConfigValues);
         var setCommand = Commands.argument("name", StringArgumentType.word())
-                .then(Commands.argument("value", BoolArgumentType.bool())
-                        .executes(c -> changeMachineSetting(StringArgumentType.getString(c, "name"), BoolArgumentType.getBool(c, "value"), c)));
+            .then(Commands.argument("value", BoolArgumentType.bool())
+                .executes(c -> changeMachineSetting(StringArgumentType.getString(c, "name"), BoolArgumentType.getBool(c, "value"), c)));
         event.getDispatcher().register(parent.then(configCommand.then(setCommand)));
     }
 
@@ -43,15 +43,15 @@ public final class ConfigCommand {
     private static int getConfigValues(CommandContext<CommandSourceStack> commandContext) throws CommandSyntaxException {
         if (QuarryPlus.config != null) {
             commandContext.getSource().sendSuccess(() -> Component.literal(
-                    String.format("%sQuarryPlus Machine List%s", ChatFormatting.UNDERLINE, ChatFormatting.RESET)
+                String.format("%sQuarryPlus Machine List%s", ChatFormatting.UNDERLINE, ChatFormatting.RESET)
             ), false);
             Holder.conditionHolders().stream()
-                    .map(Holder.EntryConditionHolder::location)
-                    .map(ResourceLocation::getPath)
-                    .sorted()
-                    .map(l -> String.format("%s%s%s: %B", ChatFormatting.DARK_AQUA, l, ChatFormatting.RESET, QuarryPlus.config.enableMap.enabled(l)))
-                    .map(Component::literal)
-                    .forEach(c -> commandContext.getSource().sendSuccess(() -> c, false));
+                .map(Holder.EntryConditionHolder::location)
+                .map(ResourceLocation::getPath)
+                .sorted()
+                .map(l -> String.format("%s%s%s: %B", ChatFormatting.DARK_AQUA, l, ChatFormatting.RESET, QuarryPlus.config.enableMap.enabled(l)))
+                .map(Component::literal)
+                .forEach(c -> commandContext.getSource().sendSuccess(() -> c, false));
             return Command.SINGLE_SUCCESS;
         } else {
             var supplier = new SimpleCommandExceptionType(Component.literal("QuarryPlus.config is NULL."));

@@ -182,8 +182,8 @@ interface BlockStatePredicate {
         @Override
         public String toString() {
             return "Name{" +
-                    "location=" + location +
-                    '}';
+                "location=" + location +
+                '}';
         }
     }
 
@@ -248,10 +248,10 @@ interface BlockStatePredicate {
             if (blockGetter instanceof Level level) {
                 try {
                     BlockPredicateArgument.Result argument = BlockPredicateArgument.blockPredicate(CommandBuildContext.simple(
-                                    Optional.ofNullable(level.getServer()).map(MinecraftServer::registryAccess).orElseThrow(),
-                                    FeatureFlags.DEFAULT_FLAGS
-                            ))
-                            .parse(new StringReader(blockPredicate));
+                            Optional.ofNullable(level.getServer()).map(MinecraftServer::registryAccess).orElseThrow(),
+                            FeatureFlags.DEFAULT_FLAGS
+                        ))
+                        .parse(new StringReader(blockPredicate));
                     return argument.test(new BlockInWorld(level, pos, true));
                 } catch (CommandSyntaxException e) {
                     if (!ForgeGameTestHooks.isGametestServer()) // Suppress warning in game test.
@@ -275,19 +275,19 @@ interface BlockStatePredicate {
         public String gameTestName() {
             // Same as BlockStatePredicateTagsTest#convertKey(String)
             return this.blockPredicate
-                    .replace("#", "tag_")
-                    .replace(":", "_")
-                    .replace("[", "_")
-                    .replace("]", "_")
-                    .replace("=", "_")
-                    ;
+                .replace("#", "tag_")
+                .replace(":", "_")
+                .replace("[", "_")
+                .replace("]", "_")
+                .replace("=", "_")
+                ;
         }
 
         @Override
         public String toString() {
             return "VanillaBlockPredicate{" +
-                    "blockPredicate='" + blockPredicate + '\'' +
-                    '}';
+                "blockPredicate='" + blockPredicate + '\'' +
+                '}';
         }
 
         @Override

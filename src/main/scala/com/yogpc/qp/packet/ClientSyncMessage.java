@@ -45,8 +45,8 @@ public final class ClientSyncMessage implements IMessage {
     public static void onReceive(ClientSyncMessage message, Supplier<NetworkEvent.Context> supplier) {
         var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
         supplier.get().enqueueWork(() ->
-                world.map(l -> l.getBlockEntity(message.pos))
-                        .flatMap(optCast(ClientSync.class))
-                        .ifPresent(t -> t.fromClientTag(message.tag)));
+            world.map(l -> l.getBlockEntity(message.pos))
+                .flatMap(optCast(ClientSync.class))
+                .ifPresent(t -> t.fromClientTag(message.tag)));
     }
 }

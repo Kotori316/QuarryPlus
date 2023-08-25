@@ -14,11 +14,11 @@ import java.util.stream.Stream;
 
 public final class ReplacerModule implements QuarryModule {
     public static final List<Predicate<BlockState>> rejects = List.of(
-            BlockState::hasBlockEntity,
-            ReplacerModule::invalidClass,
-            BlockState::isAir,
-            s -> !s.getFluidState().isEmpty(),
-            b -> false
+        BlockState::hasBlockEntity,
+        ReplacerModule::invalidClass,
+        BlockState::isAir,
+        s -> !s.getFluidState().isEmpty(),
+        b -> false
     );
 
     private static boolean invalidClass(BlockState state) {
@@ -44,8 +44,8 @@ public final class ReplacerModule implements QuarryModule {
     @Override
     public String toString() {
         return "ReplacerModule{" +
-                "state=" + supplier.get() +
-                '}';
+            "state=" + supplier.get() +
+            '}';
     }
 
     public BlockState getState() {

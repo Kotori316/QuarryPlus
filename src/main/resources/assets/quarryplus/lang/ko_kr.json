@@ -111,6 +111,7 @@
   "quarryplus.chat.pump_range.quarry": "현재, 펌프 플러스가 쿼리 영역 청크를 수색하고 있습니다.",
   "quarryplus.chat.quarry.restart": "쿼리 재시작됨",
   "quarryplus.chat.quarry_mode": "쿼리 모드",
+  "quarryplus.chat.replacer_module": "Replacer Module: %s.",
   "quarryplus.chat.warn_area": "[QuarryPlus] 영역이 너무 작습니다.",
   "quarryplus.chat.warn_cd_limit": "Area is too bigger than limit value in config.",
   "quarryplus.chat.warn_protected_area": "Area contains protected chunks. Quarry has stopped.",

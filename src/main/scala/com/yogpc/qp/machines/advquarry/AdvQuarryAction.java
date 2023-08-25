@@ -28,12 +28,12 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
 
     static {
         SERIALIZER_MAP = Stream.of(
-                new WaitingSerializer(),
-                new MakeFrameSerializer(),
-                new BreakBlockSerializer(),
-                new CheckFluidSerializer(),
-                new FillerWorkSerializer(),
-                new FinishedSerializer()
+            new WaitingSerializer(),
+            new MakeFrameSerializer(),
+            new BreakBlockSerializer(),
+            new CheckFluidSerializer(),
+            new FillerWorkSerializer(),
+            new FinishedSerializer()
         ).collect(Collectors.toMap(Serializer::key, Function.identity()));
     }
 
@@ -46,12 +46,12 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
     static AdvQuarryAction fromNbt(CompoundTag tag, TileAdvQuarry quarry) {
         var key = tag.getString("type");
         return Optional.ofNullable(SERIALIZER_MAP.get(key))
-                .map(s -> s.fromTag(tag, quarry))
-                .orElseGet(() -> {
-                    if (!tag.isEmpty())
-                        LOGGER.error(ACTION, "Unknown type '{}' found in tag: {}", key, tag);
-                    return Waiting.WAITING;
-                });
+            .map(s -> s.fromTag(tag, quarry))
+            .orElseGet(() -> {
+                if (!tag.isEmpty())
+                    LOGGER.error(ACTION, "Unknown type '{}' found in tag: {}", key, tag);
+                return Waiting.WAITING;
+            });
     }
 
     abstract CompoundTag writeDetail(CompoundTag tag);
@@ -241,9 +241,9 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
             return pos -> {
                 var state = world.getBlockState(pos);
                 return state.is(Holder.BLOCK_FRAME) // Frame
-                        || !quarry.canBreak(world, pos, state) // Unbreakable
-                        || pos.equals(quarry.getBlockPos()) // This machine
-                        ;
+                    || !quarry.canBreak(world, pos, state) // Unbreakable
+                    || pos.equals(quarry.getBlockPos()) // This machine
+                    ;
             };
         }
     }

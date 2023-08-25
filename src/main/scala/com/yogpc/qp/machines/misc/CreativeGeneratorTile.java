@@ -36,11 +36,11 @@ public class CreativeGeneratorTile extends PowerTile implements MenuProvider {
     }
 
     static final BlockEntityTicker<CreativeGeneratorTile> TICKER = (world, pos, state, tile) ->
-            Arrays.stream(Direction.values())
-                    .map(pos::relative)
-                    .map(world::getBlockEntity)
-                    .mapMulti(MapMulti.cast(PowerTile.class))
-                    .forEach(t -> t.addEnergy(tile.sendEnergy, false));
+        Arrays.stream(Direction.values())
+            .map(pos::relative)
+            .map(world::getBlockEntity)
+            .mapMulti(MapMulti.cast(PowerTile.class))
+            .forEach(t -> t.addEnergy(tile.sendEnergy, false));
 
     @Override
     public Component getDisplayName() {

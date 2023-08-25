@@ -51,9 +51,9 @@ import java.util.stream.Stream;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
 public class PlacerTile extends BlockEntity implements
-        Container,
-        CheckerLog,
-        MenuProvider {
+    Container,
+    CheckerLog,
+    MenuProvider {
     public static final String KEY_ITEM = "items";
     public static final String KEY_LAST_PLACED = "last_placed";
     public static final String KEY_RS_MODE = "redstone_mode";
@@ -117,7 +117,7 @@ public class PlacerTile extends BlockEntity implements
         List<ItemStack> drops = InvUtils.getBlockDrops(state, ((ServerLevel) level), pos, level.getBlockEntity(pos), fake, fake.getMainHandItem());
         level.removeBlock(pos, false);
         drops.stream().map(s -> ItemHandlerHelper.insertItem(this.itemHandler, s, false)) // Return not-inserted items.
-                .filter(Predicate.not(ItemStack::isEmpty)).forEach(s -> Block.popResource(level, getBlockPos(), s));
+            .filter(Predicate.not(ItemStack::isEmpty)).forEach(s -> Block.popResource(level, getBlockPos(), s));
     }
 
     /**
@@ -133,8 +133,8 @@ public class PlacerTile extends BlockEntity implements
 
         AtomicBoolean result = new AtomicBoolean(false);
         findEntry(inventory,
-                i -> tryPlaceItem(i, fake, rayTrace),
-                lastPlacedIndex).ifPresent(i -> {
+            i -> tryPlaceItem(i, fake, rayTrace),
+            lastPlacedIndex).ifPresent(i -> {
             if (!getItem(i).isEmpty())
                 this.lastPlacedIndex = i;
             else
@@ -245,10 +245,10 @@ public class PlacerTile extends BlockEntity implements
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-                "RS Mode: " + redstoneMode.toString(),
-                "Last Placed: " + getLastPlacedIndex(),
-                "Target: " + getTargetPos(),
-                "Inv: " + inventory.stream().filter(Predicate.not(ItemStack::isEmpty)).count()
+            "RS Mode: " + redstoneMode.toString(),
+            "Last Placed: " + getLastPlacedIndex(),
+            "Target: " + getTargetPos(),
+            "Inv: " + inventory.stream().filter(Predicate.not(ItemStack::isEmpty)).count()
         ).map(Component::literal).collect(Collectors.toList());
     }
 

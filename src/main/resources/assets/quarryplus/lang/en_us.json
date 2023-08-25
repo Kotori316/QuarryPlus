@@ -111,6 +111,7 @@
   "quarryplus.chat.pump_range.quarry": "Now, PumpPlus search quarry area chunks",
   "quarryplus.chat.quarry.restart": "Quarry Restarted",
   "quarryplus.chat.quarry_mode": "Quarry Mode",
+  "quarryplus.chat.replacer_module": "Replacer Module: %s.",
   "quarryplus.chat.warn_area": "[QuarryPlus] Area is too small.",
   "quarryplus.chat.warn_cd_limit": "Area is too bigger than limit value in config.",
   "quarryplus.chat.warn_protected_area": "Area contains protected chunks. Quarry has stopped.",

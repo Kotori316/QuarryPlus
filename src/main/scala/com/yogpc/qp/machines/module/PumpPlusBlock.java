@@ -13,9 +13,9 @@ public class PumpPlusBlock extends QPBlock implements QuarryModuleProvider.Block
 
     public PumpPlusBlock() {
         super(BlockBehaviour.Properties.of()
-                .mapColor(MapColor.METAL)
-                .pushReaction(PushReaction.BLOCK)
-                .strength(3.0f), NAME);
+            .mapColor(MapColor.METAL)
+            .pushReaction(PushReaction.BLOCK)
+            .strength(3.0f), NAME);
     }
 
     @Override

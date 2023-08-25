@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import static com.yogpc.qp.utils.MapStreamSyntax.byKey;
 
 public record ItemConverter(
-        List<Map.Entry<Predicate<ItemKey>, Function<ItemKey, ItemKey>>> conversionMap) {
+    List<Map.Entry<Predicate<ItemKey>, Function<ItemKey, ItemKey>>> conversionMap) {
 
     public ItemConverter(Map<ItemKey, ItemKey> map) {
         this(map.entrySet().stream().map(e -> {
@@ -47,11 +47,11 @@ public record ItemConverter(
 
     public Map.Entry<ItemKey, Integer> mapToKey(ItemKey before, int count) {
         var key = conversionMap().stream()
-                .filter(byKey(p -> p.test(before)))
-                .findFirst()
-                .map(Map.Entry::getValue)
-                .map(f -> convert(f, before))
-                .orElse(before);
+            .filter(byKey(p -> p.test(before)))
+            .findFirst()
+            .map(Map.Entry::getValue)
+            .map(f -> convert(f, before))
+            .orElse(before);
         return Map.entry(key, count);
     }
 
@@ -115,15 +115,15 @@ public record ItemConverter(
         if (!QuarryPlus.config.common.removeCommonMaterialsByCD.get()) return new ItemConverter(List.of());
         Function<ItemKey, ItemKey> function = new NoLogFunction(itemKey -> ItemKey.EMPTY_KEY);
         return new ItemConverter(Stream.of(
-                        tagPredicate(Tags.Items.STONE),
-                        tagPredicate(Tags.Items.COBBLESTONE),
-                        itemPredicate(Items.DIRT),
-                        itemPredicate(Items.GRASS_BLOCK),
-                        blockTagPredicate(BlockTags.BASE_STONE_OVERWORLD),
-                        blockTagPredicate(BlockTags.BASE_STONE_NETHER),
-                        tagPredicate(Tags.Items.SANDSTONE)
-                ).map(p -> Map.entry(p, function))
-                .toList());
+                tagPredicate(Tags.Items.STONE),
+                tagPredicate(Tags.Items.COBBLESTONE),
+                itemPredicate(Items.DIRT),
+                itemPredicate(Items.GRASS_BLOCK),
+                blockTagPredicate(BlockTags.BASE_STONE_OVERWORLD),
+                blockTagPredicate(BlockTags.BASE_STONE_NETHER),
+                tagPredicate(Tags.Items.SANDSTONE)
+            ).map(p -> Map.entry(p, function))
+            .toList());
     }
 
     public static ItemConverter voidConverter(List<ItemKey> voidedItems) {
@@ -136,8 +136,8 @@ public record ItemConverter(
 
     static Predicate<ItemKey> blockTagPredicate(TagKey<Block> tag) {
         return itemKey ->
-                (itemKey.item() instanceof BlockItem blockItem)
-                        && blockItem.getBlock().defaultBlockState().is(tag);
+            (itemKey.item() instanceof BlockItem blockItem)
+                && blockItem.getBlock().defaultBlockState().is(tag);
     }
 
     static Predicate<ItemKey> itemPredicate(Item item) {

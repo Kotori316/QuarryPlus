@@ -44,8 +44,8 @@ public class BlockMover extends QPBlock {
 
     public BlockMover() {
         super(Properties.of()
-                .mapColor(MapColor.METAL)
-                .pushReaction(PushReaction.BLOCK).strength(1.2f), NAME, BlockMoverItem::new);
+            .mapColor(MapColor.METAL)
+            .pushReaction(PushReaction.BLOCK).strength(1.2f), NAME, BlockMoverItem::new);
     }
 
     @Override

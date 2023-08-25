@@ -23,7 +23,7 @@ public final class AdvQuarryInitialMessage implements IMessage {
 
     private final WorkConfig workConfig;
 
-    public AdvQuarryInitialMessage(BlockPos pos, ResourceKey<Level> dim, WorkConfig workConfig) {
+    AdvQuarryInitialMessage(BlockPos pos, ResourceKey<Level> dim, WorkConfig workConfig) {
         this.pos = pos;
         this.dim = dim;
         this.workConfig = workConfig;
@@ -44,7 +44,7 @@ public final class AdvQuarryInitialMessage implements IMessage {
     public static void onReceive(AdvQuarryInitialMessage message, Supplier<NetworkEvent.Context> supplier) {
         var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
         supplier.get().enqueueWork(() -> world.flatMap(w -> w.getBlockEntity(message.pos, Holder.ADV_QUARRY_TYPE)).ifPresent(t ->
-                t.workConfig = message.workConfig
+            t.workConfig = message.workConfig
         ));
     }
 
@@ -69,18 +69,18 @@ public final class AdvQuarryInitialMessage implements IMessage {
 
         public static void onReceive(Ask message, Supplier<NetworkEvent.Context> supplier) {
             PacketHandler.getWorld(supplier.get(), message.pos, message.dim)
-                    .flatMap(w -> w.getBlockEntity(message.pos, Holder.ADV_QUARRY_TYPE))
-                    .ifPresent(t ->
-                            PacketHandler.sendToServer(new AdvQuarryInitialMessage(message.pos, message.dim, getWorkConfig()))
-                    );
+                .flatMap(w -> w.getBlockEntity(message.pos, Holder.ADV_QUARRY_TYPE))
+                .ifPresent(t ->
+                    PacketHandler.sendToServer(new AdvQuarryInitialMessage(message.pos, message.dim, getWorkConfig()))
+                );
         }
 
         @NotNull
         private static WorkConfig getWorkConfig() {
             return new WorkConfig(
-                    QuarryPlus.clientConfig.chunkDestroyerSetting.startImmediately.get(),
-                    QuarryPlus.clientConfig.chunkDestroyerSetting.placeAreaFrame.get(),
-                    QuarryPlus.clientConfig.chunkDestroyerSetting.chunkByChunk.get()
+                QuarryPlus.clientConfig.chunkDestroyerSetting.startImmediately.get(),
+                QuarryPlus.clientConfig.chunkDestroyerSetting.placeAreaFrame.get(),
+                QuarryPlus.clientConfig.chunkDestroyerSetting.chunkByChunk.get()
             );
         }
     }

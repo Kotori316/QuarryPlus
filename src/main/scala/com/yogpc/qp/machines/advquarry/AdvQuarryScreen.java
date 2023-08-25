@@ -77,13 +77,13 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryMenu> impl
         this.addRenderableWidget(new IndexedButton(9, getGuiLeft() + 8, getGuiTop() + 58, 50, 12, Component.literal("Modules"), this));
 
         areaFrameCheckBox = new SmallCheckBox(getGuiLeft() + 8, getGuiTop() + 72, 60, 10, 10, 10,
-                Component.literal("Area Frame"), getMenu().quarry.workConfig.placeAreaFrame(), this);
+            Component.literal("Area Frame"), getMenu().quarry.workConfig.placeAreaFrame(), this);
         this.addRenderableWidget(areaFrameCheckBox);
         chunkByChunkCheckBox = new SmallCheckBox(getGuiLeft() + 8, getGuiTop() + 83, 60, 10, 10, 10,
-                Component.literal("Chunk by Chunk"), getMenu().quarry.workConfig.chunkByChunk(), this);
+            Component.literal("Chunk by Chunk"), getMenu().quarry.workConfig.chunkByChunk(), this);
         this.addRenderableWidget(chunkByChunkCheckBox);
         startCheckBox = new SmallCheckBox(getGuiLeft() + 8, getGuiTop() + 94, 60, 10, 10, 10,
-                Component.literal("Ready to Start"), getMenu().quarry.workConfig.startImmediately(), this);
+            Component.literal("Ready to Start"), getMenu().quarry.workConfig.startImmediately(), this);
         this.addRenderableWidget(startCheckBox);
     }
 

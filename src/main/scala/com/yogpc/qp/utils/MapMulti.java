@@ -39,10 +39,10 @@ public class MapMulti {
 
     public static <T extends JsonElement> Collector<T, ?, JsonArray> jsonArrayCollector() {
         return Collector.of(
-                JsonArray::new, JsonArray::add, (jsonArray, jsonArray2) -> {
-                    jsonArray.addAll(jsonArray2);
-                    return jsonArray;
-                }, Collector.Characteristics.IDENTITY_FINISH
+            JsonArray::new, JsonArray::add, (jsonArray, jsonArray2) -> {
+                jsonArray.addAll(jsonArray2);
+                return jsonArray;
+            }, Collector.Characteristics.IDENTITY_FINISH
         );
     }
 }

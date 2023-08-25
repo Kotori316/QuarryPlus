@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class MiniQuarryTile extends PowerTile implements CheckerLog,
-        EnchantmentLevel.HasEnchantments, MenuProvider, PowerConfig.Provider {
+    EnchantmentLevel.HasEnchantments, MenuProvider, PowerConfig.Provider {
     private List<EnchantmentLevel> enchantments;
     @Nullable
     Area area = null;
@@ -84,7 +84,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
             }
             var tools = container.tools();
             var tool = tools.stream().filter(t ->
-                    t.isCorrectToolForDrops(state)
+                t.isCorrectToolForDrops(state)
             ).findFirst().or(() -> tools.stream().filter(t -> {
                 fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, t);
                 return ForgeHooks.isCorrectToolForDrops(state, fakePlayer);
@@ -115,7 +115,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
             return true;
         }
         return state.getDestroySpeed(level, pos) >= 0 &&
-                denyList.stream().noneMatch(t -> t.test(state, level, pos));
+            denyList.stream().noneMatch(t -> t.test(state, level, pos));
     }
 
     ServerLevel getTargetWorld() {
@@ -146,16 +146,16 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
         Area area;
         if (this.area == null) {
             area = Stream.of(behind, behind.getCounterClockWise(), behind.getClockWise())
-                    .map(getBlockPos()::relative)
-                    .flatMap(p -> {
-                        if (level.getBlockEntity(p) instanceof QuarryMarker marker) return Stream.of(marker);
-                        else return Stream.empty();
-                    })
-                    .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(this::insertOrDropItem)))
-                    .findFirst()
-                    .map(a -> new Area(a.minX() - 1, a.minY(), a.minZ() - 1, a.maxX() + 1, a.maxY(), a.maxZ() + 1, a.direction()))
-                    .map(a -> a.aboveY(level.getMinBuildHeight() + 1)) // Do not dig the floor of world.
-                    .orElse(null);
+                .map(getBlockPos()::relative)
+                .flatMap(p -> {
+                    if (level.getBlockEntity(p) instanceof QuarryMarker marker) return Stream.of(marker);
+                    else return Stream.empty();
+                })
+                .flatMap(m -> m.getArea().stream().peek(a -> m.removeAndGetItems().forEach(this::insertOrDropItem)))
+                .findFirst()
+                .map(a -> new Area(a.minX() - 1, a.minY(), a.minZ() - 1, a.maxX() + 1, a.maxY(), a.maxZ() + 1, a.direction()))
+                .map(a -> a.aboveY(level.getMinBuildHeight() + 1)) // Do not dig the floor of world.
+                .orElse(null);
         } else {
             area = this.area;
         }
@@ -188,7 +188,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
             nbt.put("area", area.toNBT());
         var enchantments = new CompoundTag();
         this.enchantments.forEach(e ->
-                enchantments.putInt(String.valueOf(e.enchantmentID()), e.level()));
+            enchantments.putInt(String.valueOf(e.enchantmentID()), e.level()));
         nbt.put("enchantments", enchantments);
         if (targetIterator != null)
             nbt.putLong("current", targetIterator.peek().asLong());
@@ -204,25 +204,25 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
         setArea(Area.fromNBT(nbt.getCompound("area")).orElse(null));
         var enchantments = nbt.getCompound("enchantments");
         setEnchantments(enchantments.getAllKeys().stream()
-                .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, enchantments::getInt))
-                .map(EnchantmentLevel::new)
-                .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
-                .toList());
+            .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, enchantments::getInt))
+            .map(EnchantmentLevel::new)
+            .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
+            .toList());
         if (nbt.contains("current") && targetIterator != null)
             targetIterator.setCurrent(BlockPos.of(nbt.getLong("current")));
         container.fromTag(nbt.getList("inventory", Tag.TAG_COMPOUND));
         denyList = Stream.concat(nbt.getList("denyList", Tag.TAG_COMPOUND).stream()
-                .mapMulti(MapMulti.cast(CompoundTag.class)).map(BlockStatePredicate::fromTag), defaultBlackList().stream()).collect(Collectors.toSet());
+            .mapMulti(MapMulti.cast(CompoundTag.class)).map(BlockStatePredicate::fromTag), defaultBlackList().stream()).collect(Collectors.toSet());
         allowList = nbt.getList("allowList", Tag.TAG_COMPOUND).stream()
-                .mapMulti(MapMulti.cast(CompoundTag.class)).map(BlockStatePredicate::fromTag).collect(Collectors.toSet());
+            .mapMulti(MapMulti.cast(CompoundTag.class)).map(BlockStatePredicate::fromTag).collect(Collectors.toSet());
     }
 
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-                "%sArea:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, area),
-                "%sTarget:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, Optional.ofNullable(targetIterator).map(MiniTarget::peek).orElse(null)),
-                energyString()
+            "%sArea:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, area),
+            "%sTarget:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, Optional.ofNullable(targetIterator).map(MiniTarget::peek).orElse(null)),
+            energyString()
         ).map(Component::literal).toList();
     }
 

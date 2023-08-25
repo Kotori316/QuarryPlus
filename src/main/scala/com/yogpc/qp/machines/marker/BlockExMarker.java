@@ -179,7 +179,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
         public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
             float rotationYawHead = placer != null ? placer.getYHeadRot() : 0f;
             level.getBlockEntity(pos, Holder.FLEX_MARKER_TYPE)
-                    .ifPresent(t -> t.init(Direction.fromYRot(rotationYawHead)));
+                .ifPresent(t -> t.init(Direction.fromYRot(rotationYawHead)));
         }
 
     }

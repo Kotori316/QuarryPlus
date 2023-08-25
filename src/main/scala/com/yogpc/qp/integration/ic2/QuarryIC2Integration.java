@@ -41,7 +41,7 @@ public final class QuarryIC2Integration {
             IEnergySink sink = new PowerTileEnergySink(tile);
             EnergyNet.INSTANCE.addTile(sink);
             LOGGER.trace("Registered {} as IC2 tile at {} in {}",
-                    tile.getClass().getSimpleName(), sink.getPosition(), sink.getWorldObj().dimension().location());
+                tile.getClass().getSimpleName(), sink.getPosition(), sink.getWorldObj().dimension().location());
         }
 
         private static void unload(PowerTile tile) {
@@ -50,7 +50,7 @@ public final class QuarryIC2Integration {
             if (energyTile instanceof PowerTileEnergySink sink && sink.tile() == tile) {
                 EnergyNet.INSTANCE.removeTile(sink);
                 LOGGER.trace("Unregistered {} as IC2 tile at {} in {}",
-                        tile.getClass().getSimpleName(), sink.getPosition(), sink.getWorldObj().dimension().location());
+                    tile.getClass().getSimpleName(), sink.getPosition(), sink.getWorldObj().dimension().location());
             }
             // energyTile is often null, and it may be expected.
         }

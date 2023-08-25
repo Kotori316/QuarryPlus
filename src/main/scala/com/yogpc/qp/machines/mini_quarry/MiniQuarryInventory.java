@@ -22,24 +22,24 @@ final class MiniQuarryInventory extends SimpleContainer {
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
         return stack.is(Holder.ITEM_FUEL_MODULE_NORMAL) ||
-                stack.getItem() instanceof DiggerItem;
+            stack.getItem() instanceof DiggerItem;
     }
 
     List<ItemStack> tools() {
         return Stream.concat(
-                IntStream.range(0, getContainerSize())
-                        .mapToObj(this::getItem)
-                        .filter(s -> s.getItem() instanceof DiggerItem),
-                Stream.of(ItemStack.EMPTY)
+            IntStream.range(0, getContainerSize())
+                .mapToObj(this::getItem)
+                .filter(s -> s.getItem() instanceof DiggerItem),
+            Stream.of(ItemStack.EMPTY)
         ).toList();
     }
 
     Optional<EnergyModuleItem.EnergyModule> getEnergyModule() {
         return IntStream.range(0, getContainerSize())
-                .mapToObj(this::getItem)
-                .filter(i -> i.getItem() instanceof QuarryModuleProvider.Item)
-                .map(i -> ((QuarryModuleProvider.Item) i.getItem()).getModule(i))
-                .mapMulti(MapMulti.cast(EnergyModuleItem.EnergyModule.class))
-                .max(Comparator.comparingInt(EnergyModuleItem.EnergyModule::energy));
+            .mapToObj(this::getItem)
+            .filter(i -> i.getItem() instanceof QuarryModuleProvider.Item)
+            .map(i -> ((QuarryModuleProvider.Item) i.getItem()).getModule(i))
+            .mapMulti(MapMulti.cast(EnergyModuleItem.EnergyModule.class))
+            .max(Comparator.comparingInt(EnergyModuleItem.EnergyModule::energy));
     }
 }

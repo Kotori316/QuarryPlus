@@ -88,10 +88,10 @@ public final class FilterModuleMenu extends AbstractContainerMenu {
             super(18);
             this.filterModuleItem = filterModuleItem;
             FilterModule.getFromTag(Optional.ofNullable(filterModuleItem.getTag())
-                            .map(t -> t.getList(FilterModuleItem.KEY_ITEMS, Tag.TAG_COMPOUND)).orElse(null))
-                    .stream()
-                    .map(itemKey -> itemKey.toStack(1))
-                    .forEach(this::addItem);
+                    .map(t -> t.getList(FilterModuleItem.KEY_ITEMS, Tag.TAG_COMPOUND)).orElse(null))
+                .stream()
+                .map(itemKey -> itemKey.toStack(1))
+                .forEach(this::addItem);
         }
 
         @Override

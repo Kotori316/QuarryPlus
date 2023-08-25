@@ -36,8 +36,8 @@ import java.util.stream.Stream;
 public class BookMoverEntity extends PowerTile implements Container, MenuProvider, CheckerLog {
     private final NonNullList<ItemStack> inventory = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
     static final Set<EnchantmentCategory> CATEGORIES = Arrays.stream(EnchantmentCategory.values())
-            .filter(t -> t.canEnchant(Items.DIAMOND_PICKAXE))
-            .collect(Collectors.toSet());
+        .filter(t -> t.canEnchant(Items.DIAMOND_PICKAXE))
+        .collect(Collectors.toSet());
     static final Set<Enchantment> VALID_ENCHANTMENTS = ForgeRegistries.ENCHANTMENTS.getValues().stream().filter(e -> CATEGORIES.contains(e.category)).collect(Collectors.toSet());
 
     public BookMoverEntity(BlockPos pos, BlockState state) {
@@ -62,26 +62,26 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
             // The enchantments which Enchantment Book in slot 1 has.
             var enchantments = EnchantmentHelper.getEnchantments(inventory.get(1));
             enchantments.entrySet().stream()
-                    .filter(e ->
-                            VALID_ENCHANTMENTS.contains(e.getKey()) &&
-                                    EnchantmentHelper.getEnchantments(inventory.get(0)).keySet().stream().allMatch(e2 -> e2 == e.getKey() || e2.isCompatibleWith(e.getKey())) &&
-                                    inventory.get(0).getEnchantmentLevel(e.getKey()) < e.getValue())
-                    .findFirst()
-                    .ifPresent(e -> {
-                        var copy = inventory.get(0).copy();
-                        removeEnchantment(e.getKey(), copy);
-                        copy.enchant(e.getKey(), e.getValue());
-                        if (enchantments.size() == 1) {
-                            // Replace Enchantment Book to Book
-                            setItem(1, new ItemStack(Items.BOOK));
-                        } else {
-                            // Remove Enchantment
-                            removeEnchantment(e.getKey(), inventory.get(1));
-                        }
-                        setItem(0, ItemStack.EMPTY);
-                        setItem(2, copy);
-                        useEnergy(getMaxEnergy(), Reason.BOOK_MOVER, false);
-                    });
+                .filter(e ->
+                    VALID_ENCHANTMENTS.contains(e.getKey()) &&
+                        EnchantmentHelper.getEnchantments(inventory.get(0)).keySet().stream().allMatch(e2 -> e2 == e.getKey() || e2.isCompatibleWith(e.getKey())) &&
+                        inventory.get(0).getEnchantmentLevel(e.getKey()) < e.getValue())
+                .findFirst()
+                .ifPresent(e -> {
+                    var copy = inventory.get(0).copy();
+                    removeEnchantment(e.getKey(), copy);
+                    copy.enchant(e.getKey(), e.getValue());
+                    if (enchantments.size() == 1) {
+                        // Replace Enchantment Book to Book
+                        setItem(1, new ItemStack(Items.BOOK));
+                    } else {
+                        // Remove Enchantment
+                        removeEnchantment(e.getKey(), inventory.get(1));
+                    }
+                    setItem(0, ItemStack.EMPTY);
+                    setItem(2, copy);
+                    useEnergy(getMaxEnergy(), Reason.BOOK_MOVER, false);
+                });
         }
     }
 
@@ -156,7 +156,7 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-                energyString()
+            energyString()
         ).map(Component::literal).toList();
     }
 
@@ -182,9 +182,9 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
         }
         stack.removeTagKey(tagName);
         var newList = list.stream()
-                .mapMulti(MapMulti.cast(CompoundTag.class))
-                .filter(t -> !Objects.equals(EnchantmentHelper.getEnchantmentId(t), ForgeRegistries.ENCHANTMENTS.getKey(enchantment)))
-                .collect(Collectors.toCollection(ListTag::new));
+            .mapMulti(MapMulti.cast(CompoundTag.class))
+            .filter(t -> !Objects.equals(EnchantmentHelper.getEnchantmentId(t), ForgeRegistries.ENCHANTMENTS.getKey(enchantment)))
+            .collect(Collectors.toCollection(ListTag::new));
 
         stack.addTagElement(tagName, newList);
     }

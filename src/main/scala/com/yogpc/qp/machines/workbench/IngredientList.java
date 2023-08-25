@@ -37,8 +37,8 @@ public class IngredientList implements Predicate<ItemStack> {
 
     public List<ItemStack> stackList() {
         return this.ingredientList.stream()
-                .flatMap(i -> i.stackList().stream())
-                .toList();
+            .flatMap(i -> i.stackList().stream())
+            .toList();
     }
 
     public JsonElement toJson() {
@@ -46,8 +46,8 @@ public class IngredientList implements Predicate<ItemStack> {
             return ingredientList.get(0).toJson();
         } else {
             return ingredientList.stream()
-                    .map(IngredientWithCount::toJson)
-                    .collect(MapMulti.jsonArrayCollector());
+                .map(IngredientWithCount::toJson)
+                .collect(MapMulti.jsonArrayCollector());
         }
     }
 

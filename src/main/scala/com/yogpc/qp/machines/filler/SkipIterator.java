@@ -68,14 +68,14 @@ public final class SkipIterator {
 
     static SkipIterator fromNbt(CompoundTag tag) {
         var area = Area.fromNBT(tag.getCompound("area")).orElseThrow(() ->
-                new IllegalArgumentException("Invalid tag for SkipIterator. %s".formatted(tag)));
+            new IllegalArgumentException("Invalid tag for SkipIterator. %s".formatted(tag)));
         var action = FillerEntity.Action.valueOf(tag.getString("type"));
         var skipIterator = new SkipIterator(area, action.iteratorProvider);
         var current = BlockPos.of(tag.getLong("current"));
         skipIterator.posIterator.setCurrent(current);
         Arrays.stream(tag.getLongArray("skips"))
-                .mapToObj(BlockPos::of)
-                .forEach(skipIterator.skipped::add);
+            .mapToObj(BlockPos::of)
+            .forEach(skipIterator.skipped::add);
         return skipIterator;
     }
 

@@ -111,6 +111,7 @@
   "quarryplus.chat.pump_range.quarry": "当前增强型泵的搜索范围为采石场区域",
   "quarryplus.chat.quarry.restart": "采石场已重启",
   "quarryplus.chat.quarry_mode": "采石场模式",
+  "quarryplus.chat.replacer_module": "Replacer Module: %s.",
   "quarryplus.chat.warn_area": "[QuarryPlus] Area is too small.",
   "quarryplus.chat.warn_cd_limit": "Area is too bigger than limit value in config.",
   "quarryplus.chat.warn_protected_area": "Area contains protected chunks. Quarry has stopped.",

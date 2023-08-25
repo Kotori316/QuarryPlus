@@ -113,8 +113,8 @@ public class Holder {
 
     public static List<NamedEntry<? extends Item>> items() {
         return Stream.concat(
-                BLOCKS.stream().map(q -> new NamedEntry<>(q.getRegistryName(), q.blockItem)),
-                ITEMS.stream().map(i -> new NamedEntry<>(i.getRegistryName(), i))
+            BLOCKS.stream().map(q -> new NamedEntry<>(q.getRegistryName(), q.blockItem)),
+            ITEMS.stream().map(i -> new NamedEntry<>(i.getRegistryName(), i))
         ).toList();
     }
 
@@ -192,42 +192,42 @@ public class Holder {
     public static final BlockEntityType<FillerEntity> FILLER_TYPE = registerEntityType(FillerEntity::new, BLOCK_FILLER, EnableOrNot.CONFIG_ON);
 
     public static final MenuType<ContainerMarker> FLEX_MARKER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-            new ContainerMarker(windowId, inv.player, data.readBlockPos(), Holder.FLEX_MARKER_MENU_TYPE, 29, 139), BlockExMarker.GUI_FLEX_ID);
+        new ContainerMarker(windowId, inv.player, data.readBlockPos(), Holder.FLEX_MARKER_MENU_TYPE, 29, 139), BlockExMarker.GUI_FLEX_ID);
     public static final MenuType<ContainerMarker> MARKER_16_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-            new ContainerMarker(windowId, inv.player, data.readBlockPos(), Holder.MARKER_16_MENU_TYPE, 29, 107), BlockExMarker.GUI_16_ID);
+        new ContainerMarker(windowId, inv.player, data.readBlockPos(), Holder.MARKER_16_MENU_TYPE, 29, 107), BlockExMarker.GUI_16_ID);
     public static final MenuType<YSetterContainer> Y_SETTER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-            new YSetterContainer(windowId, inv.player, data.readBlockPos()), YSetterContainer.GUI_ID);
+        new YSetterContainer(windowId, inv.player, data.readBlockPos()), YSetterContainer.GUI_ID);
     public static final MenuType<ContainerWorkbench> WORKBENCH_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-            new ContainerWorkbench(windowId, inv.player, data.readBlockPos()), BlockWorkbench.GUI_ID);
+        new ContainerWorkbench(windowId, inv.player, data.readBlockPos()), BlockWorkbench.GUI_ID);
     public static final MenuType<ContainerMover> MOVER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-            new ContainerMover(windowId, inv.player, data.readBlockPos()), BlockMover.GUI_ID);
+        new ContainerMover(windowId, inv.player, data.readBlockPos()), BlockMover.GUI_ID);
     public static final MenuType<ContainerQuarryModule> MODULE_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-            new ContainerQuarryModule(windowId, inv.player, data.readBlockPos()), ContainerQuarryModule.GUI_ID);
+        new ContainerQuarryModule(windowId, inv.player, data.readBlockPos()), ContainerQuarryModule.GUI_ID);
     public static final MenuType<PlacerContainer> PLACER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-            new PlacerContainer(windowId, inv.player, data.readBlockPos(), PlacerTile.class), PlacerContainer.PLACER_GUI_ID);
+        new PlacerContainer(windowId, inv.player, data.readBlockPos(), PlacerTile.class), PlacerContainer.PLACER_GUI_ID);
     public static final MenuType<PlacerContainer> REMOTE_PLACER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-            new PlacerContainer(windowId, inv.player, data.readBlockPos(), RemotePlacerTile.class), PlacerContainer.REMOTE_PLACER_GUI_ID);
+        new PlacerContainer(windowId, inv.player, data.readBlockPos(), RemotePlacerTile.class), PlacerContainer.REMOTE_PLACER_GUI_ID);
     public static final MenuType<BookMoverMenu> BOOK_MOVER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-            new BookMoverMenu(windowId, inv.player, data.readBlockPos()), BookMoverBlock.GUI_ID);
+        new BookMoverMenu(windowId, inv.player, data.readBlockPos()), BookMoverBlock.GUI_ID);
     public static final MenuType<CreativeGeneratorMenu> CREATIVE_GENERATOR_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-            new CreativeGeneratorMenu(windowId, inv.player, data.readBlockPos()), CreativeGeneratorMenu.GUI_ID);
+        new CreativeGeneratorMenu(windowId, inv.player, data.readBlockPos()), CreativeGeneratorMenu.GUI_ID);
     public static final MenuType<AdvQuarryMenu> ADV_QUARRY_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-            new AdvQuarryMenu(windowId, inv.player, data.readBlockPos()), AdvQuarryMenu.GUI_ID);
+        new AdvQuarryMenu(windowId, inv.player, data.readBlockPos()), AdvQuarryMenu.GUI_ID);
     public static final MenuType<MiniQuarryMenu> MINI_QUARRY_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-            new MiniQuarryMenu(windowId, inv.player, data.readBlockPos()), MiniQuarryMenu.GUI_ID);
+        new MiniQuarryMenu(windowId, inv.player, data.readBlockPos()), MiniQuarryMenu.GUI_ID);
     public static final MenuType<SFQuarryMenu> SOLID_FUEL_QUARRY_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-            new SFQuarryMenu(windowId, inv.player, data.readBlockPos()), SFQuarryMenu.GUI_ID);
+        new SFQuarryMenu(windowId, inv.player, data.readBlockPos()), SFQuarryMenu.GUI_ID);
     public static final MenuType<FillerMenu> FILLER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-            new FillerMenu(windowId, inv.player, data.readBlockPos()), FillerMenu.GUI_ID);
+        new FillerMenu(windowId, inv.player, data.readBlockPos()), FillerMenu.GUI_ID);
     public static final MenuType<FilterModuleMenu> FILTER_MODULE_MENU_TYPE = registerMenuType(((windowId, inv, data) ->
-            new FilterModuleMenu(windowId, inv.player, inv.getItem(inv.selected))), FilterModuleMenu.GUI_ID);
+        new FilterModuleMenu(windowId, inv.player, inv.getItem(inv.selected))), FilterModuleMenu.GUI_ID);
 
     public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
-            new ResourceLocation(QuarryPlus.modID, EnchantedLootFunction.NAME), new LootItemFunctionType(EnchantedLootFunction.SERIALIZER));
+        new ResourceLocation(QuarryPlus.modID, EnchantedLootFunction.NAME), new LootItemFunctionType(EnchantedLootFunction.SERIALIZER));
     public static final LootItemFunctionType QUARRY_LOOT_TYPE = Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
-            new ResourceLocation(QuarryPlus.modID, QuarryLootFunction.NAME), new LootItemFunctionType(QuarryLootFunction.SERIALIZER));
+        new ResourceLocation(QuarryPlus.modID, QuarryLootFunction.NAME), new LootItemFunctionType(QuarryLootFunction.SERIALIZER));
     public static final LootItemFunctionType MODULE_LOOT_TYPE = Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
-            new ResourceLocation(QuarryPlus.modID, ModuleLootFunction.NAME), new LootItemFunctionType(ModuleLootFunction.SERIALIZER));
+        new ResourceLocation(QuarryPlus.modID, ModuleLootFunction.NAME), new LootItemFunctionType(ModuleLootFunction.SERIALIZER));
 
     public static final TagKey<Item> TAG_MARKERS = TagKey.create(Registries.ITEM, new ResourceLocation(QuarryPlus.modID, "markers"));
 

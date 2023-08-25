@@ -75,7 +75,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
                     } else {
                         // What ?
                         QuarryPlus.LOGGER.warn("Fluid is nether LiquidBlock nor BucketPickup, but {}({})",
-                                state.getBlock(), state.getBlock().getClass());
+                            state.getBlock(), state.getBlock().getClass());
                     }
                     level.setBlock(targetPos, Holder.BLOCK_DUMMY.defaultBlockState(), Block.UPDATE_ALL);
                 }
@@ -114,11 +114,11 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-                "MinY: " + digMinY,
-                "Interval: " + interval,
-                "Finished: " + finished,
-                "Efficiency: " + efficiencyLevel,
-                energyString()
+            "MinY: " + digMinY,
+            "Interval: " + interval,
+            "Finished: " + finished,
+            "Efficiency: " + efficiencyLevel,
+            energyString()
         ).map(Component::literal).toList();
     }
 

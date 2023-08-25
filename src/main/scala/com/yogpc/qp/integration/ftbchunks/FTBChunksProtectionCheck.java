@@ -32,8 +32,8 @@ public final class FTBChunksProtectionCheck {
 
     static Stream<ChunkPos> getChunkPosStream(Area area) {
         return IntStream.rangeClosed(Math.floorDiv(area.minX(), 16), Math.floorDiv(area.maxX(), 16)).boxed()
-                .flatMap(x -> IntStream.rangeClosed(Math.floorDiv(area.minZ(), 16), Math.floorDiv(area.maxZ(), 16)).boxed()
-                        .map(z -> new ChunkPos(x, z)));
+            .flatMap(x -> IntStream.rangeClosed(Math.floorDiv(area.minZ(), 16), Math.floorDiv(area.maxZ(), 16)).boxed()
+                .map(z -> new ChunkPos(x, z)));
     }
 
     private static final class Accessor {

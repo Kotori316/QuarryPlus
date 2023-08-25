@@ -51,11 +51,11 @@ public final class SmallCheckBox extends Button {
         float uOffset = this.isHoveredOrFocused() ? 20.0F : 0.0F;
         float vOffset = this.isSelected() ? 20.0F : 0.0F;
         graphics.blit(TEXTURE, this.getX(), this.getY() + this.height / 2 - this.checkBoxHeight / 2,
-                this.checkBoxWidth, this.checkBoxHeight, uOffset, vOffset, 20, 20, 64, 64);
+            this.checkBoxWidth, this.checkBoxHeight, uOffset, vOffset, 20, 20, 64, 64);
         // this.renderBg(pPoseStack, minecraft, pMouseX, pMouseY);
         int color = 0x404040;
         int labelOffset = this.checkBoxWidth / 5;
         graphics.drawString(font, this.getMessage(), this.getX() + this.checkBoxWidth + labelOffset, this.getY() + ((int) ((float) this.height - 7) / 2),
-                color | Mth.ceil(this.alpha * 255.0F) << 24, false);
+            color | Mth.ceil(this.alpha * 255.0F) << 24, false);
     }
 }

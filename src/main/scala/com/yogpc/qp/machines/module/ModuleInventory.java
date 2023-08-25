@@ -56,9 +56,9 @@ public class ModuleInventory extends SimpleContainer implements INBTSerializable
     @VisibleForTesting
     static List<QuarryModule> getModules(Stream<ItemStack> stream) {
         return stream
-                .filter(s -> s.getItem() instanceof QuarryModuleProvider.Item)
-                .map(s -> ((QuarryModuleProvider.Item) s.getItem()).getModule(s))
-                .toList();
+            .filter(s -> s.getItem() instanceof QuarryModuleProvider.Item)
+            .map(s -> ((QuarryModuleProvider.Item) s.getItem()).getModule(s))
+            .toList();
     }
 
     @Override
@@ -94,8 +94,8 @@ public class ModuleInventory extends SimpleContainer implements INBTSerializable
     public static List<QuarryModule> loadModulesFromTag(CompoundTag tag) {
         if (tag == null || tag.isEmpty()) return Collections.emptyList();
         return getModules(tag.getList("inventory", Tag.TAG_COMPOUND).stream()
-                .mapMulti(MapMulti.cast(CompoundTag.class))
-                .map(ItemStack::of));
+            .mapMulti(MapMulti.cast(CompoundTag.class))
+            .map(ItemStack::of));
     }
 
     public interface HasModuleInventory {

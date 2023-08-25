@@ -29,11 +29,11 @@ public class QuarryJeiPlugin implements IModPlugin {
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         List<WorkbenchRecipe> recipes =
-                RecipeFinder.find(Objects.requireNonNull(Minecraft.getInstance().level).getRecipeManager(), WorkbenchRecipe.RECIPE_TYPE).values().stream() // Synced by server.
-                        .filter(WorkbenchRecipe::showInJEI)
-                        .filter(WorkbenchRecipe::hasContent)
-                        .sorted(WorkbenchRecipe.COMPARATOR)
-                        .collect(Collectors.toList());
+            RecipeFinder.find(Objects.requireNonNull(Minecraft.getInstance().level).getRecipeManager(), WorkbenchRecipe.RECIPE_TYPE).values().stream() // Synced by server.
+                .filter(WorkbenchRecipe::showInJEI)
+                .filter(WorkbenchRecipe::hasContent)
+                .sorted(WorkbenchRecipe.COMPARATOR)
+                .collect(Collectors.toList());
         registration.addRecipes(WorkBenchRecipeCategory.RECIPE_TYPE, recipes);
         registration.addRecipes(MoverRecipeCategory.RECIPE_TYPE, MoverRecipeCategory.recipes());
     }

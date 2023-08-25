@@ -32,8 +32,8 @@ public final class RemotePlacerBlock extends QPBlock implements EntityBlock {
 
     public RemotePlacerBlock() {
         super(Properties.of()
-                .mapColor(MapColor.METAL)
-                .pushReaction(PushReaction.BLOCK).strength(1.2f), NAME);
+            .mapColor(MapColor.METAL)
+            .pushReaction(PushReaction.BLOCK).strength(1.2f), NAME);
         registerDefaultState(getStateDefinition().any().setValue(TRIGGERED, Boolean.FALSE));
     }
 
@@ -60,7 +60,7 @@ public final class RemotePlacerBlock extends QPBlock implements EntityBlock {
                     });
                 } else {
                     world.getBlockEntity(pos, Holder.REMOTE_PLACER_TYPE).ifPresent(o ->
-                            NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
+                        NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
                 }
             }
             return InteractionResult.SUCCESS;
@@ -93,13 +93,13 @@ public final class RemotePlacerBlock extends QPBlock implements EntityBlock {
         boolean poweredOld = state.getValue(TRIGGERED);
         if (poweredNow && !poweredOld) {
             if (worldIn.getBlockEntity(pos, Holder.REMOTE_PLACER_TYPE)
-                    .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
+                .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
                 worldIn.scheduleTick(pos, this, 1);
             }
             worldIn.setBlock(pos, state.setValue(TRIGGERED, Boolean.TRUE), Block.UPDATE_INVISIBLE);
         } else if (!poweredNow && poweredOld) {
             if (worldIn.getBlockEntity(pos, Holder.REMOTE_PLACER_TYPE)
-                    .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
+                .filter(p -> p.redstoneMode.isPulse()).isPresent()) {
                 worldIn.scheduleTick(pos, this, 1);
             }
             worldIn.setBlock(pos, state.setValue(TRIGGERED, Boolean.FALSE), Block.UPDATE_INVISIBLE);

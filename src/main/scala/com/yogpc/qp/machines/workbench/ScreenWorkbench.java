@@ -27,7 +27,7 @@ public class ScreenWorkbench extends AbstractContainerScreen<ContainerWorkbench>
         if (getMenu().tile.getMaxEnergyStored() > 5) {
             String current = getMenu().tile.getEnergyStored() + "FE";
             graphics.drawString(font, String.format("%s/%d", current, getMenu().tile.getMaxEnergyStored()),
-                    120 - this.font.width(current), this.inventoryLabelY, 0x404040, false);
+                120 - this.font.width(current), this.inventoryLabelY, 0x404040, false);
         }
     }
 

@@ -13,7 +13,7 @@ class BoxZ extends Box {
 
     @Override
     @SuppressWarnings("DuplicatedCode")
-    public void render(final VertexConsumer b, PoseStack matrixStack, final TextureAtlasSprite sprite, final ColorBox colorBox) {
+    void render(final VertexConsumer b, PoseStack matrixStack, final TextureAtlasSprite sprite, final ColorBox colorBox) {
         int count = Mth.floor(this.length / super.sizeZ);
         float minU = sprite.getU0();
         float minV = sprite.getV0();

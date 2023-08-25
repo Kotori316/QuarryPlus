@@ -19,9 +19,9 @@ public interface PowerConfig {
 
     static Stream<Method> getAllMethods() {
         return Arrays.stream(PowerConfig.class.getMethods())
-                .filter(m -> !Modifier.isStatic(m.getModifiers()))
-                .filter(m -> Character.isLowerCase(m.getName().charAt(0)))
-                .filter(m -> m.getReturnType() == Long.TYPE || m.getReturnType() == Double.TYPE);
+            .filter(m -> !Modifier.isStatic(m.getModifiers()))
+            .filter(m -> Character.isLowerCase(m.getName().charAt(0)))
+            .filter(m -> m.getReturnType() == Long.TYPE || m.getReturnType() == Double.TYPE);
     }
 
     long maxEnergy();
@@ -110,8 +110,8 @@ class MachinePowerConfig implements PowerConfig {
     @Override
     public String toString() {
         return "MachinePowerConfig{" +
-                "machineName='" + machineName + '\'' +
-                '}';
+            "machineName='" + machineName + '\'' +
+            '}';
     }
 
     // @formatter:off

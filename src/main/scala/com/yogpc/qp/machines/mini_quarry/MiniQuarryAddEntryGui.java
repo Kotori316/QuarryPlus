@@ -31,7 +31,7 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
     private EntryList list;
     private EditBox textField;
 
-    protected MiniQuarryAddEntryGui(Screen parent, Consumer<BlockStatePredicate> callback) {
+    MiniQuarryAddEntryGui(Screen parent, Consumer<BlockStatePredicate> callback) {
         super(parent.getTitle()); // title
         this.callback = callback;
     }
@@ -73,12 +73,12 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
         if (filterText.startsWith("#")) {
             String f = filterText.substring(1); // Remove first #
             return List.of(Pair.of(Kind.TAG, BuiltInRegistries.BLOCK.getTagNames()
-                    .map(TagKey::location).map(ResourceLocation::toString).filter(r -> r.contains(f)).sorted().collect(Collectors.toList())));
+                .map(TagKey::location).map(ResourceLocation::toString).filter(r -> r.contains(f)).sorted().collect(Collectors.toList())));
         } else {
             return List.of(
-                    Pair.of(Kind.ALL, Stream.of("ALL").filter(r -> r.contains(filterText)).toList()),
-                    Pair.of(Kind.BLOCK, ForgeRegistries.BLOCKS.getKeys().stream()
-                            .map(ResourceLocation::toString).filter(r -> r.contains(filterText)).sorted().collect(Collectors.toList()))
+                Pair.of(Kind.ALL, Stream.of("ALL").filter(r -> r.contains(filterText)).toList()),
+                Pair.of(Kind.BLOCK, ForgeRegistries.BLOCKS.getKeys().stream()
+                    .map(ResourceLocation::toString).filter(r -> r.contains(filterText)).sorted().collect(Collectors.toList()))
             );
         }
     }
@@ -129,7 +129,7 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
         private final Screen parent;
         private final Supplier<List<Pair<Kind, List<String>>>> entriesSupplier;
 
-        public EntryList(Minecraft mcIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn, Screen parent, Supplier<List<Pair<Kind, List<String>>>> entriesSupplier) {
+        private EntryList(Minecraft mcIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn, Screen parent, Supplier<List<Pair<Kind, List<String>>>> entriesSupplier) {
             super(mcIn, widthIn, heightIn, topIn, bottomIn, slotHeightIn);
             this.parent = parent;
             this.entriesSupplier = entriesSupplier;
@@ -140,9 +140,9 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
             this.clearEntries();
             List<Pair<Kind, List<String>>> kindListPairs = entriesSupplier.get();
             kindListPairs.forEach(kindListPair ->
-                    kindListPair.getValue().stream()
-                            .map(e -> new LocationEntry(e, this.parent, this::setSelected, kindListPair.getKey()))
-                            .forEach(this::addEntry)
+                kindListPair.getValue().stream()
+                    .map(e -> new LocationEntry(e, this.parent, this::setSelected, kindListPair.getKey()))
+                    .forEach(this::addEntry)
             );
         }
 
@@ -162,11 +162,11 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
             this.kind = kind;
         }
 
-        public String getData() {
+        private String getData() {
             return data;
         }
 
-        public Kind getKind() {
+        private Kind getKind() {
             return kind;
         }
 
@@ -175,7 +175,7 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
             String name = (kind == Kind.TAG ? "#" : "") + data;
             // drawCenteredString(m, Minecraft.getInstance().font, name, parent.width, top + 1, 0xFFFFFF);
             graphics.drawString(Minecraft.getInstance().font, name,
-                    (parent.width - Minecraft.getInstance().font.width(name)) / 2, top + 2, 0xFFFFFF, false);
+                (parent.width - Minecraft.getInstance().font.width(name)) / 2, top + 2, 0xFFFFFF, false);
         }
 
         @Override

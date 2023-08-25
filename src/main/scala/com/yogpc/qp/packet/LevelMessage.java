@@ -40,10 +40,10 @@ public final class LevelMessage implements IMessage {
     public static void onReceive(LevelMessage message, Supplier<NetworkEvent.Context> supplier) {
         var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
         supplier.get().enqueueWork(() ->
-                world
-                        .map(l -> l.getBlockEntity(message.pos))
-                        .map(YAccessor::get)
-                        .ifPresent(yAccessor -> yAccessor.setDigMinY(message.digMinY))
+            world
+                .map(l -> l.getBlockEntity(message.pos))
+                .map(YAccessor::get)
+                .ifPresent(yAccessor -> yAccessor.setDigMinY(message.digMinY))
         );
     }
 

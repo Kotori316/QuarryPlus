@@ -44,23 +44,23 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
     void tryConnect(boolean first) {
         assert getLevel() != null;
         Optional<TileMarker> zMarker = IntStream.range(1, MAX_SEARCH)
-                .flatMap(i -> IntStream.of(i, -i))
-                .mapToObj(i -> getBlockPos().relative(Direction.NORTH, i))
-                .flatMap(p -> getLevel().getBlockEntity(p, Holder.MARKER_TYPE).stream())
-                .findFirst();
+            .flatMap(i -> IntStream.of(i, -i))
+            .mapToObj(i -> getBlockPos().relative(Direction.NORTH, i))
+            .flatMap(p -> getLevel().getBlockEntity(p, Holder.MARKER_TYPE).stream())
+            .findFirst();
         Optional<TileMarker> xMarker = IntStream.range(1, MAX_SEARCH)
-                .flatMap(i -> IntStream.of(i, -i))
-                .mapToObj(i -> getBlockPos().relative(Direction.EAST, i))
-                .flatMap(p -> getLevel().getBlockEntity(p, Holder.MARKER_TYPE).stream())
-                .findFirst();
+            .flatMap(i -> IntStream.of(i, -i))
+            .mapToObj(i -> getBlockPos().relative(Direction.EAST, i))
+            .flatMap(p -> getLevel().getBlockEntity(p, Holder.MARKER_TYPE).stream())
+            .findFirst();
         Optional<TileMarker> yMarker = IntStream.range(1, MAX_SEARCH)
-                .flatMap(i -> IntStream.of(i, -i))
-                .filter(y -> !getLevel().isOutsideBuildHeight(y))
-                .boxed()
-                .flatMap(y -> Stream.concat(Stream.of(this.getBlockPos()), Stream.concat(xMarker.stream(), zMarker.stream()).map(TileMarker::getBlockPos))
-                        .map(p -> p.relative(Direction.Axis.Y, y))
-                        .flatMap(p -> getLevel().getBlockEntity(p, Holder.MARKER_TYPE).stream()))
-                .findFirst();
+            .flatMap(i -> IntStream.of(i, -i))
+            .filter(y -> !getLevel().isOutsideBuildHeight(y))
+            .boxed()
+            .flatMap(y -> Stream.concat(Stream.of(this.getBlockPos()), Stream.concat(xMarker.stream(), zMarker.stream()).map(TileMarker::getBlockPos))
+                .map(p -> p.relative(Direction.Axis.Y, y))
+                .flatMap(p -> getLevel().getBlockEntity(p, Holder.MARKER_TYPE).stream()))
+            .findFirst();
         MarkerConnection.set(this, xMarker.orElse(null), zMarker.orElse(null), yMarker.orElse(null));
         if (first && this.markerConnection == MarkerConnection.EMPTY) {
             xMarker.ifPresent(marker -> marker.tryConnect(false));
@@ -75,7 +75,7 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
         super.setRemoved();
         if (level != null && !level.isClientSide)
             markerConnection.markerPlaces().stream().flatMap(p -> level.getBlockEntity(p, Holder.MARKER_TYPE).stream())
-                    .forEach(TileMarker::resetConnection);
+                .forEach(TileMarker::resetConnection);
     }
 
     private static void resetConnection(TileMarker m) {
@@ -117,8 +117,8 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
     @Override
     public List<? extends Component> getDebugLogs() {
         return List.of(
-                Component.literal("%sMarker Area%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.getArea())),
-                Component.literal("%sMarker Poses%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.markerPlaces()))
+            Component.literal("%sMarker Area%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.getArea())),
+            Component.literal("%sMarker Poses%s: %s".formatted(ChatFormatting.AQUA, ChatFormatting.RESET, markerConnection.markerPlaces()))
         );
     }
 
@@ -156,13 +156,13 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
         static void set(TileMarker thisMarker, @Nullable TileMarker xMarker, @Nullable TileMarker zMarker, @Nullable TileMarker yMarker) {
             if (xMarker != null && zMarker != null) {
                 var area = new Area(
-                        xMarker.getBlockPos(),
-                        yMarker != null ? zMarker.getBlockPos().atY(yMarker.getBlockPos().getY()) : zMarker.getBlockPos().above(4),
-                        Direction.UP);
+                    xMarker.getBlockPos(),
+                    yMarker != null ? zMarker.getBlockPos().atY(yMarker.getBlockPos().getY()) : zMarker.getBlockPos().above(4),
+                    Direction.UP);
                 var connectionParent = new MarkerConnection(area,
-                        Set.of(thisMarker.getBlockPos(), xMarker.getBlockPos(), zMarker.getBlockPos()), true);
+                    Set.of(thisMarker.getBlockPos(), xMarker.getBlockPos(), zMarker.getBlockPos()), true);
                 var connectionChild = new MarkerConnection(area,
-                        Set.of(thisMarker.getBlockPos(), xMarker.getBlockPos(), zMarker.getBlockPos()), false);
+                    Set.of(thisMarker.getBlockPos(), xMarker.getBlockPos(), zMarker.getBlockPos()), false);
 
                 thisMarker.markerConnection = connectionParent;
                 xMarker.markerConnection = connectionChild;

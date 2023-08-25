@@ -40,8 +40,8 @@ public final class SetSpawnerEntityMessage implements IMessage {
 
     public static void onReceive(SetSpawnerEntityMessage message, Supplier<NetworkEvent.Context> supplier) {
         supplier.get().enqueueWork(() ->
-                PacketHandler.getWorld(supplier.get(), message.pos, message.dim)
-                        .ifPresent(level -> BlockController.setSpawnerEntity(level, message.pos, message.entity))
+            PacketHandler.getWorld(supplier.get(), message.pos, message.dim)
+                .ifPresent(level -> BlockController.setSpawnerEntity(level, message.pos, message.entity))
         );
     }
 }

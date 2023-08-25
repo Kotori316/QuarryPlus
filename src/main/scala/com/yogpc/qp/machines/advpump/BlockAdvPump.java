@@ -41,12 +41,12 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
 
     public BlockAdvPump() {
         super(QPBlock.Properties.of()
-                .mapColor(MapColor.METAL)
-                .pushReaction(PushReaction.BLOCK)
-                .strength(1.5f, 10f)
-                .sound(SoundType.STONE), NAME, ItemAdvPump::new);
+            .mapColor(MapColor.METAL)
+            .pushReaction(PushReaction.BLOCK)
+            .strength(1.5f, 10f)
+            .sound(SoundType.STONE), NAME, ItemAdvPump::new);
         registerDefaultState(getStateDefinition().any()
-                .setValue(WORKING, false));
+            .setValue(WORKING, false));
     }
 
     @Override

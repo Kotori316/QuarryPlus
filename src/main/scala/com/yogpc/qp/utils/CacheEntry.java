@@ -46,8 +46,8 @@ public abstract class CacheEntry<T> {
     @Override
     public String toString() {
         return "CacheEntry{" +
-                "cached=" + cached +
-                '}';
+            "cached=" + cached +
+            '}';
     }
 
     public static <T> CacheEntry<T> supplierCache(long cacheInterval, Supplier<T> supplier) {
