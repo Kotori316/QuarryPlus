@@ -20,9 +20,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      TEST_UTILITY_LOG_ALL_TEST: true
-      IGNORE_OTHER_MODS_IN_RUNTIME: true
     steps:
       - uses: actions/checkout@v3
       - uses: gradle/wrapper-validation-action@v1
@@ -39,12 +36,17 @@ jobs:
         run: sed -i -e 's/org.gradle.daemon=false/org.gradle.daemon=true/' gradle.properties
       - name: Check plugin dependency
         run: ./gradlew buildEnvironment
-      - name: Compile
+      - name: Compile 1
+        run: ./gradlew classes
+      - name: Compile 2
         run: ./gradlew testClasses
       - name: Assemble
         run: ./gradlew assemble
       - name: Test with JUnit
         run: ./gradlew test
+        env:
+          TEST_UTILITY_LOG_ALL_TEST: true
+          IGNORE_OTHER_MODS_IN_RUNTIME: true
       - name: Download assets
         run: |
           (./gradlew downloadMCMeta downloadAssets) || \
@@ -52,8 +54,13 @@ jobs:
           (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || true
       - name: GameTest
         run: ./gradlew runGameTestServer
+        env:
+          TEST_UTILITY_LOG_ALL_TEST: true
+          IGNORE_OTHER_MODS_IN_RUNTIME: true
       - name: RunData
         run: ./gradlew runData
+        env:
+          IGNORE_OTHER_MODS_IN_RUNTIME: true
       - name: Check report
         run: |
           ! test -d "game-test/crash-reports"
@@ -61,5 +68,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          path: build/reports/tests/*
+          path: |
+            build/reports/tests/*
+            game-test/crash-reports/*
           name: Test-Report-${{ github.run_number }}-QuarryPlus
