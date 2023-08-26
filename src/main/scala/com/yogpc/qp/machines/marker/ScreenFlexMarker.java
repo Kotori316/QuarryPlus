@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines.marker;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.misc.IndexedButton;
 import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -12,17 +13,18 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 @OnlyIn(Dist.CLIENT)
 public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
     private static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/flex_marker.png");
-    private static final int upSide = 1;
-    private static final int center = 3;
-    private static final int downSide = 1;
     private final TileFlexMarker marker;
-    private static final int yOffsetCenter = 45;
-    private static final int yOffsetBottom = 90;
+    private static final int yOffsetCenter = 35;
+    private static final int yOffsetLR = 55;
+    private static final int yOffsetBottom = 78;
+    private static final int buttonWidth = 20;
+    private static final int buttonHeight = 14;
 
     public ScreenFlexMarker(ContainerMarker containerMarker, Inventory inventory, Component component) {
         super(containerMarker, inventory, component);
@@ -37,33 +39,45 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
     public void init() {
         super.init();
         Component[] mp = Stream.of("--", "-", "+", "++").map(Component::literal).toArray(Component[]::new);
-        int w = Stream.of(mp).mapToInt(font::width).max().orElseThrow();
-        int h = 20;
+        int w = buttonWidth;
+        int h = buttonHeight;
         int top = 16;
+        AtomicInteger buttonIndex = new AtomicInteger(0);
 
-        for (int i = 0; i < upSide; i++) {
-            for (int j = 0; j < mp.length; j++) {
-                addRenderableWidget(Button.builder(mp[j], this::actionPerformed)
-                    .pos(this.getGuiLeft() + imageWidth / 2 - 4 * w * upSide / 2 + w * j, this.getGuiTop() + top)
-                    .size(w, h)
-                    .build());
-            }
+        // UP
+        for (int j = 0; j < mp.length; j++) {
+            addRenderableWidget(Button.builder(mp[j], this::actionPerformed)
+                .pos(this.getGuiLeft() + imageWidth / 2 + (j - mp.length / 2) * w, this.getGuiTop() + top)
+                .size(w, h)
+                .build(IndexedButton.builder(buttonIndex.getAndIncrement())));
         }
-        for (int i = 0; i < center; i++) {
-            for (int j = 0; j < mp.length; j++) {
-                addRenderableWidget(Button.builder(mp[j], this::actionPerformed)
-                    .pos(this.getGuiLeft() + imageWidth / 2 - 4 * w * center / 2 + i * w * mp.length + w * j, this.getGuiTop() + top + yOffsetCenter)
-                    .size(w, h)
-                    .build());
-            }
+        // Left
+        for (int j = 0; j < mp.length; j++) {
+            addRenderableWidget(Button.builder(mp[j], this::actionPerformed)
+                .pos(this.getGuiLeft() + 8 + j * w, this.getGuiTop() + top + yOffsetLR)
+                .size(w, h)
+                .build(IndexedButton.builder(buttonIndex.getAndIncrement())));
         }
-        for (int i = 0; i < downSide; i++) {
-            for (int j = 0; j < mp.length; j++) {
-                addRenderableWidget(Button.builder(mp[j], this::actionPerformed)
-                    .pos(this.getGuiLeft() + imageWidth / 2 - 4 * w * downSide / 2 + w * j, this.getGuiTop() + top + yOffsetBottom)
-                    .size(w, h)
-                    .build());
-            }
+        // Center
+        for (int j = 0; j < mp.length; j++) {
+            addRenderableWidget(Button.builder(mp[j], this::actionPerformed)
+                .pos(this.getGuiLeft() + imageWidth / 2 + (j - mp.length / 2) * w, this.getGuiTop() + top + yOffsetCenter)
+                .size(w, h)
+                .build(IndexedButton.builder(buttonIndex.getAndIncrement())));
+        }
+        // Right
+        for (int j = 0; j < mp.length; j++) {
+            addRenderableWidget(Button.builder(mp[j], this::actionPerformed)
+                .pos(this.getGuiLeft() + imageWidth - 8 + (j - mp.length) * w, this.getGuiTop() + top + yOffsetLR)
+                .size(w, h)
+                .build(IndexedButton.builder(buttonIndex.getAndIncrement())));
+        }
+        // Down
+        for (int j = 0; j < mp.length; j++) {
+            addRenderableWidget(Button.builder(mp[j], this::actionPerformed)
+                .pos(this.getGuiLeft() + imageWidth / 2 + (j - mp.length / 2) * w, this.getGuiTop() + top + yOffsetBottom)
+                .size(w, h)
+                .build(IndexedButton.builder(buttonIndex.getAndIncrement())));
         }
     }
 
@@ -89,9 +103,9 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
         s = Component.translatable(TileFlexMarker.Movable.FORWARD.transName);
         graphics.drawString(font, s, (this.imageWidth - font.width(s)) / 2, 6 + yOffsetCenter, 0x404040, false);
         s = Component.translatable(TileFlexMarker.Movable.LEFT.transName);
-        graphics.drawString(font, s, (this.imageWidth - font.width(s)) / 2 - 40, 6 + yOffsetCenter, 0x404040, false);
+        graphics.drawString(font, s, 8 + buttonWidth * 2 - font.width(s) / 2, 6 + yOffsetLR, 0x404040, false);
         s = Component.translatable(TileFlexMarker.Movable.RIGHT.transName);
-        graphics.drawString(font, s, (this.imageWidth - font.width(s)) / 2 + 40, 6 + yOffsetCenter, 0x404040, false);
+        graphics.drawString(font, s, imageWidth - 8 - buttonWidth * 2 - font.width(s) / 2, 6 + yOffsetLR, 0x404040, false);
         s = Component.translatable(TileFlexMarker.Movable.DOWN.transName);
         graphics.drawString(font, s, (this.imageWidth - font.width(s)) / 2, 6 + yOffsetBottom, 0x404040, false);
 
@@ -99,8 +113,9 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
             var start = "(%d, %d, %d)".formatted(area.minX(), area.minY(), area.minZ());
             var end = "(%d, %d, %d)".formatted(area.maxX(), area.maxY(), area.maxZ());
             var x = this.imageWidth - Math.max(font.width(start), font.width(end)) - 10;
-            graphics.drawString(font, start, x, 6 + yOffsetBottom + 5, 0x404040, false);
-            graphics.drawString(font, end, x, 6 + yOffsetBottom + 15, 0x404040, false);
+            var heightOffset = buttonHeight + 12;
+            graphics.drawString(font, start, x, 6 + heightOffset + yOffsetBottom, 0x404040, false);
+            graphics.drawString(font, end, x, 6 + heightOffset + yOffsetBottom + 10, 0x404040, false);
 
             var minPos = new BlockPos(area.minX(), area.minY(), area.minZ());
             var maxPos = new BlockPos(area.maxX(), area.maxY(), area.maxZ());
@@ -109,21 +124,24 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> {
             String distanceForward = String.valueOf(TileFlexMarker.Movable.FORWARD.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
             String distanceRight = String.valueOf(TileFlexMarker.Movable.RIGHT.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
             String distanceDown = String.valueOf(TileFlexMarker.Movable.DOWN.distanceFromOrigin(marker.getBlockPos(), minPos, maxPos, marker.direction));
-            graphics.drawString(font, distanceUp, (this.imageWidth - font.width(distanceUp)) / 2, 6 + 32, 0x404040, false);
-            graphics.drawString(font, distanceLeft, (this.imageWidth - font.width(distanceLeft)) / 2 - 40, 6 + 32 + yOffsetCenter, 0x404040, false);
-            graphics.drawString(font, distanceForward, (this.imageWidth - font.width(distanceForward)) / 2, 6 + 32 + yOffsetCenter, 0x404040, false);
-            graphics.drawString(font, distanceRight, (this.imageWidth - font.width(distanceRight)) / 2 + 40, 6 + 32 + yOffsetCenter, 0x404040, false);
-            graphics.drawString(font, distanceDown, (this.imageWidth - font.width(distanceDown)) / 2, 6 + 32 + yOffsetBottom, 0x404040, false);
+            graphics.drawString(font, distanceUp, (this.imageWidth - font.width(distanceUp)) / 2, 6 + heightOffset, 0x404040, false);
+            graphics.drawString(font, distanceLeft, 8 + buttonWidth * 2 - font.width(distanceLeft) / 2, 6 + heightOffset + yOffsetLR, 0x404040, false);
+            graphics.drawString(font, distanceForward, (this.imageWidth - font.width(distanceForward)) / 2, 6 + heightOffset + yOffsetCenter, 0x404040, false);
+            graphics.drawString(font, distanceRight, imageWidth - 8 - buttonWidth * 2 - font.width(distanceRight) / 2, 6 + heightOffset + yOffsetLR, 0x404040, false);
+            graphics.drawString(font, distanceDown, (this.imageWidth - font.width(distanceDown)) / 2, 6 + heightOffset + yOffsetBottom, 0x404040, false);
         });
     }
 
     public void actionPerformed(Button button) {
-        int id = super.children().indexOf(button);
-        if (id >= 0) {
-            final int[] amounts = {-16, -1, 1, 16};
-            TileFlexMarker.Movable movable = TileFlexMarker.Movable.valueOf(id / 4);
-            FlexMarkerMessage message = new FlexMarkerMessage(getMenu().player.level(), getMenu().pos, movable, amounts[id % 4]);
-            PacketHandler.sendToServer(message);
+        if (button instanceof IndexedButton indexedButton) {
+            int id = indexedButton.id();
+            if (id >= 0) {
+                final int[] amounts = {-16, -1, 1, 16};
+                int amount = amounts[id % 4];
+                TileFlexMarker.Movable movable = TileFlexMarker.Movable.valueOf(id / 4);
+                FlexMarkerMessage message = new FlexMarkerMessage(getMenu().player.level(), getMenu().pos, movable, amount);
+                PacketHandler.sendToServer(message);
+            }
         }
     }
 }
