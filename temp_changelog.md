@@ -1,4 +1,9 @@
-## Version 1201.0.x
+## Version LATEST for 1.20.1
+
+* Change layout of buttons in Flexible Marker GUI
+* Change internal behavior of Flexible Marker GUI to prevent crash [#271](https://github.com/Kotori316/QuarryPlus/issues/271)
+
+## Version for 1.20.1
 
 * Update for 1.20/1.20.1
 * Add progress of QuarryPlus and ChunkDestroyer in Status Checker
