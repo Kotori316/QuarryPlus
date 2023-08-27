@@ -1,3 +1,12 @@
+## Version 18.20
+
+* Add RepeatTickModuleItem
+* Change internal operation in command
+
+## Version 18.19
+
+* Make max range of Flexible Marker configurable
+
 ## Version 18.18
 
 * Show progress of QuarryPlus and Chunk Destroyer in Status Checker log
