@@ -7,6 +7,8 @@ import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.ConfigCommand;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
@@ -89,6 +91,7 @@ public class QuarryPlus {
             event.register(Registry.MENU_REGISTRY, Register::registerContainers);
             event.register(Registry.RECIPE_SERIALIZER_REGISTRY, Register::registerRecipe);
             event.register(Registry.RECIPE_TYPE_REGISTRY, Register::registerRecipeType);
+            event.register(Registry.COMMAND_ARGUMENT_TYPE_REGISTRY, Register::registerArgument);
         }
 
         public static void registerBlocks(RegisterEvent.RegisterHelper<Block> blockRegisterHelper) {
@@ -120,6 +123,11 @@ public class QuarryPlus {
 
         public static void registerRecipeType(RegisterEvent.RegisterHelper<RecipeType<?>> helper) {
             helper.register(WorkbenchRecipe.recipeLocation, WorkbenchRecipe.RECIPE_TYPE);
+        }
+
+        public static void registerArgument(RegisterEvent.RegisterHelper<ArgumentTypeInfo<?, ?>> helper) {
+            helper.register(new ResourceLocation(modID, "config_argument"),
+                ArgumentTypeInfos.registerByClass(ConfigCommand.SelectorArgument.class, ConfigCommand.INFO));
         }
 
         @SubscribeEvent

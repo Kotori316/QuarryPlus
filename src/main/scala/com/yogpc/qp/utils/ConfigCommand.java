@@ -1,5 +1,7 @@
 package com.yogpc.qp.utils;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -12,14 +14,18 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -72,7 +78,7 @@ public final class ConfigCommand {
         }
     }
 
-    private record SelectorArgument(List<String> allowedValues) implements ArgumentType<String> {
+    public record SelectorArgument(List<String> allowedValues) implements ArgumentType<String> {
 
         @Override
         public String parse(StringReader reader) {
@@ -91,6 +97,46 @@ public final class ConfigCommand {
 
         static String getString(final CommandContext<?> context, final String name) {
             return context.getArgument(name, String.class);
+        }
+    }
+
+    public static final ArgumentTypeInfo<SelectorArgument, ?> INFO = new Info();
+
+    public static final class Info implements ArgumentTypeInfo<SelectorArgument, Template> {
+
+        @Override
+        public void serializeToNetwork(ConfigCommand.Template pTemplate, FriendlyByteBuf pBuffer) {
+            pBuffer.writeCollection(pTemplate.allowedValues, FriendlyByteBuf::writeUtf);
+        }
+
+        @Override
+        public ConfigCommand.Template deserializeFromNetwork(FriendlyByteBuf pBuffer) {
+            var list = pBuffer.readCollection(ArrayList::new, FriendlyByteBuf::readUtf);
+            return new ConfigCommand.Template(list);
+        }
+
+        @Override
+        public void serializeToJson(ConfigCommand.Template pTemplate, JsonObject pJson) {
+            pJson.add("allowedValues",
+                pTemplate.allowedValues.stream().map(JsonPrimitive::new).collect(MapMulti.jsonArrayCollector())
+            );
+        }
+
+        @Override
+        public ConfigCommand.Template unpack(SelectorArgument pArgument) {
+            return new ConfigCommand.Template(pArgument.allowedValues);
+        }
+    }
+
+    public record Template(List<String> allowedValues) implements ArgumentTypeInfo.Template<SelectorArgument> {
+        @Override
+        public SelectorArgument instantiate(CommandBuildContext pContext) {
+            return new SelectorArgument(allowedValues);
+        }
+
+        @Override
+        public ArgumentTypeInfo<SelectorArgument, ?> type() {
+            return INFO;
         }
     }
 }

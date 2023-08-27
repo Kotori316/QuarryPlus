@@ -4,7 +4,6 @@ import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -18,8 +17,7 @@ public final class RepeatTickModuleItem extends QPItem implements QuarryModulePr
     public static final String NAME = "repeat_tick_module";
 
     public RepeatTickModuleItem() {
-        super(new Properties().tab(Holder.TAB));
-        setRegistryName(QuarryPlus.modID, NAME);
+        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties().tab(Holder.TAB));
     }
 
     @Override
@@ -30,7 +28,7 @@ public final class RepeatTickModuleItem extends QPItem implements QuarryModulePr
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltips, TooltipFlag pIsAdvanced) {
         super.appendHoverText(pStack, pLevel, tooltips, pIsAdvanced);
-        tooltips.add(new TranslatableComponent("quarryplus.tooltip.repeat_tick_module"));
+        tooltips.add(Component.translatable("quarryplus.tooltip.repeat_tick_module"));
     }
 
     public record RepeatTickModule(int stackSize) implements QuarryModule {
