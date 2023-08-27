@@ -1,25 +1,8 @@
 package com.yogpc.qp.machines.advpump;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
-import com.yogpc.qp.machines.BreakResult;
-import com.yogpc.qp.machines.CheckerLog;
-import com.yogpc.qp.machines.EnchantmentLevel;
-import com.yogpc.qp.machines.MachineStorage;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.module.EnergyModuleItem;
-import com.yogpc.qp.machines.module.ModuleInventory;
-import com.yogpc.qp.machines.module.QuarryModule;
-import com.yogpc.qp.machines.module.QuarryModuleProvider;
-import com.yogpc.qp.machines.module.ReplacerModule;
+import com.yogpc.qp.machines.*;
+import com.yogpc.qp.machines.module.*;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
@@ -39,6 +22,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.fluids.FluidType;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TileAdvPump extends PowerTile
     implements MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments,
@@ -92,6 +84,12 @@ public class TileAdvPump extends PowerTile
             pump.updateModule();
             pump.isBlockModuleLoaded = true;
         }
+        for (int i = 0; i < pump.getRepeatWorkCount(); i++) {
+            drainOnce(world, pos, state, pump);
+        }
+    }
+
+    private static void drainOnce(Level world, BlockPos pos, BlockState state, TileAdvPump pump) {
         long fluidSum = pump.storage.getFluidMap().values().stream().mapToLong(Long::longValue).sum();
         if (pump.hasEnoughEnergy() && !pump.finished && fluidSum <= pump.enchantmentEfficiency.fluidCapacity) {
             // In server world.
@@ -260,7 +258,11 @@ public class TileAdvPump extends PowerTile
     }
 
     static boolean isCapableModule(QuarryModule module) {
-        return module instanceof EnergyModuleItem.EnergyModule || module instanceof ReplacerModule || module == QuarryModule.Constant.FILLER;
+        return module instanceof EnergyModuleItem.EnergyModule
+            || module instanceof ReplacerModule
+            || module == QuarryModule.Constant.FILLER
+            || module instanceof RepeatTickModuleItem.RepeatTickModule
+            ;
     }
 
     @Override

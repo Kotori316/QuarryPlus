@@ -196,8 +196,10 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                 quarry.updateModules();
                 quarry.init = false;
             }
-            // In server world.
-            quarry.state.tick(world, pos, state, quarry);
+            for (int i = 0; i < quarry.getRepeatWorkCount(); i++) {
+                // In server world.
+                quarry.state.tick(world, pos, state, quarry);
+            }
         }
     }
 

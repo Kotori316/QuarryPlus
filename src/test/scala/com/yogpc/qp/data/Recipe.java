@@ -1,9 +1,5 @@
 package com.yogpc.qp.data;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
 import com.google.gson.JsonObject;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.PowerTile;
@@ -16,28 +12,13 @@ import com.yogpc.qp.machines.marker.BlockExMarker;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryBlock;
 import com.yogpc.qp.machines.miningwell.MiningWellBlock;
 import com.yogpc.qp.machines.misc.YSetterItem;
-import com.yogpc.qp.machines.module.BedrockModuleItem;
-import com.yogpc.qp.machines.module.ExpModuleItem;
-import com.yogpc.qp.machines.module.ExpPumpBlock;
-import com.yogpc.qp.machines.module.FillerModuleItem;
-import com.yogpc.qp.machines.module.FilterModuleItem;
-import com.yogpc.qp.machines.module.PumpModuleItem;
-import com.yogpc.qp.machines.module.PumpPlusBlock;
-import com.yogpc.qp.machines.module.ReplacerBlock;
-import com.yogpc.qp.machines.module.ReplacerModuleItem;
+import com.yogpc.qp.machines.module.*;
 import com.yogpc.qp.machines.mover.BlockMover;
 import com.yogpc.qp.machines.placer.PlacerBlock;
 import com.yogpc.qp.machines.placer.RemotePlacerBlock;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.SFQuarryBlock;
-import com.yogpc.qp.machines.workbench.BlockWorkbench;
-import com.yogpc.qp.machines.workbench.EnableCondition;
-import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
-import com.yogpc.qp.machines.workbench.IngredientList;
-import com.yogpc.qp.machines.workbench.IngredientRecipe;
-import com.yogpc.qp.machines.workbench.IngredientWithCount;
-import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
-import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
+import com.yogpc.qp.machines.workbench.*;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
@@ -60,6 +41,10 @@ import net.minecraftforge.common.crafting.conditions.NotCondition;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static com.yogpc.qp.data.QuarryPlusDataProvider.location;
 
@@ -252,6 +237,13 @@ class Recipe extends QuarryDataProvider {
             makeList(Items.LADDER, 32),
             makeList(Items.IRON_AXE, 6)
         )))).addCondition(new EnableCondition(FillerBlock.NAME)));
+        // Repeat Tick Module
+        list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
+            location(RepeatTickModuleItem.NAME), new ItemStack(Holder.ITEM_REPEAT_MODULE), 160000 * PowerTile.ONE_FE, true, List.of(
+            makeList(Holder.ITEM_FUEL_MODULE_NORMAL, 1),
+            makeList(Items.PRISMARINE_SHARD, 4),
+            makeList(Items.AMETHYST_SHARD, 4)
+        )))).addCondition(new EnableCondition(RepeatTickModuleItem.NAME)));
 
         return list;
     }
