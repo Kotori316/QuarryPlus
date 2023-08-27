@@ -26,6 +26,7 @@ plugins {
     id("scala")
     id "com.github.breadmoirai.github-release" version "2.2.12"
     id "com.matthewprenger.cursegradle" version "1.4.0"
+    id("com.modrinth.minotaur").version("2.+")
     id("com.kotori316.plugin.cf").version("1.+")
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -401,6 +402,26 @@ curseforge {
     options {
         curseGradleOptions.debug = false // defaults to false
         javaVersionAutoDetect = false
+    }
+}
+
+modrinth {
+    token.set((project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String)
+    projectId = "additional-enchanted-miner"
+    versionType = "release"
+    versionName = "${project.version}-forge"
+    versionNumber.set(project.version.toString())
+    uploadFile = tasks.jar
+    getAdditionalFiles().set([
+            tasks.deobfJar,
+            tasks.srcJar,
+    ])
+    getGameVersions().set([project.minecraftVersion])
+    getLoaders().set(["forge"])
+    changelog = "Version ${project.version}"
+    debugMode = false
+    dependencies {
+        required.project("scalable-cats-force")
     }
 }
 
