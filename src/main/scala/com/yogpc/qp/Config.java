@@ -15,6 +15,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -202,19 +203,23 @@ public class Config {
 
         public AcceptableEnchantmentsMap(ForgeConfigSpec.Builder builder) {
             builder.comment("Enchantments. Defines enchantments machines can accept.").push("enchantments");
+
+            enchantmentsMap = getTargets().stream()
+                .map(e -> Map.entry(e.getKey().getPath(), builder.defineListAllowEmpty(List.of(e.getKey().getPath()), e::getValue, o -> o instanceof String s && ResourceLocation.isValidResourceLocation(s))))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        }
+
+        @NotNull
+        private static List<Map.Entry<ResourceLocation, List<String>>> getTargets() {
             var vanillaAllEnchantments = List.of("minecraft:efficiency", "minecraft:unbreaking", "minecraft:fortune", "minecraft:silk_touch");
             var miniQuarryEnchantments = List.of("minecraft:efficiency", "minecraft:unbreaking");
             var pumpEnchantments = List.of("minecraft:efficiency", "minecraft:unbreaking", "minecraft:fortune");
-            var targets = List.of(
+            return List.of(
                 Map.entry(new ResourceLocation(QuarryPlus.modID, QuarryBlock.NAME), vanillaAllEnchantments),
                 Map.entry(new ResourceLocation(QuarryPlus.modID, BlockAdvQuarry.NAME), vanillaAllEnchantments),
                 Map.entry(new ResourceLocation(QuarryPlus.modID, MiniQuarryBlock.NAME), miniQuarryEnchantments),
                 Map.entry(new ResourceLocation(QuarryPlus.modID, BlockAdvPump.NAME), pumpEnchantments)
             );
-
-            enchantmentsMap = targets.stream()
-                .map(e -> Map.entry(e.getKey().getPath(), builder.defineListAllowEmpty(List.of(e.getKey().getPath()), e::getValue, o -> o instanceof String s && ResourceLocation.isValidResourceLocation(s))))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         }
 
         public Set<Enchantment> getAllowedEnchantments(ResourceLocation machineName) {
