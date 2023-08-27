@@ -499,4 +499,5 @@ tasks.register("registerVersion", CallVersionFunctionTask.class) {
     gameVersion = project.findProperty("minecraftVersion")
     platform = "forge"
     modName = "quarryplus"
+    changelog = "Version ${project.getVersion()}"
 }
