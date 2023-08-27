@@ -1,39 +1,27 @@
-## Version 1192.2.3
+## Version LATEST for 1.19.2
+
+* Add Faster Work Module, which can fasten quarry work x2 or x3
+  * Be careful, this module can cause heavy lags
+  * Disabled by default, change `repeat_tick_module` to `true` to use this module
+
+## Version for 1.19.2
 
 * Fix a bug of save/load of Chunk Destroyer
 * Add server config to disable machine in specific dimension
-
-## Version 1192.2.2
-
 * Fix deadlock with some item transfer mod
-
-## Version 1192.2.1
-
 * The range of Flexible Marker is now configurable
-
-## Version 1192.2.0
-
 * Show progress in QuarryPlus and ChunkDestroyer in Status Checker log
-
-## Version 1192.1.1
-
 * May fix item duplication in Workbench
-
-## Version 1192.1.0
-
 * Fixed a bug where swapping items in Workbench Plus could give over-stacked items. #253
-
-## Version 18.17
-
-* Fixed a bug where swapping items in Workbench Plus could give over-stacked items. #253
-
-## Version 1192.0.0
-
 * Changed versioning.
   * Include MC version into QuarryPlus version.
 * Added IC2 Classic integration.
   * You can use EU to supply energy.
   * The conversion rate can be changed in config. The default is 1 EU = 4 FE.
+
+## Version 18.17
+
+* Fixed a bug where swapping items in Workbench Plus could give over-stacked items. #253
 
 ## Version 19.10.9
 
