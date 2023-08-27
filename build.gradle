@@ -162,15 +162,6 @@ processResources {
 }
 
 repositories {
-    maven {
-        // location of the maven that hosts JEI files
-        //noinspection SpellCheckingInspection
-        name = "Progwml6 maven"
-        url = "https://dvs1.progwml6.com/files/maven/"
-        content {
-            includeGroup("mezz.jei")
-        }
-    }
     /*maven {
         // location of a maven mirror for JEI files, as a fallback
         name = "ModMaven-k-4u.nl"
@@ -180,6 +171,7 @@ repositories {
         name = "CraftTweaker"
         url = 'https://maven.blamejared.com'
         content {
+            includeGroup("mezz.jei")
             //noinspection SpellCheckingInspection
             includeModule("com.blamejared.crafttweaker", "CraftTweaker-1.16.4")
         }
