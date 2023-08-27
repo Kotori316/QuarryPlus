@@ -156,6 +156,7 @@ public class Holder {
     public static final BedrockModuleItem ITEM_BEDROCK_MODULE = registerItem(new BedrockModuleItem(), EnableOrNot.CONFIG_OFF);
     public static final EnergyModuleItem ITEM_FUEL_MODULE_NORMAL = registerItem(new EnergyModuleItem(5, "fuel_module_normal"), EnableOrNot.CONFIG_ON);
     public static final FillerModuleItem ITEM_FILLER_MODULE = registerItem(new FillerModuleItem(), EnableOrNot.CONFIG_OFF);
+    public static final RepeatTickModuleItem ITEM_REPEAT_MODULE = registerItem(new RepeatTickModuleItem(), EnableOrNot.CONFIG_OFF);
 
     public static final BlockEntityType<TileQuarry> QUARRY_TYPE = registerEntityType(TileQuarry::new, BLOCK_QUARRY, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<SFQuarryEntity> SOLID_FUEL_QUARRY_TYPE = registerEntityType(SFQuarryEntity::new, BLOCK_SOLID_FUEL_QUARRY, EnableOrNot.CONFIG_ON);
