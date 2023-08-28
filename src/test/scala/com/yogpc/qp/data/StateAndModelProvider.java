@@ -70,6 +70,7 @@ final class StateAndModelProvider extends BlockStateProvider {
         simpleItem(Holder.ITEM_REPLACER_MODULE, "block/replacer_side");
         simpleItem(Holder.ITEM_CHECKER);
         simpleItem(Holder.ITEM_Y_SETTER);
+        simpleItem(Holder.ITEM_REPEAT_MODULE);
     }
 
     void frame() {
