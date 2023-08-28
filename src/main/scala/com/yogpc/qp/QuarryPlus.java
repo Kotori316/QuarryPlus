@@ -93,7 +93,7 @@ public class QuarryPlus {
             event.register(Registries.RECIPE_SERIALIZER, Register::registerRecipe);
             event.register(Registries.RECIPE_TYPE, Register::registerRecipeType);
             event.register(Registries.CREATIVE_MODE_TAB, Register::registerCreativeTab);
-            event.register(Registry.COMMAND_ARGUMENT_TYPE, Register::registerArgument);
+            event.register(Registries.COMMAND_ARGUMENT_TYPE, Register::registerArgument);
         }
 
         public static void registerBlocks(RegisterEvent.RegisterHelper<Block> blockRegisterHelper) {
