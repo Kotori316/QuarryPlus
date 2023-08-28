@@ -89,7 +89,9 @@ public class TileAdvQuarry extends PowerTile implements
             quarry.isBlockModuleLoaded = true;
         }
         if (quarry.hasEnoughEnergy()) {
-            quarry.action.tick(world, pos, state, quarry);
+            for (int i = 0; i < quarry.getRepeatWorkCount(); i++) {
+                quarry.action.tick(world, pos, state, quarry);
+            }
         }
     }
 

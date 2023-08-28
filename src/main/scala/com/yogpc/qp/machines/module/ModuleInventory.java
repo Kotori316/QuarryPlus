@@ -126,5 +126,10 @@ public class ModuleInventory extends SimpleContainer implements INBTSerializable
         default Stream<FilterModule> getFilterModules() {
             return getLoadedModules().stream().mapMulti(MapMulti.cast(FilterModule.class));
         }
+
+        default int getRepeatWorkCount() {
+            return getLoadedModules().stream().mapMulti(MapMulti.cast(RepeatTickModuleItem.RepeatTickModule.class))
+                .mapToInt(RepeatTickModuleItem.RepeatTickModule::stackSize).sum() + 1;
+        }
     }
 }

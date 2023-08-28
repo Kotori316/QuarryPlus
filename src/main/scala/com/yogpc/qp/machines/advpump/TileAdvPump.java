@@ -84,6 +84,12 @@ public class TileAdvPump extends PowerTile
             pump.updateModule();
             pump.isBlockModuleLoaded = true;
         }
+        for (int i = 0; i < pump.getRepeatWorkCount(); i++) {
+            drainOnce(world, pos, state, pump);
+        }
+    }
+
+    private static void drainOnce(Level world, BlockPos pos, BlockState state, TileAdvPump pump) {
         long fluidSum = pump.storage.getFluidMap().values().stream().mapToLong(Long::longValue).sum();
         if (pump.hasEnoughEnergy() && !pump.finished && fluidSum <= pump.enchantmentEfficiency.fluidCapacity) {
             // In server world.
@@ -252,7 +258,11 @@ public class TileAdvPump extends PowerTile
     }
 
     static boolean isCapableModule(QuarryModule module) {
-        return module instanceof EnergyModuleItem.EnergyModule || module instanceof ReplacerModule || module == QuarryModule.Constant.FILLER;
+        return module instanceof EnergyModuleItem.EnergyModule
+            || module instanceof ReplacerModule
+            || module == QuarryModule.Constant.FILLER
+            || module instanceof RepeatTickModuleItem.RepeatTickModule
+            ;
     }
 
     @Override
