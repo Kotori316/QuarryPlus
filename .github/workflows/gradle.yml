@@ -34,8 +34,6 @@ jobs:
           gradle-home-cache-cleanup: true
       - name: Enable daemon
         run: sed -i -e 's/org.gradle.daemon=false/org.gradle.daemon=true/' gradle.properties
-      - name: Check plugin dependency
-        run: ./gradlew buildEnvironment
       - name: Compile 1
         run: ./gradlew classes
       - name: Compile 2
