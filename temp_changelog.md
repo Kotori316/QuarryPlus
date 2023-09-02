@@ -1,7 +1,7 @@
 ## Version LATEST for 1.20.1
 
-* Change layout of buttons in Flexible Marker GUI
-* Change internal behavior of Flexible Marker GUI to prevent crash [#271](https://github.com/Kotori316/QuarryPlus/issues/271)
+* Add Faster Work Module
+* Minor improvement in command
 
 ## Version for 1.20.1
 
@@ -14,6 +14,8 @@
 * Add server config to disable machine in specific dimension
 * The range of Flexible Marker is now configurable
 * Fix deadlock with some item transfer mod
+* Change layout of buttons in Flexible Marker GUI
+* Change internal behavior of Flexible Marker GUI to prevent crash [#271](https://github.com/Kotori316/QuarryPlus/issues/271)
 
 ## Version 1192.2.3
 
