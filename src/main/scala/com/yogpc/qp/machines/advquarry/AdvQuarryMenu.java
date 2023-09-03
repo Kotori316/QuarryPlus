@@ -11,6 +11,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Objects;
+
 public class AdvQuarryMenu extends AbstractContainerMenu {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + BlockAdvQuarry.NAME;
     final TileAdvQuarry quarry;
@@ -19,8 +21,8 @@ public class AdvQuarryMenu extends AbstractContainerMenu {
 
     public AdvQuarryMenu(int id, Player player, BlockPos pos) {
         super(Holder.ADV_QUARRY_MENU_TYPE, id);
-        quarry = (TileAdvQuarry) player.level().getBlockEntity(pos);
-        assert quarry != null;
+        quarry = Objects.requireNonNull((TileAdvQuarry) player.level().getBlockEntity(pos),
+            "Tile at %s in %s is null".formatted(pos, player.level().dimension()));
         this.imageWidth = 176;
         this.imageHeight = 200;
 
