@@ -9,6 +9,7 @@ import com.yogpc.qp.machines.bookmover.BookMoverBlock;
 import com.yogpc.qp.machines.checker.ItemChecker;
 import com.yogpc.qp.machines.filler.FillerBlock;
 import com.yogpc.qp.machines.marker.BlockExMarker;
+import com.yogpc.qp.machines.marker.BlockMarker;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryBlock;
 import com.yogpc.qp.machines.miningwell.MiningWellBlock;
 import com.yogpc.qp.machines.misc.YSetterItem;
@@ -91,14 +92,10 @@ class Recipe extends QuarryDataProvider {
             makeList(Holder.TAG_MARKERS, 3)
         )))).addCondition(new EnableCondition(BlockAdvPump.NAME)));
         // Marker Plus
-        /*list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
-            location(BlockMarker.NAME), new ItemStack(Holder.BLOCK_MARKER), 20000 * PowerTile.ONE_FE, true, List.of(
-            makeList(Tags.Items.INGOTS_GOLD, 7),
-            makeList(Tags.Items.INGOTS_IRON, 8),
-            makeList(Tags.Items.DUSTS_REDSTONE, 12),
-            makeList(Tags.Items.DUSTS_GLOWSTONE, 4),
-            makeList(Items.LAPIS_LAZULI, 12)
-        )))).addCondition(new EnableCondition(BlockMarker.NAME)));*/
+        list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
+            location(BlockMarker.NAME + "_workbench"), new ItemStack(Holder.BLOCK_MARKER), 20000 * PowerTile.ONE_FE, true, List.of(
+            makeList(Holder.BLOCK_FLEX_MARKER, 1)
+        )))).addCondition(new EnableCondition(BlockMarker.NAME)));
         // Flexible Marker
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
             location(BlockExMarker.BlockFlexMarker.NAME + "_workbench"), new ItemStack(Holder.BLOCK_FLEX_MARKER), 20000 * PowerTile.ONE_FE, true, List.of(
