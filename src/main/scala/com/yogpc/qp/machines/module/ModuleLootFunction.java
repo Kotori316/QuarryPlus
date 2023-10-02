@@ -1,7 +1,7 @@
 package com.yogpc.qp.machines.module;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.yogpc.qp.Holder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -10,11 +10,14 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
+import java.util.List;
+
 public class ModuleLootFunction extends LootItemConditionalFunction {
-    public static final Serializer<ModuleLootFunction> SERIALIZER = new ModuleLootFunctionSerializer();
+    public static final Codec<ModuleLootFunction> SERIALIZER = RecordCodecBuilder.create(instance ->
+        commonFields(instance).apply(instance, ModuleLootFunction::new));
     public static final String NAME = "drop_function_module";
 
-    protected ModuleLootFunction(LootItemCondition[] conditions) {
+    protected ModuleLootFunction(List<LootItemCondition> conditions) {
         super(conditions);
     }
 
@@ -42,13 +45,5 @@ public class ModuleLootFunction extends LootItemConditionalFunction {
 
     public static Builder<?> builder() {
         return LootItemConditionalFunction.simpleBuilder(ModuleLootFunction::new);
-    }
-}
-
-class ModuleLootFunctionSerializer extends LootItemConditionalFunction.Serializer<ModuleLootFunction> {
-
-    @Override
-    public ModuleLootFunction deserialize(JsonObject json, JsonDeserializationContext context, LootItemCondition[] conditions) {
-        return new ModuleLootFunction(conditions);
     }
 }

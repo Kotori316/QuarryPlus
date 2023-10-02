@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -51,7 +50,7 @@ public class CreativeGeneratorBlock extends QPBlock implements EntityBlock {
         if (!player.isShiftKeyDown()) {
             if (!world.isClientSide) {
                 world.getBlockEntity(pos, Holder.CREATIVE_GENERATOR_TYPE).ifPresent(o ->
-                    NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
+                    ((ServerPlayer) player).openMenu(o, pos));
             }
             return InteractionResult.SUCCESS;
         }

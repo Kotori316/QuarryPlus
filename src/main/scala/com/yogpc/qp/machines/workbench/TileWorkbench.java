@@ -27,6 +27,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
@@ -45,8 +46,9 @@ import java.util.stream.Stream;
 public class TileWorkbench extends PowerTile implements Container, MenuProvider, CheckerLog {
     final List<ItemStack> ingredientInventory = NonNullList.withSize(27, ItemStack.EMPTY);
     final List<ItemStack> selectionInventory = NonNullList.withSize(18, ItemStack.EMPTY);
-    public List<WorkbenchRecipe> recipesList = Collections.emptyList();
+    public List<RecipeHolder<WorkbenchRecipe>> recipesList = Collections.emptyList();
     private WorkbenchRecipe currentRecipe = WorkbenchRecipe.dummyRecipe();
+    private ResourceLocation currentRecipeId = DummyRecipe.LOCATION;
     private final ItemHandler itemHandler = new ItemHandler();
     public boolean workContinue;
     private Runnable initRecipeTask = null;
@@ -72,7 +74,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
             }
             currentRecipe.consumeItems(ingredientInventory);
             updateRecipeOutputs();
-            setCurrentRecipe(workContinue ? currentRecipe.getId() : WorkbenchRecipe.dummyRecipe().getId());
+            setCurrentRecipe(workContinue ? currentRecipeId : DummyRecipe.LOCATION);
         } else if (QuarryPlus.config.common.noEnergy.get()) {
             addEnergy(currentRecipe.getRequiredEnergy() / 200, false);
         } else {
@@ -129,7 +131,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
             }
         }
         nbt.put("Items", items);
-        nbt.putString("recipe", currentRecipe.getId().toString());
+        nbt.putString("recipe", currentRecipeId.toString());
     }
 
     // Implementation of Inventory.
@@ -227,7 +229,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
             updateRecipeList(level.registryAccess());
             if (!recipesList.contains(currentRecipe)) {
                 if (currentRecipe.hasContent()) {
-                    setCurrentRecipe(WorkbenchRecipe.dummyRecipe().getId());
+                    setCurrentRecipe(DummyRecipe.LOCATION);
                     //Finish work
                     logUsage();
                 }
@@ -241,7 +243,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
         recipesList = WorkbenchRecipe.getRecipeFinder().getRecipes(ingredientInventory);
         selectionInventory.clear();
         for (int i = 0; i < recipesList.size(); i++) {
-            setItem(ingredientInventory.size() + i, recipesList.get(i).getResultItem(access));
+            setItem(ingredientInventory.size() + i, recipesList.get(i).value().getResultItem(access));
         }
     }
 
@@ -254,8 +256,10 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
      * @param recipeName the id of recipe.
      */
     public void setCurrentRecipe(ResourceLocation recipeName) {
-        this.currentRecipe = recipesList.stream().filter(r -> recipeName.equals(r.getId()))
-            .findFirst().orElse(WorkbenchRecipe.dummyRecipe());
+        var holder = recipesList.stream().filter(r -> recipeName.equals(r.id()))
+            .findFirst().orElse(new RecipeHolder<>(DummyRecipe.LOCATION, WorkbenchRecipe.dummyRecipe()));
+        this.currentRecipe = holder.value();
+        this.currentRecipeId = holder.id();
         setMaxEnergy(Math.max(this.currentRecipe.getRequiredEnergy(), 5));
         if (QuarryPlus.config.common.noEnergy.get()) {
             setEnergy(0, true);
@@ -273,6 +277,10 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
 
     public WorkbenchRecipe getRecipe() {
         return currentRecipe;
+    }
+
+    public ResourceLocation getRecipeId() {
+        return this.currentRecipeId;
     }
 
     public int getProgressScaled(int scale) {

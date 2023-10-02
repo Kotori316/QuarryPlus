@@ -403,7 +403,7 @@ public class TileAdvQuarry extends PowerTile implements
         }
         for (Pair<BlockPos, BlockState> pair : toDrain) {
             if (pair.getRight().getBlock() instanceof BucketPickup fluidBlock) {
-                var bucketItem = fluidBlock.pickupBlock(targetWorld, pair.getLeft(), pair.getRight());
+                var bucketItem = fluidBlock.pickupBlock(fakePlayer, targetWorld, pair.getLeft(), pair.getRight());
                 storage.addFluid(bucketItem);
             }
             var state = targetWorld.getBlockState(pair.getLeft());
@@ -478,7 +478,7 @@ public class TileAdvQuarry extends PowerTile implements
                 var state = world.getBlockState(pos);
                 if (state.getBlock() instanceof BucketPickup fluidBlock) {
                     useEnergy(PowerManager.getBreakBlockFluidEnergy(this), Reason.REMOVE_FLUID, true);
-                    var bucketItem = fluidBlock.pickupBlock(world, pos, state);
+                    var bucketItem = fluidBlock.pickupBlock(null, world, pos, state);
                     storage.addFluid(bucketItem);
                     if (world.getBlockState(pos).isAir() || (fluidBlock instanceof LiquidBlock && !fluidState.isSource())) {
                         world.setBlock(pos, Holder.BLOCK_FRAME.getDammingState(), Block.UPDATE_ALL);

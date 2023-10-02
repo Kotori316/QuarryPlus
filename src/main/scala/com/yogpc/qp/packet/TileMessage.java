@@ -7,9 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 /**
  * To both client and server.
@@ -40,9 +38,9 @@ public final class TileMessage implements IMessage {
         buf.writeNbt(this.tag);
     }
 
-    public static void onReceive(TileMessage message, Supplier<NetworkEvent.Context> supplier) {
-        var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
-        supplier.get().enqueueWork(() -> world.map(l -> l.getBlockEntity(message.pos)).ifPresent(t -> t.load(message.tag)));
+    public static void onReceive(TileMessage message, CustomPayloadEvent.Context supplier) {
+        var world = PacketHandler.getWorld(supplier, message.pos, message.dim);
+        supplier.enqueueWork(() -> world.map(l -> l.getBlockEntity(message.pos)).ifPresent(t -> t.load(message.tag)));
     }
 
 }

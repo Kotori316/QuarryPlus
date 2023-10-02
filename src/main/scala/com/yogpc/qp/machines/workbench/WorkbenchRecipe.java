@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -21,18 +22,17 @@ public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
     public static final RecipeType<WorkbenchRecipe> RECIPE_TYPE = new WorkbenchRecipeType();
     @VisibleForTesting
     static RecipeFinder recipeFinder = new DefaultFinder();
-    public static final Comparator<WorkbenchRecipe> COMPARATOR =
-        Comparator.comparingLong(WorkbenchRecipe::getRequiredEnergy)
-            .thenComparingInt(r -> Item.getId(r.output.getItem()))
-            .thenComparing(WorkbenchRecipe::getId);
+    public static final Comparator<RecipeHolder<WorkbenchRecipe>> COMPARATOR =
+        Comparator.<RecipeHolder<WorkbenchRecipe>, WorkbenchRecipe>comparing(RecipeHolder::value,
+                Comparator.comparingLong(WorkbenchRecipe::getRequiredEnergy)
+                    .thenComparingInt(r -> Item.getId(r.output.getItem())))
+            .thenComparing(RecipeHolder::id);
 
-    private final ResourceLocation location;
     public final ItemStack output;
     private final long energy;
     private final boolean showInJEI;
 
-    public WorkbenchRecipe(ResourceLocation location, ItemStack output, long energy, boolean showInJEI) {
-        this.location = location;
+    public WorkbenchRecipe(ItemStack output, long energy, boolean showInJEI) {
         this.output = output;
         this.energy = energy;
         this.showInJEI = showInJEI;
@@ -40,7 +40,7 @@ public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
 
     @Override
     public String toString() {
-        return "WorkbenchRecipe{id=" + location + ", output=" + output + ", energy=" + energy + '}';
+        return "WorkbenchRecipe{output=" + output + ", energy=" + energy + '}';
     }
 
     @Override
@@ -48,12 +48,12 @@ public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WorkbenchRecipe that = (WorkbenchRecipe) o;
-        return energy == that.energy && location.equals(that.location) && ItemStack.matches(this.output, that.output);
+        return energy == that.energy && ItemStack.matches(this.output, that.output);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, energy);
+        return Objects.hash(this.output, energy);
     }
 
     public final long getRequiredEnergy() {
@@ -83,11 +83,6 @@ public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
     @Override
     public final ItemStack getResultItem(RegistryAccess access) {
         return output;
-    }
-
-    @Override
-    public final ResourceLocation getId() {
-        return location;
     }
 
     @Override

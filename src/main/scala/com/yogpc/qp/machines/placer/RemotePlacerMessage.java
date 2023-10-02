@@ -8,9 +8,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 /**
  * To Server only.
@@ -38,9 +36,9 @@ public record RemotePlacerMessage(BlockPos pos, ResourceKey<Level> dim, BlockPos
         buf.writeBlockPos(newTarget);
     }
 
-    public static void onReceive(RemotePlacerMessage message, Supplier<NetworkEvent.Context> supplier) {
-        var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
-        supplier.get().enqueueWork(() ->
+    public static void onReceive(RemotePlacerMessage message, CustomPayloadEvent.Context supplier) {
+        var world = PacketHandler.getWorld(supplier, message.pos, message.dim);
+        supplier.enqueueWork(() ->
             world.flatMap(w -> w.getBlockEntity(message.pos, Holder.REMOTE_PLACER_TYPE))
                 .ifPresent(placer -> placer.targetPos = message.newTarget));
     }

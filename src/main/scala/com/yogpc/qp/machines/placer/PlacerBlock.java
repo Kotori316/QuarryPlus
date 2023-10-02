@@ -31,7 +31,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -69,7 +68,7 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
                     });
                 } else {
                     world.getBlockEntity(pos, Holder.PLACER_TYPE).ifPresent(o ->
-                        NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
+                        ((ServerPlayer) player).openMenu(o, pos));
                 }
             }
             return InteractionResult.SUCCESS;

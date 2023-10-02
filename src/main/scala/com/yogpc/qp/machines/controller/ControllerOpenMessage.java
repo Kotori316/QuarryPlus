@@ -10,10 +10,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
@@ -44,8 +43,8 @@ public final class ControllerOpenMessage implements IMessage {
         allEntities.forEach(buf::writeResourceLocation);
     }
 
-    public static void onReceive(ControllerOpenMessage message, Supplier<NetworkEvent.Context> supplier) {
-        supplier.get().enqueueWork(() -> openScreen(message));
+    public static void onReceive(ControllerOpenMessage message, CustomPayloadEvent.Context supplier) {
+        supplier.enqueueWork(() -> openScreen(message));
     }
 
     @OnlyIn(Dist.CLIENT)

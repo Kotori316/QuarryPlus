@@ -17,7 +17,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.network.NetworkHooks;
+
 
 public class YSetterItem extends QPItem {
     public static final String NAME = "y_setter";
@@ -35,7 +35,7 @@ public class YSetterItem extends QPItem {
             if (!level.isClientSide) {
                 if (player instanceof ServerPlayer p) {
                     PacketHandler.sendToClientPlayer(new TileMessage(tile), p);
-                    NetworkHooks.openScreen(p, new YSetterScreenHandler(tile.getBlockPos(), tile.getBlockState().getBlock()), context.getClickedPos());
+                    p.openMenu(new YSetterScreenHandler(tile.getBlockPos(), tile.getBlockState().getBlock()), context.getClickedPos());
                 }
 
                 return InteractionResult.CONSUME;

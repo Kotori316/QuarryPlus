@@ -11,11 +11,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 import java.util.Collection;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
@@ -64,17 +63,17 @@ public final class MiniListSyncMessage implements IMessage {
         denyList.stream().map(BlockStatePredicate::toTag).forEach(buf::writeNbt);
     }
 
-    public static void onReceive(MiniListSyncMessage message, Supplier<NetworkEvent.Context> supplier) {
-        switch (supplier.get().getDirection().getReceptionSide()) {
+    public static void onReceive(MiniListSyncMessage message, CustomPayloadEvent.Context supplier) {
+        switch (supplier.getDirection().getReceptionSide()) {
             case SERVER -> inServer(message, supplier);
             case CLIENT -> inClient(message, supplier);
         }
     }
 
-    static void inServer(MiniListSyncMessage message, Supplier<NetworkEvent.Context> supplier) {
+    static void inServer(MiniListSyncMessage message, CustomPayloadEvent.Context supplier) {
         // Set lists.
-        supplier.get().enqueueWork(() ->
-            PacketHandler.getWorld(supplier.get(), message.pos, message.dim)
+        supplier.enqueueWork(() ->
+            PacketHandler.getWorld(supplier, message.pos, message.dim)
                 .flatMap(w -> w.getBlockEntity(message.pos, Holder.MINI_QUARRY_TYPE))
                 .ifPresent(t -> {
                     t.allowList = message.allowList;
@@ -83,10 +82,10 @@ public final class MiniListSyncMessage implements IMessage {
     }
 
     @OnlyIn(Dist.CLIENT)
-    static void inClient(MiniListSyncMessage message, Supplier<NetworkEvent.Context> supplier) {
+    static void inClient(MiniListSyncMessage message, CustomPayloadEvent.Context supplier) {
         // Open GUI of current list.
-        supplier.get().enqueueWork(() ->
-            PacketHandler.getWorld(supplier.get(), message.pos, message.dim)
+        supplier.enqueueWork(() ->
+            PacketHandler.getWorld(supplier, message.pos, message.dim)
                 .flatMap(w -> w.getBlockEntity(message.pos, Holder.MINI_QUARRY_TYPE))
                 .ifPresent(t ->
                     Minecraft.getInstance().pushGuiLayer(new MiniQuarryListGui(t, message.allowList, message.denyList))));

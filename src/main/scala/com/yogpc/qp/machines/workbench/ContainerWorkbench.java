@@ -150,14 +150,14 @@ public class ContainerWorkbench extends AbstractContainerMenu {
             int index = slotId - sourceSlot;
             if (index < tile.recipesList.size()) {
                 if (dragType == 0) {
-                    var newRecipeId = tile.recipesList.get(index).getId();
-                    if (newRecipeId.equals(tile.getRecipe().getId())) {
+                    var newRecipeId = tile.recipesList.get(index).id();
+                    if (newRecipeId.equals(tile.getRecipeId())) {
                         tile.workContinue = !tile.workContinue;
                     } else {
                         tile.setCurrentRecipe(newRecipeId);
                     }
                 } else if (dragType == 1) {
-                    tile.setCurrentRecipe(WorkbenchRecipe.dummyRecipe().getId());
+                    tile.setCurrentRecipe(DummyRecipe.LOCATION);
                 }
             }
         } else if (0 <= slotId && slotId < sourceSlot && clickTypeIn == ClickType.PICKUP) {

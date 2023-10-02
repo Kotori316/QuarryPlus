@@ -166,7 +166,7 @@ public class TileAdvPump extends PowerTile
             }
             var blockState = world.getBlockState(target);
             if (!(blockState.getBlock() instanceof LiquidBlock) && blockState.getBlock() instanceof BucketPickup drain) {
-                var drained = drain.pickupBlock(world, target, blockState);
+                var drained = drain.pickupBlock(null, world, target, blockState);
                 if (!deleteFluid) this.storage.addFluid(drained);
             } else {
                 if (!deleteFluid) this.storage.addFluid(fluidState.getType(), FluidType.BUCKET_VOLUME);

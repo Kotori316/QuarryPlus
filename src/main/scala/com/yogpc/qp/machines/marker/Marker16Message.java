@@ -9,10 +9,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * To server only.
@@ -49,9 +48,9 @@ public final class Marker16Message implements IMessage {
         buffer.writeVarInt(yMin);
     }
 
-    public static void onReceive(Marker16Message message, Supplier<NetworkEvent.Context> supplier) {
-        var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
-        supplier.get().enqueueWork(() ->
+    public static void onReceive(Marker16Message message, CustomPayloadEvent.Context supplier) {
+        var world = PacketHandler.getWorld(supplier, message.pos, message.dim);
+        supplier.enqueueWork(() ->
             world.map(w -> w.getBlockEntity(message.pos))
                 .flatMap(MapMulti.optCast(Tile16Marker.class))
                 .ifPresent(m -> {

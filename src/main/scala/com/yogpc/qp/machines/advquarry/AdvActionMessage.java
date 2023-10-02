@@ -10,9 +10,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 /**
  * To Server only
@@ -65,16 +63,16 @@ public final class AdvActionMessage implements IMessage {
         QUICK_START, MODULE_INV, CHANGE_RANGE, SYNC
     }
 
-    public static void onReceive(AdvActionMessage message, Supplier<NetworkEvent.Context> supplier) {
-        var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
-        supplier.get().enqueueWork(() ->
+    public static void onReceive(AdvActionMessage message, CustomPayloadEvent.Context supplier) {
+        var world = PacketHandler.getWorld(supplier, message.pos, message.dim);
+        supplier.enqueueWork(() ->
             world.map(w -> w.getBlockEntity(message.pos))
                 .flatMap(MapMulti.optCast(TileAdvQuarry.class))
                 .ifPresent(quarry -> {
                     AdvQuarry.LOGGER.debug(AdvQuarry.MESSAGE, "onReceive. {}, {}", message.pos, message.action);
                     switch (message.action) {
                         case CHANGE_RANGE -> quarry.setArea(message.area);
-                        case MODULE_INV -> PacketHandler.getPlayer(supplier.get())
+                        case MODULE_INV -> PacketHandler.getPlayer(supplier)
                             .flatMap(MapMulti.optCast(ServerPlayer.class))
                             .ifPresent(quarry::openModuleGui);
                         case QUICK_START -> {

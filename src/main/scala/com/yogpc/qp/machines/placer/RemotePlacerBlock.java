@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.TRIGGERED;
 
@@ -60,7 +59,7 @@ public final class RemotePlacerBlock extends QPBlock implements EntityBlock {
                     });
                 } else {
                     world.getBlockEntity(pos, Holder.REMOTE_PLACER_TYPE).ifPresent(o ->
-                        NetworkHooks.openScreen(((ServerPlayer) player), o, pos));
+                        ((ServerPlayer) player).openMenu(o, pos));
                 }
             }
             return InteractionResult.SUCCESS;

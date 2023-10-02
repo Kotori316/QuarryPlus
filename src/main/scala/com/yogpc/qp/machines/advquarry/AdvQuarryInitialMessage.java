@@ -9,10 +9,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Supplier;
 
 /**
  * To Server only.
@@ -41,9 +39,9 @@ public final class AdvQuarryInitialMessage implements IMessage {
         workConfig.writePacket(buf);
     }
 
-    public static void onReceive(AdvQuarryInitialMessage message, Supplier<NetworkEvent.Context> supplier) {
-        var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
-        supplier.get().enqueueWork(() -> world.flatMap(w -> w.getBlockEntity(message.pos, Holder.ADV_QUARRY_TYPE)).ifPresent(t ->
+    public static void onReceive(AdvQuarryInitialMessage message, CustomPayloadEvent.Context supplier) {
+        var world = PacketHandler.getWorld(supplier, message.pos, message.dim);
+        supplier.enqueueWork(() -> world.flatMap(w -> w.getBlockEntity(message.pos, Holder.ADV_QUARRY_TYPE)).ifPresent(t ->
             t.workConfig = message.workConfig
         ));
     }
@@ -67,8 +65,8 @@ public final class AdvQuarryInitialMessage implements IMessage {
             buf.writeBlockPos(pos).writeResourceLocation(dim.location());
         }
 
-        public static void onReceive(Ask message, Supplier<NetworkEvent.Context> supplier) {
-            PacketHandler.getWorld(supplier.get(), message.pos, message.dim)
+        public static void onReceive(Ask message, CustomPayloadEvent.Context supplier) {
+            PacketHandler.getWorld(supplier, message.pos, message.dim)
                 .flatMap(w -> w.getBlockEntity(message.pos, Holder.ADV_QUARRY_TYPE))
                 .ifPresent(t ->
                     PacketHandler.sendToServer(new AdvQuarryInitialMessage(message.pos, message.dim, getWorkConfig()))

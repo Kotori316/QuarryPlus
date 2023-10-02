@@ -6,6 +6,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -18,30 +19,30 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public interface RecipeFinder {
-    Map<ResourceLocation, WorkbenchRecipe> recipes();
+    Map<ResourceLocation, RecipeHolder<WorkbenchRecipe>> recipes();
 
     default int recipeSize() {
         return recipes().size();
     }
 
-    default List<WorkbenchRecipe> getRecipes(List<ItemStack> input) {
+    default List<RecipeHolder<WorkbenchRecipe>> getRecipes(List<ItemStack> input) {
         return recipes().values().stream()
-            .filter(r -> r.hasAllRequiredItems(input))
+            .filter(r -> r.value().hasAllRequiredItems(input))
             .sorted(WorkbenchRecipe.COMPARATOR)
             .toList();
     }
 
-    default List<WorkbenchRecipe> findRecipes(ItemStack output) {
+    default List<RecipeHolder<WorkbenchRecipe>> findRecipes(ItemStack output) {
         if (output.isEmpty()) return Collections.emptyList();
         return recipes().values().stream()
-            .filter(r -> ItemStack.isSameItemSameTags(r.output, output))
+            .filter(r -> ItemStack.isSameItemSameTags(r.value().output, output))
             .toList();
     }
 
     @SuppressWarnings({"SameParameterValue"})
-    static <C extends Container, T extends Recipe<C>> Map<ResourceLocation, T> find(RecipeManager manager, RecipeType<T> recipeType) {
+    static <C extends Container, T extends Recipe<C>> Map<ResourceLocation, RecipeHolder<T>> find(RecipeManager manager, RecipeType<T> recipeType) {
         return manager.getAllRecipesFor(recipeType).stream()
-            .collect(Collectors.toMap(Recipe::getId, Function.identity()));
+            .collect(Collectors.toMap(RecipeHolder::id, Function.identity()));
     }
 
 }
@@ -49,13 +50,13 @@ public interface RecipeFinder {
 class DefaultFinder implements RecipeFinder {
 
     @Override
-    public Map<ResourceLocation, WorkbenchRecipe> recipes() {
+    public Map<ResourceLocation, RecipeHolder<WorkbenchRecipe>> recipes() {
         return rawRecipeMap().entrySet().stream()
-            .filter(MapStreamSyntax.byValue(WorkbenchRecipe::hasContent))
+            .filter(MapStreamSyntax.byValue(o -> o.value().hasContent()))
             .collect(MapStreamSyntax.entryToMap());
     }
 
-    public Map<ResourceLocation, WorkbenchRecipe> rawRecipeMap() {
+    public Map<ResourceLocation, RecipeHolder<WorkbenchRecipe>> rawRecipeMap() {
         return Optional.ofNullable(ServerLifecycleHooks.getCurrentServer())
             .map(MinecraftServer::getRecipeManager)
             .map(r -> RecipeFinder.find(r, WorkbenchRecipe.RECIPE_TYPE))

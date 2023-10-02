@@ -33,7 +33,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
@@ -172,7 +171,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
 
         @Override
         protected void openScreen(Level worldIn, BlockPos pos, Player playerIn) {
-            NetworkHooks.openScreen(((ServerPlayer) playerIn), new InteractionObject(pos, Holder.FLEX_MARKER_MENU_TYPE, getDescriptionId(), 29, 139), pos);
+            ((ServerPlayer) playerIn).openMenu(new InteractionObject(pos, Holder.FLEX_MARKER_MENU_TYPE, getDescriptionId(), 29, 139), pos);
         }
 
         @Override
@@ -207,7 +206,7 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
 
         @Override
         protected void openScreen(Level worldIn, BlockPos pos, Player playerIn) {
-            NetworkHooks.openScreen(((ServerPlayer) playerIn), new InteractionObject(pos, Holder.MARKER_16_MENU_TYPE, getDescriptionId(), 29, 107), pos);
+            ((ServerPlayer) playerIn).openMenu(new InteractionObject(pos, Holder.MARKER_16_MENU_TYPE, getDescriptionId(), 29, 107), pos);
         }
 
         @Override

@@ -310,7 +310,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         if (!fluidState.isEmpty()) {
             if (state.getBlock() instanceof BucketPickup fluidBlock) {
                 quarry.useEnergy(PowerManager.getBreakBlockFluidEnergy(quarry), Reason.REMOVE_FLUID, true);
-                var bucketItem = fluidBlock.pickupBlock(world, pos, state);
+                var bucketItem = fluidBlock.pickupBlock(null, world, pos, state);
                 quarry.storage.addFluid(bucketItem);
                 if (world.getBlockState(pos).isAir() || (fluidBlock instanceof LiquidBlock && !fluidState.isSource())) {
                     world.setBlock(pos, Holder.BLOCK_FRAME.getDammingState(), Block.UPDATE_ALL);

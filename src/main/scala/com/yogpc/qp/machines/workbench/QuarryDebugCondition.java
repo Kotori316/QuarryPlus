@@ -1,9 +1,10 @@
 package com.yogpc.qp.machines.workbench;
 
-import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Unit;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 public final class QuarryDebugCondition implements ICondition {
@@ -13,29 +14,18 @@ public final class QuarryDebugCondition implements ICondition {
     }
 
     @Override
-    public ResourceLocation getID() {
-        return NAME;
-    }
-
-    @Override
     public boolean test(IContext context) {
         return !FMLEnvironment.production;
     }
 
-    public static class Serializer implements IConditionSerializer<QuarryDebugCondition> {
+    public static final Codec<QuarryDebugCondition> CODEC = Codec.EMPTY.codec().comapFlatMap(
+        v -> DataResult.success(new QuarryDebugCondition()),
+        v -> Unit.INSTANCE
+    );
 
-        @Override
-        public void write(JsonObject json, QuarryDebugCondition condition) {
-        }
-
-        @Override
-        public QuarryDebugCondition read(JsonObject json) {
-            return new QuarryDebugCondition();
-        }
-
-        @Override
-        public ResourceLocation getID() {
-            return QuarryDebugCondition.NAME;
-        }
+    @Override
+    public Codec<? extends ICondition> codec() {
+        return CODEC;
     }
+
 }

@@ -33,7 +33,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +58,7 @@ public class BlockMover extends QPBlock {
         }
         if (!player.isShiftKeyDown()) {
             if (!level.isClientSide) {
-                NetworkHooks.openScreen((ServerPlayer) player, new InteractionObject(pos, this.getName()), pos);
+                ((ServerPlayer) player).openMenu(new InteractionObject(pos, this.getName()), pos);
             }
             return InteractionResult.SUCCESS;
         }

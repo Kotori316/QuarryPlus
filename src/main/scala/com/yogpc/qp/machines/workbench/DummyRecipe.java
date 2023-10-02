@@ -10,9 +10,10 @@ import java.util.List;
 
 class DummyRecipe extends WorkbenchRecipe {
     static final DummyRecipe INSTANCE = new DummyRecipe();
+    public static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "builtin_dummy");
 
     private DummyRecipe() {
-        super(new ResourceLocation(QuarryPlus.modID, "builtin_dummy"), ItemStack.EMPTY, 0, false);
+        super(ItemStack.EMPTY, 0, false);
     }
 
     @Override

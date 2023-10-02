@@ -15,6 +15,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
 import java.util.List;
 import java.util.Objects;
@@ -30,9 +31,9 @@ public class QuarryJeiPlugin implements IModPlugin {
     public void registerRecipes(IRecipeRegistration registration) {
         List<WorkbenchRecipe> recipes =
             RecipeFinder.find(Objects.requireNonNull(Minecraft.getInstance().level).getRecipeManager(), WorkbenchRecipe.RECIPE_TYPE).values().stream() // Synced by server.
-                .filter(WorkbenchRecipe::showInJEI)
-                .filter(WorkbenchRecipe::hasContent)
+                .filter(o -> o.value().showInJEI() && o.value().hasContent())
                 .sorted(WorkbenchRecipe.COMPARATOR)
+                .map(RecipeHolder::value)
                 .collect(Collectors.toList());
         registration.addRecipes(WorkBenchRecipeCategory.RECIPE_TYPE, recipes);
         registration.addRecipes(MoverRecipeCategory.RECIPE_TYPE, MoverRecipeCategory.recipes());

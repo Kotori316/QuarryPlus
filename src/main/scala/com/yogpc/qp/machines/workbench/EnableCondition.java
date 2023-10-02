@@ -1,11 +1,10 @@
 package com.yogpc.qp.machines.workbench;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
 
 public final class EnableCondition implements ICondition {
     public static final ResourceLocation NAME = new ResourceLocation("quarryplus:machine_enabled");
@@ -13,11 +12,6 @@ public final class EnableCondition implements ICondition {
 
     public EnableCondition(String value) {
         this.machineName = value;
-    }
-
-    @Override
-    public ResourceLocation getID() {
-        return NAME;
     }
 
     @Override
@@ -29,21 +23,14 @@ public final class EnableCondition implements ICondition {
         }
     }
 
-    public static class Serializer implements IConditionSerializer<EnableCondition> {
+    public static final Codec<EnableCondition> CODEC = RecordCodecBuilder.create(instance ->
+        instance.group(
+            Codec.STRING.fieldOf("value").forGetter(enableCondition -> enableCondition.machineName)
+        ).apply(instance, EnableCondition::new));
 
-        @Override
-        public void write(JsonObject json, EnableCondition condition) {
-            json.addProperty("value", condition.machineName);
-        }
-
-        @Override
-        public EnableCondition read(JsonObject json) {
-            return new EnableCondition(GsonHelper.getAsString(json, "value"));
-        }
-
-        @Override
-        public ResourceLocation getID() {
-            return EnableCondition.NAME;
-        }
+    @Override
+    public Codec<? extends ICondition> codec() {
+        return CODEC;
     }
+
 }

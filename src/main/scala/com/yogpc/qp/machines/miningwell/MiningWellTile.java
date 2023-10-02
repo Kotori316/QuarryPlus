@@ -70,7 +70,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
                         if (!fluid.isEmpty() && fluid.isSource())
                             storage.addFluid(fluid.getType(), FluidType.BUCKET_VOLUME);
                     } else if (state.getBlock() instanceof BucketPickup drain) {
-                        var bucket = drain.pickupBlock(level, targetPos, state);
+                        var bucket = drain.pickupBlock(fakePlayer, level, targetPos, state);
                         storage.addFluid(bucket);
                     } else {
                         // What ?

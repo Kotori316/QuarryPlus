@@ -16,7 +16,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +45,7 @@ public final class FilterModuleItem extends QPItem implements QuarryModuleProvid
             return InteractionResult.PASS;
         }
         if (!context.getLevel().isClientSide && context.getPlayer() instanceof ServerPlayer) {
-            NetworkHooks.openScreen((ServerPlayer) context.getPlayer(), new InteractionObject(context.getItemInHand()));
+            context.getPlayer().openMenu(new InteractionObject(context.getItemInHand()));
         }
         return InteractionResult.SUCCESS;
     }

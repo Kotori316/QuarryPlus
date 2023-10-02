@@ -26,7 +26,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public final class FillerBlock extends QPBlock implements EntityBlock {
@@ -66,7 +65,7 @@ public final class FillerBlock extends QPBlock implements EntityBlock {
         }
         if (!player.isShiftKeyDown()) {
             if (!level.isClientSide && level.getBlockEntity(pos) instanceof FillerEntity filler) {
-                NetworkHooks.openScreen((ServerPlayer) player, filler, pos);
+                ((ServerPlayer) player).openMenu(filler, pos);
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }

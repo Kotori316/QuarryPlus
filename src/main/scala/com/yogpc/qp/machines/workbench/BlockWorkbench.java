@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
@@ -51,7 +50,7 @@ public class BlockWorkbench extends QPBlock implements EntityBlock {
         if (!player.isShiftKeyDown()) {
             if (!level.isClientSide) {
                 level.getBlockEntity(pos, Holder.WORKBENCH_TYPE)
-                    .ifPresent(w -> NetworkHooks.openScreen(((ServerPlayer) player), w, pos));
+                    .ifPresent(w -> ((ServerPlayer) player).openMenu(w, pos));
             }
             return InteractionResult.SUCCESS;
         }

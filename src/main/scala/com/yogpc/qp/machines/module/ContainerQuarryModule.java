@@ -13,7 +13,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkHooks;
 
 import java.util.Objects;
 
@@ -92,7 +91,7 @@ public class ContainerQuarryModule extends AbstractContainerMenu {
 
         public static <T extends BlockEntity & ModuleInventory.HasModuleInventory> void openScreen(T tile, ServerPlayer player, Component name) {
             if (tile.getLevel() != null && !tile.getLevel().isClientSide) {
-                NetworkHooks.openScreen(player, new InteractionObject(tile.getBlockPos(), name), tile.getBlockPos());
+                player.openMenu(new InteractionObject(tile.getBlockPos(), name), tile.getBlockPos());
             }
         }
     }
