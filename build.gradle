@@ -230,16 +230,16 @@ dependencies {
     }
 
     boolean useREI = false // Boolean.parseBoolean(System.getenv("USE_REI"))
-    compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20.1-common-api", version: project.jeiVersion))
-    compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20.1-forge-api", version: project.jeiVersion))
+    compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20.2-common-api", version: project.jeiVersion))
+    compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20.2-forge-api", version: project.jeiVersion))
     if (useREI) {
         implementation(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
         implementation(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
         implementation(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
     } else {
-        // runtimeOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20-forge", version: project.jeiVersion) {
-        //     transitive(false)
-        // })
+        runtimeOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20.2-forge", version: project.jeiVersion) {
+            transitive(false)
+        })
         compileOnly(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
         compileOnly(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
         compileOnly(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))

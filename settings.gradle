@@ -6,3 +6,7 @@ pluginManagement {
         maven { url = "https://storage.googleapis.com/kotori316-maven-storage/maven/" }
     }
 }
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.5.0'
+}
