@@ -531,7 +531,7 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
                 buffer.pos(fX1, MYPd, hZPd).colored().tex(D_maxU, D_minV).lightedAndEnd();
             }
         }
-        var fixedV = drillStripe.getV((length - floor) * 16);
+        var fixedV = drillStripe.getV((float) (length - floor));
         var xF = plus ? headPosX + (d4 + floor) : headPosX - (d4 + floor);
         var xL = plus ? headPosX + (d4 + length) : headPosX - (d4 + length);
         if (plus) {
@@ -579,7 +579,7 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
 
     private static void yLineDrill(Buffer buffer, int floor, double length, TextureAtlasSprite drillStripe, TextureAtlasSprite headSprite, double headPosX, double headPosY, double headPosZ,
                                    double hXmd, double hXPd, double MYPd, double hZmd, double hZPd, float D_minU, float D_maxU, float D_minV) {
-        var D_I8dV = drillStripe.getV(8d);
+        var D_I8dV = drillStripe.getV(0.5f);
         var D_16dU = drillStripe.getU1();
         //Top
         buffer.pos(hXmd, MYPd, hZmd).colored().tex(D_minU, D_I8dV).lightedAndEnd();
@@ -610,7 +610,7 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
             buffer.pos(hXmd, MY2, hZmd).colored().tex(D_16dU, D_I8dV).lightedAndEnd();
             buffer.pos(hXmd, MY2, hZPd).colored().tex(D_16dU, D_minV).lightedAndEnd();
         }
-        var fixedU = drillStripe.getU((length - floor) * 16);
+        var fixedU = drillStripe.getU((float) (length - floor));
         var MYF = MYPd - floor;
         var MYL = MYPd - length;
         buffer.pos(hXPd, MYF, hZmd).colored().tex(D_minU, D_minV).lightedAndEnd();
@@ -719,7 +719,7 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
                 buffer.pos(hXPd, MYmd, fZ2).colored().tex(D_minU, D_maxV).lightedAndEnd();
             }
         }
-        var fixedV = drillStripe.getV((length - floor) * 16);
+        var fixedV = drillStripe.getV((float) (length - floor));
         var zF = plus ? headPosZ + (d4 + floor) : headPosZ - (d4 + floor);
         var zL = plus ? headPosZ + (d4 + length) : headPosZ - (d4 + length);
         if (plus) {

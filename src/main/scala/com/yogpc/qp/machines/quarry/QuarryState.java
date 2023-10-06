@@ -190,7 +190,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                             quarry.storage.addFluid(fluidState.getType(), FluidType.BUCKET_VOLUME);
                         targetWorld.setBlock(fluidPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
                     } else if (blockState.getBlock() instanceof BucketPickup drain) {
-                        var bucket = drain.pickupBlock(targetWorld, fluidPos, blockState);
+                        var bucket = drain.pickupBlock(null, targetWorld, fluidPos, blockState);
                         quarry.storage.addFluid(bucket);
                     } else {
                         // What ?

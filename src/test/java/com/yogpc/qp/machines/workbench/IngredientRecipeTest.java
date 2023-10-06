@@ -62,7 +62,7 @@ class IngredientRecipeTest {
              Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
             jsonObject = GSON.fromJson(reader, JsonObject.class);
         }
-        var recipe = SERIALIZE.fromJson(id("dummy_block_recipe"), jsonObject, ICondition.IContext.EMPTY);
+        var recipe = SERIALIZE.fromJson(jsonObject, ICondition.IContext.EMPTY);
         assertNotNull(recipe);
         assertEquals(5000 * PowerTile.ONE_FE, recipe.getRequiredEnergy());
         assertTrue(recipe.showInJEI());
@@ -78,7 +78,7 @@ class IngredientRecipeTest {
 
     void advPumpRecipe(List<ItemStack> inventory) {
         var recipe = new IngredientRecipe(
-            id(BlockAdvPump.NAME), new ItemStack(Holder.BLOCK_ADV_PUMP), 3200000 * PowerTile.ONE_FE, true, List.of(
+            new ItemStack(Holder.BLOCK_ADV_PUMP), 3200000 * PowerTile.ONE_FE, true, List.of(
             new IngredientList(List.of(new IngredientWithCount(Ingredient.of(Holder.BLOCK_PUMP), 2), new IngredientWithCount(Ingredient.of(Holder.ITEM_PUMP_MODULE), 2))),
             new IngredientList(new IngredientWithCount(Ingredient.of(Holder.BLOCK_MINING_WELL), 2)),
             new IngredientList(new IngredientWithCount(Ingredient.of(Holder.BLOCK_MARKER), 3))
@@ -114,7 +114,7 @@ class IngredientRecipeTest {
 
     void notAdvPumpRecipe(List<ItemStack> inventory) {
         var recipe = new IngredientRecipe(
-            id(BlockAdvPump.NAME), new ItemStack(Holder.BLOCK_ADV_PUMP), 3200000 * PowerTile.ONE_FE, true, List.of(
+            new ItemStack(Holder.BLOCK_ADV_PUMP), 3200000 * PowerTile.ONE_FE, true, List.of(
             new IngredientList(List.of(new IngredientWithCount(Ingredient.of(Holder.BLOCK_PUMP), 2), new IngredientWithCount(Ingredient.of(Holder.ITEM_PUMP_MODULE), 2))),
             new IngredientList(new IngredientWithCount(Ingredient.of(Holder.BLOCK_MINING_WELL), 2)),
             new IngredientList(new IngredientWithCount(Ingredient.of(Holder.BLOCK_MARKER), 3))

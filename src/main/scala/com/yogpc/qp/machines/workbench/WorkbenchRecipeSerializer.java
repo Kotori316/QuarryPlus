@@ -1,18 +1,24 @@
 package com.yogpc.qp.machines.workbench;
 
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
 
 public class WorkbenchRecipeSerializer implements RecipeSerializer<WorkbenchRecipe> {
+    public static final Codec<WorkbenchRecipe> CODEC = new RecipeCodec();
     private final Map<String, PacketSerialize<? extends WorkbenchRecipe>> serializeMap;
 
     WorkbenchRecipeSerializer() {
@@ -21,16 +27,9 @@ public class WorkbenchRecipeSerializer implements RecipeSerializer<WorkbenchReci
         );
     }
 
-    @Override
-    @Deprecated
-    public WorkbenchRecipe fromJson(ResourceLocation id, JsonObject jsonObject) {
-        return fromJson(id, jsonObject, ICondition.IContext.EMPTY);
-    }
-
-    @Override
-    public WorkbenchRecipe fromJson(ResourceLocation id, JsonObject recipeJson, ICondition.IContext context) {
+    public WorkbenchRecipe fromJson(JsonObject recipeJson, ICondition.IContext context) {
         var subType = GsonHelper.getAsString(recipeJson, "subType", "default");
-        return serializeMap.get(subType).fromJson(id, recipeJson, context);
+        return serializeMap.get(subType).fromJson(recipeJson, context);
     }
 
     public JsonObject toJson(WorkbenchRecipe recipe, JsonObject o) {
@@ -44,9 +43,14 @@ public class WorkbenchRecipeSerializer implements RecipeSerializer<WorkbenchReci
     }
 
     @Override
-    public WorkbenchRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
+    public WorkbenchRecipe fromNetwork( FriendlyByteBuf buffer) {
         var subType = buffer.readUtf();
-        return serializeMap.get(subType).fromPacket(id, buffer);
+        return serializeMap.get(subType).fromPacket(buffer);
+    }
+
+    @Override
+    public Codec<WorkbenchRecipe> codec() {
+        return CODEC;
     }
 
     @Override
@@ -61,11 +65,11 @@ public class WorkbenchRecipeSerializer implements RecipeSerializer<WorkbenchReci
     }
 
     interface PacketSerialize<T extends WorkbenchRecipe> {
-        T fromJson(ResourceLocation id, JsonObject jsonObject, ICondition.IContext context);
+        T fromJson(JsonObject jsonObject, ICondition.IContext context);
 
         JsonObject toJson(JsonObject jsonObject, T recipe);
 
-        T fromPacket(ResourceLocation id, FriendlyByteBuf buffer);
+        T fromPacket(FriendlyByteBuf buffer);
 
         void toPacket(FriendlyByteBuf buffer, T recipe);
 
@@ -76,6 +80,26 @@ public class WorkbenchRecipeSerializer implements RecipeSerializer<WorkbenchReci
             if (stack.getTag() != null)
                 o.addProperty("nbt", stack.getTag().toString());
             return o;
+        }
+    }
+
+    private static class RecipeCodec implements Codec<WorkbenchRecipe> {
+        @Override
+        public <T> DataResult<Pair<WorkbenchRecipe, T>> decode(DynamicOps<T> ops, T input) {
+            try {
+                JsonObject jsonObject = ops.convertTo(JsonOps.INSTANCE, input).getAsJsonObject();
+                return DataResult.success(Pair.of(WorkbenchRecipe.SERIALIZER.fromJson(jsonObject, ICondition.IContext.EMPTY), ops.empty()));
+            } catch (RuntimeException e) {
+                return DataResult.error(e::getMessage);
+            }
+        }
+
+        @Override
+        public <T> DataResult<T> encode(WorkbenchRecipe input, DynamicOps<T> ops, T prefix) {
+            var json = WorkbenchRecipe.SERIALIZER.toJson(input, new JsonObject());
+            var tMap = JsonOps.INSTANCE.convertTo(ops, json);
+            return ops.getMap(tMap)
+                .flatMap(m -> ops.mergeToMap(prefix, m));
         }
     }
 }

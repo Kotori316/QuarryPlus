@@ -8,6 +8,7 @@ import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,15 +18,15 @@ final class WorkbenchDisplay extends BasicDisplay {
     final long energy;
 
     @SuppressWarnings("UnstableApiUsage")
-    WorkbenchDisplay(WorkbenchRecipe recipe) {
+    WorkbenchDisplay(RecipeHolder<WorkbenchRecipe> recipe) {
         this(
-            recipe.inputs().stream()
+            recipe.value().inputs().stream()
                 .map(IngredientList::stackList)
                 .map(EntryIngredients::ofItemStacks)
                 .toList(),
-            List.of(EntryIngredients.of(recipe.getResultItem(registryAccess()))),
-            Optional.of(recipe.getId()),
-            recipe.getRequiredEnergy()
+            List.of(EntryIngredients.of(recipe.value().getResultItem(registryAccess()))),
+            Optional.of(recipe.id()),
+            recipe.value().getRequiredEnergy()
         );
     }
 

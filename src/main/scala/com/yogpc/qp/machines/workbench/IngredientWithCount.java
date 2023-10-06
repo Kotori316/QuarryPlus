@@ -3,11 +3,11 @@ package com.yogpc.qp.machines.workbench;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.Arrays;
@@ -17,7 +17,8 @@ import java.util.stream.StreamSupport;
 
 public record IngredientWithCount(Ingredient ingredient, int count) implements Predicate<ItemStack> {
     public IngredientWithCount(JsonObject jsonObject) {
-        this(CraftingHelper.getIngredient(modifyCount(jsonObject), false), GsonHelper.getAsInt(jsonObject, "count"));
+        this(Ingredient.CODEC_NONEMPTY.parse(JsonOps.INSTANCE, modifyCount(jsonObject)).get().orThrow(),
+            GsonHelper.getAsInt(jsonObject, "count"));
     }
 
     public IngredientWithCount(ItemStack stack) {
@@ -46,7 +47,7 @@ public record IngredientWithCount(Ingredient ingredient, int count) implements P
     }
 
     public JsonElement toJson() {
-        var obj = ingredient.toJson();
+        var obj = ingredient.toJson(false);
         if (obj instanceof JsonArray jsonArray) {
             jsonArray.forEach(e -> e.getAsJsonObject().addProperty("count", count));
         } else if (obj instanceof JsonObject jsonObject) {

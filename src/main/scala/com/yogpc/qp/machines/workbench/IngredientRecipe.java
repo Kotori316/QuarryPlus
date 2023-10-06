@@ -5,7 +5,6 @@ import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -18,9 +17,9 @@ import java.util.stream.StreamSupport;
 public class IngredientRecipe extends WorkbenchRecipe {
     private final List<IngredientList> input;
 
-    public IngredientRecipe(ResourceLocation location, ItemStack output, long energy, boolean showInJEI,
+    public IngredientRecipe(ItemStack output, long energy, boolean showInJEI,
                             List<IngredientList> input) {
-        super(location, output, energy, showInJEI);
+        super(output, energy, showInJEI);
         this.input = input;
     }
 
@@ -48,7 +47,7 @@ public class IngredientRecipe extends WorkbenchRecipe {
 class IngredientRecipeSerialize implements WorkbenchRecipeSerializer.PacketSerialize<IngredientRecipe> {
 
     @Override
-    public IngredientRecipe fromJson(ResourceLocation id, JsonObject jsonObject, ICondition.IContext context) {
+    public IngredientRecipe fromJson(JsonObject jsonObject, ICondition.IContext context) {
         var result = CraftingHelper.getItemStack(jsonObject.getAsJsonObject("result"), true);
         long energy = (long) (GsonHelper.getAsDouble(jsonObject, "energy", 1000) * PowerTile.ONE_FE);
         var showInJei = GsonHelper.getAsBoolean(jsonObject, "showInJEI", true);
@@ -62,7 +61,7 @@ class IngredientRecipeSerialize implements WorkbenchRecipeSerializer.PacketSeria
         } else {
             throw new IllegalArgumentException("Bad Json type of ingredients. " + jsonObject.get("ingredients"));
         }
-        return new IngredientRecipe(id, result, energy, showInJei, input);
+        return new IngredientRecipe(result, energy, showInJei, input);
     }
 
     @Override
@@ -76,7 +75,7 @@ class IngredientRecipeSerialize implements WorkbenchRecipeSerializer.PacketSeria
     }
 
     @Override
-    public IngredientRecipe fromPacket(ResourceLocation id, FriendlyByteBuf buffer) {
+    public IngredientRecipe fromPacket(FriendlyByteBuf buffer) {
         var output = buffer.readItem();
         var energy = buffer.readLong();
         var showInJei = buffer.readBoolean();
@@ -84,7 +83,7 @@ class IngredientRecipeSerialize implements WorkbenchRecipeSerializer.PacketSeria
         var input = IntStream.range(0, inputSize)
             .mapToObj(i -> IngredientList.fromPacket(buffer))
             .toList();
-        return new IngredientRecipe(id, output, energy, showInJei, input);
+        return new IngredientRecipe(output, energy, showInJei, input);
     }
 
     @Override
