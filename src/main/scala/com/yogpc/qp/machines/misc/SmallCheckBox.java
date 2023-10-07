@@ -10,10 +10,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 public final class SmallCheckBox extends Button {
-    private static final ResourceLocation TEXTURE = new ResourceLocation("textures/gui/checkbox.png");
+    private static final ResourceLocation CHECKBOX_SELECTED_HIGHLIGHTED_SPRITE = new ResourceLocation("widget/checkbox_selected_highlighted");
+    private static final ResourceLocation CHECKBOX_SELECTED_SPRITE = new ResourceLocation("widget/checkbox_selected");
+    private static final ResourceLocation CHECKBOX_HIGHLIGHTED_SPRITE = new ResourceLocation("widget/checkbox_highlighted");
+    private static final ResourceLocation CHECKBOX_SPRITE = new ResourceLocation("widget/checkbox");
     private final int checkBoxWidth;
     private final int checkBoxHeight;
     private boolean selected;
+    private int widthWithText;
 
     public SmallCheckBox(int xPos, int yPos, int totalWidth, int totalHeight, int checkBoxWidth, int checkBoxHeight, Component displayString, boolean selected, Button.OnPress onPress) {
         this(xPos, yPos, totalWidth, totalHeight, checkBoxWidth, checkBoxHeight, displayString, selected, onPress, DEFAULT_NARRATION);
@@ -25,6 +29,7 @@ public final class SmallCheckBox extends Button {
         this.checkBoxWidth = checkBoxWidth;
         this.checkBoxHeight = checkBoxHeight;
         this.selected = selected;
+        this.widthWithText = Minecraft.getInstance().font.width(getMessage()) + this.checkBoxWidth;
     }
 
     public boolean isSelected() {
@@ -48,14 +53,38 @@ public final class SmallCheckBox extends Button {
         graphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         Font font = minecraft.font;
-        float uOffset = this.isHoveredOrFocused() ? 20.0F : 0.0F;
-        float vOffset = this.isSelected() ? 20.0F : 0.0F;
-        graphics.blit(TEXTURE, this.getX(), this.getY() + this.height / 2 - this.checkBoxHeight / 2,
-            this.checkBoxWidth, this.checkBoxHeight, uOffset, vOffset, 20, 20, 64, 64);
-        // this.renderBg(pPoseStack, minecraft, pMouseX, pMouseY);
+        ResourceLocation resourcelocation;
+        if (isSelected()) {
+            resourcelocation = this.isMouseOver(pMouseX, pMouseY) ? CHECKBOX_SELECTED_HIGHLIGHTED_SPRITE : CHECKBOX_SELECTED_SPRITE;
+        } else {
+            resourcelocation = this.isMouseOver(pMouseX, pMouseY) ? CHECKBOX_HIGHLIGHTED_SPRITE : CHECKBOX_SPRITE;
+        }
+        graphics.blitSprite(resourcelocation, this.getX(), this.getY(), this.checkBoxWidth, this.checkBoxHeight);
+        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         int color = 0x404040;
         int labelOffset = this.checkBoxWidth / 5;
         graphics.drawString(font, this.getMessage(), this.getX() + this.checkBoxWidth + labelOffset, this.getY() + ((int) ((float) this.height - 7) / 2),
             color | Mth.ceil(this.alpha * 255.0F) << 24, false);
+    }
+
+    @Override
+    public int getWidth() {
+        return Math.max(super.getWidth(), this.widthWithText);
+    }
+
+    @Override
+    public void setMessage(Component pMessage) {
+        super.setMessage(pMessage);
+        int labelOffset = this.checkBoxWidth / 5;
+        this.widthWithText = Minecraft.getInstance().font.width(getMessage()) + this.checkBoxWidth + labelOffset;
+    }
+
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return this.visible &&
+            mouseX >= this.getX() &&
+            mouseY >= this.getY() &&
+            mouseX < this.getX() + this.getWidth() &&
+            mouseY < this.getY() + this.getHeight();
     }
 }

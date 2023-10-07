@@ -1,6 +1,7 @@
 package com.yogpc.qp;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
+import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.machines.workbench.EnableCondition;
 import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
@@ -47,6 +48,7 @@ public class QuarryPlus {
         FMLJavaModLoadingContext.get().getModEventBus().register(Register.class);
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> QuarryPlusClient::registerClientBus);
         MinecraftForge.EVENT_BUS.register(ConfigCommand.class);
+        MinecraftForge.EVENT_BUS.register(QuarryFakePlayer.class);
     }
 
     @VisibleForTesting
