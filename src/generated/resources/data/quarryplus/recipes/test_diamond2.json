@@ -2,7 +2,8 @@
   "type": "quarryplus:workbench_recipe",
   "conditions": [
     {
-      "type": "quarryplus:debug_enabled"
+      "type": "quarryplus:debug_enabled",
+      "value": {}
     }
   ],
   "energy": 640.0,

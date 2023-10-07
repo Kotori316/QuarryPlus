@@ -3,7 +3,8 @@
   "category": "misc",
   "conditions": [
     {
-      "type": "quarryplus:debug_enabled"
+      "type": "quarryplus:debug_enabled",
+      "value": {}
     }
   ],
   "ingredients": [

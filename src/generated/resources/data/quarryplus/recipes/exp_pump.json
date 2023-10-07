@@ -22,10 +22,8 @@
     },
     [
       {
-        "type": "forge:nbt",
         "count": 128,
-        "item": "minecraft:potion",
-        "nbt": "{Potion:\"minecraft:water\"}"
+        "item": "minecraft:potion"
       },
       {
         "count": 1,
