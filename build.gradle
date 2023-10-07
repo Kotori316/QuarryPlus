@@ -90,7 +90,7 @@ minecraft {
             mods {
                 quarryplus {
                     source(sourceSets.main)
-                    // source(sourceSets.test)
+                    source(sourceSets.test)
                 }
             }
             lazyToken("minecraft_classpath") {
