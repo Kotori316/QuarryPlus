@@ -1,6 +1,7 @@
 package com.yogpc.qp;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
+import com.mojang.serialization.Codec;
 import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.machines.workbench.EnableCondition;
 import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
@@ -22,6 +23,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -30,6 +32,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.gametest.ForgeGameTestHooks;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegisterEvent;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -95,6 +98,7 @@ public class QuarryPlus {
             event.register(Registries.RECIPE_TYPE, Register::registerRecipeType);
             event.register(Registries.CREATIVE_MODE_TAB, Register::registerCreativeTab);
             event.register(Registries.COMMAND_ARGUMENT_TYPE, Register::registerArgument);
+            event.register(ForgeRegistries.Keys.CONDITION_SERIALIZERS, Register::registerCondition);
         }
 
         public static void registerBlocks(RegisterEvent.RegisterHelper<Block> blockRegisterHelper) {
@@ -120,6 +124,11 @@ public class QuarryPlus {
         public static void registerRecipe(RegisterEvent.RegisterHelper<RecipeSerializer<?>> helper) {
             helper.register(WorkbenchRecipe.recipeLocation, WorkbenchRecipe.SERIALIZER);
             // CraftingHelper.register(new ResourceLocation(modID, EnchantmentIngredient.NAME), EnchantmentIngredient.Serializer.INSTANCE);
+        }
+
+        public static void registerCondition(RegisterEvent.RegisterHelper<Codec<? extends ICondition>> helper) {
+            helper.register(EnableCondition.NAME, EnableCondition.CODEC);
+            helper.register(QuarryDebugCondition.NAME, QuarryDebugCondition.CODEC);
             CraftingHelper.register(EnableCondition.NAME, EnableCondition.CODEC);
             CraftingHelper.register(QuarryDebugCondition.NAME, QuarryDebugCondition.CODEC);
         }
