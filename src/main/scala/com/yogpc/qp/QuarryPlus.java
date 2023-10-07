@@ -22,7 +22,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -129,8 +128,6 @@ public class QuarryPlus {
         public static void registerCondition(RegisterEvent.RegisterHelper<Codec<? extends ICondition>> helper) {
             helper.register(EnableCondition.NAME, EnableCondition.CODEC);
             helper.register(QuarryDebugCondition.NAME, QuarryDebugCondition.CODEC);
-            CraftingHelper.register(EnableCondition.NAME, EnableCondition.CODEC);
-            CraftingHelper.register(QuarryDebugCondition.NAME, QuarryDebugCondition.CODEC);
         }
 
         public static void registerRecipeType(RegisterEvent.RegisterHelper<RecipeType<?>> helper) {

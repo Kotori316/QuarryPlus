@@ -1,7 +1,6 @@
 package com.yogpc.qp.gametest;
 
-import java.util.List;
-
+import com.kotori316.testutil.GameTestUtil;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.miningwell.MiningWellTile;
@@ -19,17 +18,15 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.gametest.GameTestDontPrefix;
 import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
-import com.kotori316.testutil.GameTestUtil;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 @GameTestHolder(QuarryPlus.modID)
-@PrefixGameTestTemplate(value = false)
+@GameTestDontPrefix
 public final class PlaceQuarryTest {
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void chainBreakEnabled(GameTestHelper helper) {

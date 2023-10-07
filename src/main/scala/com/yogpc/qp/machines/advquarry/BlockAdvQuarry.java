@@ -36,7 +36,6 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.util.FakePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -148,7 +147,7 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 var enchantment = EnchantmentLevel.fromItem(stack);
                 enchantment.sort(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR);
                 quarry.setEnchantments(enchantment);
-                if (entity instanceof ServerPlayer player && !(entity instanceof FakePlayer)) {
+                if (entity instanceof ServerPlayer player) {
                     quarry.workConfig = quarry.workConfig.noAutoStartConfig(); // Prevent machines from starting by being supplied enough energy to start. Wait for client setting.
                     PacketHandler.sendToClientPlayer(new AdvQuarryInitialMessage.Ask(pos, level.dimension()), player);
                 }

@@ -1,10 +1,6 @@
 package com.yogpc.qp.machines.placer;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
+import com.kotori316.testutil.GameTestUtil;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.Direction;
@@ -15,14 +11,17 @@ import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraftforge.gametest.GameTestDontPrefix;
 import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import org.junit.jupiter.api.Assertions;
 
-import com.kotori316.testutil.GameTestUtil;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @GameTestHolder(QuarryPlus.modID)
-@PrefixGameTestTemplate(value = false)
+@GameTestDontPrefix
 public final class PlacerGameTest {
     static final String BATCH = "PlacerGameTest";
 

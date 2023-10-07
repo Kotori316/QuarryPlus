@@ -1,28 +1,24 @@
 package com.yogpc.qp.machines.module;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-import java.util.stream.IntStream;
-
+import com.kotori316.testutil.GameTestUtil;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.gametest.GameTestDontPrefix;
 import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
-import com.kotori316.testutil.GameTestUtil;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @GameTestHolder(QuarryPlus.modID)
-@PrefixGameTestTemplate(value = false)
+@GameTestDontPrefix
 class ExpModuleItemTest {
     static final String BATCH = "ExpModuleItem";
 

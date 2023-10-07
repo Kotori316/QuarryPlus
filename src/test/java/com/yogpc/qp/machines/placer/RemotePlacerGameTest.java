@@ -1,9 +1,6 @@
 package com.yogpc.qp.machines.placer;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.StreamSupport;
-
+import com.kotori316.testutil.GameTestUtil;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
@@ -15,18 +12,18 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.gametest.GameTestDontPrefix;
 import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
-import com.kotori316.testutil.GameTestUtil;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.StreamSupport;
 
 import static com.yogpc.qp.machines.placer.PlacerGameTest.BATCH;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @GameTestHolder(QuarryPlus.modID)
-@PrefixGameTestTemplate(value = false)
+@GameTestDontPrefix
 public final class RemotePlacerGameTest {
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     public void placeRemotePlacerBlock(GameTestHelper helper) {

@@ -1,5 +1,24 @@
 package com.yogpc.qp.machines.workbench;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.kotori316.testutil.GameTestUtil;
+import com.yogpc.qp.Holder;
+import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.PowerTile;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestGenerator;
+import net.minecraft.gametest.framework.TestFunction;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
+import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.minecraftforge.gametest.GameTestDontPrefix;
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.registries.ForgeRegistries;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,35 +28,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.yogpc.qp.Holder;
-import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.advpump.BlockAdvPump;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestGenerator;
-import net.minecraft.gametest.framework.TestFunction;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import com.kotori316.testutil.GameTestUtil;
-
-import static com.yogpc.qp.QuarryPlusTest.id;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @GameTestHolder(QuarryPlus.modID)
-@PrefixGameTestTemplate(value = false)
+@GameTestDontPrefix
 class IngredientRecipeTest {
     static final String BATCH = "IngredientRecipe";
     static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();

@@ -1,8 +1,6 @@
 package com.yogpc.qp.machines.mover;
 
-import java.util.List;
-import java.util.stream.Stream;
-
+import com.kotori316.testutil.GameTestUtil;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
@@ -15,16 +13,17 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraftforge.gametest.GameTestDontPrefix;
 import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
-import com.kotori316.testutil.GameTestUtil;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @GameTestHolder(QuarryPlus.modID)
-@PrefixGameTestTemplate(value = false)
+@GameTestDontPrefix
 public final class SlotMoverTest {
     private static final String BATCH = "SlotMover";
 

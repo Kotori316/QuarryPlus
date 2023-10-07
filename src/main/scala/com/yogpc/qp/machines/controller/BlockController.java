@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.controller;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
+import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.MapMulti;
 import cpw.mods.modlauncher.Launcher;
@@ -27,8 +28,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
@@ -142,7 +141,7 @@ public class BlockController extends QPBlock {
                         LOGGER.warn(e);
                         return;
                     }
-                    FakePlayer fakePlayer = FakePlayerFactory.getMinecraft((ServerLevel) level);
+                    ServerPlayer fakePlayer = QuarryFakePlayer.get((ServerLevel) level);
                     fakePlayer.setPos(logic.getRight().getX(), logic.getRight().getY(), logic.getRight().getZ());
 //                    logic.getWorld().players.add(fakePlayer);
                     logic.getLeft().serverTick((ServerLevel) level, logic.getRight());

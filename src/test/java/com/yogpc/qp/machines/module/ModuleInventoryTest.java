@@ -1,11 +1,6 @@
 package com.yogpc.qp.machines.module;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
+import com.kotori316.testutil.GameTestUtil;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.ItemConverter;
@@ -14,21 +9,22 @@ import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.gametest.GameTestDontPrefix;
 import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
-import com.kotori316.testutil.GameTestUtil;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ModuleInventoryTest {
     static final String BATCH = "ModuleInventory";
 
     @GameTestHolder(QuarryPlus.modID)
-    @PrefixGameTestTemplate(value = false)
+    @GameTestDontPrefix
     static class SingleTest {
         @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
         void getModules1() {
@@ -50,7 +46,7 @@ class ModuleInventoryTest {
     }
 
     @GameTestHolder(QuarryPlus.modID)
-    @PrefixGameTestTemplate(value = false)
+    @GameTestDontPrefix
     static class MultiTest {
         @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
         void getModules3() {
@@ -72,7 +68,7 @@ class ModuleInventoryTest {
     }
 
     @GameTestHolder(QuarryPlus.modID)
-    @PrefixGameTestTemplate(value = false)
+    @GameTestDontPrefix
     static class InventoryTest {
         @GameTestGenerator
         List<TestFunction> empty() {

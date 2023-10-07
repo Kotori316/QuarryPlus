@@ -15,11 +15,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.stats.Stat;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.RelativeMovement;
-import net.minecraftforge.common.util.FakePlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -34,9 +37,9 @@ import java.util.UUID;
  */
 public class QuarryFakePlayer {
     private static final GameProfile profile = new GameProfile(UUID.fromString("ce6c3b8d-11ba-4b32-90d5-e5d30167fca7"), "[QuarryPlus]");
-    private static final Map<ServerLevel, FakePlayer> players = new HashMap<>();
+    private static final Map<ServerLevel, ServerPlayer> players = new HashMap<>();
 
-    public static FakePlayer get(ServerLevel serverLevel) {
+    public static ServerPlayer get(ServerLevel serverLevel) {
         return players.computeIfAbsent(serverLevel, key -> {
             var cookie = CommonListenerCookie.createInitial(profile);
             var player = new InternalFakePlayer(key, profile, cookie.clientInformation());
@@ -51,9 +54,41 @@ public class QuarryFakePlayer {
             players.entrySet().removeIf(entry -> entry.getValue().level() == level);
     }
 
-    private static final class InternalFakePlayer extends FakePlayer {
+    private static final class InternalFakePlayer extends ServerPlayer {
         private InternalFakePlayer(ServerLevel level, GameProfile name, ClientInformation info) {
-            super(level, name, info);
+            super(level.getServer(), level, name, info);
+        }
+
+        @Override
+        public void displayClientMessage(Component chatComponent, boolean actionBar) {
+        }
+
+        @Override
+        public void awardStat(Stat<?> stat, int amount) {
+        }
+
+        @Override
+        public boolean isInvulnerableTo(DamageSource source) {
+            return true;
+        }
+
+        @Override
+        public boolean canHarmPlayer(Player player) {
+            return false;
+        }
+
+        @Override
+        public void die(DamageSource source) {
+        }
+
+        @Override
+        public void tick() {
+        }
+
+        @Override
+        @Nullable
+        public MinecraftServer getServer() {
+            return ServerLifecycleHooks.getCurrentServer();
         }
 
         @ParametersAreNonnullByDefault
