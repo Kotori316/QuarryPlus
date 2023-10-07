@@ -1,14 +1,11 @@
 package com.yogpc.qp;
 
-import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
+import com.kotori316.testutil.MCTestInitializer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-
-import com.kotori316.testutil.MCTestInitializer;
 
 public final class QuarryPlusTest implements BeforeAllCallback {
 
@@ -23,7 +20,7 @@ public final class QuarryPlusTest implements BeforeAllCallback {
     }
 
     private static void registerRecipes() {
-        CraftingHelper.register(new ResourceLocation(QuarryPlus.modID, EnchantmentIngredient.NAME), EnchantmentIngredient.Serializer.INSTANCE);
+        // CraftingHelper.register(new ResourceLocation(QuarryPlus.modID, EnchantmentIngredient.NAME), EnchantmentIngredient.Serializer.INSTANCE);
     }
 
     private static void setConfig() {

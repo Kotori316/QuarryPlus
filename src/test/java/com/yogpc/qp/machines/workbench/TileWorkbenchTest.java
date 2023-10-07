@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.List;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusTest;
@@ -11,6 +9,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,10 +19,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(QuarryPlusTest.class)
 class TileWorkbenchTest {
@@ -138,14 +136,14 @@ class TileWorkbenchTest {
         }
     }
 
-    WorkbenchRecipe r1 = RecipeFinderTest.create("stone", 100L, new ItemStack(Items.STONE, 64), new ItemStack(Items.COBBLESTONE, 64));
-    WorkbenchRecipe r2 = RecipeFinderTest.create("dirt1", 200L, new ItemStack(Items.STONE), new ItemStack(Items.DIRT, 4));
-    WorkbenchRecipe r3 = RecipeFinderTest.create("iron1", 300L, new ItemStack(Items.STONE, 64), new ItemStack(Items.IRON_INGOT));
-    WorkbenchRecipe r4 = RecipeFinderTest.create("wood1", 400L, new ItemStack(Items.OAK_LOG, 32), new ItemStack(Items.IRON_INGOT));
-    WorkbenchRecipe r5 = RecipeFinderTest.create("dirt2", 500L, new ItemStack(Items.COBBLESTONE, 48), new ItemStack(Items.DIRT, 24));
-    WorkbenchRecipe r6 = RecipeFinderTest.create("iron2", 600L, new ItemStack(Items.GOLD_INGOT, 1), new ItemStack(Items.IRON_INGOT, 16));
-    WorkbenchRecipe r7 = new IngredientRecipe(new ResourceLocation(QuarryPlus.modID, "test_100"), new ItemStack(Items.DIAMOND, 4), 100 * PowerTile.ONE_FE,
-        false, RecipeFinderTest.createList(new ItemStack(Items.STONE, 64), new ItemStack(Items.IRON_INGOT, 64)));
+    RecipeHolder<WorkbenchRecipe> r1 = RecipeFinderTest.create("stone", 100L, new ItemStack(Items.STONE, 64), new ItemStack(Items.COBBLESTONE, 64));
+    RecipeHolder<WorkbenchRecipe> r2 = RecipeFinderTest.create("dirt1", 200L, new ItemStack(Items.STONE), new ItemStack(Items.DIRT, 4));
+    RecipeHolder<WorkbenchRecipe> r3 = RecipeFinderTest.create("iron1", 300L, new ItemStack(Items.STONE, 64), new ItemStack(Items.IRON_INGOT));
+    RecipeHolder<WorkbenchRecipe> r4 = RecipeFinderTest.create("wood1", 400L, new ItemStack(Items.OAK_LOG, 32), new ItemStack(Items.IRON_INGOT));
+    RecipeHolder<WorkbenchRecipe> r5 = RecipeFinderTest.create("dirt2", 500L, new ItemStack(Items.COBBLESTONE, 48), new ItemStack(Items.DIRT, 24));
+    RecipeHolder<WorkbenchRecipe> r6 = RecipeFinderTest.create("iron2", 600L, new ItemStack(Items.GOLD_INGOT, 1), new ItemStack(Items.IRON_INGOT, 16));
+    RecipeHolder<WorkbenchRecipe> r7 = new RecipeHolder<>(new ResourceLocation(QuarryPlus.modID, "test_100"), new IngredientRecipe(new ItemStack(Items.DIAMOND, 4), 100 * PowerTile.ONE_FE,
+        false, RecipeFinderTest.createList(new ItemStack(Items.STONE, 64), new ItemStack(Items.IRON_INGOT, 64))));
 
     @BeforeEach
     void setup() {

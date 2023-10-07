@@ -1,11 +1,7 @@
 package com.yogpc.qp.gametest;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Objects;
-
 import com.google.gson.JsonObject;
+import com.kotori316.testutil.GameTestUtil;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
@@ -19,17 +15,22 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import org.junit.platform.commons.function.Try;
+import org.junit.platform.commons.support.ReflectionSupport;
 
-import com.kotori316.testutil.GameTestUtil;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @GameTestHolder(QuarryPlus.modID)
 @PrefixGameTestTemplate(value = false)
@@ -55,7 +56,7 @@ public final class LoadRecipeTest {
             jsonObject = GsonHelper.parse(reader);
         }
         var context = GameTestUtil.getContext(helper);
-        var recipe = assertDoesNotThrow(() -> RecipeManager.fromJson(new ResourceLocation(QuarryPlus.modID, "flex_marker_workbench"), jsonObject, context));
+        var recipe = assertDoesNotThrow(() -> managerFromJson(new ResourceLocation(QuarryPlus.modID, "flex_marker_workbench"), jsonObject, context));
         assertAll(
             () -> assertTrue(recipe instanceof WorkbenchRecipe),
             () -> assertTrue(ItemStack.isSameItemSameTags(recipe.getResultItem(helper.getLevel().registryAccess()), new ItemStack(Holder.BLOCK_FLEX_MARKER)))
@@ -71,6 +72,15 @@ public final class LoadRecipeTest {
             () -> assertEquals(6, inputs.size())
         );
         helper.succeed();
+    }
+
+    private static Recipe<?> managerFromJson(ResourceLocation location, JsonObject jsonObject, ICondition.IContext context) {
+        return Try.call(() -> RecipeManager.class.getDeclaredMethod("fromJson", ResourceLocation.class, JsonObject.class))
+            .andThenTry(m -> ReflectionSupport.invokeMethod(m, null, location, jsonObject))
+            .andThenTry(RecipeHolder.class::cast)
+            .andThenTry(RecipeHolder::value)
+            .andThenTry(Recipe.class::cast)
+            .getOrThrow(RuntimeException::new);
     }
 
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
@@ -96,8 +106,8 @@ public final class LoadRecipeTest {
                 "count": 1
               }
             }""");
-        var r1 = RecipeManager.fromJson(new ResourceLocation("quarryplus:cheat_diamond2"), object, context);
-        var r2 = WorkbenchRecipe.SERIALIZER.fromJson(new ResourceLocation("quarryplus:cheat_diamond2"), object, context);
+        var r1 = managerFromJson(new ResourceLocation("quarryplus:cheat_diamond2"), object, context);
+        var r2 = WorkbenchRecipe.SERIALIZER.fromJson(object, context);
         assertEquals(r1, r2);
 
         var inputs = r2.inputs().stream().flatMap(i -> i.stackList().stream()).toList();

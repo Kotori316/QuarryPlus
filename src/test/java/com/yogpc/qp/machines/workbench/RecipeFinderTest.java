@@ -1,23 +1,24 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,9 +32,10 @@ class RecipeFinderTest {
             .toList();
     }
 
-    static IngredientRecipe create(String name, long energy, ItemStack output, ItemStack inputFirst, ItemStack... inputs) {
-        return new IngredientRecipe(new ResourceLocation(QuarryPlus.modID, "test_" + name), output, energy, false,
-            createList(inputFirst, inputs));
+    static RecipeHolder<WorkbenchRecipe> create(String name, long energy, ItemStack output, ItemStack inputFirst, ItemStack... inputs) {
+        return new RecipeHolder<>(new ResourceLocation(QuarryPlus.modID, "test_" + name),
+            new IngredientRecipe(output, energy, false,
+                createList(inputFirst, inputs)));
     }
 
     @Test
@@ -65,12 +67,12 @@ class RecipeFinderTest {
     @Nested
     class FindByInputTest {
 
-        WorkbenchRecipe r1 = create("stone", 1000L, new ItemStack(Items.STONE, 64), new ItemStack(Items.COBBLESTONE, 64));
-        WorkbenchRecipe r2 = create("dirt1", 1000L, new ItemStack(Items.STONE), new ItemStack(Items.DIRT, 4));
-        WorkbenchRecipe r3 = create("iron1", 1000L, new ItemStack(Items.STONE, 64), new ItemStack(Items.IRON_INGOT));
-        WorkbenchRecipe r4 = create("wood1", 1000L, new ItemStack(Items.OAK_LOG, 32), new ItemStack(Items.IRON_INGOT));
-        WorkbenchRecipe r5 = create("dirt2", 1000L, new ItemStack(Items.COBBLESTONE, 48), new ItemStack(Items.DIRT, 24));
-        WorkbenchRecipe r6 = create("iron2", 1000L, new ItemStack(Items.GOLD_INGOT, 1), new ItemStack(Items.IRON_INGOT, 16));
+        RecipeHolder<WorkbenchRecipe> r1 = create("stone", 1000L, new ItemStack(Items.STONE, 64), new ItemStack(Items.COBBLESTONE, 64));
+        RecipeHolder<WorkbenchRecipe> r2 = create("dirt1", 1000L, new ItemStack(Items.STONE), new ItemStack(Items.DIRT, 4));
+        RecipeHolder<WorkbenchRecipe> r3 = create("iron1", 1000L, new ItemStack(Items.STONE, 64), new ItemStack(Items.IRON_INGOT));
+        RecipeHolder<WorkbenchRecipe> r4 = create("wood1", 1000L, new ItemStack(Items.OAK_LOG, 32), new ItemStack(Items.IRON_INGOT));
+        RecipeHolder<WorkbenchRecipe> r5 = create("dirt2", 1000L, new ItemStack(Items.COBBLESTONE, 48), new ItemStack(Items.DIRT, 24));
+        RecipeHolder<WorkbenchRecipe> r6 = create("iron2", 1000L, new ItemStack(Items.GOLD_INGOT, 1), new ItemStack(Items.IRON_INGOT, 16));
         RecipeFinder finder;
 
         @BeforeEach
@@ -136,10 +138,10 @@ class RecipeFinderTest {
     }
 }
 
-record SimpleRecipeFinder(Map<ResourceLocation, WorkbenchRecipe> recipes) implements RecipeFinder {
-    static SimpleRecipeFinder create(List<WorkbenchRecipe> recipes) {
+record SimpleRecipeFinder(Map<ResourceLocation, RecipeHolder<WorkbenchRecipe>> recipes) implements RecipeFinder {
+    static SimpleRecipeFinder create(List<RecipeHolder<WorkbenchRecipe>> recipes) {
         return new SimpleRecipeFinder(
-            recipes.stream().collect(Collectors.toMap(WorkbenchRecipe::getId, Function.identity()))
+            recipes.stream().collect(Collectors.toMap(RecipeHolder::id, Function.identity()))
         );
     }
 }

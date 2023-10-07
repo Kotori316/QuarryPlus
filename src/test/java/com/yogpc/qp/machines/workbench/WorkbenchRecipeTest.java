@@ -1,12 +1,5 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.LongStream;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.QuarryPlusTest;
 import com.yogpc.qp.machines.PowerTile;
 import net.minecraft.core.RegistryAccess;
@@ -14,28 +7,36 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
+
 import static com.yogpc.qp.QuarryPlusTest.id;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(QuarryPlusTest.class)
 class WorkbenchRecipeTest {
-    CompareRecipe stone = new CompareRecipe(id("test_stone"), new ItemStack(Items.STONE), 10);
-    CompareRecipe bedrock = new CompareRecipe(id("test_bedrock"), new ItemStack(Items.BEDROCK), 10);
-    CompareRecipe diamond1 = new CompareRecipe(id("test_diamond1"), new ItemStack(Items.DIAMOND, 1), 5);
-    CompareRecipe diamond0 = new CompareRecipe(id("test_diamond"), new ItemStack(Items.DIAMOND, 2), 5);
+    RecipeHolder<WorkbenchRecipe> stone = create(id("test_stone"), new ItemStack(Items.STONE), 10);
+    RecipeHolder<WorkbenchRecipe> bedrock = create(id("test_bedrock"), new ItemStack(Items.BEDROCK), 10);
+    RecipeHolder<WorkbenchRecipe> diamond1 = create(id("test_diamond1"), new ItemStack(Items.DIAMOND, 1), 5);
+    RecipeHolder<WorkbenchRecipe> diamond0 = create(id("test_diamond"), new ItemStack(Items.DIAMOND, 2), 5);
+
+    private static RecipeHolder<WorkbenchRecipe> create(ResourceLocation id, ItemStack output, long energy) {
+        return new RecipeHolder<>(id, new CompareRecipe(output, energy));
+    }
 
     @Test
     @SuppressWarnings("EqualsWithItself")
-        // This is test for comparing itself.
+        // This is a test for comparing itself.
     void compareSame() {
         assertEquals(0, WorkbenchRecipe.COMPARATOR.compare(stone, stone));
         assertEquals(0, WorkbenchRecipe.COMPARATOR.compare(bedrock, bedrock));
@@ -48,14 +49,14 @@ class WorkbenchRecipeTest {
 
     @Test
     void compareWithEnergy() {
-        CompareRecipe stone2 = new CompareRecipe(id("test_stone"), new ItemStack(Items.STONE), 5);
+        var stone2 = create(id("test_stone"), new ItemStack(Items.STONE), 5);
         assertTrue(WorkbenchRecipe.COMPARATOR.compare(stone, stone2) > 0, "expect stone2 < stone");
     }
 
     @Test
     void compareSameEnergy() {
         assertTrue(WorkbenchRecipe.COMPARATOR.compare(stone, bedrock) < 0);
-        CompareRecipe glass = new CompareRecipe(id("test_glass"), new ItemStack(Items.GLASS), 10);
+        var glass = create(id("test_glass"), new ItemStack(Items.GLASS), 10);
         assertTrue(WorkbenchRecipe.COMPARATOR.compare(bedrock, glass) < 0);
     }
 
@@ -72,8 +73,8 @@ class WorkbenchRecipeTest {
     @Test
     void sort() {
         Random random = new Random(654);
-        List<WorkbenchRecipe> expected = List.of(diamond0, diamond1, stone, bedrock);
-        List<WorkbenchRecipe> randomized = new ArrayList<>(expected);
+        var expected = List.of(diamond0, diamond1, stone, bedrock);
+        var randomized = new ArrayList<>(expected);
         Collections.shuffle(randomized, random);
 
         assertNotEquals(expected, randomized);
@@ -84,9 +85,9 @@ class WorkbenchRecipeTest {
     @ParameterizedTest
     @MethodSource("itemEnergy")
     void compareSameItem(Item item, long energy) {
-        var r1 = new CompareRecipe(id("test_r1"), new ItemStack(item, 5), energy);
-        var r2 = new CompareRecipe(id("test_r2"), new ItemStack(item, 10), energy);
-        var r3 = new CompareRecipe(id("test_r3"), new ItemStack(item, 1), energy);
+        var r1 = create(id("test_r1"), new ItemStack(item, 5), energy);
+        var r2 = create(id("test_r2"), new ItemStack(item, 10), energy);
+        var r3 = create(id("test_r3"), new ItemStack(item, 1), energy);
 
         assertAll(
             () -> assertNotEquals(0, WorkbenchRecipe.COMPARATOR.compare(r1, r2)),
@@ -106,8 +107,8 @@ class WorkbenchRecipeTest {
     }
 
     private static class CompareRecipe extends WorkbenchRecipe {
-        public CompareRecipe(ResourceLocation location, ItemStack output, long energy) {
-            super(location, output, energy, true);
+        public CompareRecipe(ItemStack output, long energy) {
+            super(output, energy, true);
         }
 
         @Override

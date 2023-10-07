@@ -1,19 +1,21 @@
 package com.yogpc.qp.data;
 
+import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
+import com.yogpc.qp.utils.MapMulti;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.common.crafting.conditions.ICondition;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-
-import com.google.gson.JsonElement;
-import com.yogpc.qp.utils.MapMulti;
-import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import org.jetbrains.annotations.Nullable;
 
 record RecipeSerializeHelper(
     FinishedRecipe recipe,
@@ -22,14 +24,16 @@ record RecipeSerializeHelper(
 ) implements DataBuilder {
     @Override
     public ResourceLocation location() {
-        return saveName == null ? recipe.getId() : saveName;
+        return saveName == null ? recipe.id() : saveName;
     }
 
     @Override
     public JsonElement build() {
         var o = recipe.serializeRecipe();
         if (!conditions.isEmpty()) {
-            o.add("conditions", conditions.stream().map(CraftingHelper::serialize).collect(MapMulti.jsonArrayCollector()));
+            o.add("conditions", conditions.stream().map(c ->
+                ICondition.CODEC.encodeStart(JsonOps.INSTANCE, c).get().orThrow()
+            ).collect(MapMulti.jsonArrayCollector()));
         }
         return o;
     }
@@ -51,7 +55,17 @@ record RecipeSerializeHelper(
     static FinishedRecipe getConsumeValue(RecipeBuilder c) {
         c.unlockedBy("dummy", RecipeUnlockedTrigger.unlocked(QuarryPlusDataProvider.location("dummy")));
         AtomicReference<FinishedRecipe> reference = new AtomicReference<>();
-        c.save(reference::set);
+        c.save(new RecipeOutput() {
+            @Override
+            public void accept(FinishedRecipe recipe) {
+                reference.set(recipe);
+            }
+
+            @Override
+            public Advancement.Builder advancement() {
+                return Advancement.Builder.recipeAdvancement();
+            }
+        });
         return reference.get();
     }
 }
