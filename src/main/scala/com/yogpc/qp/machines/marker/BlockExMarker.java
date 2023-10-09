@@ -6,6 +6,7 @@ import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -101,6 +102,11 @@ public abstract class BlockExMarker extends QPBlock implements EntityBlock {
         protected WaterloggedMarker(Properties properties, String name) {
             super(properties, name);
             this.registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
+        }
+
+        @Override
+        protected ResourceLocation getConfigName() {
+            return getBaseBlock().getRegistryName();
         }
 
         @Override

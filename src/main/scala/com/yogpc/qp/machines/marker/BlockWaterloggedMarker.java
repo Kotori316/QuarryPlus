@@ -4,6 +4,7 @@ import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -35,6 +36,11 @@ public final class BlockWaterloggedMarker extends QPBlock implements EntityBlock
     public BlockWaterloggedMarker() {
         super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak(), NAME);
         this.registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
+    }
+
+    @Override
+    protected ResourceLocation getConfigName() {
+        return Holder.BLOCK_MARKER.getRegistryName();
     }
 
     @Override

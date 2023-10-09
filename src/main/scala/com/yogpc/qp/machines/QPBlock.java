@@ -45,6 +45,10 @@ public class QPBlock extends Block {
         return registryName;
     }
 
+    protected ResourceLocation getConfigName() {
+        return getRegistryName();
+    }
+
     /**
      * Implemented for unit test. Default implementation returns Air item as modded items are not registered in Registry.
      *
@@ -106,7 +110,7 @@ public class QPBlock extends Block {
         @Override
         public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltips, TooltipFlag pIsAdvanced) {
             super.appendHoverText(pStack, pLevel, tooltips, pIsAdvanced);
-            if (QuarryPlus.config != null && !QuarryPlus.config.enableMap.enabled(getRegistryName())) {
+            if (QuarryPlus.config != null && !QuarryPlus.config.enableMap.enabled(((QPBlock) getBlock()).getConfigName())) {
                 tooltips.add(Component.translatable("quarryplus.tooltip.item_disable_message"));
             }
         }
