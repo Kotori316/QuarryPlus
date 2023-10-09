@@ -17,8 +17,18 @@
       "tag": "forge:storage_blocks/diamond"
     },
     {
+      "type": "quarryplus:enchantment_ingredient",
       "count": 1,
-      "item": "minecraft:diamond_pickaxe"
+      "enchantments": [
+        {
+          "id": "minecraft:silk_touch",
+          "level": 1
+        }
+      ],
+      "stack": {
+        "Count": 1,
+        "id": "minecraft:diamond_pickaxe"
+      }
     }
   ],
   "result": {

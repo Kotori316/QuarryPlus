@@ -1,33 +1,32 @@
 package com.yogpc.qp.machines.workbench;
-/*
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
+
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Dynamic;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
-import net.minecraftforge.common.crafting.AbstractIngredient;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
+import net.minecraftforge.common.crafting.ingredients.AbstractIngredient;
+import net.minecraftforge.common.crafting.ingredients.IIngredientSerializer;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class EnchantmentIngredient extends AbstractIngredient {
     public static final String NAME = "enchantment_ingredient";
@@ -49,13 +48,6 @@ public class EnchantmentIngredient extends AbstractIngredient {
     @Override
     public boolean isSimple() {
         return false;
-    }
-
-    @Override
-    public JsonObject toJson() {
-        JsonObject object = new JsonObject();
-        Serializer.INSTANCE.write(object, this);
-        return object;
     }
 
     @Override
@@ -83,6 +75,16 @@ public class EnchantmentIngredient extends AbstractIngredient {
         }
     }
 
+    private ItemStack stackForSerialization() {
+        var stack = this.stack.copy();
+        stack.setTag(this.withoutEnchantment);
+        if (!checkDamage) {
+            // setTag added damage tag even the given tag is null.
+            stack.removeTagKey("Damage");
+        }
+        return stack;
+    }
+
     private static ItemStack addEnchantments(ItemStack stack, List<EnchantmentInstance> enchantments) {
         ItemStack toEnchantment = stack.copy();
         enchantments.forEach(d -> toEnchantment.enchant(d.enchantment, d.level));
@@ -100,15 +102,28 @@ public class EnchantmentIngredient extends AbstractIngredient {
     }
 
     @Override
-    public IIngredientSerializer<? extends Ingredient> getSerializer() {
+    public IIngredientSerializer<? extends Ingredient> serializer() {
         return Serializer.INSTANCE;
     }
 
     public static class Serializer implements IIngredientSerializer<EnchantmentIngredient> {
         public static final Serializer INSTANCE = new Serializer();
+        private static final Codec<EnchantmentInstance> ENCHANTMENT_INSTANCE_CODEC = RecordCodecBuilder.create(instance ->
+            instance.group(
+                ForgeRegistries.ENCHANTMENTS.getCodec().fieldOf("id").forGetter(i -> i.enchantment),
+                Codec.INT.fieldOf("level").forGetter(i -> i.level)
+            ).apply(instance, EnchantmentInstance::new)
+        );
+        public static final Codec<EnchantmentIngredient> CODEC = RecordCodecBuilder.create(instance ->
+            instance.group(
+                ItemStack.CODEC.fieldOf("stack").forGetter(i -> i.stackForSerialization()),
+                ENCHANTMENT_INSTANCE_CODEC.listOf().optionalFieldOf("enchantments", List.of()).forGetter(i -> i.enchantments),
+                Codec.BOOL.optionalFieldOf("checkDamage").xmap(o -> o.orElse(false), Optional::of).forGetter(i -> i.checkDamage),
+                Codec.BOOL.optionalFieldOf("checkOtherTags").xmap(o -> o.orElse(false), Optional::of).forGetter(i -> i.checkOtherTags)
+            ).apply(instance, EnchantmentIngredient::new));
 
         @Override
-        public EnchantmentIngredient parse(FriendlyByteBuf buffer) {
+        public EnchantmentIngredient read(FriendlyByteBuf buffer) {
             ItemStack stack = buffer.readItem();
             int size = buffer.readVarInt();
             List<EnchantmentInstance> data = IntStream.range(0, size)
@@ -122,25 +137,9 @@ public class EnchantmentIngredient extends AbstractIngredient {
             return new EnchantmentIngredient(stack, data, checkDamage, checkOtherTags);
         }
 
-        @Override
-        public EnchantmentIngredient parse(JsonObject json) {
-            ItemStack stack = CraftingHelper.getItemStack(json, true);
-            boolean checkDamage = GsonHelper.getAsBoolean(json, "checkDamage", false);
-            boolean checkOtherTags = GsonHelper.getAsBoolean(json, "checkOtherTags", false);
-            List<EnchantmentInstance> data;
-            if (json.has("enchantments")) {
-                JsonArray enchantmentArray = json.getAsJsonArray("enchantments");
-                data = StreamSupport.stream(enchantmentArray.spliterator(), false)
-                    .map(JsonElement::getAsJsonObject)
-                    .map(o -> {
-                        Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(GsonHelper.getAsString(o, "id")));
-                        int level = GsonHelper.getAsInt(o, "level", 1);
-                        return new EnchantmentInstance(Objects.requireNonNull(enchantment), level);
-                    }).collect(Collectors.toList());
-            } else {
-                data = Collections.emptyList();
-            }
-            return new EnchantmentIngredient(stack, data, checkDamage, checkOtherTags);
+        @VisibleForTesting
+        EnchantmentIngredient parse(JsonObject json) {
+            return CODEC.decode(JsonOps.INSTANCE, json).map(Pair::getFirst).get().orThrow();
         }
 
         @Override
@@ -155,30 +154,9 @@ public class EnchantmentIngredient extends AbstractIngredient {
             buffer.writeBoolean(ingredient.checkOtherTags);
         }
 
-        @SuppressWarnings("ConstantConditions")
-        public void write(JsonObject json, EnchantmentIngredient ingredient) {
-            json.addProperty("type", CraftingHelper.getID(Serializer.INSTANCE).toString());
-            json.addProperty("item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(ingredient.stack.getItem())).toString());
-            json.addProperty("count", ingredient.stack.getCount());
-            json.addProperty("checkDamage", ingredient.checkDamage);
-            json.addProperty("checkOtherTags", ingredient.checkOtherTags);
-            if (ingredient.withoutEnchantment != null) {
-                JsonElement element = Dynamic.convert(NbtOps.INSTANCE, JsonOps.INSTANCE, ingredient.withoutEnchantment);
-                json.add("nbt", element);
-            }
-            JsonArray enchantmentArray = ingredient.enchantments.stream().reduce(new JsonArray(), (jsonElements, enchantmentData) -> {
-                JsonObject object = new JsonObject();
-                object.addProperty("id", Objects.requireNonNull(ForgeRegistries.ENCHANTMENTS.getKey(enchantmentData.enchantment)).toString());
-                object.addProperty("level", enchantmentData.level);
-                jsonElements.add(object);
-                return jsonElements;
-            }, (jsonElements, jsonElements2) -> {
-                jsonElements.addAll(jsonElements2);
-                return jsonElements;
-            });
-            if (!enchantmentArray.isEmpty()) {
-                json.add("enchantments", enchantmentArray);
-            }
+        @Override
+        public Codec<? extends EnchantmentIngredient> codec() {
+            return CODEC;
         }
     }
-}*/
+}

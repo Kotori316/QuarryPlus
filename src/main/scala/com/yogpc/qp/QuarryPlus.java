@@ -4,6 +4,7 @@ import com.electronwill.nightconfig.core.CommentedConfig;
 import com.mojang.serialization.Codec;
 import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.machines.workbench.EnableCondition;
+import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
 import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
 import com.yogpc.qp.packet.PacketHandler;
@@ -23,6 +24,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.minecraftforge.common.crafting.ingredients.IIngredientSerializer;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -98,6 +100,7 @@ public class QuarryPlus {
             event.register(Registries.CREATIVE_MODE_TAB, Register::registerCreativeTab);
             event.register(Registries.COMMAND_ARGUMENT_TYPE, Register::registerArgument);
             event.register(ForgeRegistries.Keys.CONDITION_SERIALIZERS, Register::registerCondition);
+            event.register(ForgeRegistries.Keys.INGREDIENT_SERIALIZERS, Register::registerIngredient);
         }
 
         public static void registerBlocks(RegisterEvent.RegisterHelper<Block> blockRegisterHelper) {
@@ -122,12 +125,15 @@ public class QuarryPlus {
 
         public static void registerRecipe(RegisterEvent.RegisterHelper<RecipeSerializer<?>> helper) {
             helper.register(WorkbenchRecipe.recipeLocation, WorkbenchRecipe.SERIALIZER);
-            // CraftingHelper.register(new ResourceLocation(modID, EnchantmentIngredient.NAME), EnchantmentIngredient.Serializer.INSTANCE);
         }
 
         public static void registerCondition(RegisterEvent.RegisterHelper<Codec<? extends ICondition>> helper) {
             helper.register(EnableCondition.NAME, EnableCondition.CODEC);
             helper.register(QuarryDebugCondition.NAME, QuarryDebugCondition.CODEC);
+        }
+
+        public static void registerIngredient(RegisterEvent.RegisterHelper<IIngredientSerializer<?>> helper) {
+            helper.register(new ResourceLocation(modID, EnchantmentIngredient.NAME), EnchantmentIngredient.Serializer.INSTANCE);
         }
 
         public static void registerRecipeType(RegisterEvent.RegisterHelper<RecipeType<?>> helper) {

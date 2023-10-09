@@ -18,10 +18,7 @@ public final class QuarryDebugCondition implements ICondition {
         return !FMLEnvironment.production;
     }
 
-    public static final Codec<QuarryDebugCondition> CODEC = Codec.EMPTY.codec().comapFlatMap(
-        v -> DataResult.success(new QuarryDebugCondition()),
-        v -> Unit.INSTANCE
-    );
+    public static final Codec<QuarryDebugCondition> CODEC = Codec.unit(QuarryDebugCondition::new).stable();
 
     @Override
     public Codec<? extends ICondition> codec() {

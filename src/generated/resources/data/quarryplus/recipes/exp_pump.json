@@ -22,8 +22,15 @@
     },
     [
       {
+        "type": "forge:nbt",
         "count": 128,
-        "item": "minecraft:potion"
+        "stack": {
+          "Count": 1,
+          "id": "minecraft:potion",
+          "tag": {
+            "Potion": "minecraft:water"
+          }
+        }
       },
       {
         "count": 1,
