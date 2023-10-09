@@ -20,7 +20,6 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.gametest.GameTestDontPrefix;
 import net.minecraftforge.gametest.GameTestHolder;
 import org.junit.platform.commons.function.Try;
 import org.junit.platform.commons.support.ReflectionSupport;
@@ -33,7 +32,6 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 @GameTestHolder(QuarryPlus.modID)
-@GameTestDontPrefix
 public final class LoadRecipeTest {
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void accessTag(GameTestHelper helper) {

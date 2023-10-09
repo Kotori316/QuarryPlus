@@ -20,7 +20,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.gametest.GameTestDontPrefix;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -33,7 +32,6 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 @GameTestHolder(QuarryPlus.modID)
-@GameTestDontPrefix
 public final class DropTest {
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void existence(GameTestHelper helper) {
