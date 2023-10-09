@@ -1,12 +1,10 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "conditions": [
-    {
-      "type": "quarryplus:machine_enabled",
-      "value": "remove_bedrock_module"
-    }
-  ],
   "energy": 640000.0,
+  "forge:condition": {
+    "type": "quarryplus:machine_enabled",
+    "value": "remove_bedrock_module"
+  },
   "ingredients": [
     {
       "count": 32,
@@ -18,6 +16,8 @@
     },
     {
       "type": "quarryplus:enchantment_ingredient",
+      "checkDamage": false,
+      "checkOtherTags": false,
       "count": 1,
       "enchantments": [
         {

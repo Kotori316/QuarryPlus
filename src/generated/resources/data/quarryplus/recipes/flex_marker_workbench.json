@@ -1,12 +1,10 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "conditions": [
-    {
-      "type": "quarryplus:machine_enabled",
-      "value": "flex_marker"
-    }
-  ],
   "energy": 20000.0,
+  "forge:condition": {
+    "type": "quarryplus:machine_enabled",
+    "value": "flex_marker"
+  },
   "ingredients": [
     {
       "count": 7,

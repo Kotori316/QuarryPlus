@@ -2,13 +2,13 @@ package com.yogpc.qp.data;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
-import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.common.crafting.conditions.AndCondition;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,9 +31,13 @@ record RecipeSerializeHelper(
     public JsonElement build() {
         var o = recipe.serializeRecipe();
         if (!conditions.isEmpty()) {
-            o.add("conditions", conditions.stream().map(c ->
-                ICondition.CODEC.encodeStart(JsonOps.INSTANCE, c).get().orThrow()
-            ).collect(MapMulti.jsonArrayCollector()));
+            ICondition toWrite;
+            if (conditions.size() == 1) {
+                toWrite = conditions.get(0);
+            } else {
+                toWrite = new AndCondition(conditions);
+            }
+            o.add(ICondition.DEFAULT_FIELD, ICondition.CODEC.encodeStart(JsonOps.INSTANCE, toWrite).get().orThrow());
         }
         return o;
     }

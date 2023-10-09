@@ -10,9 +10,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraftforge.common.crafting.conditions.ConditionCodec;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
@@ -87,8 +87,9 @@ public class WorkbenchRecipeSerializer implements RecipeSerializer<WorkbenchReci
         @Override
         public <T> DataResult<Pair<WorkbenchRecipe, T>> decode(DynamicOps<T> ops, T input) {
             try {
+                ICondition.IContext context = ConditionCodec.getContext(ops);
                 JsonObject jsonObject = ops.convertTo(JsonOps.INSTANCE, input).getAsJsonObject();
-                return DataResult.success(Pair.of(WorkbenchRecipe.SERIALIZER.fromJson(jsonObject, ICondition.IContext.EMPTY), ops.empty()));
+                return DataResult.success(Pair.of(WorkbenchRecipe.SERIALIZER.fromJson(jsonObject, context), ops.empty()));
             } catch (RuntimeException e) {
                 return DataResult.error(e::getMessage);
             }
