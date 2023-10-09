@@ -1,3 +1,10 @@
+## Version LATEST for 1.20.2
+
+* Update for 1.20.2
+  * Change resource pack format following changes in forge
+    * ItemStack representation
+    * Condition provided by forge
+
 ## Version LATEST for 1.20.1
 
 * Add Faster Work Module
