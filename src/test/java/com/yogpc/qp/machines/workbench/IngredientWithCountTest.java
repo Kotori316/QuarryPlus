@@ -109,9 +109,14 @@ class IngredientWithCountTest {
             var json = GSON.fromJson("""
                 {
                   "type": "forge:nbt",
-                  "item": "minecraft:potion",
                   "count": 128,
-                  "nbt": "{Potion:\\"minecraft:water\\"}"
+                  "stack": {
+                    "id": "minecraft:potion",
+                    "Count": 128,
+                    "tag": {
+                      "Potion": "minecraft:water"
+                    }
+                  }
                 }
                 """, JsonObject.class);
             waterBottleFromJson = new IngredientWithCount(json);
@@ -150,8 +155,7 @@ class IngredientWithCountTest {
         @Test
         void nbtJsonItemIngredientInstance() {
             var i = waterBottleFromJson.ingredient();
-            // TODO forge ingredient
-            // assertTrue(i instanceof StrictNBTIngredient, "Actual Class: " + i.getClass() + " String: " + i);
+            assertTrue(i instanceof StrictNBTIngredient, "Actual Class: " + i.getClass() + " String: " + i);
         }
 
         @Test

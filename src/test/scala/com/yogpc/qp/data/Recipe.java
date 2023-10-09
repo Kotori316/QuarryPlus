@@ -35,6 +35,8 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.NotCondition;
@@ -152,8 +154,7 @@ class Recipe extends QuarryDataProvider {
             new ItemStack(Holder.ITEM_BEDROCK_MODULE), 640000 * PowerTile.ONE_FE, true, List.of(
             makeList(Tags.Items.OBSIDIAN, 32),
             makeList(Tags.Items.STORAGE_BLOCKS_DIAMOND, 16),
-            // new IngredientList(new IngredientWithCount(new EnchantmentIngredient(diamond_pickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false, false), 1)) // TODO
-            new IngredientList(new IngredientWithCount(Ingredient.of(diamond_pickaxe), 1))
+            new IngredientList(new IngredientWithCount(new EnchantmentIngredient(diamond_pickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false, false), 1))
         )), location(BedrockModuleItem.NAME))).addCondition(new EnableCondition(BedrockModuleItem.NAME)));
         // Fuel Module
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(

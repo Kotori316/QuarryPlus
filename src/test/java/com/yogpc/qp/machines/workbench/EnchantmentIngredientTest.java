@@ -1,8 +1,4 @@
 package com.yogpc.qp.machines.workbench;
-/*
-import java.util.List;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,11 +19,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(QuarryPlusTest.class)
 class EnchantmentIngredientTest {
@@ -47,8 +43,8 @@ class EnchantmentIngredientTest {
     @Test
     void instance() {
         var ei = new EnchantmentIngredient(diamondPickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false, true);
-        assertTrue(ei.toJson().isJsonObject());
-        assertNotEquals(0, ei.toJson().size());
+        assertTrue(ei.toJson(true).isJsonObject());
+        assertNotEquals(0, ei.toJson(true).getAsJsonObject().size());
     }
 
     @Nested
@@ -60,8 +56,10 @@ class EnchantmentIngredientTest {
             var json = GSON.fromJson("""
                 {
                   "type": "quarryplus:enchantment_ingredient",
-                  "item": "minecraft:diamond_pickaxe",
-                  "count": 1,
+                  "stack": {
+                    "id": "minecraft:diamond_pickaxe",
+                    "Count": 1
+                  },
                   "checkDamage": false,
                   "checkOtherTags": true,
                   "enchantments": [
@@ -72,10 +70,10 @@ class EnchantmentIngredientTest {
                   ]
                 }
                 """, JsonObject.class);
-            var loaded = EnchantmentIngredient.Serializer.INSTANCE.parse(json);
+            var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(diamondPickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false, true);
-            assertEquals(json, loaded.toJson());
-            assertEquals(expect.toJson(), loaded.toJson());
+            assertEquals(json, loaded.toJson(true));
+            assertEquals(expect.toJson(true), loaded.toJson(true));
         }
 
         @Test
@@ -85,8 +83,10 @@ class EnchantmentIngredientTest {
             var json = GSON.fromJson("""
                 {
                   "type": "quarryplus:enchantment_ingredient",
-                  "item": "minecraft:diamond_pickaxe",
-                  "count": 1,
+                  "stack": {
+                    "id": "minecraft:diamond_pickaxe",
+                    "Count": 1
+                  },
                   "checkDamage": false,
                   "checkOtherTags": false,
                   "enchantments": [
@@ -97,10 +97,10 @@ class EnchantmentIngredientTest {
                   ]
                 }
                 """, JsonObject.class);
-            var loaded = EnchantmentIngredient.Serializer.INSTANCE.parse(json);
+            var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(diamondPickaxe, List.of(new EnchantmentInstance(Enchantments.BLOCK_EFFICIENCY, 4)), false, false);
-            assertEquals(json, loaded.toJson());
-            assertEquals(expect.toJson(), loaded.toJson());
+            assertEquals(json, loaded.toJson(true));
+            assertEquals(expect.toJson(true), loaded.toJson(true));
         }
 
         @Test
@@ -110,8 +110,10 @@ class EnchantmentIngredientTest {
             var json = GSON.fromJson("""
                 {
                   "type": "quarryplus:enchantment_ingredient",
-                  "item": "minecraft:diamond_pickaxe",
-                  "count": 1,
+                  "stack": {
+                    "id": "minecraft:diamond_pickaxe",
+                    "Count": 1
+                  },
                   "checkDamage": false,
                   "checkOtherTags": true,
                   "enchantments": [
@@ -126,11 +128,11 @@ class EnchantmentIngredientTest {
                   ]
                 }
                 """, JsonObject.class);
-            var loaded = EnchantmentIngredient.Serializer.INSTANCE.parse(json);
+            var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(diamondPickaxe, List.of(new EnchantmentInstance(Enchantments.BLOCK_EFFICIENCY, 4),
                 new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false, true);
-            assertEquals(json, loaded.toJson());
-            assertEquals(expect.toJson(), loaded.toJson());
+            assertEquals(json, loaded.toJson(true));
+            assertEquals(expect.toJson(true), loaded.toJson(true));
         }
 
         @Test
@@ -140,8 +142,10 @@ class EnchantmentIngredientTest {
             var json = GSON.fromJson("""
                 {
                   "type": "quarryplus:enchantment_ingredient",
-                  "item": "minecraft:diamond_pickaxe",
-                  "count": 1,
+                  "stack": {
+                    "id": "minecraft:diamond_pickaxe",
+                    "Count": 1
+                  },
                   "checkDamage": false,
                   "checkOtherTags": true,
                   "enchantments": [
@@ -156,11 +160,11 @@ class EnchantmentIngredientTest {
                   ]
                 }
                 """, JsonObject.class);
-            var loaded = EnchantmentIngredient.Serializer.INSTANCE.parse(json);
+            var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(diamondPickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1),
                 new EnchantmentInstance(Enchantments.BLOCK_EFFICIENCY, 4)), false, true);
-            assertEquals(json, loaded.toJson());
-            assertEquals(expect.toJson(), loaded.toJson());
+            assertEquals(json, loaded.toJson(true));
+            assertEquals(expect.toJson(true), loaded.toJson(true));
         }
 
         @Test
@@ -170,8 +174,10 @@ class EnchantmentIngredientTest {
             var json = GSON.fromJson("""
                 {
                   "type": "quarryplus:enchantment_ingredient",
-                  "item": "minecraft:stone",
-                  "count": 1,
+                  "stack": {
+                    "id": "minecraft:stone",
+                    "Count": 1
+                  },
                   "checkDamage": false,
                   "checkOtherTags": true,
                   "enchantments": [
@@ -182,10 +188,10 @@ class EnchantmentIngredientTest {
                   ]
                 }
                 """, JsonObject.class);
-            var loaded = EnchantmentIngredient.Serializer.INSTANCE.parse(json);
+            var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(new ItemStack(Items.STONE), List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false, true);
-            assertEquals(json, loaded.toJson());
-            assertEquals(expect.toJson(), loaded.toJson());
+            assertEquals(json, loaded.toJson(true));
+            assertEquals(expect.toJson(true), loaded.toJson(true));
         }
 
         @Test
@@ -195,8 +201,10 @@ class EnchantmentIngredientTest {
             var json = GSON.fromJson("""
                 {
                   "type": "quarryplus:enchantment_ingredient",
-                  "item": "minecraft:enchanted_book",
-                  "count": 1,
+                  "stack": {
+                    "id": "minecraft:enchanted_book",
+                    "Count": 1
+                  },
                   "checkDamage": false,
                   "checkOtherTags": true,
                   "enchantments": [
@@ -207,10 +215,10 @@ class EnchantmentIngredientTest {
                   ]
                 }
                 """, JsonObject.class);
-            var loaded = EnchantmentIngredient.Serializer.INSTANCE.parse(json);
+            var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(new ItemStack(Items.ENCHANTED_BOOK), List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false, true);
-            assertEquals(json, loaded.toJson());
-            assertEquals(expect.toJson(), loaded.toJson());
+            assertEquals(json, loaded.toJson(true));
+            assertEquals(expect.toJson(true), loaded.toJson(true));
         }
 
         @Test
@@ -220,10 +228,12 @@ class EnchantmentIngredientTest {
             var json = GSON.fromJson("""
                 {
                   "type": "quarryplus:enchantment_ingredient",
-                  "item": "minecraft:diamond_pickaxe",
-                  "count": 1,
-                  "nbt": {
-                    "Damage": 0
+                  "stack": {
+                    "id": "minecraft:diamond_pickaxe",
+                    "Count": 1,
+                    "tag": {
+                      "Damage": 0
+                    }
                   },
                   "checkDamage": true,
                   "checkOtherTags": true,
@@ -234,10 +244,10 @@ class EnchantmentIngredientTest {
                     }
                   ]
                 }""", JsonObject.class);
-            var loaded = EnchantmentIngredient.Serializer.INSTANCE.parse(json);
+            var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(new ItemStack(Items.DIAMOND_PICKAXE), List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), true, true);
-            assertEquals(json, loaded.toJson());
-            assertEquals(expect.toJson(), loaded.toJson());
+            assertEquals(json, loaded.toJson(true));
+            assertEquals(expect.toJson(true), loaded.toJson(true));
         }
 
         @Test
@@ -247,10 +257,12 @@ class EnchantmentIngredientTest {
             var json = GSON.fromJson("""
                 {
                   "type": "quarryplus:enchantment_ingredient",
-                  "item": "minecraft:diamond_pickaxe",
-                  "count": 1,
-                  "nbt": {
-                    "Damage": 0
+                  "stack": {
+                    "id": "minecraft:diamond_pickaxe",
+                    "Count": 1,
+                    "tag": {
+                      "Damage": 0
+                    }
                   },
                   "checkDamage": true,
                   "checkOtherTags": false,
@@ -261,10 +273,10 @@ class EnchantmentIngredientTest {
                     }
                   ]
                 }""", JsonObject.class);
-            var loaded = EnchantmentIngredient.Serializer.INSTANCE.parse(json);
+            var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(new ItemStack(Items.DIAMOND_PICKAXE), List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), true, false);
-            assertEquals(json, loaded.toJson());
-            assertEquals(expect.toJson(), loaded.toJson());
+            assertEquals(json, loaded.toJson(true));
+            assertEquals(expect.toJson(true), loaded.toJson(true));
         }
     }
 
@@ -600,4 +612,4 @@ class EnchantmentIngredientTest {
         stack.setDamageValue(damage);
         return stack;
     }
-}*/
+}

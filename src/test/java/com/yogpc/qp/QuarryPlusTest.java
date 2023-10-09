@@ -11,7 +11,7 @@ public final class QuarryPlusTest implements BeforeAllCallback {
 
     @Override
     public void beforeAll(ExtensionContext context) {
-        MCTestInitializer.setUp(QuarryPlus.modID, QuarryPlusTest::setup);
+        MCTestInitializer.setUp(QuarryPlus.modID, QuarryPlusTest::setup, QuarryPlus.Register::registerAll);
     }
 
     static void setup() {
