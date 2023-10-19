@@ -41,6 +41,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class TileWorkbench extends PowerTile implements Container, MenuProvider, CheckerLog {
@@ -227,7 +228,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
     private void updateRecipeOutputs() {
         if (level != null && !level.isClientSide) {
             updateRecipeList(level.registryAccess());
-            if (!recipesList.contains(currentRecipe)) {
+            if (recipesList.stream().map(RecipeHolder::value).noneMatch(Predicate.isEqual(this.currentRecipe))) {
                 if (currentRecipe.hasContent()) {
                     setCurrentRecipe(DummyRecipe.LOCATION);
                     //Finish work
@@ -281,6 +282,10 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
 
     public ResourceLocation getRecipeId() {
         return this.currentRecipeId;
+    }
+
+    public int getRecipeIndex() {
+        return this.recipesList.indexOf(new RecipeHolder<>(currentRecipeId, currentRecipe));
     }
 
     public int getProgressScaled(int scale) {

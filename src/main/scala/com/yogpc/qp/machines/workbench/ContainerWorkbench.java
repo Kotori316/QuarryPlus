@@ -59,7 +59,7 @@ public class ContainerWorkbench extends AbstractContainerMenu {
         progress.set(this.tile.getProgressScaled(160));
         isWorking.set(this.tile.getRecipe().hasContent() ? 1 : 0);
         workContinue.set(this.tile.workContinue ? 1 : 0);
-        recipeIndex.set(this.tile.recipesList.indexOf(this.tile.getRecipe()));
+        recipeIndex.set(this.tile.getRecipeIndex());
     }
 
     @Override
