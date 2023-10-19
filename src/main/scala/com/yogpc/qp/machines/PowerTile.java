@@ -105,7 +105,7 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
      */
     public final long addEnergy(long amount, boolean simulate) {
         long accepted = Math.min(Math.min(maxEnergy - energy, amount), getMaxReceive());
-        if (!simulate && accepted != 0) {
+        if (!simulate && accepted >= 0) {
             energy += accepted;
             energyCounter.getEnergy(this.timeProvider, accepted);
             setChanged();
