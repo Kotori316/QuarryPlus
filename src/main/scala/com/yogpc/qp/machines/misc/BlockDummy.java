@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines.misc;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Direction8;
@@ -14,6 +10,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AbstractGlassBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public class BlockDummy extends AbstractGlassBlock {
     public static final String NAME = "dummy";
@@ -54,10 +53,11 @@ public class BlockDummy extends AbstractGlassBlock {
             chains.add(first);
             var nextCheck = new ArrayList<BlockPos>();
             nextCheck.add(first);
+            rootLoop:
             while (!nextCheck.isEmpty()) {
-                var list = List.copyOf(nextCheck);
+                var copied = nextCheck.toArray(new BlockPos[0]);
                 nextCheck.clear();
-                for (var pos : list) {
+                for (var pos : copied) {
                     for (var dir : Direction8.DIRECTIONS) {
                         var nPos = pos.offset(dir.vec());
                         var nBlock = world.getBlockState(nPos);
@@ -65,6 +65,9 @@ public class BlockDummy extends AbstractGlassBlock {
                             if (chains.add(nPos))
                                 nextCheck.add(nPos);
                         }
+                    }
+                    if (chains.size() > Short.MAX_VALUE) {
+                        break rootLoop;
                     }
                 }
             }
