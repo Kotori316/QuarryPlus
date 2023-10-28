@@ -1,3 +1,7 @@
+## Version 18.21
+
+* Limit the number of chaining of Dummy Block. #278
+
 ## Version 18.20
 
 * Add RepeatTickModuleItem
