@@ -27,7 +27,7 @@ plugins {
     id "com.github.breadmoirai.github-release" version "2.2.12"
     id "com.matthewprenger.cursegradle" version "1.4.0"
     id("com.modrinth.minotaur").version("2.+")
-    id("com.kotori316.plugin.cf").version("1.+")
+    id("com.kotori316.plugin.cf").version("1.6")
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
@@ -513,4 +513,5 @@ tasks.register("registerVersion", CallVersionFunctionTask.class) {
     platform = "forge"
     modName = "quarryplus"
     changelog = "Version ${project.getVersion()}"
+    homepage = "https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner"
 }
