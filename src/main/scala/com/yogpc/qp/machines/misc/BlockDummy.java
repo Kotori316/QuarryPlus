@@ -13,7 +13,6 @@ import net.minecraft.world.level.material.MapColor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 public class BlockDummy extends AbstractGlassBlock {
     public static final String NAME = "dummy";
@@ -54,10 +53,11 @@ public class BlockDummy extends AbstractGlassBlock {
             chains.add(first);
             var nextCheck = new ArrayList<BlockPos>();
             nextCheck.add(first);
+            rootLoop:
             while (!nextCheck.isEmpty()) {
-                var list = List.copyOf(nextCheck);
+                var copied = nextCheck.toArray(new BlockPos[0]);
                 nextCheck.clear();
-                for (var pos : list) {
+                for (var pos : copied) {
                     for (var dir : Direction8.DIRECTIONS) {
                         var nPos = pos.offset(dir.vec());
                         var nBlock = world.getBlockState(nPos);
@@ -65,6 +65,9 @@ public class BlockDummy extends AbstractGlassBlock {
                             if (chains.add(nPos))
                                 nextCheck.add(nPos);
                         }
+                    }
+                    if (chains.size() > Short.MAX_VALUE) {
+                        break rootLoop;
                     }
                 }
             }

@@ -23,7 +23,7 @@ plugins {
     id("com.github.breadmoirai.github-release") version("2.4.1")
     id("com.matthewprenger.cursegradle") version("1.4.0")
     id("com.modrinth.minotaur").version("2.+")
-    id("com.kotori316.plugin.cf").version("1.+")
+    id("com.kotori316.plugin.cf").version("1.6")
 }
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
@@ -567,4 +567,5 @@ tasks.register("registerVersion", CallVersionFunctionTask.class) {
     platform = "forge"
     modName = "quarryplus"
     changelog = getShortChangelog(false)
+    homepage = "https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner"
 }
