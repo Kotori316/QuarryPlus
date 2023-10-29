@@ -1,25 +1,7 @@
 package com.yogpc.qp.machines.mini_quarry;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
-import com.yogpc.qp.machines.Area;
-import com.yogpc.qp.machines.BreakResult;
-import com.yogpc.qp.machines.CheckerLog;
-import com.yogpc.qp.machines.EnchantmentLevel;
-import com.yogpc.qp.machines.InvUtils;
-import com.yogpc.qp.machines.PowerConfig;
-import com.yogpc.qp.machines.PowerManager;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.QPBlock;
-import com.yogpc.qp.machines.QuarryFakePlayer;
-import com.yogpc.qp.machines.QuarryMarker;
-import com.yogpc.qp.machines.TraceQuarryWork;
+import com.yogpc.qp.machines.*;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -47,6 +29,13 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public final class MiniQuarryTile extends PowerTile implements CheckerLog,
     EnchantmentLevel.HasEnchantments, MenuProvider, PowerConfig.Provider {
     private List<EnchantmentLevel> enchantments;
@@ -71,7 +60,8 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
         // Interval check
         if (level.getGameTime() % interval(efficiencyLevel()) != 0 || targetIterator == null) return;
         // Energy consumption
-        if (!useEnergy(PowerManager.getMiniQuarryEnergy(this), Reason.MINI_QUARRY, false)) return;
+        long consumedEnergy = PowerManager.getMiniQuarryEnergy(this);
+        if (!useEnergy(consumedEnergy, Reason.MINI_QUARRY, false)) return;
         // Break block
         while (targetIterator.hasNext()) {
             var level = getTargetWorld();
@@ -91,7 +81,9 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
 
             if (state.getDestroySpeed(level, pos) < 0) {
                 // Consume additional energy if quarry tries to remove bedrock.
-                useEnergy(PowerManager.getBreakEnergy(-1, this), Reason.BREAK_BLOCK, true);
+                var energy = PowerManager.getBreakEnergy(-1, this);
+                useEnergy(energy, Reason.BREAK_BLOCK, true);
+                consumedEnergy += energy;
             }
             var tools = container.tools();
             var tool = tools.stream().filter(t ->
@@ -100,10 +92,11 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
                 fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, t);
                 return ForgeHooks.isCorrectToolForDrops(state, fakePlayer);
             }).findFirst());
+            final long c = consumedEnergy;
             tool.ifPresent(t -> {
                 fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, t);
                 var drops = InvUtils.getBlockDrops(state, level, pos, level.getBlockEntity(pos), fakePlayer, t);
-                TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), pos, state, drops, 0);
+                TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), pos, state, drops, 0, c);
                 drops.forEach(this::insertOrDropItem);
                 var damage = t.isCorrectToolForDrops(state) ? 1 : 4;
                 for (int i = 0; i < damage; i++) {
@@ -126,7 +119,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
             return true;
         }
         return state.getDestroySpeed(level, pos) >= 0 &&
-               denyList.stream().noneMatch(t -> t.test(state, level, pos));
+            denyList.stream().noneMatch(t -> t.test(state, level, pos));
     }
 
     ServerLevel getTargetWorld() {

@@ -251,7 +251,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         }
         // Get drops
         var drops = InvUtils.getBlockDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), fakePlayer, pickaxe);
-        TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), targetPos, state, drops, breakEvent.getExpToDrop());
+        TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), targetPos, state, drops, breakEvent.getExpToDrop(), requiredEnergy);
         drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
         targetWorld.setBlock(targetPos, getReplacementState(), Block.UPDATE_ALL);
         // Get experience

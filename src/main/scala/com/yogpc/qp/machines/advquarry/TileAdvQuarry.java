@@ -317,13 +317,14 @@ public class TileAdvQuarry extends PowerTile implements
 
         // Break block
         var hardness = state.getDestroySpeed(targetWorld, targetPos);
-        if (requireEnergy && !useEnergy(PowerManager.getBreakEnergy(hardness, this), Reason.BREAK_BLOCK, false)) {
+        var consumedEnergy = PowerManager.getBreakEnergy(hardness, this);
+        if (requireEnergy && !useEnergy(consumedEnergy, Reason.BREAK_BLOCK, false)) {
             TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), targetPos, state, BreakResult.NOT_ENOUGH_ENERGY);
             return BreakResult.NOT_ENOUGH_ENERGY;
         }
         // Get drops
         var drops = InvUtils.getBlockDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), fakePlayer, pickaxe);
-        TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), targetPos, state, drops, breakEvent.getExpToDrop());
+        TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), targetPos, state, drops, breakEvent.getExpToDrop(), consumedEnergy);
         drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
         targetWorld.setBlock(targetPos, getReplacementState(), Block.UPDATE_ALL);
         // Get experience
@@ -419,7 +420,7 @@ public class TileAdvQuarry extends PowerTile implements
         {
             var headPos = toBreak.stream().map(Pair::getKey).findFirst().orElse(mutableBlockPos);
             var states = toBreak.stream().map(Pair::getValue).toList();
-            TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), headPos, states, drops, exp.get());
+            TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), headPos, states, drops, exp.get(), requiredEnergy);
         }
         this.storage.addAllItems(drops);
         // Remove blocks
