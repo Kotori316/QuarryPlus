@@ -1,5 +1,7 @@
 package com.yogpc.qp.machines;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public final class TraceQuarryWork {
@@ -111,4 +114,25 @@ public final class TraceQuarryWork {
         return "[%s(%d,%d,%d)]".formatted(tile.getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ());
     }
 
+    // No meaning for value, just for existence check
+    private static final Cache<String, String> knownKeys = CacheBuilder.newBuilder()
+        .expireAfterWrite(Duration.ofMinutes(10))
+        .build();
+
+    /**
+     * Log given message once in a minute.
+     */
+    public static void logOnceIn10Minutes(String key, Supplier<String> message, @Nullable Supplier<? extends Throwable> error) {
+        if (knownKeys.getIfPresent(key) == null) {
+            knownKeys.put(key, key);
+            var msg = "[" + key + "] " + message.get();
+            if (error == null) {
+                QuarryPlus.LOGGER.warn(msg);
+                LOGGER.warn(WARNING_MARKER, msg);
+            } else {
+                QuarryPlus.LOGGER.error(msg, error.get());
+                LOGGER.error(WARNING_MARKER, msg, error.get());
+            }
+        }
+    }
 }

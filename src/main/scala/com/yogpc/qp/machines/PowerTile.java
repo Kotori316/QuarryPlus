@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.LongSupplier;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.ic2.QuarryIC2Integration;
@@ -26,6 +22,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
+
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.LongSupplier;
 
 public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     public static final long ONE_FE = 1_000_000_000L;
@@ -122,8 +122,14 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
      * @return {@code true} if the energy is consumed. When {@code false}, the machine doesn't have enough energy to work.
      */
     public final boolean useEnergy(long amount, Reason reason, boolean force) {
-        if (amount > maxEnergy && QuarryPlus.config.debug())
-            QuarryPlus.LOGGER.warn("{} required {} FE, which is over {}.", energyCounter.name, amount / ONE_FE, getMaxEnergyStored());
+        if (amount > maxEnergy) {
+            var pos = getBlockPos();
+            TraceQuarryWork.logOnceIn10Minutes(
+                "%s(%d, %d, %d)".formatted(getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ()),
+                () -> "required %d FE for %s, but maxEnergy is %d FE".formatted(amount / ONE_FE, reason, getMaxEnergyStored()),
+                null
+            );
+        }
         if (energy >= amount || force) {
             energy -= amount;
             energyCounter.useEnergy(this.timeProvider, amount, reason);
