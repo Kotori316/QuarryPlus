@@ -1,0 +1,22 @@
+{
+  "type": "quarryplus:workbench_recipe",
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "marker"
+    }
+  ],
+  "energy": 20000.0,
+  "ingredients": [
+    {
+      "count": 1,
+      "item": "quarryplus:flex_marker"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "item": "quarryplus:marker"
+  },
+  "showInJEI": true,
+  "subType": "default"
+}
