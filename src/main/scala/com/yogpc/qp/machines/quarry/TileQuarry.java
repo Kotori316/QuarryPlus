@@ -181,6 +181,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             if ((pre != QuarryState.MOVE_HEAD && pre != QuarryState.BREAK_BLOCK && pre != QuarryState.REMOVE_FLUID) || quarryState == QuarryState.FILLER) {
                 if (shouldLogQuarryWork()) {
                     QuarryPlus.LOGGER.debug(MARKER, "{}({}) State changed from {} to {}.", getClass().getSimpleName(), getBlockPos(), pre, quarryState);
+                    TraceQuarryWork.changeTarget(this, getBlockPos(), "State changed from %s to %s.".formatted(pre, quarryState));
                 }
             }
         }
