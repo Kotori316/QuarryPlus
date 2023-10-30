@@ -2,8 +2,10 @@ package com.yogpc.qp.machines;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.gson.GsonBuilder;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -134,5 +136,11 @@ public final class TraceQuarryWork {
                 LOGGER.error(WARNING_MARKER, msg, error.get());
             }
         }
+    }
+
+    public static void initialLog(MinecraftServer server) {
+        var gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+        var config = Map.of("common", QuarryPlus.config.getAll(), "server", QuarryPlus.serverConfig.getAll());
+        LOGGER.warn(MARKER, "Config {} {}", server.getMotd(), gson.toJson(config));
     }
 }
