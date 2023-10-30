@@ -101,18 +101,7 @@ public class Config {
 
         @VisibleForTesting
         Map<String, Object> getAll() {
-            return Stream.of(Common.class.getDeclaredFields())
-                .filter(f -> ForgeConfigSpec.ConfigValue.class.isAssignableFrom(f.getType()))
-                .map(f -> {
-                    try {
-                        var config = (ForgeConfigSpec.ConfigValue<?>) f.get(this);
-                        var value = config.get();
-                        return Map.entry(f.getName(), value);
-                    } catch (ReflectiveOperationException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            return getAllInClass(this);
         }
     }
 
@@ -309,5 +298,21 @@ public class Config {
             return enchantmentsMap.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get()));
         }
+    }
+
+    static <T> Map<String, Object> getAllInClass(T instance) {
+        return Stream.of(instance.getClass().getDeclaredFields())
+            .filter(f -> ForgeConfigSpec.ConfigValue.class.isAssignableFrom(f.getType()))
+            .map(f -> {
+                try {
+                    f.setAccessible(true);
+                    var config = (ForgeConfigSpec.ConfigValue<?>) f.get(instance);
+                    var value = config.get();
+                    return Map.entry(f.getName(), value);
+                } catch (ReflectiveOperationException e) {
+                    throw new RuntimeException(e);
+                }
+            })
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

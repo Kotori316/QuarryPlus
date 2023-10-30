@@ -4,8 +4,6 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class ClientConfig {
     public final ChunkDestroyerSetting chunkDestroyerSetting;
@@ -35,18 +33,7 @@ public final class ClientConfig {
 
         @VisibleForTesting
         Map<String, Object> getAll() {
-            return Stream.of(ChunkDestroyerSetting.class.getDeclaredFields())
-                .filter(f -> ForgeConfigSpec.ConfigValue.class.isAssignableFrom(f.getType()))
-                .map(f -> {
-                    try {
-                        var config = (ForgeConfigSpec.ConfigValue<?>) f.get(this);
-                        var value = config.get();
-                        return Map.entry(f.getName(), value);
-                    } catch (ReflectiveOperationException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            return Config.getAllInClass(this);
         }
     }
 }
