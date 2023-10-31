@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="warn" shutdownHook="disable">
     <filters>
-        <MarkerFilter marker="QUARRY_WARNING" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
-        <MarkerFilter marker="QUARRY_TRACE" onMatch="ACCEPT" onMismatch="DENY"/>
+        <!--<MarkerFilter marker="QUARRY_WARNING" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
+        <MarkerFilter marker="QUARRY_TRACE" onMatch="ACCEPT" onMismatch="DENY"/>-->
     </filters>
     <Appenders>
         <RollingRandomAccessFile name="DebugFile" fileName="logs/quarry-debug.log"
