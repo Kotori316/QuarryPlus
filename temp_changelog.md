@@ -3,6 +3,7 @@
 * Add Faster Work Module
 * Minor improvement in command
 * Limit the number of chaining of Dummy Block. #278
+* Improve logging of machine. #275
 
 ## Version for 1.20.1
 
