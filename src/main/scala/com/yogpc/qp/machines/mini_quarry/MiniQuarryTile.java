@@ -68,7 +68,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
             var pos = targetIterator.next();
             var state = level.getBlockState(pos);
             if (!canBreak(level, pos, state)) {
-                TraceQuarryWork.canBreakCheck(this, getBlockPos(), pos, state, "in deny or unbreakable");
+                TraceQuarryWork.canBreakCheck(this, getBlockPos(), pos, state, "In deny list or unbreakable");
                 continue; // The block is in deny list or unbreakable.
             }
 

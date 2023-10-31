@@ -39,7 +39,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.HasStorage,
-        EnchantmentLevel.HasEnchantments, ClientSync, ModuleInventory.HasModuleInventory, PowerConfig.Provider {
+    EnchantmentLevel.HasEnchantments, ClientSync, ModuleInventory.HasModuleInventory, PowerConfig.Provider {
     private static final Marker MARKER = MarkerManager.getMarker("TileQuarry");
     @Nullable
     public Target target;
@@ -81,7 +81,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         {
             var enchantments = new CompoundTag();
             this.enchantments.forEach(e ->
-                    enchantments.putInt(Objects.requireNonNull(e.enchantmentID(), "Invalid enchantment. " + e.enchantment()).toString(), e.level()));
+                enchantments.putInt(Objects.requireNonNull(e.enchantmentID(), "Invalid enchantment. " + e.enchantment()).toString(), e.level()));
             nbt.put("enchantments", enchantments);
         }
         nbt.putDouble("headX", headX);
@@ -101,10 +101,10 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         {
             var enchantments = nbt.getCompound("enchantments");
             setEnchantments(enchantments.getAllKeys().stream()
-                    .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, enchantments::getInt))
-                    .map(EnchantmentLevel::new)
-                    .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
-                    .toList());
+                .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, enchantments::getInt))
+                .map(EnchantmentLevel::new)
+                .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
+                .toList());
         }
         headX = nbt.getDouble("headX");
         headY = nbt.getDouble("headY");
@@ -173,7 +173,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             sync();
             if (level != null) {
                 level.setBlock(getBlockPos(), blockState.setValue(QPBlock.WORKING, quarryState.isWorking), Block.UPDATE_ALL);
-                if (!level.isClientSide && !quarryState.isWorking) {
+                if (!level.isClientSide && QuarryState.FINISHED == quarryState) {
                     logUsage();
                     TraceQuarryWork.finishWork(this, getBlockPos(), this.getEnergyStored());
                 }
@@ -181,7 +181,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             if ((pre != QuarryState.MOVE_HEAD && pre != QuarryState.BREAK_BLOCK && pre != QuarryState.REMOVE_FLUID) || quarryState == QuarryState.FILLER) {
                 if (shouldLogQuarryWork()) {
                     QuarryPlus.LOGGER.debug(MARKER, "{}({}) State changed from {} to {}.", getClass().getSimpleName(), getBlockPos(), pre, quarryState);
-                    TraceQuarryWork.changeTarget(this, getBlockPos(), "State changed from %s to %s.".formatted(pre, quarryState));
+                    TraceQuarryWork.changeState(this, getBlockPos(), pre.toString(), quarryState.toString());
                 }
             }
         }
@@ -214,16 +214,16 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         // Gather Drops
         if (targetPos.getX() % 3 == 0 && targetPos.getZ() % 3 == 0) {
             targetWorld.getEntitiesOfClass(ItemEntity.class, new AABB(targetPos).inflate(5), Predicate.not(i -> i.getItem().isEmpty()))
-                    .forEach(i -> {
-                        storage.addItem(i.getItem());
-                        i.kill();
-                    });
+                .forEach(i -> {
+                    storage.addItem(i.getItem());
+                    i.kill();
+                });
             getExpModule().ifPresent(e ->
-                    targetWorld.getEntitiesOfClass(ExperienceOrb.class, new AABB(targetPos).inflate(5), EntitySelector.ENTITY_STILL_ALIVE)
-                            .forEach(orb -> {
-                                e.addExp(orb.getValue());
-                                orb.kill();
-                            }));
+                targetWorld.getEntitiesOfClass(ExperienceOrb.class, new AABB(targetPos).inflate(5), EntitySelector.ENTITY_STILL_ALIVE)
+                    .forEach(orb -> {
+                        e.addExp(orb.getValue());
+                        orb.kill();
+                    }));
         }
         var pickaxe = getPickaxe();
         var fakePlayer = QuarryFakePlayer.get(targetWorld);
@@ -374,8 +374,8 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     void updateModules() {
         // Blocks
         Set<QuarryModule> blockModules = level != null
-                ? QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
-                : Collections.emptySet();
+            ? QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
+            : Collections.emptySet();
 
         // Module Inventory
         Set<QuarryModule> itemModules = Set.copyOf(moduleInventory.getModules());
@@ -390,16 +390,16 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean canBreak(Level targetWorld, BlockPos targetPos, BlockState state) {
         if (target != null && target.alreadySkipped(targetPos)) {
-            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "already skipped");
+            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "Already skipped");
             return false;
         }
         if (state.isAir()) {
-            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "air");
+            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "IsAir");
             return true;
         }
         var unbreakable = state.getDestroySpeed(targetWorld, targetPos) < 0;
         if (unbreakable) {
-            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "unbreakable");
+            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "Unbreakable block");
             if (hasBedrockModule() && state.getBlock() == Blocks.BEDROCK) {
                 var worldBottom = targetWorld.getMinBuildHeight();
                 if (targetWorld.dimension().equals(Level.NETHER)) {
@@ -411,12 +411,12 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                 return false;
             }
         } else if (isFullFluidBlock(state)) {
-            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "fluid");
+            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "Is Fluid");
             return hasPumpModule();
         } else {
             var result = getReplacementState() != state;
             if (!result)
-                TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "replacement state");
+                TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "Replacement state");
             return result;
         }
     }
@@ -424,16 +424,16 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     @Override
     public List<? extends Component> getDebugLogs() {
         return Stream.of(
-                "%sArea:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, area),
-                "%sTarget:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, target),
-                "%sState:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, state),
-                "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, hasBedrockModule()),
-                "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
-                "%sHead:%s (%f, %f, %f)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, headX, headY, headZ),
-                "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
-                "%sProgressY:%s %.2f".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, yProgress()),
-                "%sCurrentWorkProgress:%s %.2f".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, xzProgress()),
-                energyString()
+            "%sArea:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, area),
+            "%sTarget:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, target),
+            "%sState:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, state),
+            "%sRemoveBedrock:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, hasBedrockModule()),
+            "%sDigMinY:%s %d".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, digMinY),
+            "%sHead:%s (%f, %f, %f)".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, headX, headY, headZ),
+            "%sModules:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, modules),
+            "%sProgressY:%s %.2f".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, yProgress()),
+            "%sCurrentWorkProgress:%s %.2f".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, xzProgress()),
+            energyString()
         ).map(Component::literal).toList();
     }
 
@@ -521,7 +521,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
 
         public QuarryCache() {
             replaceState = CacheEntry.supplierCache(5,
-                    () -> TileQuarry.this.getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState()));
+                () -> TileQuarry.this.getReplacerModule().map(ReplacerModule::getState).orElse(Blocks.AIR.defaultBlockState()));
             netherTop = CacheEntry.supplierCache(100, QuarryPlus.config.common.netherTop);
             enchantments = CacheEntry.supplierCache(1000, () -> EnchantmentHolder.makeHolder(TileQuarry.this));
         }

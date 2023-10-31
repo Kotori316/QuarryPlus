@@ -459,4 +459,11 @@ final class FillerTarget extends Target {
     public double progress() {
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return "FillerTarget{" +
+            "area=" + area +
+            '}';
+    }
 }

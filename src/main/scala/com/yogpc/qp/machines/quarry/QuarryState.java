@@ -1,18 +1,8 @@
 package com.yogpc.qp.machines.quarry;
 
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.Area;
-import com.yogpc.qp.machines.BreakResult;
-import com.yogpc.qp.machines.PowerManager;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.TraceQuarryWork;
+import com.yogpc.qp.machines.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -28,6 +18,12 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 
 public enum QuarryState implements BlockEntityTicker<TileQuarry> {
     FINISHED(false) {
@@ -283,7 +279,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
         if (TileQuarry.shouldLogQuarryWork()) {
             LOGGER.debug(MARKER, "{}({}) Target changed to {} in {}.", quarry.getClass().getSimpleName(), quarryPos, quarry.target, name());
         }
-        TraceQuarryWork.changeTarget(quarry, quarryPos, name());
+        TraceQuarryWork.changeTarget(quarry, quarryPos, name(), String.valueOf(quarry.target));
     }
 }
 

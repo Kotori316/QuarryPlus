@@ -207,7 +207,7 @@ public class TileAdvQuarry extends PowerTile implements
                 level.setBlock(getBlockPos(), getBlockState().setValue(BlockAdvQuarry.WORKING, true), Block.UPDATE_ALL);
             }
         this.action = action;
-        TraceQuarryWork.changeTarget(this, getBlockPos(), "From %s to %s".formatted(pre, action));
+        TraceQuarryWork.changeState(this, getBlockPos(), pre.toString(), action.toString());
         if (action == AdvQuarryAction.Finished.FINISHED)
             if (level != null) {
                 level.setBlock(getBlockPos(), getBlockState().setValue(BlockAdvQuarry.WORKING, false), Block.UPDATE_ALL);
