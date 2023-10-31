@@ -4,6 +4,7 @@
   * Be careful, this module can cause heavy lags
   * Disabled by default, change `repeat_tick_module` to `true` to use this module
 * Limit the number of chaining of Dummy Block. #278
+* Improve logging of machine. #275
 
 ## Version for 1.19.2
 
