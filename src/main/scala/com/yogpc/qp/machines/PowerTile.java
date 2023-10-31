@@ -122,8 +122,14 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
      * @return {@code true} if the energy is consumed. When {@code false}, the machine doesn't have enough energy to work.
      */
     public final boolean useEnergy(long amount, Reason reason, boolean force) {
-        if (amount > maxEnergy && QuarryPlus.config.debug())
-            QuarryPlus.LOGGER.warn("{} required {} FE, which is over {}.", energyCounter.name, amount / ONE_FE, getMaxEnergyStored());
+        if (amount > maxEnergy) {
+            var pos = getBlockPos();
+            TraceQuarryWork.logOnceIn10Minutes(
+                "%s(%d, %d, %d)".formatted(getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ()),
+                () -> "required %d FE for %s, but maxEnergy is %d FE".formatted(amount / ONE_FE, reason, getMaxEnergyStored()),
+                null
+            );
+        }
         if (energy >= amount || force) {
             energy -= amount;
             energyCounter.useEnergy(this.timeProvider, amount, reason);

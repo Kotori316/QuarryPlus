@@ -60,14 +60,15 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
         // Interval check
         if (level.getGameTime() % interval(efficiencyLevel()) != 0 || targetIterator == null) return;
         // Energy consumption
-        if (!useEnergy(PowerManager.getMiniQuarryEnergy(this), Reason.MINI_QUARRY, false)) return;
+        long consumedEnergy = PowerManager.getMiniQuarryEnergy(this);
+        if (!useEnergy(consumedEnergy, Reason.MINI_QUARRY, false)) return;
         // Break block
         while (targetIterator.hasNext()) {
             var level = getTargetWorld();
             var pos = targetIterator.next();
             var state = level.getBlockState(pos);
             if (!canBreak(level, pos, state)) {
-                TraceQuarryWork.canBreakCheck(this, getBlockPos(), pos, state, "in deny or unbreakable");
+                TraceQuarryWork.canBreakCheck(this, getBlockPos(), pos, state, "In deny list or unbreakable");
                 continue; // The block is in deny list or unbreakable.
             }
 
@@ -80,7 +81,9 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
 
             if (state.getDestroySpeed(level, pos) < 0) {
                 // Consume additional energy if quarry tries to remove bedrock.
-                useEnergy(PowerManager.getBreakEnergy(-1, this), Reason.BREAK_BLOCK, true);
+                var energy = PowerManager.getBreakEnergy(-1, this);
+                useEnergy(energy, Reason.BREAK_BLOCK, true);
+                consumedEnergy += energy;
             }
             var tools = container.tools();
             var tool = tools.stream().filter(t ->
@@ -89,10 +92,11 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
                 fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, t);
                 return ForgeHooks.isCorrectToolForDrops(state, fakePlayer);
             }).findFirst());
+            final long c = consumedEnergy;
             tool.ifPresent(t -> {
                 fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, t);
                 var drops = InvUtils.getBlockDrops(state, level, pos, level.getBlockEntity(pos), fakePlayer, t);
-                TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), pos, state, drops, 0);
+                TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), pos, state, drops, 0, c);
                 drops.forEach(this::insertOrDropItem);
                 var damage = t.isCorrectToolForDrops(state) ? 1 : 4;
                 for (int i = 0; i < damage; i++) {

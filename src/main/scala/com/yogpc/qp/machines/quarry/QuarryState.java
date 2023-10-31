@@ -279,7 +279,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
         if (TileQuarry.shouldLogQuarryWork()) {
             LOGGER.debug(MARKER, "{}({}) Target changed to {} in {}.", quarry.getClass().getSimpleName(), quarryPos, quarry.target, name());
         }
-        TraceQuarryWork.changeTarget(quarry, quarryPos, name());
+        TraceQuarryWork.changeTarget(quarry, quarryPos, name(), String.valueOf(quarry.target));
     }
 }
 

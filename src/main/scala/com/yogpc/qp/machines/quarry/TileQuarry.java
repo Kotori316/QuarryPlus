@@ -173,7 +173,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             sync();
             if (level != null) {
                 level.setBlock(getBlockPos(), blockState.setValue(QPBlock.WORKING, quarryState.isWorking), Block.UPDATE_ALL);
-                if (!level.isClientSide && !quarryState.isWorking) {
+                if (!level.isClientSide && QuarryState.FINISHED == quarryState) {
                     logUsage();
                     TraceQuarryWork.finishWork(this, getBlockPos(), this.getEnergyStored());
                 }
@@ -181,6 +181,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             if ((pre != QuarryState.MOVE_HEAD && pre != QuarryState.BREAK_BLOCK && pre != QuarryState.REMOVE_FLUID) || quarryState == QuarryState.FILLER) {
                 if (shouldLogQuarryWork()) {
                     QuarryPlus.LOGGER.debug(MARKER, "{}({}) State changed from {} to {}.", getClass().getSimpleName(), getBlockPos(), pre, quarryState);
+                    TraceQuarryWork.changeState(this, getBlockPos(), pre.toString(), quarryState.toString());
                 }
             }
         }
@@ -252,7 +253,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         }
         // Get drops
         var drops = InvUtils.getBlockDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), fakePlayer, pickaxe);
-        TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), targetPos, state, drops, breakEvent.getExpToDrop());
+        TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), targetPos, state, drops, breakEvent.getExpToDrop(), requiredEnergy);
         drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
         targetWorld.setBlock(targetPos, getReplacementState(), Block.UPDATE_ALL);
         // Get experience
@@ -390,16 +391,16 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean canBreak(Level targetWorld, BlockPos targetPos, BlockState state) {
         if (target != null && target.alreadySkipped(targetPos)) {
-            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "already skipped");
+            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "Already skipped");
             return false;
         }
         if (state.isAir()) {
-            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "air");
+            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "IsAir");
             return true;
         }
         var unbreakable = state.getDestroySpeed(targetWorld, targetPos) < 0;
         if (unbreakable) {
-            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "unbreakable");
+            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "Unbreakable block");
             if (hasBedrockModule() && state.getBlock() == Blocks.BEDROCK) {
                 var worldBottom = targetWorld.getMinBuildHeight();
                 if (targetWorld.dimension().equals(Level.NETHER)) {
@@ -411,12 +412,12 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                 return false;
             }
         } else if (isFullFluidBlock(state)) {
-            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "fluid");
+            TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "Is Fluid");
             return hasPumpModule();
         } else {
             var result = getReplacementState() != state;
             if (!result)
-                TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "replacement state");
+                TraceQuarryWork.canBreakCheck(this, getBlockPos(), targetPos, state, "Replacement state");
             return result;
         }
     }

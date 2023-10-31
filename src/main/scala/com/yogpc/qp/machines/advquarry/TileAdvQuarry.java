@@ -207,7 +207,7 @@ public class TileAdvQuarry extends PowerTile implements
                 level.setBlock(getBlockPos(), getBlockState().setValue(BlockAdvQuarry.WORKING, true), Block.UPDATE_ALL);
             }
         this.action = action;
-        TraceQuarryWork.changeTarget(this, getBlockPos(), "From %s to %s".formatted(pre, action));
+        TraceQuarryWork.changeState(this, getBlockPos(), pre.toString(), action.toString());
         if (action == AdvQuarryAction.Finished.FINISHED)
             if (level != null) {
                 level.setBlock(getBlockPos(), getBlockState().setValue(BlockAdvQuarry.WORKING, false), Block.UPDATE_ALL);
@@ -325,7 +325,7 @@ public class TileAdvQuarry extends PowerTile implements
         }
         // Get drops
         var drops = InvUtils.getBlockDrops(state, targetWorld, targetPos, targetWorld.getBlockEntity(targetPos), fakePlayer, pickaxe);
-        TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), targetPos, state, drops, breakEvent.getExpToDrop());
+        TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), targetPos, state, drops, breakEvent.getExpToDrop(), requiredEnergy);
         drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
         targetWorld.setBlock(targetPos, getReplacementState(), Block.UPDATE_ALL);
         // Get experience
@@ -421,7 +421,7 @@ public class TileAdvQuarry extends PowerTile implements
         {
             var headPos = toBreak.stream().map(Pair::getKey).findFirst().orElse(mutableBlockPos);
             var states = toBreak.stream().map(Pair::getValue).toList();
-            TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), headPos, states, drops, exp.get());
+            TraceQuarryWork.blockRemoveSucceed(this, getBlockPos(), headPos, states, drops, exp.get(), requiredEnergy);
         }
         this.storage.addAllItems(drops);
         // Remove blocks

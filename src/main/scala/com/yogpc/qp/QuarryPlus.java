@@ -1,6 +1,7 @@
 package com.yogpc.qp;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
+import com.yogpc.qp.machines.TraceQuarryWork;
 import com.yogpc.qp.machines.workbench.EnableCondition;
 import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
 import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
@@ -22,6 +23,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -48,6 +50,7 @@ public class QuarryPlus {
         FMLJavaModLoadingContext.get().getModEventBus().register(Register.class);
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> QuarryPlusClient::registerClientBus);
         MinecraftForge.EVENT_BUS.register(ConfigCommand.class);
+        MinecraftForge.EVENT_BUS.addListener(QuarryPlus::onServerStart);
     }
 
     @VisibleForTesting
@@ -155,5 +158,9 @@ public class QuarryPlus {
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Can't access to LOGGER in loader.", e);
         }
+    }
+
+    static void onServerStart(ServerStartedEvent event) {
+        TraceQuarryWork.initialLog(event.getServer());
     }
 }
