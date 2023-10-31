@@ -8,6 +8,7 @@
   * Close #277
 * Fix the lost of energy in Workbench when it changes the recipe to another one
 * Limit the number of chaining of Dummy Block. #278
+* Improve logging of machine. #275
 
 ## Version LATEST for 1.20.1
 
