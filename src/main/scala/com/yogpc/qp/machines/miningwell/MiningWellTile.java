@@ -1,25 +1,15 @@
 package com.yogpc.qp.machines.miningwell;
 
-import java.util.List;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.CheckerLog;
-import com.yogpc.qp.machines.EnchantmentLevel;
-import com.yogpc.qp.machines.InvUtils;
-import com.yogpc.qp.machines.ItemConverter;
-import com.yogpc.qp.machines.MachineStorage;
-import com.yogpc.qp.machines.PowerConfig;
-import com.yogpc.qp.machines.PowerManager;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.QuarryFakePlayer;
+import com.yogpc.qp.machines.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -32,6 +22,9 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.fluids.FluidType;
 import org.jetbrains.annotations.VisibleForTesting;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 public class MiningWellTile extends PowerTile implements CheckerLog, MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments {
     private final MachineStorage storage = new MachineStorage();
@@ -89,7 +82,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
                 }
                 break;
             } else if (canBreak(level, targetPos, state)) {
-                breakBlock(level, targetPos, state, pickaxe);
+                breakBlock(level, targetPos, state, pickaxe, fakePlayer);
                 break;
             }
         }
@@ -140,10 +133,10 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
         return hardness >= 0;
     }
 
-    private void breakBlock(Level level, BlockPos pos, BlockState state, ItemStack tool) {
+    private void breakBlock(Level level, BlockPos pos, BlockState state, ItemStack tool, Entity entity) {
         var hardness = state.getDestroySpeed(level, pos);
         if (useEnergy(PowerManager.getBreakEnergy(hardness, EnchantmentLevel.NoEnchantments.INSTANCE, PowerConfig.DEFAULT), Reason.BREAK_BLOCK, false)) {
-            var drops = InvUtils.getBlockDrops(state, (ServerLevel) level, pos, level.getBlockEntity(pos), null, tool);
+            var drops = InvUtils.getBlockDrops(state, (ServerLevel) level, pos, level.getBlockEntity(pos), entity, tool);
             drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
             level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
             var sound = state.getSoundType();
