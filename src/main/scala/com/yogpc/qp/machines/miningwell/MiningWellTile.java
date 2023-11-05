@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -81,7 +82,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
                 }
                 break;
             } else if (canBreak(level, targetPos, state)) {
-                breakBlock(level, targetPos, state, pickaxe);
+                breakBlock(level, targetPos, state, pickaxe, fakePlayer);
                 break;
             }
         }
@@ -132,10 +133,10 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
         return hardness >= 0;
     }
 
-    private void breakBlock(Level level, BlockPos pos, BlockState state, ItemStack tool) {
+    private void breakBlock(Level level, BlockPos pos, BlockState state, ItemStack tool, Entity entity) {
         var hardness = state.getDestroySpeed(level, pos);
         if (useEnergy(PowerManager.getBreakEnergy(hardness, EnchantmentLevel.NoEnchantments.INSTANCE, PowerConfig.DEFAULT), Reason.BREAK_BLOCK, false)) {
-            var drops = InvUtils.getBlockDrops(state, (ServerLevel) level, pos, level.getBlockEntity(pos), null, tool);
+            var drops = InvUtils.getBlockDrops(state, (ServerLevel) level, pos, level.getBlockEntity(pos), entity, tool);
             drops.stream().map(itemConverter::map).forEach(this.storage::addItem);
             level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
             var sound = state.getSoundType();

@@ -11,6 +11,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.ItemHandlerHelper;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -46,7 +51,7 @@ public class InvUtils {
         return remain;
     }
 
-    public static List<ItemStack> getBlockDrops(BlockState state, ServerLevel level, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity entity, ItemStack tool) {
+    public static List<ItemStack> getBlockDrops(BlockState state, ServerLevel level, BlockPos pos, @Nullable BlockEntity blockEntity, @NotNull Entity entity, ItemStack tool) {
         var result = Block.getDrops(state, level, pos, blockEntity, entity, tool);
         if (TraceQuarryWork.enabled && result.isEmpty()) {
             // Log if block has no drops.

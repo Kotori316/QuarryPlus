@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -241,7 +242,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), targetPos, state, BreakResult.SKIPPED);
             return BreakResult.SKIPPED;
         }
-        if (hasPumpModule()) removeEdgeFluid(targetPos, targetWorld, this);
+        if (hasPumpModule()) removeEdgeFluid(targetPos, targetWorld, this, fakePlayer);
 
         // Break block
         var hardness = state.getDestroySpeed(targetWorld, targetPos);
@@ -272,7 +273,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         return BreakResult.SUCCESS;
     }
 
-    static void removeEdgeFluid(BlockPos targetPos, ServerLevel targetWorld, TileQuarry quarry) {
+    static void removeEdgeFluid(BlockPos targetPos, ServerLevel targetWorld, TileQuarry quarry, Entity entity) {
         var area = quarry.getArea();
         assert area != null;
         boolean flagMinX = targetPos.getX() - 1 == area.minX();
@@ -280,32 +281,32 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         boolean flagMinZ = targetPos.getZ() - 1 == area.minZ();
         boolean flagMaxZ = targetPos.getZ() + 1 == area.maxZ();
         if (flagMinX) {
-            removeFluidAtPos(targetWorld, new BlockPos(area.minX(), targetPos.getY(), targetPos.getZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(area.minX(), targetPos.getY(), targetPos.getZ()), quarry, entity);
         }
         if (flagMaxX) {
-            removeFluidAtPos(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), targetPos.getZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), targetPos.getZ()), quarry, entity);
         }
         if (flagMinZ) {
-            removeFluidAtPos(targetWorld, new BlockPos(targetPos.getX(), targetPos.getY(), area.minZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(targetPos.getX(), targetPos.getY(), area.minZ()), quarry, entity);
         }
         if (flagMaxZ) {
-            removeFluidAtPos(targetWorld, new BlockPos(targetPos.getX(), targetPos.getY(), area.maxZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(targetPos.getX(), targetPos.getY(), area.maxZ()), quarry, entity);
         }
         if (flagMinX && flagMinZ) {
-            removeFluidAtPos(targetWorld, new BlockPos(area.minX(), targetPos.getY(), area.minZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(area.minX(), targetPos.getY(), area.minZ()), quarry, entity);
         }
         if (flagMinX && flagMaxZ) {
-            removeFluidAtPos(targetWorld, new BlockPos(area.minX(), targetPos.getY(), area.maxZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(area.minX(), targetPos.getY(), area.maxZ()), quarry, entity);
         }
         if (flagMaxX && flagMinZ) {
-            removeFluidAtPos(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), area.minZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), area.minZ()), quarry, entity);
         }
         if (flagMaxX && flagMaxZ) {
-            removeFluidAtPos(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), area.maxZ()), quarry);
+            removeFluidAtPos(targetWorld, new BlockPos(area.maxX(), targetPos.getY(), area.maxZ()), quarry, entity);
         }
     }
 
-    private static void removeFluidAtPos(ServerLevel world, BlockPos pos, TileQuarry quarry) {
+    private static void removeFluidAtPos(ServerLevel world, BlockPos pos, TileQuarry quarry, Entity entity) {
         var state = world.getBlockState(pos);
         var fluidState = world.getFluidState(pos);
         if (!fluidState.isEmpty()) {
@@ -319,7 +320,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             } else if (state.getBlock() instanceof LiquidBlockContainer) {
                 float hardness = state.getDestroySpeed(world, pos);
                 quarry.useEnergy(PowerManager.getBreakEnergy(hardness, quarry), Reason.REMOVE_FLUID, true);
-                var drops = InvUtils.getBlockDrops(state, world, pos, world.getBlockEntity(pos), null, quarry.getPickaxe());
+                var drops = InvUtils.getBlockDrops(state, world, pos, world.getBlockEntity(pos), entity, quarry.getPickaxe());
                 drops.forEach(quarry.storage::addItem);
                 world.setBlock(pos, Holder.BLOCK_FRAME.getDammingState(), Block.UPDATE_ALL);
             }

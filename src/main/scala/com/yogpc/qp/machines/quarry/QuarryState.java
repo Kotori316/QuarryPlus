@@ -182,6 +182,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             Set<BlockPos> fluidPoses = countFluid(targetWorld, original, quarry.getArea());
             TraceQuarryWork.progress(quarry, quarryPos, original, "Remove %d fluids".formatted(fluidPoses.size()));
             if (quarry.useEnergy(PowerManager.getBreakBlockFluidEnergy(quarry) * fluidPoses.size(), PowerTile.Reason.REMOVE_FLUID, true)) {
+                var fakePlayer = QuarryFakePlayer.get(targetWorld);
                 for (BlockPos fluidPos : fluidPoses) {
                     var blockState = targetWorld.getBlockState(fluidPos);
                     if (blockState.getBlock() instanceof LiquidBlock) {
@@ -198,7 +199,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                         TraceQuarryWork.unexpected(quarry, quarryPos, "Invalid fluid(%s, %s) at (%d,%d,%d)"
                             .formatted(blockState, targetWorld.getFluidState(fluidPos), fluidPos.getX(), fluidPos.getY(), fluidPos.getZ()));
                     }
-                    TileQuarry.removeEdgeFluid(fluidPos, targetWorld, quarry);
+                    TileQuarry.removeEdgeFluid(fluidPos, targetWorld, quarry, fakePlayer);
                 }
                 quarry.setState(BREAK_BLOCK, state);
             }
