@@ -19,6 +19,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -357,7 +358,7 @@ public class TileAdvQuarry extends PowerTile implements
                     e.addExp(orb.getValue());
                     orb.kill();
                 }));
-        removeEdgeFluid(x, z, targetWorld);
+        removeEdgeFluid(x, z, targetWorld, fakePlayer);
         long requiredEnergy = 0;
         var exp = new AtomicInteger(0);
         List<Pair<BlockPos, BlockState>> toBreak = new ArrayList<>();
@@ -437,39 +438,39 @@ public class TileAdvQuarry extends PowerTile implements
         return BreakResult.SUCCESS;
     }
 
-    void removeEdgeFluid(int x, int z, ServerLevel targetWorld) {
+    void removeEdgeFluid(int x, int z, ServerLevel targetWorld, Entity entity) {
         assert area != null;
         boolean flagMinX = x - 1 == area.minX();
         boolean flagMaxX = x + 1 == area.maxX();
         boolean flagMinZ = z - 1 == area.minZ();
         boolean flagMaxZ = z + 1 == area.maxZ();
         if (flagMinX) {
-            removeFluidAtXZ(area.minX(), z, targetWorld);
+            removeFluidAtXZ(area.minX(), z, targetWorld, entity);
         }
         if (flagMaxX) {
-            removeFluidAtXZ(area.maxX(), z, targetWorld);
+            removeFluidAtXZ(area.maxX(), z, targetWorld, entity);
         }
         if (flagMinZ) {
-            removeFluidAtXZ(x, area.minZ(), targetWorld);
+            removeFluidAtXZ(x, area.minZ(), targetWorld, entity);
         }
         if (flagMaxZ) {
-            removeFluidAtXZ(x, area.maxZ(), targetWorld);
+            removeFluidAtXZ(x, area.maxZ(), targetWorld, entity);
         }
         if (flagMinX && flagMinZ) {
-            removeFluidAtXZ(area.minX(), area.minZ(), targetWorld);
+            removeFluidAtXZ(area.minX(), area.minZ(), targetWorld, entity);
         }
         if (flagMinX && flagMaxZ) {
-            removeFluidAtXZ(area.minX(), area.maxZ(), targetWorld);
+            removeFluidAtXZ(area.minX(), area.maxZ(), targetWorld, entity);
         }
         if (flagMaxX && flagMinZ) {
-            removeFluidAtXZ(area.maxX(), area.minZ(), targetWorld);
+            removeFluidAtXZ(area.maxX(), area.minZ(), targetWorld, entity);
         }
         if (flagMaxX && flagMaxZ) {
-            removeFluidAtXZ(area.maxX(), area.maxZ(), targetWorld);
+            removeFluidAtXZ(area.maxX(), area.maxZ(), targetWorld, entity);
         }
     }
 
-    void removeFluidAtXZ(int x, int z, ServerLevel world) {
+    void removeFluidAtXZ(int x, int z, ServerLevel world, Entity entity) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, 0, z);
         for (int y = getBlockPos().getY() - 1; y > digMinY; y--) {
             pos.setY(y);
@@ -486,7 +487,7 @@ public class TileAdvQuarry extends PowerTile implements
                 } else if (state.getBlock() instanceof LiquidBlockContainer) {
                     float hardness = state.getDestroySpeed(world, pos);
                     useEnergy(PowerManager.getBreakEnergy(hardness, this), Reason.REMOVE_FLUID, true);
-                    var drops = InvUtils.getBlockDrops(state, world, pos, world.getBlockEntity(pos), null, this.getPickaxe());
+                    var drops = InvUtils.getBlockDrops(state, world, pos, world.getBlockEntity(pos), entity, this.getPickaxe());
                     drops.forEach(this.storage::addItem);
                     world.setBlock(pos, Holder.BLOCK_FRAME.getDammingState(), Block.UPDATE_ALL);
                 }
