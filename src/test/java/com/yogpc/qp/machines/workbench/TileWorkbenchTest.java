@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -50,7 +50,7 @@ class TileWorkbenchTest {
                 var tile = tile();
                 tile.setItem(0, new ItemStack(Items.APPLE, 64));
 
-                var handler = tile.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
+                var handler = tile.getCapability(Capabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
                 var extracted = handler.extractItem(0, 1, true);
                 assertTrue(extracted.isEmpty());
             } finally {
@@ -66,7 +66,7 @@ class TileWorkbenchTest {
                 var tile = tile();
                 tile.setItem(0, new ItemStack(Items.APPLE, 64));
 
-                var handler = tile.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
+                var handler = tile.getCapability(Capabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
                 var extracted = handler.extractItem(0, 1, false);
                 assertTrue(ItemStack.matches(extracted, new ItemStack(Items.APPLE, 1)),
                     "Extracted: %s".formatted(extracted));
@@ -87,7 +87,7 @@ class TileWorkbenchTest {
                 var tile = tile();
                 tile.setItem(0, new ItemStack(Items.APPLE, 64));
 
-                var handler = tile.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
+                var handler = tile.getCapability(Capabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
                 var extracted = handler.extractItem(0, 1, true);
                 assertTrue(ItemStack.matches(extracted, new ItemStack(Items.APPLE, 1)),
                     "Extracted: %s".formatted(extracted));
@@ -116,7 +116,7 @@ class TileWorkbenchTest {
                 var tile = tile();
                 tile.setItem(0, new ItemStack(Items.APPLE, initial));
 
-                var handler = tile.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
+                var handler = tile.getCapability(Capabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
                 var extracted = handler.extractItem(0, extractCount, false);
                 assertTrue(ItemStack.matches(extracted, new ItemStack(Items.APPLE, extractCount)),
                     "Extracted: %s".formatted(extracted));

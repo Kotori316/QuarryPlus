@@ -18,9 +18,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.crafting.conditions.ICondition;
+import net.neoforged.neoforge.gametest.GameTestHolder;
 import org.junit.platform.commons.function.Try;
 import org.junit.platform.commons.support.ReflectionSupport;
 

@@ -13,8 +13,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.gametest.GameTestDontPrefix;
-import net.minecraftforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.GameTestDontPrefix;
+import net.neoforged.neoforge.gametest.GameTestHolder;
 
 import java.util.List;
 import java.util.stream.Stream;

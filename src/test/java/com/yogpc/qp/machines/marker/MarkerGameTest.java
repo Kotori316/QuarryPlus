@@ -7,8 +7,8 @@ import com.yogpc.qp.machines.Area;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraftforge.gametest.GameTestDontPrefix;
-import net.minecraftforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.GameTestDontPrefix;
+import net.neoforged.neoforge.gametest.GameTestHolder;
 
 import java.util.Objects;
 import java.util.Optional;

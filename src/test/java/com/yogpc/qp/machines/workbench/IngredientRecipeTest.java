@@ -14,10 +14,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.gametest.GameTestDontPrefix;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.crafting.conditions.ICondition;
+import net.neoforged.neoforge.gametest.GameTestDontPrefix;
+import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import java.io.IOException;
 import java.io.InputStream;

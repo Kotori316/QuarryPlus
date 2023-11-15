@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines.advpump;
 
-import java.util.List;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.QuarryPlusTest;
 import com.yogpc.qp.machines.EnchantmentLevel;
 import com.yogpc.qp.machines.PowerTile;
@@ -12,17 +8,18 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(QuarryPlusTest.class)
 class EnchantmentEfficiencyTest {

@@ -8,8 +8,8 @@ import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.crafting.conditions.AndCondition;
-import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.AndCondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ record RecipeSerializeHelper(
             } else {
                 toWrite = new AndCondition(conditions);
             }
-            o.add(ICondition.DEFAULT_FIELD, ICondition.CODEC.encodeStart(JsonOps.INSTANCE, toWrite).get().orThrow());
+            o.add("conditions", ICondition.CODEC.encodeStart(JsonOps.INSTANCE, toWrite).get().orThrow());
         }
         return o;
     }
@@ -61,7 +61,7 @@ record RecipeSerializeHelper(
         AtomicReference<FinishedRecipe> reference = new AtomicReference<>();
         c.save(new RecipeOutput() {
             @Override
-            public void accept(FinishedRecipe recipe) {
+            public void accept(FinishedRecipe recipe, ICondition... conditions) {
                 reference.set(recipe);
             }
 

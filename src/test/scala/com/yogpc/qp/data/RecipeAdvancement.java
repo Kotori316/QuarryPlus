@@ -1,7 +1,5 @@
 package com.yogpc.qp.data;
 
-import java.util.List;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.module.ExpModuleItem;
@@ -16,8 +14,10 @@ import com.yogpc.qp.machines.workbench.EnableCondition;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.conditions.NotCondition;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.crafting.conditions.NotCondition;
+
+import java.util.List;
 
 final class RecipeAdvancement extends QuarryDataProvider {
     RecipeAdvancement(DataGenerator generatorIn) {

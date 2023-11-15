@@ -7,8 +7,8 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.gametest.GameTestDontPrefix;
-import net.minecraftforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.GameTestDontPrefix;
+import net.neoforged.neoforge.gametest.GameTestHolder;
 
 import java.util.List;
 import java.util.Objects;
