@@ -48,9 +48,9 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
-import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.network.IContainerFactory;
-import net.minecraftforge.registries.RegisterEvent;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.network.IContainerFactory;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -102,7 +102,7 @@ public class Holder {
     }
 
     private static <T extends AbstractContainerMenu> MenuType<T> registerMenuType(IContainerFactory<T> factory, String guiId) {
-        MenuType<T> type = IForgeMenuType.create(factory);
+        MenuType<T> type = IMenuTypeExtension.create(factory);
         MENU_TYPES.add(new NamedEntry<>(new ResourceLocation(guiId), type));
         return type;
     }

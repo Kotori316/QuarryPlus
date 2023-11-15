@@ -2,7 +2,7 @@ package com.yogpc.qp.integration.wrench;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ObjectHolder;
+import net.neoforged.neoforge.registries.ObjectHolder;
 
 public final class WrenchItems {
     public static boolean isWrenchItem(ItemStack stack) {

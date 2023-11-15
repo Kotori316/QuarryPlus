@@ -18,8 +18,8 @@ plugins {
     id("maven-publish")
     id("signing")
     id("scala")
-    id("net.minecraftforge.gradle") version("[6.0,6.2)")
-    id("org.parchmentmc.librarian.forgegradle") version("1.+")
+    id("net.neoforged.gradle.userdev") version("7.+")
+    // id("org.parchmentmc.librarian.forgegradle") version("1.+")
     id("com.github.breadmoirai.github-release") version("2.4.1")
     id("com.matthewprenger.cursegradle") version("1.4.0")
     id("com.modrinth.minotaur").version("2.+")
@@ -56,100 +56,59 @@ println("Java: ${System.getProperty("java.version")} " +
         "JVM: ${System.getProperty("java.vm.version")}(${System.getProperty("java.vendor")}) " +
         "Arch: ${System.getProperty("os.arch")} " +
         "Project version: ${project.version}")
-minecraft {
-    mappings channel: "parchment", version: ((project.parchmentMapping + "-" + project.minecraftVersion) as String)
-//    mappings channel: "official", version: (project.minecraftVersion as String)
 
-    runs {
-        configureEach {
-            property("forge.logging.markers", "")
-            property("mixin.env.remapRefMap", "true")
-            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
-            property("mixin.debug.export", "true")
-            property("forge.logging.console.level", "debug")
-        }
+runs {
+    configureEach {
+        systemProperties.put("forge.logging.markers", "")
+        systemProperties.put("mixin.env.remapRefMap", "true")
+        systemProperties.put("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
+        systemProperties.put("mixin.debug.export", "true")
+        systemProperties.put("forge.logging.console.level", "debug")
+    }
 
-        client {
-            workingDirectory project.file("Minecraft")
-            property("forge.enabledGameTestNamespaces", "QuarryPlus".toLowerCase())
-            // From https://github.com/SlimeKnights/TinkersConstruct/blob/1.18/build.gradle
-            if (project.hasProperty("mc_uuid")) {
-                // Your uuid without any dashes in the middle
-                args("--uuid", project.getProperty("mc_uuid"))
-            }
-            if (project.hasProperty("mc_username")) {
-                // Your username/display name, this is the name that shows up in chat
-                // Note: This is not your email, even if you have a Mojang account
-                args("--username", project.getProperty("mc_username"))
-            }
-            // Your access token, you can find it in your ".minecraft/launcher_profiles.json" file
-            // If not set, use "0" to prevent authentication exception.
-            args("--accessToken", project.findProperty("mc_token") ?: "0")
-            jvmArgs("-EnableAssertions".toLowerCase())
+    client {
+        workingDirectory.set(project.file("Minecraft"))
+        systemProperties.put("forge.enabledGameTestNamespaces", "QuarryPlus".toLowerCase())
+        // Your access token, you can find it in your ".minecraft/launcher_profiles.json" file
+        // If not set, use "0" to prevent authentication exception.
+        programArguments.addAll("--accessToken", (project.findProperty("mc_token") ?: "0") as String)
+        jvmArguments.add("-EnableAssertions".toLowerCase())
 
-            mods {
-                quarryplus {
-                    source(sourceSets.main)
-                    // source(sourceSets.test)
-                }
-            }
-            lazyToken("minecraft_classpath") {
-                configurations.game_test.collect { it.absolutePath }.join(File.pathSeparator)
-            }
-        }
+        modSources.add(project.sourceSets.main)
+    }
 
-        client2 {
-            parent(runs.client)
-            workingDirectory project.file("run-server-client")
-            property("forge.enabledGameTestNamespaces", "")
-            property("forge.enableGameTest", "false")
-            mods {
-                quarryplus {
-                    source(sourceSets.main)
-                }
-            }
-        }
+    /*client2 {
+        parent(runs.client)
+        workingDirectory project.file("run-server-client")
+        systemProperties.put("forge.enabledGameTestNamespaces", "")
+        systemProperties.put("forge.enableGameTest", "false")
+        modSources.add(project.sourceSets.main)
+    }*/
 
-        server {
-            workingDirectory project.file("run-server")
+    server {
+        workingDirectory.set(project.file("run-server"))
 
-            // Recommended logging data for a userdev environment
-            args("--nogui")
+        // Recommended logging data for a userdev environment
+        programArguments.add("--nogui")
 
-            mods {
-                quarryplus {
-                    source(sourceSets.main)
-                }
-            }
-        }
+        modSources.add(project.sourceSets.main)
+    }
 
-        data {
-            workingDirectory project.file("run-server")
-            args("--mod", "quarryplus", "--all", "--output", file("src/generated/resources/"), "--existing", file("src/main/resources/"))
+    data {
+        workingDirectory.set(project.file("run-server"))
+        programArguments.addAll("--mod", "quarryplus", "--all", "--output", file("src/generated/resources/").toString(), "--existing", file("src/main/resources/").toString())
 
-            mods {
-                quarryplus {
-                    source(sourceSets.main)
-                    source(sourceSets.test)
-                }
-            }
-        }
+        modSources.add(project.sourceSets.main)
+        modSources.add(project.sourceSets.test)
+    }
 
-        gameTestServer {
-            workingDirectory project.file("game-test")
-            property("forge.enabledGameTestNamespaces", "QuarryPlus".toLowerCase())
-            jvmArgs("-EnableAssertions".toLowerCase())
+    gameTestServer {
+        workingDirectory.set(project.file("game-test"))
+        systemProperties.put("forge.enabledGameTestNamespaces", "QuarryPlus".toLowerCase())
+        jvmArguments.add("-EnableAssertions".toLowerCase())
 
-            mods {
-                quarryplus {
-                    source(sourceSets.main)
-                    source(sourceSets.test)
-                }
-            }
-            lazyToken("minecraft_classpath") {
-                configurations.game_test.collect { it.absolutePath }.join(File.pathSeparator)
-            }
-        }
+        modSources.add(project.sourceSets.main)
+        modSources.add(project.sourceSets.test)
     }
 }
 
@@ -218,8 +177,8 @@ configurations {
 
 dependencies {
     String forgeVersion = System.getenv("CI_FORGE") ?: project.forgeVersion
-    minecraft("net.minecraftforge:forge:" + forgeVersion)
-    System.out.println(("Selected version: " + "net.minecraftforge:forge:" + forgeVersion) as String)
+    implementation(group: "net.neoforged", name: "neoforge", version: forgeVersion)
+    System.out.println(("Selected version: " + "net.neoforged.neoforge:forge:" + forgeVersion) as String)
     compileOnly(group: "org.scala-lang", name: "scala-library", version: project.scalaVersion)
     // compileOnly(group: "org.scala-lang", name: "scala3-library_3", version: project.scala3Version)
     compileOnly(group: "org.typelevel", name: "cats-core_3", version: project.catsVersion) {
@@ -231,50 +190,42 @@ dependencies {
         exclude(group: 'org.scala-lang', module: 'scala3-library_3')
     }
 
-    boolean useREI = false // Boolean.parseBoolean(System.getenv("USE_REI"))
-    compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20.2-common-api", version: project.jeiVersion))
-    compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20.2-forge-api", version: project.jeiVersion))
-    if (useREI) {
-        implementation(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
-        implementation(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
-        implementation(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
-    } else {
-        runtimeOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20.2-forge", version: project.jeiVersion) {
-            transitive(false)
-        })
-        compileOnly(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
-        compileOnly(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
-        compileOnly(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
-    }
+    compileOnly(group: "mezz.jei", name: "jei-1.20.2-common-api", version: project.jeiVersion)
+    compileOnly(group: "mezz.jei", name: "jei-1.20.2-forge-api", version: project.jeiVersion)
+    compileOnly(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion)
     runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: project.slpVersion, classifier: "with-library") {
         transitive(false)
     }
 
     boolean enableFTB = false // Boolean.parseBoolean(System.getenv("USE_FTB"))
     if (enableFTB) { // FTB Chunks stuff
-        implementation(fg.deobf(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion))
-        implementation(fg.deobf(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion))
-        runtimeOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion))
-        implementation(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
+        implementation(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion)
+        implementation(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion)
+        runtimeOnly(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion)
+        implementation(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion)
     } else {
-        compileOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion))
-        compileOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion))
+        compileOnly(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion) {
+            transitive(false)
+        }
+        compileOnly(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion) {
+            transitive(false)
+        }
     }
 
     // IC2 Classic
     if (false) {
         // if (System.getenv("IGNORE_OTHER_MODS_IN_RUNTIME") == null) {
-        compileOnly(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
-        testImplementation(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
+        compileOnly(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId)
+        testImplementation(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId)
     } else {
-        compileOnly(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
-        // testCompileOnly(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
+        compileOnly(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId)
+        // testCompileOnly(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId)
     }
 
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.
-    implementation(fg.deobf(group: "com.kotori316", name: "test_utility", version: project.testUtilVersion))
+    compileOnly(group: "com.kotori316", name: "test_utility", version: project.testUtilVersion)
     implementation(group: "com.kotori316", name: "test_utility_dependency", version: "2.0-SNAPSHOT") {
         exclude(group: 'org.scala-lang', module: 'scala3-library_3')
     }
@@ -410,7 +361,7 @@ String getShortChangelog(boolean includeVersion) {
                     Stream.of(version, ""),
                     content
             ).collect(Collectors.joining(System.lineSeparator()))
-        }else{
+        } else {
             content.collect(Collectors.joining(System.lineSeparator()))
         }
 
@@ -439,6 +390,7 @@ curseforge {
     options {
         curseGradleOptions.debug = false // defaults to false
         curseGradleOptions.javaVersionAutoDetect = false
+        curseGradleOptions.forgeGradleIntegration = false
     }
 }
 

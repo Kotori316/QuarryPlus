@@ -9,13 +9,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Optional;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -35,7 +31,7 @@ public class InvUtils {
         var remain = stack.copy();
         for (Direction d : Direction.values()) {
             Optional.ofNullable(level.getBlockEntity(pos.relative(d)))
-                .flatMap(t -> t.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).resolve())
+                .flatMap(t -> t.getCapability(Capabilities.ITEM_HANDLER, d.getOpposite()).resolve())
                 .ifPresent(handler -> {
                     var simulate = ItemHandlerHelper.insertItem(handler, remain.copy(), true);
                     if (simulate.getCount() < remain.getCount()) {

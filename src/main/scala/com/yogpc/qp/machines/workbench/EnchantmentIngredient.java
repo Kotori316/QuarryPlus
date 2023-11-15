@@ -1,34 +1,26 @@
 package com.yogpc.qp.machines.workbench;
 
-import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
-import net.minecraftforge.common.crafting.ingredients.AbstractIngredient;
-import net.minecraftforge.common.crafting.ingredients.IIngredientSerializer;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.crafting.IngredientType;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class EnchantmentIngredient extends AbstractIngredient {
+public class EnchantmentIngredient extends Ingredient {
     public static final String NAME = "enchantment_ingredient";
     private final ItemStack stack;
     private final List<EnchantmentInstance> enchantments;
@@ -37,7 +29,7 @@ public class EnchantmentIngredient extends AbstractIngredient {
     private final boolean checkOtherTags;
 
     public EnchantmentIngredient(ItemStack stack, List<EnchantmentInstance> enchantments, boolean checkDamage, boolean checkOtherTags) {
-        super(Stream.of(new Ingredient.ItemValue(addEnchantments(stack, enchantments))));
+        super(Stream.of(new Ingredient.ItemValue(addEnchantments(stack, enchantments))), () -> TYPE);
         this.stack = stack;
         this.enchantments = enchantments;
         this.withoutEnchantment = getTagWithoutEnchantment(stack, checkDamage);
@@ -101,62 +93,19 @@ public class EnchantmentIngredient extends AbstractIngredient {
         }).filter(Predicate.not(CompoundTag::isEmpty)).orElse(null);
     }
 
-    @Override
-    public IIngredientSerializer<? extends Ingredient> serializer() {
-        return Serializer.INSTANCE;
-    }
+    private static final Codec<EnchantmentInstance> ENCHANTMENT_INSTANCE_CODEC = RecordCodecBuilder.create(instance ->
+        instance.group(
+            ForgeRegistries.ENCHANTMENTS.getCodec().fieldOf("id").forGetter(i -> i.enchantment),
+            Codec.INT.fieldOf("level").forGetter(i -> i.level)
+        ).apply(instance, EnchantmentInstance::new)
+    );
+    public static final Codec<EnchantmentIngredient> CODEC = RecordCodecBuilder.create(instance ->
+        instance.group(
+            ItemStack.CODEC.fieldOf("stack").forGetter(i -> i.stackForSerialization()),
+            ENCHANTMENT_INSTANCE_CODEC.listOf().optionalFieldOf("enchantments", List.of()).forGetter(i -> i.enchantments),
+            Codec.BOOL.optionalFieldOf("checkDamage").xmap(o -> o.orElse(false), Optional::of).forGetter(i -> i.checkDamage),
+            Codec.BOOL.optionalFieldOf("checkOtherTags").xmap(o -> o.orElse(false), Optional::of).forGetter(i -> i.checkOtherTags)
+        ).apply(instance, EnchantmentIngredient::new));
 
-    public static class Serializer implements IIngredientSerializer<EnchantmentIngredient> {
-        public static final Serializer INSTANCE = new Serializer();
-        private static final Codec<EnchantmentInstance> ENCHANTMENT_INSTANCE_CODEC = RecordCodecBuilder.create(instance ->
-            instance.group(
-                ForgeRegistries.ENCHANTMENTS.getCodec().fieldOf("id").forGetter(i -> i.enchantment),
-                Codec.INT.fieldOf("level").forGetter(i -> i.level)
-            ).apply(instance, EnchantmentInstance::new)
-        );
-        public static final Codec<EnchantmentIngredient> CODEC = RecordCodecBuilder.create(instance ->
-            instance.group(
-                ItemStack.CODEC.fieldOf("stack").forGetter(i -> i.stackForSerialization()),
-                ENCHANTMENT_INSTANCE_CODEC.listOf().optionalFieldOf("enchantments", List.of()).forGetter(i -> i.enchantments),
-                Codec.BOOL.optionalFieldOf("checkDamage").xmap(o -> o.orElse(false), Optional::of).forGetter(i -> i.checkDamage),
-                Codec.BOOL.optionalFieldOf("checkOtherTags").xmap(o -> o.orElse(false), Optional::of).forGetter(i -> i.checkOtherTags)
-            ).apply(instance, EnchantmentIngredient::new));
-
-        @Override
-        public EnchantmentIngredient read(FriendlyByteBuf buffer) {
-            ItemStack stack = buffer.readItem();
-            int size = buffer.readVarInt();
-            List<EnchantmentInstance> data = IntStream.range(0, size)
-                .mapToObj(operand -> {
-                    Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(buffer.readResourceLocation());
-                    int level = buffer.readInt();
-                    return new EnchantmentInstance(Objects.requireNonNull(enchantment), level);
-                }).collect(Collectors.toList());
-            boolean checkDamage = buffer.readBoolean();
-            boolean checkOtherTags = buffer.readBoolean();
-            return new EnchantmentIngredient(stack, data, checkDamage, checkOtherTags);
-        }
-
-        @VisibleForTesting
-        EnchantmentIngredient parse(JsonObject json) {
-            return CODEC.decode(JsonOps.INSTANCE, json).map(Pair::getFirst).get().orThrow();
-        }
-
-        @Override
-        public void write(FriendlyByteBuf buffer, EnchantmentIngredient ingredient) {
-            buffer.writeItemStack(ingredient.stack, false);
-            buffer.writeVarInt(ingredient.enchantments.size());
-            for (EnchantmentInstance data : ingredient.enchantments) {
-                buffer.writeResourceLocation(Objects.requireNonNull(ForgeRegistries.ENCHANTMENTS.getKey(data.enchantment)));
-                buffer.writeInt(data.level);
-            }
-            buffer.writeBoolean(ingredient.checkDamage);
-            buffer.writeBoolean(ingredient.checkOtherTags);
-        }
-
-        @Override
-        public Codec<? extends EnchantmentIngredient> codec() {
-            return CODEC;
-        }
-    }
+    public static final IngredientType<EnchantmentIngredient> TYPE = new IngredientType<>(CODEC);
 }

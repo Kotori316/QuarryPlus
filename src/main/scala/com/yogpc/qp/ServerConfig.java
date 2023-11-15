@@ -1,7 +1,7 @@
 package com.yogpc.qp;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.List;
@@ -11,7 +11,7 @@ public class ServerConfig {
 
     public final MachineWork machineWork;
 
-    public ServerConfig(ForgeConfigSpec.Builder builder) {
+    public ServerConfig(ModConfigSpec.Builder builder) {
         this.machineWork = new MachineWork(builder);
     }
 
@@ -22,9 +22,9 @@ public class ServerConfig {
     }
 
     public static final class MachineWork {
-        public final ForgeConfigSpec.ConfigValue<List<? extends String>> unworkableDimensions;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> unworkableDimensions;
 
-        private MachineWork(ForgeConfigSpec.Builder builder) {
+        private MachineWork(ModConfigSpec.Builder builder) {
             this.unworkableDimensions = builder
                 .comment("Dimensions where machine should not work. This config is for admin of multi player server.")
                 .worldRestart()

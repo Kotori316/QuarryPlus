@@ -7,7 +7,7 @@ import dev.ftb.mods.ftblibrary.math.ChunkDimPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 import java.util.Locale;
 import java.util.function.Predicate;

@@ -13,9 +13,9 @@ import com.yogpc.qp.utils.MapStreamSyntax;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -36,7 +36,7 @@ public class Config {
     public final PowerMap powerMap;
     public final AcceptableEnchantmentsMap acceptableEnchantmentsMap;
 
-    public Config(ForgeConfigSpec.Builder builder) {
+    public Config(ModConfigSpec.Builder builder) {
         common = new Common(builder);
         enableMap = new EnableMap(builder);
         powerMap = new PowerMap(builder);
@@ -57,23 +57,23 @@ public class Config {
     }
 
     public static class Common {
-        public final ForgeConfigSpec.IntValue netherTop;
-        private final ForgeConfigSpec.BooleanValue debug;
-        public final ForgeConfigSpec.BooleanValue noEnergy;
-        public final ForgeConfigSpec.BooleanValue convertDeepslateOres;
-        public final ForgeConfigSpec.DoubleValue sfqEnergy;
-        public final ForgeConfigSpec.BooleanValue removeCommonMaterialsByCD;
-        public final ForgeConfigSpec.BooleanValue reduceMarkerGuideLineIfPlayerIsFar;
-        public final ForgeConfigSpec.BooleanValue removeFrameAfterQuarryIsRemoved;
-        public final ForgeConfigSpec.BooleanValue allowWorkInClaimedChunkByFBTChunks;
-        public final ForgeConfigSpec.ConfigValue<List<? extends String>> spawnerBlackList;
-        public final ForgeConfigSpec.IntValue chunkDestroyerLimit;
-        public final ForgeConfigSpec.IntValue flexMarkerMaxDistance;
-        public final ForgeConfigSpec.BooleanValue allowWorkbenchExtraction;
-        public final ForgeConfigSpec.BooleanValue enableChunkLoader;
-        public final ForgeConfigSpec.BooleanValue logAllQuarryWork;
+        public final ModConfigSpec.IntValue netherTop;
+        private final ModConfigSpec.BooleanValue debug;
+        public final ModConfigSpec.BooleanValue noEnergy;
+        public final ModConfigSpec.BooleanValue convertDeepslateOres;
+        public final ModConfigSpec.DoubleValue sfqEnergy;
+        public final ModConfigSpec.BooleanValue removeCommonMaterialsByCD;
+        public final ModConfigSpec.BooleanValue reduceMarkerGuideLineIfPlayerIsFar;
+        public final ModConfigSpec.BooleanValue removeFrameAfterQuarryIsRemoved;
+        public final ModConfigSpec.BooleanValue allowWorkInClaimedChunkByFBTChunks;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> spawnerBlackList;
+        public final ModConfigSpec.IntValue chunkDestroyerLimit;
+        public final ModConfigSpec.IntValue flexMarkerMaxDistance;
+        public final ModConfigSpec.BooleanValue allowWorkbenchExtraction;
+        public final ModConfigSpec.BooleanValue enableChunkLoader;
+        public final ModConfigSpec.BooleanValue logAllQuarryWork;
 
-        public Common(ForgeConfigSpec.Builder builder) {
+        public Common(ModConfigSpec.Builder builder) {
             var inDev = !FMLEnvironment.production;
             builder.comment("QuarryPlus Setting").push("common");
             netherTop = builder.comment("The top of Nether").defineInRange("netherTop", inDev ? 128 : 127, -256, 256);
@@ -108,7 +108,7 @@ public class Config {
     public static class EnableMap {
         private final Map<String, BooleanSupplier> machinesMap;
 
-        public EnableMap(ForgeConfigSpec.Builder builder) {
+        public EnableMap(ModConfigSpec.Builder builder) {
             builder.comment("QuarryPlus Machines. Set true to enable machine or item.").push("machines");
             var defaultConfig = GsonHelper.parse(new InputStreamReader(
                 Objects.requireNonNull(getClass().getResourceAsStream("/machine_default.json"), "Content in Jar must not be absent.")
@@ -152,8 +152,8 @@ public class Config {
 
     public static class PowerMap {
         @VisibleForTesting
-        final Map<String, Map<String, ForgeConfigSpec.DoubleValue>> map;
-        public final ForgeConfigSpec.LongValue ic2ConversionRate;
+        final Map<String, Map<String, ModConfigSpec.DoubleValue>> map;
+        public final ModConfigSpec.LongValue ic2ConversionRate;
 
         private record Key(String machineName, String configName) {
         }
@@ -164,7 +164,7 @@ public class Config {
             }
         }
 
-        PowerMap(ForgeConfigSpec.Builder builder) {
+        PowerMap(ModConfigSpec.Builder builder) {
             map = new HashMap<>();
             builder.comment("Power settings of each machines").push("powers");
             var defaultConfig = GsonHelper.parse(new InputStreamReader(
@@ -201,7 +201,7 @@ public class Config {
         public OptionalDouble get(String machineName, String configName) {
             return Optional.ofNullable(this.map.get(machineName))
                 .flatMap(m -> Optional.ofNullable(m.get(configName)))
-                .map(ForgeConfigSpec.ConfigValue::get)
+                .map(ModConfigSpec.ConfigValue::get)
                 .map(OptionalDouble::of)
                 .orElse(OptionalDouble.empty());
         }
@@ -245,9 +245,9 @@ public class Config {
 
     public static class AcceptableEnchantmentsMap {
         @VisibleForTesting
-        final Map<String, ForgeConfigSpec.ConfigValue<List<? extends String>>> enchantmentsMap;
+        final Map<String, ModConfigSpec.ConfigValue<List<? extends String>>> enchantmentsMap;
 
-        public AcceptableEnchantmentsMap(ForgeConfigSpec.Builder builder) {
+        public AcceptableEnchantmentsMap(ModConfigSpec.Builder builder) {
             builder.comment("Enchantments. Defines enchantments machines can accept.").push("enchantments");
             var targets = List.of(
                 Map.entry(new ResourceLocation(QuarryPlus.modID, QuarryBlock.NAME), vanillaAllEnchantments()),
@@ -284,7 +284,7 @@ public class Config {
         public Set<Enchantment> getAllowedEnchantments(ResourceLocation machineName) {
             if (machineName == null) return Set.of();
             return Optional.ofNullable(this.enchantmentsMap.get(machineName.getPath()))
-                .map(ForgeConfigSpec.ConfigValue::get)
+                .map(ModConfigSpec.ConfigValue::get)
                 .orElseGet(List::of)
                 .stream()
                 .map(ResourceLocation::new)
@@ -302,11 +302,11 @@ public class Config {
 
     static <T> Map<String, Object> getAllInClass(T instance) {
         return Stream.of(instance.getClass().getDeclaredFields())
-            .filter(f -> ForgeConfigSpec.ConfigValue.class.isAssignableFrom(f.getType()))
+            .filter(f -> ModConfigSpec.ConfigValue.class.isAssignableFrom(f.getType()))
             .map(f -> {
                 try {
                     f.setAccessible(true);
-                    var config = (ForgeConfigSpec.ConfigValue<?>) f.get(instance);
+                    var config = (ModConfigSpec.ConfigValue<?>) f.get(instance);
                     var value = config.get();
                     return Map.entry(f.getName(), value);
                 } catch (ReflectiveOperationException e) {

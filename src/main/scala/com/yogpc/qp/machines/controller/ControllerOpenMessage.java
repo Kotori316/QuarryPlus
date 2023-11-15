@@ -8,9 +8,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.NetworkEvent;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -43,7 +43,7 @@ public final class ControllerOpenMessage implements IMessage {
         allEntities.forEach(buf::writeResourceLocation);
     }
 
-    public static void onReceive(ControllerOpenMessage message, CustomPayloadEvent.Context supplier) {
+    public static void onReceive(ControllerOpenMessage message, NetworkEvent.Context supplier) {
         supplier.enqueueWork(() -> openScreen(message));
     }
 

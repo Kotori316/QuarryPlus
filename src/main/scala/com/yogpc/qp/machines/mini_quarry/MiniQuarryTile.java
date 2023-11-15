@@ -23,10 +23,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -74,7 +74,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
 
             var fakePlayer = QuarryFakePlayer.get(level);
             var event = new BlockEvent.BreakEvent(level, pos, state, fakePlayer);
-            if (MinecraftForge.EVENT_BUS.post(event)) {
+            if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
                 TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), pos, state, BreakResult.FAIL_EVENT);
                 break; // Denied to break block.
             }
@@ -90,7 +90,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
                 t.isCorrectToolForDrops(state)
             ).findFirst().or(() -> tools.stream().filter(t -> {
                 fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, t);
-                return ForgeHooks.isCorrectToolForDrops(state, fakePlayer);
+                return CommonHooks.isCorrectToolForDrops(state, fakePlayer);
             }).findFirst());
             final long c = consumedEnergy;
             tool.ifPresent(t -> {

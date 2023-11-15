@@ -5,10 +5,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public class Sprites {
 
     @SuppressWarnings("resource")
     @SubscribeEvent
-    public static void registerSprites(TextureStitchEvent.Post event) {
+    public static void registerSprites(TextureAtlasStitchedEvent event) {
         if (event.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
             spriteNames.forEach(s -> {
                 var name = getSpriteLocation(s);

@@ -9,9 +9,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.NetworkEvent;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -63,14 +63,14 @@ public final class MiniListSyncMessage implements IMessage {
         denyList.stream().map(BlockStatePredicate::toTag).forEach(buf::writeNbt);
     }
 
-    public static void onReceive(MiniListSyncMessage message, CustomPayloadEvent.Context supplier) {
+    public static void onReceive(MiniListSyncMessage message, NetworkEvent.Context supplier) {
         switch (supplier.getDirection().getReceptionSide()) {
             case SERVER -> inServer(message, supplier);
             case CLIENT -> inClient(message, supplier);
         }
     }
 
-    static void inServer(MiniListSyncMessage message, CustomPayloadEvent.Context supplier) {
+    static void inServer(MiniListSyncMessage message, NetworkEvent.Context supplier) {
         // Set lists.
         supplier.enqueueWork(() ->
             PacketHandler.getWorld(supplier, message.pos, message.dim)
@@ -82,7 +82,7 @@ public final class MiniListSyncMessage implements IMessage {
     }
 
     @OnlyIn(Dist.CLIENT)
-    static void inClient(MiniListSyncMessage message, CustomPayloadEvent.Context supplier) {
+    static void inClient(MiniListSyncMessage message, NetworkEvent.Context supplier) {
         // Open GUI of current list.
         supplier.enqueueWork(() ->
             PacketHandler.getWorld(supplier, message.pos, message.dim)

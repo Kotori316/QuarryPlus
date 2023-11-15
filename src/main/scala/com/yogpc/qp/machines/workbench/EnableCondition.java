@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
 
 public final class EnableCondition implements ICondition {
     public static final ResourceLocation NAME = new ResourceLocation("quarryplus:machine_enabled");

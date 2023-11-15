@@ -5,7 +5,7 @@ import com.yogpc.qp.machines.PowerTile;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.tile.IEnergySink;
 import ic2.api.energy.tile.IEnergyTile;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.atomic.AtomicInteger;

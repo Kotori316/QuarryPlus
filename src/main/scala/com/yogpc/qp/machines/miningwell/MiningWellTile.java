@@ -18,9 +18,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.fluids.FluidType;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.List;
@@ -62,7 +62,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
             var fakePlayer = QuarryFakePlayer.get((ServerLevel) level);
             fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
             var breakEvent = new BlockEvent.BreakEvent(level, targetPos, state, fakePlayer);
-            MinecraftForge.EVENT_BUS.post(breakEvent);
+            NeoForge.EVENT_BUS.post(breakEvent);
             if (breakEvent.isCanceled()) continue;
 
             if (!fluid.isEmpty()) {

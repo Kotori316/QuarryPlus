@@ -10,7 +10,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 
 /**
  * To Server only
@@ -63,7 +63,7 @@ public final class AdvActionMessage implements IMessage {
         QUICK_START, MODULE_INV, CHANGE_RANGE, SYNC
     }
 
-    public static void onReceive(AdvActionMessage message, CustomPayloadEvent.Context supplier) {
+    public static void onReceive(AdvActionMessage message, NetworkEvent.Context supplier) {
         var world = PacketHandler.getWorld(supplier, message.pos, message.dim);
         supplier.enqueueWork(() ->
             world.map(w -> w.getBlockEntity(message.pos))

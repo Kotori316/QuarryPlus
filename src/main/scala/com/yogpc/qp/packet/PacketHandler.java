@@ -20,64 +20,62 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.network.CustomPayloadEvent;
-import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.network.Channel;
-import net.minecraftforge.network.ChannelBuilder;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.SimpleChannel;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.simple.MessageFunctions;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 public class PacketHandler {
-    private static final int PROTOCOL_VERSION = 1;
-    public static final SimpleChannel INSTANCE = registerMessage(
-        ChannelBuilder.named(new ResourceLocation(QuarryPlus.modID, "main"))
-        .networkProtocolVersion(PROTOCOL_VERSION)
-        .acceptedVersions(Channel.VersionTest.exact(PROTOCOL_VERSION))
-        .simpleChannel()
+    private static final String PROTOCOL_VERSION = "1";
+    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
+        new ResourceLocation(QuarryPlus.modID, "main"),
+        () -> PROTOCOL_VERSION,
+        PROTOCOL_VERSION::equals,
+        PROTOCOL_VERSION::equals
     );
 
     private static final Proxy PROXY = ProxyProvider.getInstance();
 
     public static void init() {
-    }
+        AtomicInteger id = new AtomicInteger(1);
+        INSTANCE.registerMessage(id.getAndIncrement(), TileMessage.class, TileMessage::write, TileMessage::new, setHandled(TileMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), ClientSyncMessage.class, ClientSyncMessage::write, ClientSyncMessage::new, setHandled(ClientSyncMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), Marker16Message.class, Marker16Message::write, Marker16Message::new, setHandled(Marker16Message::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), FlexMarkerMessage.class, FlexMarkerMessage::write, FlexMarkerMessage::new, setHandled(FlexMarkerMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), LevelMessage.class, LevelMessage::write, LevelMessage::new, setHandled(LevelMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), MoverMessage.class, MoverMessage::write, MoverMessage::new, setHandled(MoverMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), AdvActionMessage.class, AdvActionMessage::write, AdvActionMessage::new, setHandled(AdvActionMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), SetSpawnerEntityMessage.class, SetSpawnerEntityMessage::write, SetSpawnerEntityMessage::new, setHandled(SetSpawnerEntityMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), ControllerOpenMessage.class, ControllerOpenMessage::write, ControllerOpenMessage::new, setHandled(ControllerOpenMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), MiniListSyncMessage.class, MiniListSyncMessage::write, MiniListSyncMessage::new, setHandled(MiniListSyncMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), MiniRequestListMessage.class, MiniRequestListMessage::write, MiniRequestListMessage::new, setHandled(MiniRequestListMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), FillerButtonMessage.class, FillerButtonMessage::write, FillerButtonMessage::new, setHandled(FillerButtonMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), RemotePlacerMessage.class, RemotePlacerMessage::write, RemotePlacerMessage::new, setHandled(RemotePlacerMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), AdvQuarryInitialMessage.class, AdvQuarryInitialMessage::write, AdvQuarryInitialMessage::new, setHandled(AdvQuarryInitialMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), AdvQuarryInitialMessage.Ask.class, AdvQuarryInitialMessage.Ask::write, AdvQuarryInitialMessage.Ask::new, setHandled(AdvQuarryInitialMessage.Ask::onReceive));
 
-    private static SimpleChannel registerMessage(SimpleChannel channel) {
-        return channel
-            .messageBuilder(TileMessage.class).encoder(TileMessage::write).decoder(TileMessage::new).consumerNetworkThread(setHandled(TileMessage::onReceive)).add()
-            .messageBuilder(ClientSyncMessage.class).encoder(ClientSyncMessage::write).decoder(ClientSyncMessage::new).consumerNetworkThread(setHandled(ClientSyncMessage::onReceive)).add()
-            .messageBuilder(Marker16Message.class).encoder(Marker16Message::write).decoder(Marker16Message::new).consumerNetworkThread(setHandled(Marker16Message::onReceive)).add()
-            .messageBuilder(FlexMarkerMessage.class).encoder(FlexMarkerMessage::write).decoder(FlexMarkerMessage::new).consumerNetworkThread(setHandled(FlexMarkerMessage::onReceive)).add()
-            .messageBuilder(LevelMessage.class).encoder(LevelMessage::write).decoder(LevelMessage::new).consumerNetworkThread(setHandled(LevelMessage::onReceive)).add()
-            .messageBuilder(MoverMessage.class).encoder(MoverMessage::write).decoder(MoverMessage::new).consumerNetworkThread(setHandled(MoverMessage::onReceive)).add()
-            .messageBuilder(AdvActionMessage.class).encoder(AdvActionMessage::write).decoder(AdvActionMessage::new).consumerNetworkThread(setHandled(AdvActionMessage::onReceive)).add()
-            .messageBuilder(SetSpawnerEntityMessage.class).encoder(SetSpawnerEntityMessage::write).decoder(SetSpawnerEntityMessage::new).consumerNetworkThread(setHandled(SetSpawnerEntityMessage::onReceive)).add()
-            .messageBuilder(ControllerOpenMessage.class).encoder(ControllerOpenMessage::write).decoder(ControllerOpenMessage::new).consumerNetworkThread(setHandled(ControllerOpenMessage::onReceive)).add()
-            .messageBuilder(MiniListSyncMessage.class).encoder(MiniListSyncMessage::write).decoder(MiniListSyncMessage::new).consumerNetworkThread(setHandled(MiniListSyncMessage::onReceive)).add()
-            .messageBuilder(MiniRequestListMessage.class).encoder(MiniRequestListMessage::write).decoder(MiniRequestListMessage::new).consumerNetworkThread(setHandled(MiniRequestListMessage::onReceive)).add()
-            .messageBuilder(FillerButtonMessage.class).encoder(FillerButtonMessage::write).decoder(FillerButtonMessage::new).consumerNetworkThread(setHandled(FillerButtonMessage::onReceive)).add()
-            .messageBuilder(RemotePlacerMessage.class).encoder(RemotePlacerMessage::write).decoder(RemotePlacerMessage::new).consumerNetworkThread(setHandled(RemotePlacerMessage::onReceive)).add()
-            .messageBuilder(AdvQuarryInitialMessage.class).encoder(AdvQuarryInitialMessage::write).decoder(AdvQuarryInitialMessage::new).consumerNetworkThread(setHandled(AdvQuarryInitialMessage::onReceive)).add()
-            .messageBuilder(AdvQuarryInitialMessage.Ask.class).encoder(AdvQuarryInitialMessage.Ask::write).decoder(AdvQuarryInitialMessage.Ask::new).consumerNetworkThread(setHandled(AdvQuarryInitialMessage.Ask::onReceive)).add()
-            ;
     }
 
     public static void sendToClient(@NotNull IMessage message, @NotNull Level world) {
-        INSTANCE.send(message, PacketDistributor.DIMENSION.with(world.dimension()));
+        INSTANCE.send(PacketDistributor.DIMENSION.with(world::dimension), message);
     }
 
     public static void sendToClientPlayer(@NotNull IMessage message, @NotNull ServerPlayer player) {
-        INSTANCE.send(message, PacketDistributor.PLAYER.with(player));
+        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
     }
 
     public static void sendToServer(@NotNull IMessage message) {
-        INSTANCE.send(message, PacketDistributor.SERVER.noArg());
+        INSTANCE.sendToServer(message);
     }
 
     @NotNull
@@ -89,18 +87,18 @@ public class PacketHandler {
     }
 
     @NotNull
-    public static Optional<Level> getWorld(@NotNull CustomPayloadEvent.Context context, @NotNull BlockPos pos, @NotNull ResourceKey<Level> expectedDim) {
+    public static Optional<Level> getWorld(@NotNull NetworkEvent.Context context, @NotNull BlockPos pos, @NotNull ResourceKey<Level> expectedDim) {
         return PROXY.getPacketWorld(context)
             .filter(l -> l.dimension().equals(expectedDim))
             .filter(l -> l.isLoaded(pos));
     }
 
     @NotNull
-    public static Optional<Player> getPlayer(@NotNull CustomPayloadEvent.Context context) {
+    public static Optional<Player> getPlayer(@NotNull NetworkEvent.Context context) {
         return PROXY.getPacketPlayer(context);
     }
 
-    private static <T> BiConsumer<T, CustomPayloadEvent.Context> setHandled(BiConsumer<T, CustomPayloadEvent.Context> execution) {
+    private static <T> MessageFunctions.MessageConsumer<T> setHandled(BiConsumer<T, NetworkEvent.Context> execution) {
         return (t, supplier) -> {
             execution.accept(t, supplier);
             supplier.setPacketHandled(true);
@@ -132,21 +130,21 @@ public class PacketHandler {
 
     private static abstract class Proxy {
         @NotNull
-        abstract Optional<Level> getPacketWorld(@NotNull CustomPayloadEvent.Context context);
+        abstract Optional<Level> getPacketWorld(@NotNull NetworkEvent.Context context);
 
         @NotNull
-        abstract Optional<Player> getPacketPlayer(@NotNull CustomPayloadEvent.Context context);
+        abstract Optional<Player> getPacketPlayer(@NotNull NetworkEvent.Context context);
     }
 
     private static class ProxyServer extends Proxy {
 
         @Override
-        Optional<Level> getPacketWorld(CustomPayloadEvent.Context context) {
+        Optional<Level> getPacketWorld(NetworkEvent.Context context) {
             return Optional.ofNullable(context.getSender()).map(ServerPlayer::serverLevel);
         }
 
         @Override
-        Optional<Player> getPacketPlayer(CustomPayloadEvent.Context context) {
+        Optional<Player> getPacketPlayer(NetworkEvent.Context context) {
             return Optional.ofNullable(context.getSender());
         }
     }
@@ -155,7 +153,7 @@ public class PacketHandler {
     private static class ProxyClient extends Proxy {
 
         @Override
-        Optional<Level> getPacketWorld(CustomPayloadEvent.Context context) {
+        Optional<Level> getPacketWorld(NetworkEvent.Context context) {
             var sender = context.getSender();
             if (sender == null) {
                 return Optional.ofNullable(Minecraft.getInstance().level);
@@ -165,7 +163,7 @@ public class PacketHandler {
         }
 
         @Override
-        Optional<Player> getPacketPlayer(CustomPayloadEvent.Context context) {
+        Optional<Player> getPacketPlayer(NetworkEvent.Context context) {
             return Optional.<Player>ofNullable(context.getSender()).or(() -> Optional.ofNullable(Minecraft.getInstance().player));
         }
     }

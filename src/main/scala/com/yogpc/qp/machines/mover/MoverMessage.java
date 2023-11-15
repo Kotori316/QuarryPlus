@@ -7,8 +7,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraftforge.event.network.CustomPayloadEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 
 /**
  * To Server only.
@@ -37,7 +37,7 @@ public final class MoverMessage implements IMessage {
         buf.writeResourceLocation(enchantment);
     }
 
-    public static void onReceive(MoverMessage message, CustomPayloadEvent.Context supplier) {
+    public static void onReceive(MoverMessage message, NetworkEvent.Context supplier) {
         supplier.enqueueWork(() ->
             PacketHandler.getPlayer(supplier)
                 .map(p -> p.containerMenu)

@@ -27,9 +27,9 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
@@ -232,7 +232,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         // Check breakable
         var state = targetWorld.getBlockState(targetPos);
         var breakEvent = new BlockEvent.BreakEvent(targetWorld, targetPos, state, fakePlayer);
-        MinecraftForge.EVENT_BUS.post(breakEvent);
+        NeoForge.EVENT_BUS.post(breakEvent);
         if (breakEvent.isCanceled()) {
             TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), targetPos, state, BreakResult.FAIL_EVENT);
             if (target != null) target.addSkipped(targetPos);

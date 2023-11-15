@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class BookMoverBlock extends QPBlock implements EntityBlock {
@@ -43,7 +44,7 @@ public class BookMoverBlock extends QPBlock implements EntityBlock {
         }
         if (!player.isShiftKeyDown()) {
             if (!world.isClientSide && world.getBlockEntity(pos) instanceof BookMoverEntity mover) {
-                ((ServerPlayer) player).openMenu(mover, pos);
+                NetworkHooks.openScreen((ServerPlayer) player, mover, pos);
             }
             return InteractionResult.sidedSuccess(world.isClientSide);
         }

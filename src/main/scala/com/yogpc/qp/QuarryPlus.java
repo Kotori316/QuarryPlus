@@ -21,22 +21,22 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.crafting.ingredients.IIngredientSerializer;
-import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.gametest.ForgeGameTestHooks;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.crafting.IngredientType;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.gametest.GameTestHooks;
+import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -52,24 +52,26 @@ public class QuarryPlus {
     public QuarryPlus() {
         registerConfig(false);
         FMLJavaModLoadingContext.get().getModEventBus().register(Register.class);
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> QuarryPlusClient::registerClientBus);
-        MinecraftForge.EVENT_BUS.register(ConfigCommand.class);
-        MinecraftForge.EVENT_BUS.register(QuarryFakePlayer.class);
-        MinecraftForge.EVENT_BUS.addListener(QuarryPlus::onServerStart);
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            QuarryPlusClient.registerClientBus();
+        }
+        NeoForge.EVENT_BUS.register(ConfigCommand.class);
+        NeoForge.EVENT_BUS.register(QuarryFakePlayer.class);
+        NeoForge.EVENT_BUS.addListener(QuarryPlus::onServerStart);
     }
 
     @VisibleForTesting
     static void registerConfig(boolean inJUnitTest) {
-        ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
-        ForgeConfigSpec.Builder client = new ForgeConfigSpec.Builder();
-        ForgeConfigSpec.Builder server = new ForgeConfigSpec.Builder();
+        ModConfigSpec.Builder common = new ModConfigSpec.Builder();
+        ModConfigSpec.Builder client = new ModConfigSpec.Builder();
+        ModConfigSpec.Builder server = new ModConfigSpec.Builder();
         config = new Config(common);
         clientConfig = new ClientConfig(client);
         serverConfig = new ServerConfig(server);
-        ForgeConfigSpec build = common.build();
-        ForgeConfigSpec clientBuild = client.build();
-        ForgeConfigSpec serverBuild = server.build();
-        if (inJUnitTest || ForgeGameTestHooks.isGametestServer()) {
+        ModConfigSpec build = common.build();
+        ModConfigSpec clientBuild = client.build();
+        ModConfigSpec serverBuild = server.build();
+        if (inJUnitTest || GameTestHooks.isGametestServer()) {
             // In game test. Use in-memory config.
             final CommentedConfig commentedConfig = CommentedConfig.inMemory();
             build.correct(commentedConfig);
@@ -102,8 +104,8 @@ public class QuarryPlus {
             event.register(Registries.RECIPE_TYPE, Register::registerRecipeType);
             event.register(Registries.CREATIVE_MODE_TAB, Register::registerCreativeTab);
             event.register(Registries.COMMAND_ARGUMENT_TYPE, Register::registerArgument);
-            event.register(ForgeRegistries.Keys.CONDITION_SERIALIZERS, Register::registerCondition);
-            event.register(ForgeRegistries.Keys.INGREDIENT_SERIALIZERS, Register::registerIngredient);
+            event.register(ForgeRegistries.Keys.CONDITION_CODECS, Register::registerCondition);
+            event.register(ForgeRegistries.Keys.INGREDIENT_TYPES, Register::registerIngredient);
         }
 
         public static void registerBlocks(RegisterEvent.RegisterHelper<Block> blockRegisterHelper) {
@@ -135,8 +137,8 @@ public class QuarryPlus {
             helper.register(QuarryDebugCondition.NAME, QuarryDebugCondition.CODEC);
         }
 
-        public static void registerIngredient(RegisterEvent.RegisterHelper<IIngredientSerializer<?>> helper) {
-            helper.register(new ResourceLocation(modID, EnchantmentIngredient.NAME), EnchantmentIngredient.Serializer.INSTANCE);
+        public static void registerIngredient(RegisterEvent.RegisterHelper<IngredientType<?>> helper) {
+            helper.register(new ResourceLocation(modID, EnchantmentIngredient.NAME), EnchantmentIngredient.TYPE);
         }
 
         public static void registerRecipeType(RegisterEvent.RegisterHelper<RecipeType<?>> helper) {
@@ -164,7 +166,7 @@ public class QuarryPlus {
 
     public static Logger getLogger(String name) {
         try {
-            var field = Class.forName("net.minecraftforge.fml.ModLoader").getDeclaredField("LOGGER");
+            var field = Class.forName("net.neoforged.fml.ModLoader").getDeclaredField("LOGGER");
             field.setAccessible(true);
             var loaderLogger = (org.apache.logging.log4j.core.Logger) field.get(null);
             return loaderLogger.getContext().getLogger(name);

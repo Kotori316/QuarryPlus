@@ -28,8 +28,8 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 
@@ -154,7 +154,7 @@ public class BlockController extends QPBlock {
     }
 
     private static Field getSpawnDelayField() {
-        if (Launcher.INSTANCE != null) {
+        if (false && Launcher.INSTANCE != null) {
             return ObfuscationReflectionHelper.findField(BaseSpawner.class, "f_45442_");
         } else {
             try {
@@ -168,7 +168,7 @@ public class BlockController extends QPBlock {
     }
 
     private static Field getNextSpawnDataField() {
-        if (Launcher.INSTANCE != null) {
+        if (false && Launcher.INSTANCE != null) {
             return ObfuscationReflectionHelper.findField(BaseSpawner.class, "f_45444_");
         } else {
             try {

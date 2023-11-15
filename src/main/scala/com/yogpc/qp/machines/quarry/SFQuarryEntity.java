@@ -18,11 +18,11 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,7 +87,7 @@ public final class SFQuarryEntity extends TileQuarry implements MenuProvider {
         if (quarry.fuelCount <= 0) {
             var fuel = quarry.fuelContainer.getItem(0);
             if (FurnaceBlockEntity.isFuel(fuel)) {
-                quarry.fuelCount += (int) (ForgeHooks.getBurnTime(fuel, null) * 4 / energyInFE);
+                quarry.fuelCount += (int) (CommonHooks.getBurnTime(fuel, null) * 4 / energyInFE);
                 if (fuel.hasCraftingRemainingItem()) {
                     quarry.fuelContainer.setItem(0, fuel.getCraftingRemainingItem());
                 } else {
@@ -105,7 +105,7 @@ public final class SFQuarryEntity extends TileQuarry implements MenuProvider {
     @Override
     @NotNull
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
+        if (cap == Capabilities.ITEM_HANDLER) {
             return LazyOptional.of(() -> new InvWrapper(this.fuelContainer)).cast();
         }
         return super.getCapability(cap, side);

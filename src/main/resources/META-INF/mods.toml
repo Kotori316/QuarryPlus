@@ -1,5 +1,5 @@
-modLoader = "kotori_scala"
-loaderVersion = "[2.13.10-build-0, ),[45,)"
+modLoader = "javafml"
+loaderVersion = "[2.13.10-build-0, ),[1,)"
 issueTrackerURL = "https://github.com/Kotori316/QuarryPlus/issues"
 license = "GNU Lesser General Public License v3.0"
 [[mods]]
@@ -14,9 +14,9 @@ logoFile = "assets/quarryplus/textures/block/mod_quarryplus.png"
 description = '''
 Adds some machines to make a big hole in your world.'''
 [[dependencies.quarryplus]]
-modId = "forge"
+modId = "neoforge"
 mandatory = true
-versionRange = "[48.0.19,)"
+versionRange = "[20.2.0-beta,)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.quarryplus]]

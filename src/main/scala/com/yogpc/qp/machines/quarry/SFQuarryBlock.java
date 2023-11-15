@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
@@ -107,7 +108,7 @@ public final class SFQuarryBlock extends QPBlock implements EntityBlock {
                         quarry.target = null;
                     } else {
                         // Open Fuel Slot GUI
-                        ((ServerPlayer) player).openMenu(quarry, pos);
+                        NetworkHooks.openScreen((ServerPlayer) player, quarry, pos);
                     }
                 }
             }

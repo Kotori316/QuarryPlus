@@ -9,7 +9,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 
 /**
  * To Server only
@@ -37,7 +37,7 @@ public final class FillerButtonMessage implements IMessage {
         buf.writeEnum(this.action);
     }
 
-    public static void onReceive(FillerButtonMessage message, CustomPayloadEvent.Context supplier) {
+    public static void onReceive(FillerButtonMessage message, NetworkEvent.Context supplier) {
         var world = PacketHandler.getWorld(supplier, message.pos, message.dim);
         supplier.enqueueWork(() ->
             world.map(w -> w.getBlockEntity(message.pos))

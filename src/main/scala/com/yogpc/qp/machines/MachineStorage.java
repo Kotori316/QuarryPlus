@@ -12,13 +12,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -127,7 +127,7 @@ public class MachineStorage {
             int count = 0;
             for (var direction : INSERT_ORDER) {
                 var destination = Optional.ofNullable(world.getBlockEntity(pos.relative(direction)));
-                var handler = destination.flatMap(d -> d.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).resolve()).orElse(null);
+                var handler = destination.flatMap(d -> d.getCapability(Capabilities.ITEM_HANDLER, direction.getOpposite()).resolve()).orElse(null);
                 if (handler == null) continue;
                 var itemMap = new ArrayList<>(storage.itemMap.entrySet());
                 for (Map.Entry<ItemKey, Long> entry : itemMap) {
@@ -168,7 +168,7 @@ public class MachineStorage {
             for (Direction direction : INSERT_ORDER) {
                 var destPos = pos.relative(direction);
                 var handler = Optional.ofNullable(world.getBlockEntity(destPos))
-                    .flatMap(d -> d.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).resolve())
+                    .flatMap(d -> d.getCapability(Capabilities.FLUID_HANDLER, direction.getOpposite()).resolve())
                     .orElse(null);
                 if (handler == null) continue;
                 var fluidMap = new ArrayList<>(storage.getFluidMap().entrySet());

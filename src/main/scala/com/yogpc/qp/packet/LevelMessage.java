@@ -6,7 +6,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 
 /**
  * To Server only.
@@ -35,7 +35,7 @@ public final class LevelMessage implements IMessage {
 
     }
 
-    public static void onReceive(LevelMessage message, CustomPayloadEvent.Context supplier) {
+    public static void onReceive(LevelMessage message, NetworkEvent.Context supplier) {
         var world = PacketHandler.getWorld(supplier, message.pos, message.dim);
         supplier.enqueueWork(() ->
             world

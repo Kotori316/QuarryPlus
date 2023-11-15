@@ -3,7 +3,7 @@ package com.yogpc.qp.utils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.neoforged.neoforge.registries.IForgeRegistry;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Objects;

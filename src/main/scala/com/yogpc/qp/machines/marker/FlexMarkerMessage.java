@@ -9,7 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 
 import java.util.Objects;
 
@@ -43,7 +43,7 @@ public final class FlexMarkerMessage implements IMessage {
         buffer.writeVarInt(amount);
     }
 
-    public static void onReceive(FlexMarkerMessage message, CustomPayloadEvent.Context supplier) {
+    public static void onReceive(FlexMarkerMessage message, NetworkEvent.Context supplier) {
         var world = PacketHandler.getWorld(supplier, message.pos, message.dim);
         supplier.enqueueWork(() ->
             world.map(w -> w.getBlockEntity(message.pos))

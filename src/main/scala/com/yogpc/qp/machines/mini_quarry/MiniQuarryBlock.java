@@ -31,6 +31,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
@@ -71,7 +72,7 @@ public class MiniQuarryBlock extends QPBlock implements EntityBlock {
         if (!player.isShiftKeyDown()) {
             if (!level.isClientSide) {
                 level.getBlockEntity(pos, Holder.MINI_QUARRY_TYPE)
-                    .ifPresent(t -> ((ServerPlayer) player).openMenu(t, pos));
+                    .ifPresent(t -> NetworkHooks.openScreen((ServerPlayer) player, t, pos));
             }
             return InteractionResult.SUCCESS;
         } else {

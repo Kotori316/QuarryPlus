@@ -29,9 +29,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -306,7 +306,7 @@ public class TileAdvQuarry extends PowerTile implements
         // Check breakable
         var state = targetWorld.getBlockState(targetPos);
         var breakEvent = new BlockEvent.BreakEvent(targetWorld, targetPos, state, fakePlayer);
-        MinecraftForge.EVENT_BUS.post(breakEvent);
+        NeoForge.EVENT_BUS.post(breakEvent);
         if (breakEvent.isCanceled()) {
             TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), targetPos, state, BreakResult.FAIL_EVENT);
             return BreakResult.FAIL_EVENT;
@@ -378,7 +378,7 @@ public class TileAdvQuarry extends PowerTile implements
                     continue;
                 }
                 var breakEvent = new BlockEvent.BreakEvent(targetWorld, mutableBlockPos, state, fakePlayer);
-                MinecraftForge.EVENT_BUS.post(breakEvent);
+                NeoForge.EVENT_BUS.post(breakEvent);
                 if (breakEvent.isCanceled()) {
                     TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), mutableBlockPos, state, BreakResult.FAIL_EVENT);
                     continue; // Not breakable. Ignore.
