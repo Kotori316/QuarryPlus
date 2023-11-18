@@ -155,9 +155,7 @@ repositories {
         name = "Azure-SLP"
         url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
         content {
-            it.includeVersion("com.kotori316", "ScalableCatsForce".toLowerCase(), project.slpVersion as String)
-            it.includeVersion("com.kotori316", "test_utility", project.testUtilVersion as String)
-            it.includeVersion("com.kotori316", "test_utility_dependency", "2.0-SNAPSHOT")
+            it.includeGroup("com.kotori316")
             it.includeVersion("org.typelevel", "cats-core_3", project.catsVersion as String)
             it.includeVersion("org.typelevel", "cats-kernel_3", project.catsVersion as String)
         }
@@ -193,7 +191,7 @@ dependencies {
     compileOnly(group: "mezz.jei", name: "jei-1.20.2-common-api", version: project.jeiVersion)
     compileOnly(group: "mezz.jei", name: "jei-1.20.2-forge-api", version: project.jeiVersion)
     compileOnly(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion)
-    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: project.slpVersion, classifier: "with-library") {
+    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce-NeoForge".toLowerCase(), version: project.slpVersion, classifier: "with-library") {
         transitive(false)
     }
 
