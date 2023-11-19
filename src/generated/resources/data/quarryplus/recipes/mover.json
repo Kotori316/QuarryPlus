@@ -1,10 +1,12 @@
 {
   "type": "quarryplus:workbench_recipe",
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "mover"
+    }
+  ],
   "energy": 320000.0,
-  "forge:condition": {
-    "type": "quarryplus:machine_enabled",
-    "value": "mover"
-  },
   "ingredients": [
     {
       "count": 32,
@@ -36,8 +38,8 @@
     }
   ],
   "result": {
-    "count": 1,
-    "item": "quarryplus:mover"
+    "Count": 1,
+    "id": "quarryplus:mover"
   },
   "showInJEI": true,
   "subType": "default"

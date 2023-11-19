@@ -1,10 +1,12 @@
 {
   "type": "quarryplus:workbench_recipe",
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "y_setter"
+    }
+  ],
   "energy": 80000.0,
-  "forge:condition": {
-    "type": "quarryplus:machine_enabled",
-    "value": "y_setter"
-  },
   "ingredients": [
     {
       "count": 32,
@@ -24,8 +26,8 @@
     }
   ],
   "result": {
-    "count": 1,
-    "item": "quarryplus:y_setter"
+    "Count": 1,
+    "id": "quarryplus:y_setter"
   },
   "showInJEI": true,
   "subType": "default"

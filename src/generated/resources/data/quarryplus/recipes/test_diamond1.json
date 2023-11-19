@@ -1,10 +1,11 @@
 {
   "type": "quarryplus:workbench_recipe",
+  "conditions": [
+    {
+      "type": "quarryplus:debug_enabled"
+    }
+  ],
   "energy": 640.0,
-  "forge:condition": {
-    "type": "quarryplus:debug_enabled",
-    "value": {}
-  },
   "ingredients": [
     [
       {
@@ -18,8 +19,8 @@
     ]
   ],
   "result": {
-    "count": 1,
-    "item": "minecraft:diamond"
+    "Count": 1,
+    "id": "minecraft:diamond"
   },
   "showInJEI": true,
   "subType": "default"

@@ -1,10 +1,12 @@
 {
   "type": "quarryplus:workbench_recipe",
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "fuel_module_normal"
+    }
+  ],
   "energy": 3200.0,
-  "forge:condition": {
-    "type": "quarryplus:machine_enabled",
-    "value": "fuel_module_normal"
-  },
   "ingredients": [
     {
       "count": 16,
@@ -24,8 +26,8 @@
     }
   ],
   "result": {
-    "count": 1,
-    "item": "quarryplus:fuel_module_normal"
+    "Count": 1,
+    "id": "quarryplus:fuel_module_normal"
   },
   "showInJEI": true,
   "subType": "default"

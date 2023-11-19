@@ -1,10 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "forge:condition": {
-    "type": "quarryplus:machine_enabled",
-    "value": "solid_fuel_quarry"
-  },
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "solid_fuel_quarry"
+    }
+  ],
   "key": {
     "D": {
       "tag": "forge:storage_blocks/gold"

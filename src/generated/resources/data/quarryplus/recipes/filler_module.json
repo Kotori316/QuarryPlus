@@ -1,10 +1,12 @@
 {
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
-  "forge:condition": {
-    "type": "quarryplus:machine_enabled",
-    "value": "filler_module"
-  },
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "filler_module"
+    }
+  ],
   "group": "quarryplus:group_module",
   "ingredients": [
     {

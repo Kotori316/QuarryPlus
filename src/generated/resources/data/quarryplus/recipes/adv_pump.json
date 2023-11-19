@@ -1,10 +1,12 @@
 {
   "type": "quarryplus:workbench_recipe",
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "adv_pump"
+    }
+  ],
   "energy": 3200000.0,
-  "forge:condition": {
-    "type": "quarryplus:machine_enabled",
-    "value": "adv_pump"
-  },
   "ingredients": [
     [
       {
@@ -26,8 +28,8 @@
     }
   ],
   "result": {
-    "count": 1,
-    "item": "quarryplus:adv_pump"
+    "Count": 1,
+    "id": "quarryplus:adv_pump"
   },
   "showInJEI": true,
   "subType": "default"

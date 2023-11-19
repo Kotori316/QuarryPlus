@@ -1,10 +1,12 @@
 {
   "type": "quarryplus:workbench_recipe",
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "exp_pump"
+    }
+  ],
   "energy": 320000.0,
-  "forge:condition": {
-    "type": "quarryplus:machine_enabled",
-    "value": "exp_pump"
-  },
   "ingredients": [
     {
       "count": 16,
@@ -20,14 +22,12 @@
     },
     [
       {
-        "type": "forge:nbt",
+        "type": "neoforge:nbt",
+        "Count": 1,
         "count": 128,
-        "stack": {
-          "Count": 1,
-          "id": "minecraft:potion",
-          "tag": {
-            "Potion": "minecraft:water"
-          }
+        "id": "minecraft:potion",
+        "tag": {
+          "Potion": "minecraft:water"
         }
       },
       {
@@ -45,8 +45,8 @@
     }
   ],
   "result": {
-    "count": 1,
-    "item": "quarryplus:exp_pump"
+    "Count": 1,
+    "id": "quarryplus:exp_pump"
   },
   "showInJEI": true,
   "subType": "default"

@@ -1,10 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "forge:condition": {
-    "type": "quarryplus:machine_enabled",
-    "value": "remote_placer"
-  },
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "remote_placer"
+    }
+  ],
   "key": {
     "d": {
       "tag": "forge:gems/diamond"

@@ -1,10 +1,12 @@
 {
   "type": "quarryplus:workbench_recipe",
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "repeat_tick_module"
+    }
+  ],
   "energy": 160000.0,
-  "forge:condition": {
-    "type": "quarryplus:machine_enabled",
-    "value": "repeat_tick_module"
-  },
   "ingredients": [
     {
       "count": 1,
@@ -20,8 +22,8 @@
     }
   ],
   "result": {
-    "count": 1,
-    "item": "quarryplus:repeat_tick_module"
+    "Count": 1,
+    "id": "quarryplus:repeat_tick_module"
   },
   "showInJEI": true,
   "subType": "default"

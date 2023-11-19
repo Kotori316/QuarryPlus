@@ -1,22 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "forge:condition": {
-    "type": "forge:and",
-    "values": [
-      {
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "placer_plus"
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
         "type": "quarryplus:machine_enabled",
-        "value": "placer_plus"
-      },
-      {
-        "type": "forge:not",
-        "value": {
-          "type": "quarryplus:machine_enabled",
-          "value": "workbench"
-        }
+        "value": "workbench"
       }
-    ]
-  },
+    }
+  ],
   "key": {
     "D": {
       "item": "minecraft:dispenser"

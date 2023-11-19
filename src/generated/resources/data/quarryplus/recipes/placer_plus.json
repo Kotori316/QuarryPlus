@@ -1,10 +1,12 @@
 {
   "type": "quarryplus:workbench_recipe",
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "placer_plus"
+    }
+  ],
   "energy": 30000.0,
-  "forge:condition": {
-    "type": "quarryplus:machine_enabled",
-    "value": "placer_plus"
-  },
   "ingredients": [
     {
       "count": 1,
@@ -28,8 +30,8 @@
     }
   ],
   "result": {
-    "count": 1,
-    "item": "quarryplus:placer_plus"
+    "Count": 1,
+    "id": "quarryplus:placer_plus"
   },
   "showInJEI": true,
   "subType": "default"

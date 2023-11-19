@@ -1,10 +1,12 @@
 {
   "type": "quarryplus:workbench_recipe",
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "mini_quarry"
+    }
+  ],
   "energy": 10000.0,
-  "forge:condition": {
-    "type": "quarryplus:machine_enabled",
-    "value": "mini_quarry"
-  },
   "ingredients": [
     {
       "count": 2,
@@ -28,8 +30,8 @@
     }
   ],
   "result": {
-    "count": 1,
-    "item": "quarryplus:mini_quarry"
+    "Count": 1,
+    "id": "quarryplus:mini_quarry"
   },
   "showInJEI": true,
   "subType": "default"

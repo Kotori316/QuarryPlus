@@ -1,10 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "forge:condition": {
-    "type": "quarryplus:machine_enabled",
-    "value": "workbench"
-  },
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "workbench"
+    }
+  ],
   "key": {
     "D": {
       "tag": "forge:storage_blocks/diamond"

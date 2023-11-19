@@ -1,10 +1,12 @@
 {
   "type": "quarryplus:workbench_recipe",
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "filter_module"
+    }
+  ],
   "energy": 3200.0,
-  "forge:condition": {
-    "type": "quarryplus:machine_enabled",
-    "value": "filter_module"
-  },
   "ingredients": [
     {
       "count": 2,
@@ -16,8 +18,8 @@
     }
   ],
   "result": {
-    "count": 1,
-    "item": "quarryplus:filter_module"
+    "Count": 1,
+    "id": "quarryplus:filter_module"
   },
   "showInJEI": true,
   "subType": "default"

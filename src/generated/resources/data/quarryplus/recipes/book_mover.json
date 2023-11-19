@@ -1,10 +1,12 @@
 {
   "type": "quarryplus:workbench_recipe",
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "book_mover"
+    }
+  ],
   "energy": 500000.0,
-  "forge:condition": {
-    "type": "quarryplus:machine_enabled",
-    "value": "book_mover"
-  },
   "ingredients": [
     {
       "count": 4,
@@ -24,8 +26,8 @@
     }
   ],
   "result": {
-    "count": 1,
-    "item": "quarryplus:book_mover"
+    "Count": 1,
+    "id": "quarryplus:book_mover"
   },
   "showInJEI": true,
   "subType": "default"
