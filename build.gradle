@@ -252,7 +252,7 @@ tasks.named("jar", org.gradle.jvm.tasks.Jar).configure {
         attributes(jarAttributeMap)
     }
 
-    finalizedBy("reobfJar", "jksSignJar")
+    finalizedBy("jksSignJar")
 }
 
 sourceSets {
@@ -289,7 +289,7 @@ artifacts {
 }
 
 tasks.register("jksSignJar") {
-    dependsOn("reobfJar")
+    dependsOn("jar")
     boolean executeCondition = project.hasProperty("jarSign.keyAlias") &&
             project.hasProperty("jarSign.keyLocation") &&
             project.hasProperty("jarSign.storePass")
