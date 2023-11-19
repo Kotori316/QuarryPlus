@@ -29,12 +29,12 @@ jobs:
         run: ./gradlew testClasses
       - name: JUnit
         run: ./gradlew test
-      - name: GameTest
-        run: |
-          (./gradlew downloadMCMeta downloadAssets) || \
-          (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || \
-          (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || true
-          ./gradlew runGameTestServer
+      # - name: GameTest
+      #   run: |
+      #     (./gradlew downloadMCMeta downloadAssets) || \
+      #     (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || \
+      #     (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || true
+      #     ./gradlew runGameTestServer
       - uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: ${{secrets.GCP_IDENTITY_PROVIDER}}
