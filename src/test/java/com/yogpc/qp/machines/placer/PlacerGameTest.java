@@ -11,8 +11,8 @@ import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.neoforged.neoforge.gametest.GameTestDontPrefix;
 import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.Arrays;
@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @GameTestHolder(QuarryPlus.modID)
-@GameTestDontPrefix
+@PrefixGameTestTemplate(value = false)
 public final class PlacerGameTest {
     static final String BATCH = "PlacerGameTest";
 

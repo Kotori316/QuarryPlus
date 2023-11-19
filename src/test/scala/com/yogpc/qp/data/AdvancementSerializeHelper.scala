@@ -9,7 +9,10 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.TagKey
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.ItemLike
+import net.neoforged.neoforge.common.conditions.{ICondition, NotCondition, TagEmptyCondition}
 import net.neoforged.neoforge.registries.ForgeRegistries
+
+import scala.jdk.OptionConverters.RichOptional
 
 case class AdvancementSerializeHelper private(location: ResourceLocation,
                                               builder: Advancement.Builder,

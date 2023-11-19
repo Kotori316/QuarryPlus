@@ -1,14 +1,14 @@
 package com.yogpc.qp.data;
 
-import java.nio.file.Path;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import org.apache.logging.log4j.Logger;
+
+import java.nio.file.Path;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 abstract class QuarryDataProvider implements DataProvider {
     private static final Logger LOGGER = QuarryPlus.getLogger(QuarryPlusDataProvider.class);

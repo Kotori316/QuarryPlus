@@ -7,8 +7,8 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.gametest.GameTestDontPrefix;
 import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @GameTestHolder(QuarryPlus.modID)
-@GameTestDontPrefix
+@PrefixGameTestTemplate(value = false)
 class EnergyModuleItemTest {
     static final String BATCH = "EnergyModuleItem";
 

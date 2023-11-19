@@ -11,7 +11,6 @@ import net.neoforged.neoforge.data.event.GatherDataEvent
 import java.util.Collections
 import scala.jdk.javaapi.CollectionConverters
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = QuarryPlus.modID)
 object QuarryPlusDataProvider {
 
   @SubscribeEvent
@@ -29,3 +28,6 @@ object QuarryPlusDataProvider {
 
   def location(path: String) = new ResourceLocation(QuarryPlus.modID, path)
 }
+
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = QuarryPlus.modID)
+class QuarryPlusDataProvider

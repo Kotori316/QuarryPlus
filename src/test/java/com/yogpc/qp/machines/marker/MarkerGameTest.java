@@ -7,8 +7,8 @@ import com.yogpc.qp.machines.Area;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.neoforged.neoforge.gametest.GameTestDontPrefix;
 import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import static com.kotori316.testutil.GameTestUtil.EMPTY_STRUCTURE;
 import static org.junit.jupiter.api.Assertions.*;
 
 @GameTestHolder(QuarryPlus.modID)
-@GameTestDontPrefix
+@PrefixGameTestTemplate(value = false)
 public final class MarkerGameTest {
     public static final String BATCH = "MarkerTest";
     private static final AtomicInteger COUNT = new AtomicInteger(1);

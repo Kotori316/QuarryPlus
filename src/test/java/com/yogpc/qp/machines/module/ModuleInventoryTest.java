@@ -9,8 +9,8 @@ import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.gametest.GameTestDontPrefix;
 import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +24,7 @@ class ModuleInventoryTest {
     static final String BATCH = "ModuleInventory";
 
     @GameTestHolder(QuarryPlus.modID)
-    @GameTestDontPrefix
+    @PrefixGameTestTemplate(value = false)
     static class SingleTest {
         @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
         void getModules1() {
@@ -46,7 +46,7 @@ class ModuleInventoryTest {
     }
 
     @GameTestHolder(QuarryPlus.modID)
-    @GameTestDontPrefix
+    @PrefixGameTestTemplate(value = false)
     static class MultiTest {
         @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
         void getModules3() {
@@ -68,7 +68,7 @@ class ModuleInventoryTest {
     }
 
     @GameTestHolder(QuarryPlus.modID)
-    @GameTestDontPrefix
+    @PrefixGameTestTemplate(value = false)
     static class InventoryTest {
         @GameTestGenerator
         List<TestFunction> empty() {

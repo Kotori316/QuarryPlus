@@ -15,8 +15,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SnowyDirtBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.gametest.GameTestDontPrefix;
 import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * which requires actual minecraft instance.
  */
 @GameTestHolder(QuarryPlus.modID)
-@GameTestDontPrefix
+@PrefixGameTestTemplate(value = false)
 public final class BlockStatePredicateTagsTest {
     private static final String BATCH = "BlockStatePredicateTags";
 

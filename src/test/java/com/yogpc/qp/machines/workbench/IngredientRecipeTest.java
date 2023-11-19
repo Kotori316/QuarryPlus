@@ -14,9 +14,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.neoforged.neoforge.common.crafting.conditions.ICondition;
-import net.neoforged.neoforge.gametest.GameTestDontPrefix;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import java.io.IOException;
@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 @GameTestHolder(QuarryPlus.modID)
-@GameTestDontPrefix
+@PrefixGameTestTemplate(value = false)
 class IngredientRecipeTest {
     static final String BATCH = "IngredientRecipe";
     static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();

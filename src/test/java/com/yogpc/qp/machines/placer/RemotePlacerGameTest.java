@@ -12,8 +12,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.gametest.GameTestDontPrefix;
 import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.List;
 import java.util.Objects;
@@ -23,7 +23,7 @@ import static com.yogpc.qp.machines.placer.PlacerGameTest.BATCH;
 import static org.junit.jupiter.api.Assertions.*;
 
 @GameTestHolder(QuarryPlus.modID)
-@GameTestDontPrefix
+@PrefixGameTestTemplate(value = false)
 public final class RemotePlacerGameTest {
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE, batch = BATCH)
     public void placeRemotePlacerBlock(GameTestHelper helper) {
