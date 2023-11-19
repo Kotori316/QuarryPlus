@@ -1,16 +1,17 @@
 package com.yogpc.qp.data
 
-import java.util.Collections
-
 import com.google.gson.JsonObject
 import com.yogpc.qp.{Holder, QuarryPlus}
+import net.minecraft.core.HolderLookup
 import net.minecraft.data.DataGenerator
 import net.minecraft.resources.ResourceLocation
 
+import java.util.Collections
+import java.util.concurrent.CompletableFuture
 import scala.jdk.javaapi.CollectionConverters
 
-class DefaultMachineConfig(generator: DataGenerator)
-  extends QuarryDataProvider(generator) {
+class DefaultMachineConfig(generator: DataGenerator, provider: CompletableFuture[HolderLookup.Provider])
+  extends QuarryDataProvider(generator, provider) {
   override def directory(): String = "../.." // To save to root dir
 
   override def data(): java.util.List[_ <: DataBuilder] = {
@@ -21,7 +22,7 @@ class DefaultMachineConfig(generator: DataGenerator)
 private object DefaultMachineConfig extends DataBuilder {
   override def location(): ResourceLocation = new ResourceLocation(QuarryPlus.modID, "machine_default")
 
-  override def build(): JsonObject = {
+  override def build(provider: HolderLookup.Provider): JsonObject = {
     CollectionConverters.asScala(Holder.conditionHolders)
       .filter(_.configurable)
       .sortBy(_.path)

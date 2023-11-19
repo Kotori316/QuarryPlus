@@ -1,20 +1,20 @@
 package com.yogpc.qp.machines.workbench;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.Util;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import java.util.Map;
-import java.util.Objects;
 
 public class WorkbenchRecipeSerializer implements RecipeSerializer<WorkbenchRecipe> {
     public static final Codec<WorkbenchRecipe> CODEC = new RecipeCodec();
@@ -42,7 +42,7 @@ public class WorkbenchRecipeSerializer implements RecipeSerializer<WorkbenchReci
     }
 
     @Override
-    public WorkbenchRecipe fromNetwork( FriendlyByteBuf buffer) {
+    public WorkbenchRecipe fromNetwork(FriendlyByteBuf buffer) {
         var subType = buffer.readUtf();
         return serializeMap.get(subType).fromPacket(buffer);
     }
@@ -72,13 +72,8 @@ public class WorkbenchRecipeSerializer implements RecipeSerializer<WorkbenchReci
 
         void toPacket(FriendlyByteBuf buffer, T recipe);
 
-        static JsonObject toJson(ItemStack stack) {
-            var o = new JsonObject();
-            o.addProperty("item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(stack.getItem())).toString());
-            o.addProperty("count", stack.getCount());
-            if (stack.getTag() != null)
-                o.addProperty("nbt", stack.getTag().toString());
-            return o;
+        static JsonElement toJson(ItemStack stack) {
+            return Util.getOrThrow(ItemStack.CODEC.encodeStart(JsonOps.INSTANCE, stack), RuntimeException::new);
         }
     }
 

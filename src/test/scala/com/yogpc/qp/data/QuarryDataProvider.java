@@ -1,6 +1,7 @@
 package com.yogpc.qp.data;
 
 import com.yogpc.qp.QuarryPlus;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -13,9 +14,11 @@ import java.util.concurrent.CompletableFuture;
 abstract class QuarryDataProvider implements DataProvider {
     private static final Logger LOGGER = QuarryPlus.getLogger(QuarryPlusDataProvider.class);
     protected final DataGenerator generatorIn;
+    protected final CompletableFuture<HolderLookup.Provider> provider;
 
-    protected QuarryDataProvider(DataGenerator generatorIn) {
+    protected QuarryDataProvider(DataGenerator generatorIn, CompletableFuture<HolderLookup.Provider> provider) {
         this.generatorIn = generatorIn;
+        this.provider = provider;
     }
 
     @Override
@@ -28,11 +31,13 @@ abstract class QuarryDataProvider implements DataProvider {
     }
 
     private CompletableFuture<?> outputWork(CachedOutput cache, Path path, DataBuilder builder) {
-        Path out = path.resolve("data/%s/%s/%s.json".formatted(builder.location().getNamespace(), directory(), builder.location().getPath()))
-            .normalize()
-            .toAbsolutePath();
-        var json = builder.build();
-        return DataProvider.saveStable(cache, json, out);
+        return this.provider.thenCompose(p -> {
+            Path out = path.resolve("data/%s/%s/%s.json".formatted(builder.location().getNamespace(), directory(), builder.location().getPath()))
+                .normalize()
+                .toAbsolutePath();
+            var json = builder.build(p);
+            return DataProvider.saveStable(cache, json, out);
+        });
     }
 
     @Override

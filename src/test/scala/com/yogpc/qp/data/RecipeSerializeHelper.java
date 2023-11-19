@@ -1,14 +1,13 @@
 package com.yogpc.qp.data;
 
 import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.conditions.AndCondition;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,16 +27,10 @@ record RecipeSerializeHelper(
     }
 
     @Override
-    public JsonElement build() {
+    public JsonElement build(HolderLookup.Provider provider) {
         var o = recipe.serializeRecipe();
         if (!conditions.isEmpty()) {
-            ICondition toWrite;
-            if (conditions.size() == 1) {
-                toWrite = conditions.get(0);
-            } else {
-                toWrite = new AndCondition(conditions);
-            }
-            o.add("conditions", ICondition.CODEC.encodeStart(JsonOps.INSTANCE, toWrite).get().orThrow());
+            ICondition.writeConditions(provider, o, "conditions", conditions);
         }
         return o;
     }

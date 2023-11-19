@@ -16,9 +16,12 @@ import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
 public record IngredientWithCount(Ingredient ingredient, int count) implements Predicate<ItemStack> {
+
+    public static final String KEY_COUNT = "count";
+
     public IngredientWithCount(JsonObject jsonObject) {
         this(Ingredient.CODEC_NONEMPTY.parse(JsonOps.INSTANCE, modifyCount(jsonObject)).get().orThrow(),
-            GsonHelper.getAsInt(jsonObject, "count"));
+            GsonHelper.getAsInt(jsonObject, KEY_COUNT));
     }
 
     public IngredientWithCount(ItemStack stack) {
@@ -49,9 +52,9 @@ public record IngredientWithCount(Ingredient ingredient, int count) implements P
     public JsonElement toJson() {
         var obj = ingredient.toJson(false);
         if (obj instanceof JsonArray jsonArray) {
-            jsonArray.forEach(e -> e.getAsJsonObject().addProperty("count", count));
+            jsonArray.forEach(e -> e.getAsJsonObject().addProperty(KEY_COUNT, count));
         } else if (obj instanceof JsonObject jsonObject) {
-            jsonObject.addProperty("count", count);
+            jsonObject.addProperty(KEY_COUNT, count);
         }
         return obj;
     }
@@ -79,10 +82,9 @@ public record IngredientWithCount(Ingredient ingredient, int count) implements P
     }
 
     static JsonObject modifyCount(JsonObject object) {
-        if (object.has("count")) {
-            var clone = new JsonObject();
-            object.entrySet().forEach(e -> clone.add(e.getKey(), e.getValue()));
-            clone.remove("count");
+        if (object.has(KEY_COUNT)) {
+            var clone = object.deepCopy();
+            clone.remove(KEY_COUNT);
             return clone;
         } else {
             return object;

@@ -26,7 +26,7 @@
   "energy": 5000.0,
   "showInJEI": true,
   "result": {
-    "item": "minecraft:emerald_block",
-    "count": 1
+    "id": "minecraft:emerald_block",
+    "Count": 1
   }
 }

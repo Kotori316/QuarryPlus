@@ -108,7 +108,7 @@ class IngredientWithCountTest {
             // language=json
             var json = GSON.fromJson("""
                 {
-                  "type": "forge:nbt",
+                  "type": "neoforge:nbt",
                   "count": 128,
                   "stack": {
                     "id": "minecraft:potion",

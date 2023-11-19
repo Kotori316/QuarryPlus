@@ -1,9 +1,9 @@
 package com.yogpc.qp.data
 
-import com.google.gson.{JsonArray, JsonElement, JsonObject}
-import com.mojang.serialization.JsonOps
+import com.google.gson.{JsonElement, JsonObject}
 import net.minecraft.advancements.critereon.{InventoryChangeTrigger, ItemPredicate, RecipeUnlockedTrigger}
 import net.minecraft.advancements.{Advancement, AdvancementRequirements, AdvancementRewards}
+import net.minecraft.core.HolderLookup
 import net.minecraft.data.recipes.RecipeBuilder
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.TagKey
@@ -12,22 +12,17 @@ import net.minecraft.world.level.ItemLike
 import net.neoforged.neoforge.common.conditions.{ICondition, NotCondition, TagEmptyCondition}
 import net.neoforged.neoforge.registries.ForgeRegistries
 
-import scala.jdk.OptionConverters.RichOptional
+import scala.jdk.javaapi.CollectionConverters
 
 case class AdvancementSerializeHelper private(location: ResourceLocation,
                                               builder: Advancement.Builder,
                                               conditions: List[ICondition])
   extends DataBuilder {
 
-  override def build(): JsonElement = {
+  override def build(provider: HolderLookup.Provider): JsonElement = {
     val obj: JsonObject = builder.save(h => {}, "").value().serializeToJson()
     if (conditions.nonEmpty) {
-      val conditionArray: JsonArray = conditions.flatMap { c =>
-        ICondition.CODEC.encodeStart(JsonOps.INSTANCE, c).result().toScala
-      }.foldLeft(new JsonArray()) {
-        case (a, o) => a.add(o); a
-      }
-      obj.add("conditions", conditionArray)
+      ICondition.writeConditions(provider, obj, "conditions", CollectionConverters.asJava(conditions))
     }
     obj
   }

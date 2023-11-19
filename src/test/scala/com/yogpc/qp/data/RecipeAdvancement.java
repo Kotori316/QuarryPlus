@@ -11,6 +11,7 @@ import com.yogpc.qp.machines.placer.RemotePlacerBlock;
 import com.yogpc.qp.machines.quarry.SFQuarryBlock;
 import com.yogpc.qp.machines.workbench.BlockWorkbench;
 import com.yogpc.qp.machines.workbench.EnableCondition;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
@@ -18,10 +19,11 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.NotCondition;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 final class RecipeAdvancement extends QuarryDataProvider {
-    RecipeAdvancement(DataGenerator generatorIn) {
-        super(generatorIn);
+    RecipeAdvancement(DataGenerator generatorIn, CompletableFuture<HolderLookup.Provider> provider) {
+        super(generatorIn, provider);
     }
 
     @Override

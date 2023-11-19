@@ -21,6 +21,7 @@ import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.SFQuarryBlock;
 import com.yogpc.qp.machines.workbench.*;
 import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
@@ -47,13 +48,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import static com.yogpc.qp.data.QuarryPlusDataProvider.location;
 
 class Recipe extends QuarryDataProvider {
-    Recipe(DataGenerator generatorIn) {
-        super(generatorIn);
+    Recipe(DataGenerator generatorIn, CompletableFuture<HolderLookup.Provider> provider) {
+        super(generatorIn, provider);
     }
 
     @Override

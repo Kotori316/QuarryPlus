@@ -12,6 +12,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.Enchantments;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,15 +46,15 @@ class EnchantmentIngredientTest {
     }
 
     static EnchantmentIngredient fromJson(JsonObject json) {
-        return assertDoesNotThrow(() ->
-            Util.getOrThrow(EnchantmentIngredient.CODEC.decode(JsonOps.INSTANCE, json).map(Pair::getFirst),
+        return assertInstanceOf(EnchantmentIngredient.class, assertDoesNotThrow(() ->
+            Util.getOrThrow(Ingredient.CODEC.decode(JsonOps.INSTANCE, json).map(Pair::getFirst),
                 RuntimeException::new)
-        );
+        ));
     }
 
     static JsonElement toJson(EnchantmentIngredient ingredient) {
         return assertDoesNotThrow(() ->
-            Util.getOrThrow(EnchantmentIngredient.CODEC.encodeStart(JsonOps.INSTANCE, ingredient),
+            Util.getOrThrow(Ingredient.CODEC.encodeStart(JsonOps.INSTANCE, ingredient),
                 RuntimeException::new)
         );
     }
