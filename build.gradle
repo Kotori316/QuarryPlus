@@ -310,7 +310,7 @@ tasks.register("jksSignJar") {
 
 def changeLogHeader() {
     return ("""\
-            For Minecraft ${project.minecraftVersion} and Minecraft Forge.
+            For Minecraft ${project.minecraftVersion} and NeoForge.
             Released at ${ZonedDateTime.now(ZoneId.of("Asia/Tokyo")).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}
 
             This mod requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force)
@@ -376,8 +376,9 @@ curseforge {
         changelog = combinedLog()
         releaseType = "release"
         addGameVersion(project.minecraftVersion)
+        addGameVersion("NeoForge")
         mainArtifact(jar) {
-            displayName = "v" + project.version + "-forge" + " [${project.minecraftVersion}]"
+            displayName = "v" + project.version + "-neoforge" + " [${project.minecraftVersion}]"
         }
         addArtifact(deobfJar)
         addArtifact(srcJar)
@@ -396,7 +397,7 @@ modrinth {
     token.set((project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String)
     projectId = "additional-enchanted-miner"
     versionType = "release"
-    versionName = "${project.version}-forge"
+    versionName = "${project.version}-neoforge"
     versionNumber.set(project.version.toString())
     uploadFile = tasks.jar
     getAdditionalFiles().set([
@@ -404,7 +405,7 @@ modrinth {
             tasks.srcJar,
     ])
     getGameVersions().set([project.minecraftVersion])
-    getLoaders().set(["forge"])
+    getLoaders().set(["neoforge"])
     changelog = project.getChangeLog()
     debugMode = false
     dependencies {
@@ -476,13 +477,13 @@ publishing {
     }
     publications {
         register("mavenJava", MavenPublication) {
-            artifactId = "AdditionalEnchantedMiner".toLowerCase()
+            artifactId = "AdditionalEnchantedMiner-NeoForge".toLowerCase()
             from components.java
             artifact(tasks.deobfJar)
             artifact(tasks.srcJar)
             pom {
                 name = archivesBaseName
-                description = "QuarryPlus for Minecraft ${project.minecraftVersion} and Forge ${project.forgeVersion}"
+                description = "QuarryPlus for Minecraft ${project.minecraftVersion} and NeoForge ${project.forgeVersion}"
                 url = "https://github.com/Kotori316/QuarryPlus"
                 packaging = "jar"
             }
@@ -516,8 +517,8 @@ tasks.withType(AbstractPublishToMaven).configureEach {
 tasks.register("registerVersion", CallVersionFunctionTask.class) {
     functionEndpoint = readVersionFunctionEndpoint(project)
     gameVersion = project.findProperty("minecraftVersion")
-    platform = "forge"
+    platform = "neoforge"
     modName = "quarryplus"
     changelog = getShortChangelog(false)
-    homepage = "https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner"
+    homepage = "https://modrinth.com/mod/additional-enchanted-miner"
 }
