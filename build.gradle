@@ -223,7 +223,7 @@ dependencies {
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.
-    compileOnly(group: "com.kotori316", name: "test_utility", version: project.testUtilVersion)
+    implementation(group: "com.kotori316", name: "test_utility_neo", version: project.testUtilVersion)
     implementation(group: "com.kotori316", name: "test_utility_dependency", version: "2.0-SNAPSHOT") {
         exclude(group: 'org.scala-lang', module: 'scala3-library_3')
     }
