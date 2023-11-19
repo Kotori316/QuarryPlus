@@ -45,11 +45,6 @@ jobs:
         env:
           TEST_UTILITY_LOG_ALL_TEST: true
           IGNORE_OTHER_MODS_IN_RUNTIME: true
-      - name: Download assets
-        run: |
-          (./gradlew downloadMCMeta downloadAssets) || \
-          (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || \
-          (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || true
       - name: GameTest
         run: ./gradlew runGameTestServer
         env:
