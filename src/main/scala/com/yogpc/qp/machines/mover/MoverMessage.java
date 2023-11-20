@@ -8,7 +8,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.neoforged.neoforge.network.NetworkEvent;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 /**
  * To Server only.
@@ -21,7 +21,7 @@ public final class MoverMessage implements IMessage {
     public MoverMessage(BlockPos pos, int windowId, Enchantment enchantment) {
         this.pos = pos;
         this.windowId = windowId;
-        this.enchantment = ForgeRegistries.ENCHANTMENTS.getKey(enchantment);
+        this.enchantment = BuiltInRegistries.ENCHANTMENT.getKey(enchantment);
     }
 
     public MoverMessage(FriendlyByteBuf buf) {
@@ -43,6 +43,6 @@ public final class MoverMessage implements IMessage {
                 .map(p -> p.containerMenu)
                 .filter(m -> m.containerId == message.windowId)
                 .flatMap(MapMulti.optCast(ContainerMover.class))
-                .ifPresent(c -> c.moveEnchant(ForgeRegistries.ENCHANTMENTS.getValue(message.enchantment))));
+                .ifPresent(c -> c.moveEnchant(BuiltInRegistries.ENCHANTMENT.get(message.enchantment))));
     }
 }

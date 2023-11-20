@@ -10,12 +10,12 @@ import com.yogpc.qp.machines.mini_quarry.MiniQuarryBlock;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.SFQuarryBlock;
 import com.yogpc.qp.utils.MapStreamSyntax;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -288,8 +288,8 @@ public class Config {
                 .orElseGet(List::of)
                 .stream()
                 .map(ResourceLocation::new)
-                .filter(ForgeRegistries.ENCHANTMENTS::containsKey)
-                .map(ForgeRegistries.ENCHANTMENTS::getValue)
+                .filter(BuiltInRegistries.ENCHANTMENT::containsKey)
+                .map(BuiltInRegistries.ENCHANTMENT::get)
                 .collect(Collectors.toSet());
         }
 

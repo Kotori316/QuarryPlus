@@ -17,7 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.TierSortingRegistry;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -184,7 +184,7 @@ public class ContainerMover extends AbstractContainerMenu {
         if (!list.isEmpty()) {
             for (int i = 0; i < list.size(); i++) {
                 var nbt = list.getCompound(i);
-                if (ForgeRegistries.ENCHANTMENTS.getValue(EnchantmentHelper.getEnchantmentId(nbt)) == enchantment) {
+                if (BuiltInRegistries.ENCHANTMENT.get(EnchantmentHelper.getEnchantmentId(nbt)) == enchantment) {
                     int l = EnchantmentHelper.getEnchantmentLevel(nbt);
                     if (l == 1) {
                         list.remove(i);
@@ -209,7 +209,7 @@ public class ContainerMover extends AbstractContainerMenu {
             var list = stack.getEnchantmentTags();
             for (int i = 0; i < list.size(); i++) {
                 var nbt = list.getCompound(i);
-                if (ForgeRegistries.ENCHANTMENTS.getValue(EnchantmentHelper.getEnchantmentId(nbt)) == enchantment) {
+                if (BuiltInRegistries.ENCHANTMENT.get(EnchantmentHelper.getEnchantmentId(nbt)) == enchantment) {
                     EnchantmentHelper.setEnchantmentLevel(nbt, level + 1);
                     break;
                 }

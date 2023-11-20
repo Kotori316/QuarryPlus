@@ -23,7 +23,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Arrays;
@@ -38,7 +38,7 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
     static final Set<EnchantmentCategory> CATEGORIES = Arrays.stream(EnchantmentCategory.values())
         .filter(t -> t.canEnchant(Items.DIAMOND_PICKAXE))
         .collect(Collectors.toSet());
-    static final Set<Enchantment> VALID_ENCHANTMENTS = ForgeRegistries.ENCHANTMENTS.getValues().stream().filter(e -> CATEGORIES.contains(e.category)).collect(Collectors.toSet());
+    static final Set<Enchantment> VALID_ENCHANTMENTS = BuiltInRegistries.ENCHANTMENT.stream().filter(e -> CATEGORIES.contains(e.category)).collect(Collectors.toSet());
 
     public BookMoverEntity(BlockPos pos, BlockState state) {
         super(Holder.BOOK_MOVER_TYPE, pos, state);
@@ -183,7 +183,7 @@ public class BookMoverEntity extends PowerTile implements Container, MenuProvide
         stack.removeTagKey(tagName);
         var newList = list.stream()
             .mapMulti(MapMulti.cast(CompoundTag.class))
-            .filter(t -> !Objects.equals(EnchantmentHelper.getEnchantmentId(t), ForgeRegistries.ENCHANTMENTS.getKey(enchantment)))
+            .filter(t -> !Objects.equals(EnchantmentHelper.getEnchantmentId(t), BuiltInRegistries.ENCHANTMENT.getKey(enchantment)))
             .collect(Collectors.toCollection(ListTag::new));
 
         stack.addTagElement(tagName, newList);

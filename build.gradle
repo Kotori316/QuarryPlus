@@ -146,8 +146,8 @@ repositories {
         url = uri("https://maven.architectury.dev/")
         content {
             it.includeGroup("dev.architectury")
-            it.includeVersion("me.shedaniel", "RoughlyEnoughItems-forge", project.reiVersion)
-            it.includeModule("me.shedaniel.cloth", "cloth-config-forge")
+            it.includeVersion("me.shedaniel", "RoughlyEnoughItems-neoforge", project.reiVersion)
+            it.includeModule("me.shedaniel.cloth", "cloth-config-neoforge")
         }
     }
 
@@ -190,7 +190,10 @@ dependencies {
 
     compileOnly(group: "mezz.jei", name: "jei-1.20.2-common-api", version: project.jeiVersion)
     compileOnly(group: "mezz.jei", name: "jei-1.20.2-forge-api", version: project.jeiVersion)
-    compileOnly(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion)
+    compileOnly(group: "me.shedaniel", name: "RoughlyEnoughItems-neoforge", version: project.reiVersion)
+    // runtimeOnly(group: "me.shedaniel.cloth", name: "cloth-config-neoforge", version: project.clothVersion)
+    // runtimeOnly(group: "dev.architectury", name: "architectury-neoforge", version: project.architecturyVersion)
+
     runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce-NeoForge".toLowerCase(), version: project.slpVersion, classifier: "with-library") {
         transitive(false)
     }
@@ -200,7 +203,7 @@ dependencies {
         implementation(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion)
         implementation(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion)
         runtimeOnly(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion)
-        implementation(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion)
+        implementation(group: "dev.architectury", name: "architectury-neoforge", version: project.architecturyVersion)
     } else {
         compileOnly(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion) {
             transitive(false)

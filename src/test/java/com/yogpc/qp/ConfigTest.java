@@ -7,7 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -181,7 +181,7 @@ final class ConfigTest {
                 assertAll(
                     enchantmentNames.stream()
                         .map(ResourceLocation::new)
-                        .map(n -> () -> assertTrue(ForgeRegistries.ENCHANTMENTS.containsKey(n), "%s must exist.".formatted(n)))
+                        .map(n -> () -> assertTrue(BuiltInRegistries.ENCHANTMENT.containsKey(n), "%s must exist.".formatted(n)))
                 );
             } catch (ReflectiveOperationException e) {
                 fail(e);

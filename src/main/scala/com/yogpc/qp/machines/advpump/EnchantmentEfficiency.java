@@ -8,7 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.List;
 import java.util.Map;
@@ -66,7 +66,7 @@ class EnchantmentEfficiency {
 
     static EnchantmentEfficiency fromNbt(CompoundTag tag) {
         var enchantmentLevels = tag.getAllKeys().stream()
-            .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, tag::getInt))
+            .mapMulti(MapMulti.getEntry(BuiltInRegistries.ENCHANTMENT, tag::getInt))
             .map(EnchantmentLevel::new)
             .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
             .toList();

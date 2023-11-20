@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -86,8 +86,8 @@ public record ItemConverter(
         Function<ItemKey, ItemKey> function = i -> {
             var newPath = i.getId().getPath().replace("deepslate_", "").replace("_deepslate", "");
             var id = new ResourceLocation(i.getId().getNamespace(), newPath);
-            if (ForgeRegistries.ITEMS.containsKey(id)) {
-                return new ItemKey(ForgeRegistries.ITEMS.getValue(id), i.nbt());
+            if (BuiltInRegistries.ITEM.containsKey(id)) {
+                return new ItemKey(BuiltInRegistries.ITEM.get(id), i.nbt());
             } else {
                 return null;
             }

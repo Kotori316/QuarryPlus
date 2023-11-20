@@ -10,7 +10,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.neoforged.neoforge.common.crafting.IngredientType;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -95,7 +95,7 @@ public class EnchantmentIngredient extends Ingredient {
 
     private static final Codec<EnchantmentInstance> ENCHANTMENT_INSTANCE_CODEC = RecordCodecBuilder.create(instance ->
         instance.group(
-            ForgeRegistries.ENCHANTMENTS.getCodec().fieldOf("id").forGetter(i -> i.enchantment),
+            BuiltInRegistries.ENCHANTMENT.byNameCodec().fieldOf("id").forGetter(i -> i.enchantment),
             Codec.INT.fieldOf("level").forGetter(i -> i.level)
         ).apply(instance, EnchantmentInstance::new)
     );

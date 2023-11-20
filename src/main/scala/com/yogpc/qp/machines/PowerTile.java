@@ -18,7 +18,7 @@ import net.neoforged.neoforge.common.capabilities.Capabilities;
 import net.neoforged.neoforge.common.capabilities.Capability;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -41,7 +41,7 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
 
     public PowerTile(BlockEntityType<?> type, @NotNull BlockPos pos, BlockState state) {
         super(type, pos, state);
-        ResourceLocation typeName = Optional.ofNullable(ForgeRegistries.BLOCK_ENTITY_TYPES.getKey(type)).or(
+        ResourceLocation typeName = Optional.ofNullable(BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type)).or(
             () -> Holder.entityTypes().stream().filter(e -> e.t() == type).map(Holder.NamedEntry::name).findFirst()
         ).orElseThrow(() -> new IllegalArgumentException("No location name found for " + type));
         this.enabled = QuarryPlus.config.enableMap.enabled(typeName);

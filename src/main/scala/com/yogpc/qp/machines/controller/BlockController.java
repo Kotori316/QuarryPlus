@@ -9,6 +9,7 @@ import com.yogpc.qp.utils.MapMulti;
 import cpw.mods.modlauncher.Launcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -29,7 +30,6 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 
@@ -84,9 +84,9 @@ public class BlockController extends QPBlock {
                         .ifPresent(s -> player.displayClientMessage(s, false));
                 } else {
                     // Open GUI
-                    var entries = ForgeRegistries.ENTITY_TYPES.getValues().stream()
+                    var entries = BuiltInRegistries.ENTITY_TYPE.stream()
                         .filter(BlockController::canSpawnFromSpawner)
-                        .map(ForgeRegistries.ENTITY_TYPES::getKey)
+                        .map(BuiltInRegistries.ENTITY_TYPE::getKey)
                         .collect(Collectors.toList());
                     PacketHandler.sendToClientPlayer(new ControllerOpenMessage(pos, level.dimension(), entries), (ServerPlayer) player);
                 }
@@ -102,7 +102,7 @@ public class BlockController extends QPBlock {
                 .flatMap(MapMulti.optCast(SpawnData.class))
                 .map(SpawnData::getEntityToSpawn)
                 .flatMap(EntityType::by)
-                .map(ForgeRegistries.ENTITY_TYPES::getKey);
+                .map(BuiltInRegistries.ENTITY_TYPE::getKey);
         } catch (ReflectiveOperationException e) {
             LOGGER.error("Exception occurred in getting entity id.", e);
             return Optional.empty();
@@ -112,13 +112,13 @@ public class BlockController extends QPBlock {
     private static boolean canSpawnFromSpawner(EntityType<?> entityType) {
         if (QuarryPlus.config == null) return true;
         else if (!entityType.canSummon()) return false;
-        return !QuarryPlus.config.common.spawnerBlackList.get().contains(String.valueOf(ForgeRegistries.ENTITY_TYPES.getKey(entityType)));
+        return !QuarryPlus.config.common.spawnerBlackList.get().contains(String.valueOf(BuiltInRegistries.ENTITY_TYPE.getKey(entityType)));
     }
 
     public static void setSpawnerEntity(Level world, BlockPos pos, ResourceLocation name) {
         getSpawner(world, pos).ifPresent(logic -> {
             Optional.of(name)
-                .map(ForgeRegistries.ENTITY_TYPES::getValue)
+                .map(BuiltInRegistries.ENTITY_TYPE::get)
                 .filter(BlockController::canSpawnFromSpawner)
                 .ifPresent(entityType -> logic.getLeft().setEntityId(entityType, world, world.getRandom(), pos));
             Optional.ofNullable(logic.getLeft().getSpawnerBlockEntity()).ifPresent(BlockEntity::setChanged);
@@ -154,6 +154,7 @@ public class BlockController extends QPBlock {
     }
 
     private static Field getSpawnDelayField() {
+        // TODO ObfuscationReflectionHelper
         if (false && Launcher.INSTANCE != null) {
             return ObfuscationReflectionHelper.findField(BaseSpawner.class, "f_45442_");
         } else {
@@ -168,6 +169,7 @@ public class BlockController extends QPBlock {
     }
 
     private static Field getNextSpawnDataField() {
+        // TODO ObfuscationReflectionHelper
         if (false && Launcher.INSTANCE != null) {
             return ObfuscationReflectionHelper.findField(BaseSpawner.class, "f_45444_");
         } else {

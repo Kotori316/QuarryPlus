@@ -16,7 +16,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
 
@@ -67,7 +66,6 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
         graphics.drawCenteredString(this.font, Component.translatable("quarryplus.gui.new_entry"), this.width / 2, 8, 0xFFFFFF);
     }
 
-    @SuppressWarnings("deprecation")
     private List<Pair<Kind, List<String>>> getEntries() {
         String filterText = textField == null ? "" : textField.getValue();
         if (filterText.startsWith("#")) {
@@ -77,13 +75,12 @@ public class MiniQuarryAddEntryGui extends Screen implements Button.OnPress {
         } else {
             return List.of(
                 Pair.of(Kind.ALL, Stream.of("ALL").filter(r -> r.contains(filterText)).toList()),
-                Pair.of(Kind.BLOCK, ForgeRegistries.BLOCKS.getKeys().stream()
+                Pair.of(Kind.BLOCK, BuiltInRegistries.BLOCK.keySet().stream()
                     .map(ResourceLocation::toString).filter(r -> r.contains(filterText)).sorted().collect(Collectors.toList()))
             );
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void onPress(Button button) {
         if (button instanceof IndexedButton indexedButton) {

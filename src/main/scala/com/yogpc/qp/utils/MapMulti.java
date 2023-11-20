@@ -2,8 +2,8 @@ package com.yogpc.qp.utils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.registries.IForgeRegistry;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Objects;
@@ -28,11 +28,11 @@ public class MapMulti {
     }
 
     public static <TO, OTHER> BiConsumer<String, Consumer<Pair<TO, OTHER>>>
-    getEntry(IForgeRegistry<TO> registry, Function<String, OTHER> keyToOther) {
+    getEntry(Registry<TO> registry, Function<String, OTHER> keyToOther) {
         return (s, toConsumer) -> {
             ResourceLocation key = new ResourceLocation(s);
             if (registry.containsKey(key)) {
-                toConsumer.accept(Pair.of(registry.getValue(key), keyToOther.apply(s)));
+                toConsumer.accept(Pair.of(registry.get(key), keyToOther.apply(s)));
             }
         };
     }

@@ -3,7 +3,7 @@ package com.yogpc.qp.machines;
 import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,7 +32,7 @@ class EnchantmentLevelTest {
     @ParameterizedTest
     @MethodSource("enchantments")
     void fromId(Enchantment enchantment) {
-        var id = ForgeRegistries.ENCHANTMENTS.getKey(enchantment);
+        var id = BuiltInRegistries.ENCHANTMENT.getKey(enchantment);
         var ans = new EnchantmentLevel(enchantment, 1);
         var fromName = new EnchantmentLevel(id, 1);
         assertEquals(ans, fromName);
@@ -115,7 +115,7 @@ class EnchantmentLevelTest {
     }
 
     static Stream<Enchantment> enchantments() {
-        return ForgeRegistries.ENCHANTMENTS.getValues().stream();
+        return BuiltInRegistries.ENCHANTMENT.stream();
     }
 
     @Test

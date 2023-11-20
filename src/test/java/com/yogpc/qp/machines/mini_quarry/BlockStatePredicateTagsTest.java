@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
@@ -59,7 +59,7 @@ public final class BlockStatePredicateTagsTest {
 
     @GameTestGenerator
     public List<TestFunction> cycleName() {
-        var names = Stream.of(Blocks.STONE, Blocks.DIAMOND_ORE).map(ForgeRegistries.BLOCKS::getKey);
+        var names = Stream.of(Blocks.STONE, Blocks.DIAMOND_ORE).map(BuiltInRegistries.BLOCK::getKey);
         var abnormalNames = Stream.of("as", "a:t", "", "fe:").map(ResourceLocation::new);
         return Stream.concat(names, abnormalNames)
             .map(BlockStatePredicate::name)

@@ -20,7 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
@@ -95,7 +95,7 @@ class MoverRecipeCategory implements IRecipeCategory<MoverRecipeCategory.MoverRe
     }
 
     static List<MoverRecipe> recipes() {
-        return ForgeRegistries.ITEMS.getValues().stream()
+        return BuiltInRegistries.ITEM.stream()
             .filter(i -> i instanceof EnchantableItem)
             .map(i -> new MoverRecipe((EnchantableItem) i, new ItemStack(i)))
             .toList();

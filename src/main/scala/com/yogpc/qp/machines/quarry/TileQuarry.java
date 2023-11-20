@@ -12,6 +12,7 @@ import com.yogpc.qp.utils.CacheEntry;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -29,7 +30,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
@@ -102,7 +102,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         {
             var enchantments = nbt.getCompound("enchantments");
             setEnchantments(enchantments.getAllKeys().stream()
-                .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, enchantments::getInt))
+                .mapMulti(MapMulti.getEntry(BuiltInRegistries.ENCHANTMENT, enchantments::getInt))
                 .map(EnchantmentLevel::new)
                 .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
                 .toList());

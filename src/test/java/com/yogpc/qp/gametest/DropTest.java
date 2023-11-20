@@ -21,7 +21,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.List;
 import java.util.Map;
@@ -80,7 +80,7 @@ public final class DropTest {
     private static String getPostFix(Map<Enchantment, Integer> map) {
         if (map.isEmpty()) return "none";
         return map.entrySet().stream().map(e -> "%s%d".formatted(
-                Objects.requireNonNull(ForgeRegistries.ENCHANTMENTS.getKey(e.getKey())).getPath().charAt(0),
+                Objects.requireNonNull(BuiltInRegistries.ENCHANTMENT.getKey(e.getKey())).getPath().charAt(0),
                 e.getValue()
             ))
             .collect(Collectors.joining());

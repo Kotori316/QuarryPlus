@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.neoforged.neoforge.gametest.GameTestHooks;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Locale;
@@ -163,7 +163,7 @@ interface BlockStatePredicate {
 
         @Override
         public boolean test(BlockState state, BlockGetter level, BlockPos pos) {
-            return location.equals(ForgeRegistries.BLOCKS.getKey(state.getBlock()));
+            return location.equals(BuiltInRegistries.BLOCK.getKey(state.getBlock()));
         }
 
         @Override

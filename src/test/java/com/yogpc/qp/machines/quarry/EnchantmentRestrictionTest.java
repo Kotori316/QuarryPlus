@@ -3,7 +3,7 @@ package com.yogpc.qp.machines.quarry;
 import com.yogpc.qp.QuarryPlusTest;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,7 +37,7 @@ class EnchantmentRestrictionTest {
     @Test
     void ignoreAll() {
         var restriction = new EnchantmentRestriction(Map.of());
-        var map = ForgeRegistries.ENCHANTMENTS.getValues().stream().map(e -> Map.entry(e, e.getMaxLevel()))
+        var map = BuiltInRegistries.ENCHANTMENT.stream().map(e -> Map.entry(e, e.getMaxLevel()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         var result = restriction.filterMap(map);
         assertTrue(result.isEmpty());
@@ -65,7 +65,7 @@ class EnchantmentRestrictionTest {
             .add(Enchantments.SHARPNESS)
             .add(Enchantments.UNBREAKING)
             .build();
-        var map = ForgeRegistries.ENCHANTMENTS.getValues().stream().map(e -> Map.entry(e, e.getMaxLevel()))
+        var map = BuiltInRegistries.ENCHANTMENT.stream().map(e -> Map.entry(e, e.getMaxLevel()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         var result = fromBuilder.filterMap(map);
         assertEquals(Map.of(Enchantments.BLOCK_EFFICIENCY, 5, Enchantments.UNBREAKING, 3, Enchantments.SHARPNESS, Enchantments.SHARPNESS.getMaxLevel()),
@@ -79,7 +79,7 @@ class EnchantmentRestrictionTest {
             .add(Enchantments.SHARPNESS)
             .add(Enchantments.UNBREAKING, 1)
             .build();
-        var map = ForgeRegistries.ENCHANTMENTS.getValues().stream().map(e -> Map.entry(e, 1))
+        var map = BuiltInRegistries.ENCHANTMENT.stream().map(e -> Map.entry(e, 1))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         var result = fromBuilder.filterMap(map);
         assertEquals(Map.of(Enchantments.BLOCK_EFFICIENCY, 1, Enchantments.UNBREAKING, 1, Enchantments.SHARPNESS, 1),

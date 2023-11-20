@@ -8,7 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -129,7 +129,7 @@ class EnchantmentEfficiencyTest {
 
     static Stream<List<EnchantmentLevel>> randomEnchantments() {
         var random = RandomSource.create(864);
-        List<Enchantment> enchantments = List.copyOf(ForgeRegistries.ENCHANTMENTS.getValues());
+        List<Enchantment> enchantments = BuiltInRegistries.ENCHANTMENT.stream().toList();
 
         return IntStream.range(0, 50).mapToObj(i ->
             IntStream.range(0, random.nextInt(10) + 1)

@@ -10,7 +10,7 @@ import net.minecraft.tags.TagKey
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.ItemLike
 import net.neoforged.neoforge.common.conditions.{ICondition, NotCondition, TagEmptyCondition}
-import net.neoforged.neoforge.registries.ForgeRegistries
+import net.minecraft.core.registries.BuiltInRegistries
 
 import scala.jdk.javaapi.CollectionConverters
 
@@ -28,7 +28,7 @@ case class AdvancementSerializeHelper private(location: ResourceLocation,
   }
 
   def addItemCriterion(item: ItemLike): AdvancementSerializeHelper = {
-    val name: String = ForgeRegistries.ITEMS.getKey(item.asItem()).getPath
+    val name: String = BuiltInRegistries.ITEM.getKey(item.asItem()).getPath
     this.copy(builder = builder.addCriterion(s"has_$name", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item.of(item).build)))
   }
 

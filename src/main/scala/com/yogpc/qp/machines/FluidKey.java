@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
 public record FluidKey(Fluid fluid, @Nullable CompoundTag nbt) {
@@ -22,7 +22,7 @@ public record FluidKey(Fluid fluid, @Nullable CompoundTag nbt) {
     }
 
     static FluidKey fromNbt(CompoundTag tag) {
-        var fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(tag.getString("fluid")));
+        var fluid = BuiltInRegistries.FLUID.get(new ResourceLocation(tag.getString("fluid")));
         var nbt = tag.contains("nbt") ? tag.getCompound("nbt") : null;
         return new FluidKey(fluid, nbt);
     }
@@ -32,6 +32,6 @@ public record FluidKey(Fluid fluid, @Nullable CompoundTag nbt) {
     }
 
     public ResourceLocation getId() {
-        return ForgeRegistries.FLUIDS.getKey(fluid);
+        return BuiltInRegistries.FLUID.getKey(fluid);
     }
 }

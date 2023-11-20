@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
 public record ItemKey(Item item, @Nullable CompoundTag nbt) {
@@ -28,7 +28,7 @@ public record ItemKey(Item item, @Nullable CompoundTag nbt) {
     }
 
     public static ItemKey fromNbt(CompoundTag tag) {
-        var item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("item")));
+        var item = BuiltInRegistries.ITEM.get(new ResourceLocation(tag.getString("item")));
         var nbt = tag.contains("tag") ? tag.getCompound("tag") : null;
         return new ItemKey(item, nbt);
     }
@@ -40,6 +40,6 @@ public record ItemKey(Item item, @Nullable CompoundTag nbt) {
     }
 
     public ResourceLocation getId() {
-        return ForgeRegistries.ITEMS.getKey(item);
+        return BuiltInRegistries.ITEM.getKey(item);
     }
 }

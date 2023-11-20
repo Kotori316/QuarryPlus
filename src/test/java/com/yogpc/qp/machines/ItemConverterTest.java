@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
@@ -154,7 +154,7 @@ class ItemConverterTest {
             Function<ItemKey, ItemKey> convertFunction = i -> {
                 var name = i.getId();
                 var pickaxeName = name.getPath().replace("_ingot", "").replace("gold", "golden") + "_pickaxe";
-                var pickaxeItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(name.getNamespace(), pickaxeName));
+                var pickaxeItem = BuiltInRegistries.ITEM.get(new ResourceLocation(name.getNamespace(), pickaxeName));
                 return new ItemKey(pickaxeItem, i.nbt());
             };
             var converter = new ItemConverter(List.of(Pair.of(keys::contains, convertFunction)));

@@ -35,7 +35,7 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.gametest.GameTestHooks;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -104,8 +104,8 @@ public class QuarryPlus {
             event.register(Registries.RECIPE_TYPE, Register::registerRecipeType);
             event.register(Registries.CREATIVE_MODE_TAB, Register::registerCreativeTab);
             event.register(Registries.COMMAND_ARGUMENT_TYPE, Register::registerArgument);
-            event.register(ForgeRegistries.Keys.CONDITION_CODECS, Register::registerCondition);
-            event.register(ForgeRegistries.Keys.INGREDIENT_TYPES, Register::registerIngredient);
+            event.register(NeoForgeRegistries.Keys.CONDITION_CODECS, Register::registerCondition);
+            event.register(NeoForgeRegistries.Keys.INGREDIENT_TYPES, Register::registerIngredient);
         }
 
         public static void registerBlocks(RegisterEvent.RegisterHelper<Block> blockRegisterHelper) {

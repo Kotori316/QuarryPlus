@@ -17,7 +17,7 @@ import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +39,7 @@ class IngredientRecipeTest {
 
     static String itemNames(List<ItemStack> stacks) {
         if (stacks.isEmpty()) return "none";
-        return stacks.stream().map(i -> "%d%s".formatted(i.getCount(), Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(i.getItem())).getPath()))
+        return stacks.stream().map(i -> "%d%s".formatted(i.getCount(), Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(i.getItem())).getPath()))
             .collect(Collectors.joining("_"));
     }
 

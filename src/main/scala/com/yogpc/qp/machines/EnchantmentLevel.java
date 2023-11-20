@@ -1,13 +1,13 @@
 package com.yogpc.qp.machines;
 
 import com.yogpc.qp.utils.ManualOrder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -18,12 +18,12 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
     }
 
     public EnchantmentLevel(ResourceLocation enchantmentID, int level) {
-        this(ForgeRegistries.ENCHANTMENTS.getValue(enchantmentID), level);
+        this(BuiltInRegistries.ENCHANTMENT.get(enchantmentID), level);
     }
 
     @Nullable
     public ResourceLocation enchantmentID() {
-        return ForgeRegistries.ENCHANTMENTS.getKey(enchantment());
+        return BuiltInRegistries.ENCHANTMENT.getKey(enchantment());
     }
 
     public interface HasEnchantments {
@@ -74,7 +74,7 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
             var tag = enchantmentList.getCompound(i);
             var name = EnchantmentHelper.getEnchantmentId(tag);
             var level = EnchantmentHelper.getEnchantmentLevel(tag);
-            if (ForgeRegistries.ENCHANTMENTS.containsKey(name)) {
+            if (name != null && BuiltInRegistries.ENCHANTMENT.containsKey(name)) {
                 list.add(new EnchantmentLevel(name, level));
             }
         }
@@ -93,7 +93,7 @@ public record EnchantmentLevel(Enchantment enchantment, int level) {
             .thenComparingInt(EnchantmentLevel::level);
     public static final Comparator<EnchantmentLevel> QUARRY_ENCHANTMENT_COMPARATOR =
         Comparator.comparing(EnchantmentLevel::enchantment,
-            ManualOrder.builder(Comparator.comparing(ForgeRegistries.ENCHANTMENTS::getKey))
+            ManualOrder.builder(Comparator.comparing(BuiltInRegistries.ENCHANTMENT::getKey))
                 .add(Enchantments.BLOCK_EFFICIENCY)
                 .add(Enchantments.UNBREAKING)
                 .add(Enchantments.BLOCK_FORTUNE)

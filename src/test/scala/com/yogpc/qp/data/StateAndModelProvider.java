@@ -15,7 +15,7 @@ import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,7 +31,7 @@ final class StateAndModelProvider extends BlockStateProvider {
 
     @Override
     public ResourceLocation blockTexture(Block block) {
-        ResourceLocation name = Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(block), "Block %s isn't registered.".formatted(block));
+        ResourceLocation name = Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(block), "Block %s isn't registered.".formatted(block));
         return new ResourceLocation(name.getNamespace(), "block" + "/" + name.getPath());
     }
 
