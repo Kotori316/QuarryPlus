@@ -147,8 +147,8 @@ repositories {
         url = uri("https://maven.architectury.dev/")
         content {
             it.includeGroup("dev.architectury")
-            it.includeVersion("me.shedaniel", "RoughlyEnoughItems-neoforge", project.reiVersion)
-            it.includeModule("me.shedaniel.cloth", "cloth-config-neoforge")
+            it.includeGroup("me.shedaniel")
+            it.includeGroup("me.shedaniel.cloth")
         }
     }
 
