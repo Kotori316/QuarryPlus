@@ -122,6 +122,7 @@ repositories {
         name = "ModMaven-k-4u.nl"
         url = "https://modmaven.dev/"
     }*/
+    mavenCentral()
     maven {
         name = "CraftTweaker"
         url = "https://maven.blamejared.com"
