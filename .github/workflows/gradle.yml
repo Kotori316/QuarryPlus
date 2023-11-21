@@ -32,12 +32,6 @@ jobs:
         with:
           cache-read-only: false
           gradle-home-cache-cleanup: true
-      - name: Cache build files
-        uses: actions/cache@v3
-        with:
-          key: neo-${{ runner.os }}-${{ hashFiles('gradle.properties') }}
-          restore-keys: neo-${{ runner.os }}-
-          path: build/neo*
       - name: Enable daemon
         run: sed -i -e 's/org.gradle.daemon=false/org.gradle.daemon=true/' gradle.properties
       - name: Compile 1
