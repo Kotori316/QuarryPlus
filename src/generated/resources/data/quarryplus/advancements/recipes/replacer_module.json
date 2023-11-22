@@ -1,11 +1,11 @@
 {
-  "parent": "minecraft:recipes/root",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "quarryplus:machine_enabled",
       "value": "replacer_module"
     }
   ],
+  "parent": "minecraft:recipes/root",
   "criteria": {
     "has_replacer": {
       "conditions": {

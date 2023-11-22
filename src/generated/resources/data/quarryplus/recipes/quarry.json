@@ -1,11 +1,11 @@
 {
-  "type": "quarryplus:workbench_recipe",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "quarryplus:machine_enabled",
       "value": "quarry"
     }
   ],
+  "type": "quarryplus:workbench_recipe",
   "energy": 320000.0,
   "ingredients": [
     {

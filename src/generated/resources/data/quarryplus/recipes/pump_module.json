@@ -1,12 +1,12 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "quarryplus:machine_enabled",
       "value": "pump_module"
     }
   ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
   "group": "quarryplus:group_module",
   "ingredients": [
     {

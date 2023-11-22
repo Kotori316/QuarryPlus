@@ -1,11 +1,11 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "quarryplus:debug_enabled"
     }
   ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
   "ingredients": [
     {
       "item": "minecraft:water_bucket"

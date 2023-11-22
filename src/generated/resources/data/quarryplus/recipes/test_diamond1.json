@@ -1,10 +1,10 @@
 {
-  "type": "quarryplus:workbench_recipe",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "quarryplus:debug_enabled"
     }
   ],
+  "type": "quarryplus:workbench_recipe",
   "energy": 640.0,
   "ingredients": [
     [

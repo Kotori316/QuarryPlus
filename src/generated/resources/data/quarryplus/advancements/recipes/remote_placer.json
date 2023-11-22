@@ -1,11 +1,11 @@
 {
-  "parent": "minecraft:recipes/root",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "quarryplus:machine_enabled",
       "value": "remote_placer"
     }
   ],
+  "parent": "minecraft:recipes/root",
   "criteria": {
     "has_placer_plus": {
       "conditions": {

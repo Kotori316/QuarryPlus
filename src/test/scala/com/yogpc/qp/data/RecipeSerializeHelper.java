@@ -30,7 +30,7 @@ record RecipeSerializeHelper(
     public JsonElement build(HolderLookup.Provider provider) {
         var o = recipe.serializeRecipe();
         if (!conditions.isEmpty()) {
-            ICondition.writeConditions(provider, o, "conditions", conditions);
+            ICondition.writeConditions(provider, o, conditions);
         }
         return o;
     }

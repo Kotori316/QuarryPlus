@@ -4,13 +4,13 @@ import com.google.gson.{JsonElement, JsonObject}
 import net.minecraft.advancements.critereon.{InventoryChangeTrigger, ItemPredicate, RecipeUnlockedTrigger}
 import net.minecraft.advancements.{Advancement, AdvancementRequirements, AdvancementRewards}
 import net.minecraft.core.HolderLookup
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.data.recipes.RecipeBuilder
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.TagKey
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.ItemLike
 import net.neoforged.neoforge.common.conditions.{ICondition, NotCondition, TagEmptyCondition}
-import net.minecraft.core.registries.BuiltInRegistries
 
 import scala.jdk.javaapi.CollectionConverters
 
@@ -22,7 +22,7 @@ case class AdvancementSerializeHelper private(location: ResourceLocation,
   override def build(provider: HolderLookup.Provider): JsonElement = {
     val obj: JsonObject = builder.save(h => {}, "").value().serializeToJson()
     if (conditions.nonEmpty) {
-      ICondition.writeConditions(provider, obj, "conditions", CollectionConverters.asJava(conditions))
+      ICondition.writeConditions(provider, obj, CollectionConverters.asJava(conditions))
     }
     obj
   }
