@@ -40,7 +40,7 @@ String createVersion() {
 
 version = createVersion()
 group = "com.kotori316" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "AdditionalEnchantedMiner-" + project.minecraftVersion
+archivesBaseName = "AdditionalEnchantedMiner-${project.minecraftVersion}-neoforge"
 
 compileScala {
     scalaCompileOptions.additionalParameters = ["-Wconf:cat=deprecation:w,any:e"]
