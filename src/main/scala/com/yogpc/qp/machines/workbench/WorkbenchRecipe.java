@@ -1,20 +1,19 @@
 package com.yogpc.qp.machines.workbench;
 
 import com.yogpc.qp.QuarryPlus;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
     public static final ResourceLocation recipeLocation = new ResourceLocation(QuarryPlus.modID, "workbench_recipe");
@@ -98,6 +97,11 @@ public abstract class WorkbenchRecipe implements Recipe<TileWorkbench> {
     @Override
     public final boolean isSpecial() {
         return true;
+    }
+
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        return this.inputs().stream().map(IngredientList::asIngredient).collect(Collectors.toCollection(NonNullList::create));
     }
 
     public static WorkbenchRecipe dummyRecipe() {

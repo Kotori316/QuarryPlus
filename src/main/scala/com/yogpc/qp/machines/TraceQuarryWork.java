@@ -3,15 +3,20 @@ package com.yogpc.qp.machines;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.GsonBuilder;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.minecraft.core.registries.BuiltInRegistries;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -169,8 +174,26 @@ public final class TraceQuarryWork {
     private static final Marker MARKER_INITIAL_LOG = MarkerManager.getMarker("initialLog");
 
     public static void initialLog(MinecraftServer server) {
+        // Config
         var gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
         var config = Map.of("common", QuarryPlus.config.getAll(), "server", QuarryPlus.serverConfig.getAll());
         LOGGER.warn(MARKER_INITIAL_LOG, "Config in '{}'{}{}", server.getMotd(), System.lineSeparator(), gson.toJson(config));
+        // Recipes
+        var noPretty = new GsonBuilder().disableHtmlEscaping().create();
+        server.getRecipeManager().getRecipes().stream()
+            .filter(h -> h.id().getNamespace().equals(QuarryPlus.modID))
+            .map(h -> {
+                var id = h.id();
+                var stack = h.value().getResultItem(server.registryAccess());
+                var itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+                var ingredients = h.value().getIngredients().stream()
+                    .map(i -> Ingredient.CODEC.encodeStart(JsonOps.INSTANCE, i))
+                    .map(DataResult::get)
+                    .map(Either::orThrow)
+                    .collect(MapMulti.jsonArrayCollector());
+                return "%s %s x%d(tag: %s) -> %s".formatted(
+                    id, itemId, stack.getCount(), stack.getTag(), noPretty.toJson(ingredients)
+                );
+            }).forEach(s -> LOGGER.warn(MARKER_INITIAL_LOG, s));
     }
 }

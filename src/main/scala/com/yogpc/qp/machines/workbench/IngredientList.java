@@ -6,6 +6,8 @@ import com.google.gson.JsonObject;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -72,5 +74,13 @@ public class IngredientList implements Predicate<ItemStack> {
         var size = buffer.readVarInt();
         var list = Stream.generate(() -> IngredientWithCount.fromPacket(buffer)).limit(size).toList();
         return new IngredientList(list);
+    }
+
+    Ingredient asIngredient() {
+        return CompoundIngredient.of(
+            this.ingredientList.stream()
+                .map(IngredientWithCount::ingredient)
+                .toArray(Ingredient[]::new)
+        );
     }
 }
