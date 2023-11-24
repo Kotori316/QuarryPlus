@@ -22,13 +22,14 @@
   },
   "requirements": [
     [
-      "has_redstone_torch",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_redstone_torch"
     ]
   ],
   "rewards": {
     "recipes": [
       "quarryplus:flex_marker"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

@@ -22,13 +22,14 @@
   },
   "requirements": [
     [
-      "has_placer",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_placer"
     ]
   ],
   "rewards": {
     "recipes": [
       "quarryplus:remote_placer"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

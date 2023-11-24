@@ -20,13 +20,14 @@
   },
   "requirements": [
     [
-      "has_iron_ingot",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_iron_ingot"
     ]
   ],
   "rewards": {
     "recipes": [
       "quarryplus:filler"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

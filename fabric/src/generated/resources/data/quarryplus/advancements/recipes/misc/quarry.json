@@ -22,13 +22,14 @@
   },
   "requirements": [
     [
-      "has_obsidian",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_obsidian"
     ]
   ],
   "rewards": {
     "recipes": [
       "quarryplus:quarry"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

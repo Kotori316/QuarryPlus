@@ -22,13 +22,14 @@
   },
   "requirements": [
     [
-      "has_marker",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_marker"
     ]
   ],
   "rewards": {
     "recipes": [
       "quarryplus:marker16"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

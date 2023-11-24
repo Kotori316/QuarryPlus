@@ -22,13 +22,14 @@
   },
   "requirements": [
     [
-      "has_dispenser",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_dispenser"
     ]
   ],
   "rewards": {
     "recipes": [
       "quarryplus:placer_plus"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

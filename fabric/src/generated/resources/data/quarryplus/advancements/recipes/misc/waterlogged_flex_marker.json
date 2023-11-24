@@ -22,13 +22,14 @@
   },
   "requirements": [
     [
-      "has_marker",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_marker"
     ]
   ],
   "rewards": {
     "recipes": [
       "quarryplus:waterlogged_flex_marker"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }
