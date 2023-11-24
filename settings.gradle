@@ -10,9 +10,15 @@ pluginManagement {
 }
 
 plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.5.0'
+    id("org.gradle.toolchains.foojay-resolver-convention") version("0.5.0")
 }
 
-include("forge")
-include("fabric")
-include("neoforge")
+if (!Boolean.parseBoolean(System.getenv("DISABLE_FORGE"))) {
+    include("forge")
+}
+if (!Boolean.parseBoolean(System.getenv("DISABLE_FABRIC"))) {
+    include("fabric")
+}
+if (!Boolean.parseBoolean(System.getenv("DISABLE_NEOFORGE"))) {
+    include("neoforge")
+}
