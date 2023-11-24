@@ -55,7 +55,7 @@ private static boolean isInCI() {
 println("Java: ${System.getProperty("java.version")} " +
         "JVM: ${System.getProperty("java.vm.version")}(${System.getProperty("java.vendor")}) " +
         "Arch: ${System.getProperty("os.arch")} " +
-        "Project version: ${project.version}")
+        "Project version: ${project.version} Loader: ${project.forgeVersion}")
 
 runs {
     configureEach {
@@ -177,7 +177,6 @@ configurations {
 dependencies {
     String forgeVersion = System.getenv("CI_FORGE") ?: project.forgeVersion
     implementation(group: "net.neoforged", name: "neoforge", version: forgeVersion)
-    System.out.println(("Selected version: " + "net.neoforged.neoforge:forge:" + forgeVersion) as String)
     compileOnly(group: "org.scala-lang", name: "scala-library", version: project.scalaVersion)
     // compileOnly(group: "org.scala-lang", name: "scala3-library_3", version: project.scala3Version)
     compileOnly(group: "org.typelevel", name: "cats-core_3", version: project.catsVersion) {
