@@ -98,12 +98,8 @@ class Recipe extends QuarryDataProvider {
         // Marker Plus
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
             new ItemStack(Holder.BLOCK_MARKER), 20000 * PowerTile.ONE_FE, true, List.of(
-            makeList(Tags.Items.INGOTS_GOLD, 7),
-            makeList(Tags.Items.INGOTS_IRON, 8),
-            makeList(Tags.Items.DUSTS_REDSTONE, 12),
-            makeList(Tags.Items.DUSTS_GLOWSTONE, 4),
-            makeList(Items.LAPIS_LAZULI, 12)
-        )), location(BlockMarker.NAME))).addCondition(new EnableCondition(BlockMarker.NAME)));
+            makeList(Holder.BLOCK_FLEX_MARKER, 1)
+        )), location(BlockMarker.NAME + "_workbench"))).addCondition(new EnableCondition(BlockMarker.NAME)));
         // Flexible Marker
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
             new ItemStack(Holder.BLOCK_FLEX_MARKER), 20000 * PowerTile.ONE_FE, true, List.of(
