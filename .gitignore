@@ -20,7 +20,7 @@ run-server-client
 test_run
 logs
 Dockerfile
-src/generated/resources/.cache
+*/src/generated/resources/.cache
 .metals
 .vscode
 /bin

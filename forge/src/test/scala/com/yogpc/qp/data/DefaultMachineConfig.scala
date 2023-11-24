@@ -11,7 +11,7 @@ import scala.jdk.javaapi.CollectionConverters
 
 class DefaultMachineConfig(generator: DataGenerator)
   extends QuarryDataProvider(generator) {
-  override def directory(): String = "../.." // To save to root dir
+  override def directory(): String = "forge/src" // To save to root dir
 
   override def data(): java.util.List[_ <: DataBuilder] = {
     Collections.singletonList(DefaultMachineConfig)
