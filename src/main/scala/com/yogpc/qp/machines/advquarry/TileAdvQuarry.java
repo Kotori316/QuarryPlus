@@ -1,25 +1,10 @@
 package com.yogpc.qp.machines.advquarry;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.Area;
-import com.yogpc.qp.machines.BreakResult;
-import com.yogpc.qp.machines.CheckerLog;
-import com.yogpc.qp.machines.EnchantmentHolder;
-import com.yogpc.qp.machines.EnchantmentLevel;
-import com.yogpc.qp.machines.EnergyConfigAccessor;
-import com.yogpc.qp.machines.ItemConverter;
-import com.yogpc.qp.machines.MachineStorage;
-import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.machines.*;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.utils.CacheEntry;
 import com.yogpc.qp.utils.MapMulti;
-import javax.annotation.Nullable;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -36,14 +21,17 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.BucketPickup;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.LiquidBlockContainer;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import org.apache.commons.lang3.tuple.Pair;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class TileAdvQuarry extends PowerTile implements
     CheckerLog, MachineStorage.HasStorage,
@@ -304,7 +292,7 @@ public class TileAdvQuarry extends PowerTile implements
         // Drain fluids
         for (Pair<BlockPos, BlockState> pair : toDrain) {
             if (pair.getRight().getBlock() instanceof BucketPickup fluidBlock) {
-                var bucketItem = fluidBlock.pickupBlock(targetWorld, pair.getLeft(), pair.getRight());
+                var bucketItem = fluidBlock.pickupBlock(null, targetWorld, pair.getLeft(), pair.getRight());
                 storage.addFluid(bucketItem);
             }
             var state = targetWorld.getBlockState(pair.getLeft());
@@ -366,7 +354,7 @@ public class TileAdvQuarry extends PowerTile implements
                 var state = world.getBlockState(pos);
                 if (state.getBlock() instanceof BucketPickup fluidBlock) {
                     useEnergy(Constants.getBreakBlockFluidEnergy(this), Reason.REMOVE_FLUID, true);
-                    var bucketItem = fluidBlock.pickupBlock(world, pos, state);
+                    var bucketItem = fluidBlock.pickupBlock(null, world, pos, state);
                     storage.addFluid(bucketItem);
                     if (world.getBlockState(pos).isAir() || (fluidBlock instanceof LiquidBlock && !fluidState.isSource())) {
                         world.setBlock(pos, QuarryPlus.ModObjects.BLOCK_FRAME.getDammingState(), Block.UPDATE_ALL);

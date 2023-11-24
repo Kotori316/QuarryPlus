@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.marker;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.IndexedButton;
 import com.yogpc.qp.packet.Marker16Message;
@@ -13,6 +11,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Screen16Marker extends AbstractContainerScreen<ContainerMarker> implements Button.OnPress {
     private static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/marker.png");
@@ -31,7 +31,7 @@ public class Screen16Marker extends AbstractContainerScreen<ContainerMarker> imp
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, delta);
         super.render(graphics, mouseX, mouseY, delta);
         this.renderTooltip(graphics, mouseX, mouseY);
     }

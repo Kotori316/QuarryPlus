@@ -1,7 +1,7 @@
 package com.yogpc.qp.machines.quarry;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.BlockItem;
@@ -12,10 +12,13 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
-public class QuarryLootFunction extends LootItemConditionalFunction {
-    public static final Serializer<QuarryLootFunction> SERIALIZER = new QuarryLootFunctionSerializer();
+import java.util.List;
 
-    protected QuarryLootFunction(LootItemCondition[] conditions) {
+public class QuarryLootFunction extends LootItemConditionalFunction {
+    public static final Codec<QuarryLootFunction> SERIALIZER = RecordCodecBuilder.create(instance ->
+        commonFields(instance).apply(instance, QuarryLootFunction::new));
+
+    protected QuarryLootFunction(List<LootItemCondition> conditions) {
         super(conditions);
     }
 
@@ -37,13 +40,5 @@ public class QuarryLootFunction extends LootItemConditionalFunction {
         CompoundTag tileDataForItem = quarry.getTileDataForItem();
         if (!tileDataForItem.isEmpty())
             BlockItem.setBlockEntityData(stack, quarry.getType(), tileDataForItem);
-    }
-}
-
-class QuarryLootFunctionSerializer extends LootItemConditionalFunction.Serializer<QuarryLootFunction> {
-
-    @Override
-    public QuarryLootFunction deserialize(JsonObject json, JsonDeserializationContext context, LootItemCondition[] conditions) {
-        return new QuarryLootFunction(conditions);
     }
 }

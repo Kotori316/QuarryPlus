@@ -178,10 +178,10 @@ dependencies {
         modCompileOnly(group: "curse.maven", name: "jade-324717", version: project.jade_id)
     } else {
         // In development env, modImplementation or modRuntimeOnly
-        modImplementation("RebornCore:RebornCore-1.20:${project.RebornCore_version}") {
+        modCompileOnly("RebornCore:RebornCore-1.20:${project.RebornCore_version}") {
             transitive = false
         }
-        modImplementation("TechReborn:TechReborn-1.20:${project.TechReborn_version}") {
+        modCompileOnly("TechReborn:TechReborn-1.20:${project.TechReborn_version}") {
             transitive = false
         }
         modRuntimeOnly("mcp.mobius.waila:wthit:fabric-${project.wthit_version}")

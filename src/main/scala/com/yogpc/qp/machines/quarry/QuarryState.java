@@ -1,11 +1,5 @@
 package com.yogpc.qp.machines.quarry;
 
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.MachineStorage;
@@ -23,6 +17,12 @@ import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 
 public enum QuarryState implements BlockEntityTicker<TileQuarry> {
     FINISHED(false) {
@@ -176,7 +176,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                             quarry.storage.addFluid(fluidState.getType(), MachineStorage.ONE_BUCKET);
                         targetWorld.setBlock(fluidPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
                     } else if (blockState.getBlock() instanceof BucketPickup drain) {
-                        var bucket = drain.pickupBlock(targetWorld, fluidPos, blockState);
+                        var bucket = drain.pickupBlock(null, targetWorld, fluidPos, blockState);
                         quarry.storage.addFluid(bucket);
                     } else {
                         // What ?

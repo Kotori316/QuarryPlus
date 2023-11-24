@@ -1,7 +1,7 @@
 package com.yogpc.qp.machines;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -10,10 +10,13 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
-public class EnchantedLootFunction extends LootItemConditionalFunction {
-    public static final net.minecraft.world.level.storage.loot.Serializer<EnchantedLootFunction> SERIALIZER = new EnchantedLootFunctionSerializer();
+import java.util.List;
 
-    protected EnchantedLootFunction(LootItemCondition[] conditions) {
+public class EnchantedLootFunction extends LootItemConditionalFunction {
+    public static final Codec<EnchantedLootFunction> SERIALIZER = RecordCodecBuilder.create(instance ->
+        commonFields(instance).apply(instance, EnchantedLootFunction::new));
+
+    protected EnchantedLootFunction(List<LootItemCondition> conditions) {
         super(conditions);
     }
 
@@ -37,12 +40,4 @@ public class EnchantedLootFunction extends LootItemConditionalFunction {
         }
     }
 
-}
-
-class EnchantedLootFunctionSerializer extends LootItemConditionalFunction.Serializer<EnchantedLootFunction> {
-
-    @Override
-    public EnchantedLootFunction deserialize(JsonObject json, JsonDeserializationContext context, LootItemCondition[] conditions) {
-        return new EnchantedLootFunction(conditions);
-    }
 }

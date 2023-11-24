@@ -1,8 +1,5 @@
 package com.yogpc.qp.machines.marker;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.IndexedButton;
 import com.yogpc.qp.packet.FlexMarkerMessage;
@@ -16,6 +13,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 @Environment(EnvType.CLIENT)
 public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> implements Button.OnPress {
@@ -68,7 +68,7 @@ public class ScreenFlexMarker extends AbstractContainerScreen<ContainerMarker> i
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, delta);
         super.render(graphics, mouseX, mouseY, delta);
         this.renderTooltip(graphics, mouseX, mouseY);
     }

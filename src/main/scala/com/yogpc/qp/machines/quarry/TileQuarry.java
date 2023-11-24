@@ -1,28 +1,11 @@
 package com.yogpc.qp.machines.quarry;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.Area;
-import com.yogpc.qp.machines.BreakResult;
-import com.yogpc.qp.machines.CheckerLog;
-import com.yogpc.qp.machines.EnchantmentLevel;
-import com.yogpc.qp.machines.EnergyConfigAccessor;
-import com.yogpc.qp.machines.ItemConverter;
-import com.yogpc.qp.machines.MachineStorage;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.QPBlock;
+import com.yogpc.qp.machines.*;
 import com.yogpc.qp.packet.ClientSync;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -41,17 +24,17 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.BucketPickup;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.LiquidBlockContainer;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class TileQuarry extends PowerTile implements ClientSync, CheckerLog, MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments, ExtendedScreenHandlerFactory {
     private static final Marker MARKER = MarkerManager.getMarker("TileQuarry");
@@ -231,7 +214,7 @@ public class TileQuarry extends PowerTile implements ClientSync, CheckerLog, Mac
             if (requireEnergy && !useEnergy(Constants.getBreakBlockFluidEnergy(this), Reason.REMOVE_FLUID, false)) {
                 return BreakResult.NOT_ENOUGH_ENERGY;
             }
-            var bucketItem = fluidBlock.pickupBlock(targetWorld, targetPos, blockState);
+            var bucketItem = fluidBlock.pickupBlock(null, targetWorld, targetPos, blockState);
             this.storage.addFluid(bucketItem);
             blockState = targetWorld.getBlockState(targetPos); // Update reference, because fluid state is changed.
         }
@@ -312,7 +295,7 @@ public class TileQuarry extends PowerTile implements ClientSync, CheckerLog, Mac
                 if (requireEnergy && !quarry.useEnergy(Constants.getBreakBlockFluidEnergy(quarry), Reason.REMOVE_FLUID, false)) {
                     return true;
                 }
-                var bucketItem = fluidBlock.pickupBlock(world, pos, state);
+                var bucketItem = fluidBlock.pickupBlock(null, world, pos, state);
                 quarry.storage.addFluid(bucketItem);
                 if (world.isEmptyBlock(pos) || (fluidBlock instanceof LiquidBlock && !fluidState.isSource())) {
                     world.setBlockAndUpdate(pos, QuarryPlus.ModObjects.BLOCK_FRAME.getDammingState());

@@ -1,9 +1,7 @@
 package com.yogpc.qp.recipe;
 
-import java.util.function.Predicate;
-import java.util.stream.IntStream;
-
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
 import net.minecraft.core.NonNullList;
@@ -11,7 +9,6 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -22,15 +19,30 @@ import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
+
 public class QuarryBedrockModuleRecipe extends ShapelessRecipe {
     public static final ResourceLocation NAME = new ResourceLocation(QuarryPlus.modID, "quarry_bedrock_recipe");
     public static final RecipeSerializer<QuarryBedrockModuleRecipe> SERIALIZER = new QuarryBedrockModuleSerializer();
     private final QPBlock targetBlock;
 
-    public QuarryBedrockModuleRecipe(ResourceLocation id, QPBlock targetBlock) {
-        super(id, QuarryPlus.modID + ":bedrock_module_recipe", CraftingBookCategory.MISC, makeOutputStack(targetBlock),
+    public QuarryBedrockModuleRecipe(QPBlock targetBlock) {
+        super(QuarryPlus.modID + ":bedrock_module_recipe", CraftingBookCategory.MISC, makeOutputStack(targetBlock),
             NonNullList.of(Ingredient.of(), Ingredient.of(targetBlock), Ingredient.of(QuarryPlus.ModObjects.ITEM_BEDROCK_MODULE)));
         this.targetBlock = targetBlock;
+    }
+
+    QuarryBedrockModuleRecipe(ResourceLocation targetBlockId) {
+        this(fromId(targetBlockId));
+    }
+
+    private static QPBlock fromId(ResourceLocation blockId) {
+        Block block = BuiltInRegistries.BLOCK.get(blockId);
+        if (block instanceof QPBlock qpBlock) {
+            return qpBlock;
+        }
+        throw new IllegalArgumentException("Invalid block %s(%s)".formatted(block, blockId));
     }
 
     @Override
@@ -72,22 +84,22 @@ public class QuarryBedrockModuleRecipe extends ShapelessRecipe {
     }
 
     private static final class QuarryBedrockModuleSerializer implements RecipeSerializer<QuarryBedrockModuleRecipe> {
+        static final Codec<QuarryBedrockModuleRecipe> CODEC = RecordCodecBuilder.create(instance ->
+            instance.group(
+                ResourceLocation.CODEC.fieldOf("target").forGetter(t -> t.targetBlock.getRegistryName())
+            ).apply(instance, QuarryBedrockModuleRecipe::new));
+
         @Override
-        public QuarryBedrockModuleRecipe fromJson(ResourceLocation resourceLocation, JsonObject jsonObject) {
-            var name = GsonHelper.getAsString(jsonObject, "target");
-            Block block = BuiltInRegistries.BLOCK.get(new ResourceLocation(name));
-            if (block instanceof QPBlock qpBlock) {
-                return new QuarryBedrockModuleRecipe(resourceLocation, qpBlock);
-            }
-            throw new IllegalArgumentException("Invalid block %s(%s)".formatted(block, name));
+        public Codec<QuarryBedrockModuleRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public QuarryBedrockModuleRecipe fromNetwork(ResourceLocation resourceLocation, FriendlyByteBuf buf) {
+        public QuarryBedrockModuleRecipe fromNetwork(FriendlyByteBuf buf) {
             var name = buf.readResourceLocation();
             Block block = BuiltInRegistries.BLOCK.get(name);
             if (block instanceof QPBlock qpBlock) {
-                return new QuarryBedrockModuleRecipe(resourceLocation, qpBlock);
+                return new QuarryBedrockModuleRecipe(qpBlock);
             }
             throw new IllegalArgumentException("Invalid block %s(%s)".formatted(block, name));
         }

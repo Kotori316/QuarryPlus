@@ -1,14 +1,7 @@
 package com.yogpc.qp.machines.advpump;
 
-import java.util.List;
-import java.util.function.Function;
-
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.BreakResult;
-import com.yogpc.qp.machines.CheckerLog;
-import com.yogpc.qp.machines.EnchantmentLevel;
-import com.yogpc.qp.machines.MachineStorage;
-import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.machines.*;
 import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -22,6 +15,9 @@ import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
+
+import java.util.List;
+import java.util.function.Function;
 
 public class TileAdvPump extends PowerTile
     implements MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments,
@@ -126,7 +122,7 @@ public class TileAdvPump extends PowerTile
             }
             var blockState = world.getBlockState(target);
             if (!(blockState.getBlock() instanceof LiquidBlock) && blockState.getBlock() instanceof BucketPickup drain) {
-                var drained = drain.pickupBlock(world, target, blockState);
+                var drained = drain.pickupBlock(null, world, target, blockState);
                 this.storage.addFluid(drained);
             } else {
                 this.storage.addFluid(fluidState.getType(), MachineStorage.ONE_BUCKET);
@@ -136,7 +132,7 @@ public class TileAdvPump extends PowerTile
         }
     }
 
-    public void setEnchantment(EnchantmentEfficiency enchantmentEfficiency) {
+    void setEnchantment(EnchantmentEfficiency enchantmentEfficiency) {
         this.enchantmentEfficiency = enchantmentEfficiency;
         this.maxEnergy = enchantmentEfficiency.energyCapacity;
         if (level != null && !level.isClientSide)

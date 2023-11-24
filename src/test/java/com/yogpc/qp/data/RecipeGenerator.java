@@ -1,19 +1,18 @@
 package com.yogpc.qp.data;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
 import com.yogpc.qp.QuarryPlus;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
+
+import java.util.ArrayList;
+import java.util.List;
 
 final class RecipeGenerator extends FabricRecipeProvider {
     RecipeGenerator(FabricDataOutput output) {
@@ -21,7 +20,7 @@ final class RecipeGenerator extends FabricRecipeProvider {
     }
 
     @Override
-    public void buildRecipes(Consumer<FinishedRecipe> exporter) {
+    public void buildRecipes(RecipeOutput exporter) {
         List<RecipeBuilder> builders = new ArrayList<>();
         builders.add(ShapedRecipeBuilder.shaped(RecipeCategory.MISC, QuarryPlus.ModObjects.BLOCK_QUARRY)
             .pattern("ioi")

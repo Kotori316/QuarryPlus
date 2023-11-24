@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.filler;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.IndexedButton;
 import com.yogpc.qp.packet.PacketHandler;
@@ -11,6 +9,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class FillerScreen extends AbstractContainerScreen<FillerMenu> implements Button.OnPress {
     private static final ResourceLocation LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/filler.png");
@@ -41,7 +41,7 @@ public final class FillerScreen extends AbstractContainerScreen<FillerMenu> impl
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, delta);
         super.render(graphics, mouseX, mouseY, delta);
         this.renderTooltip(graphics, mouseX, mouseY);
     }

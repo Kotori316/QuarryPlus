@@ -17,10 +17,10 @@ class BoxX extends Box {
         int count = Mth.floor(this.length / super.sizeX);
         float minU = sprite.getU0();
         float minV = sprite.getV0();
-        float maXV = sprite.getV(super.sizeX / this.maxSize * (double) 16);
-        float maYU = sprite.getU(super.sizeY / this.maxSize * (double) 16);
-        float maZU = sprite.getU(super.sizeZ / this.maxSize * (double) 16);
-        float maZV = sprite.getV(super.sizeZ / this.maxSize * (double) 16);
+        float maXV = sprite.getV((float) (super.sizeX / this.maxSize));
+        float maYU = sprite.getU((float) (super.sizeY / this.maxSize));
+        float maZU = sprite.getU((float) (super.sizeZ / this.maxSize));
+        float maZV = sprite.getV((float) (super.sizeZ / this.maxSize));
         int red = colorBox.red();
         int green = colorBox.green();
         int blue = colorBox.blue();
