@@ -1,0 +1,38 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "quarry"
+    }
+  ],
+  "type": "quarryplus:workbench_recipe",
+  "energy": 320000.0,
+  "ingredients": [
+    {
+      "count": 32,
+      "tag": "forge:gems/diamond"
+    },
+    {
+      "count": 32,
+      "tag": "forge:ingots/gold"
+    },
+    {
+      "count": 64,
+      "tag": "forge:ingots/iron"
+    },
+    {
+      "count": 16,
+      "tag": "forge:dusts/redstone"
+    },
+    {
+      "count": 4,
+      "tag": "forge:ender_pearls"
+    }
+  ],
+  "result": {
+    "Count": 1,
+    "id": "quarryplus:quarry"
+  },
+  "showInJEI": true,
+  "subType": "default"
+}

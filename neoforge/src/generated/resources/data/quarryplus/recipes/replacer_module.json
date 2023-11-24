@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "replacer_module"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "quarryplus:group_module",
+  "ingredients": [
+    {
+      "item": "quarryplus:replacer"
+    }
+  ],
+  "result": {
+    "item": "quarryplus:replacer_module"
+  }
+}

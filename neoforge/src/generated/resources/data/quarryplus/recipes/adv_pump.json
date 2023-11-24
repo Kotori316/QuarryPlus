@@ -1,0 +1,36 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "adv_pump"
+    }
+  ],
+  "type": "quarryplus:workbench_recipe",
+  "energy": 3200000.0,
+  "ingredients": [
+    [
+      {
+        "count": 2,
+        "item": "quarryplus:pump_plus"
+      },
+      {
+        "count": 2,
+        "item": "quarryplus:pump_module"
+      }
+    ],
+    {
+      "count": 2,
+      "item": "quarryplus:mining_well"
+    },
+    {
+      "count": 3,
+      "tag": "quarryplus:markers"
+    }
+  ],
+  "result": {
+    "Count": 1,
+    "id": "quarryplus:adv_pump"
+  },
+  "showInJEI": true,
+  "subType": "default"
+}

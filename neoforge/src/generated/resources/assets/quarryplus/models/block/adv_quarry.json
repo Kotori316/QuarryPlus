@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "quarryplus:block/adv_quarry_front",
+    "side": "quarryplus:block/adv_quarry",
+    "top": "quarryplus:block/adv_quarry_top"
+  }
+}

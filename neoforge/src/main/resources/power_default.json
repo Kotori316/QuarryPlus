@@ -1,0 +1,52 @@
+{
+  "quarry": {
+    "maxEnergy": 10000.0,
+    "makeFrame": 15.0,
+    "breakBlockBase": 25.0,
+    "breakBlockFluid": 125.0,
+    "moveHeadBase": 1.0,
+    "expCollect": 2.5,
+    "efficiencyCoefficient": 1.5848931924611136,
+    "breakEfficiencyCoefficient": 1.379729661461215,
+    "breakFortuneCoefficient": 1.5874010519681996,
+    "breakSilktouchCoefficient": 4.0
+  },
+  "solid_fuel_quarry": {
+    "maxEnergy": 1000.0,
+    "makeFrame": 15.0,
+    "breakBlockBase": 25.0,
+    "breakBlockFluid": 125.0,
+    "moveHeadBase": 1.0,
+    "expCollect": 2.5,
+    "efficiencyCoefficient": 1.5848931924611136,
+    "breakEfficiencyCoefficient": 1.379729661461215,
+    "breakFortuneCoefficient": 1.5874010519681996,
+    "breakSilktouchCoefficient": 4.0
+  },
+  "adv_quarry": {
+    "maxEnergy": 50000.0,
+    "makeFrame": 15.0,
+    "breakBlockBase": 25.0,
+    "breakBlockFluid": 125.0,
+    "moveHeadBase": 1.0,
+    "expCollect": 2.5,
+    "efficiencyCoefficient": 1.5848931924611136,
+    "breakEfficiencyCoefficient": 1.379729661461215,
+    "breakFortuneCoefficient": 1.5874010519681996,
+    "breakSilktouchCoefficient": 4.0
+  },
+  "mini_quarry": {
+    "maxEnergy": 1000.0,
+    "breakBlockBase": 20.0
+  },
+  "workbench": {
+    "maxEnergy": 5.0
+  },
+  "book_mover": {
+    "maxEnergy": 50000.0
+  },
+  "filler": {
+    "maxEnergy": 1000.0,
+    "breakBlockBase": 15.0
+  }
+}

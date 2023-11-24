@@ -1,0 +1,41 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "replacer_module"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_replacer": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "quarryplus:replacer"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "quarryplus:replacer_module"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_replacer"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "quarryplus:replacer_module"
+    ]
+  },
+  "sends_telemetry_event": false
+}

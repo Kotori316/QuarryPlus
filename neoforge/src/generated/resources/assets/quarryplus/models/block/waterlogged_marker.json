@@ -1,0 +1,7 @@
+{
+  "parent": "quarryplus:block/waterlogged_marker_common",
+  "textures": {
+    "particle": "quarryplus:block/marker",
+    "texture": "quarryplus:block/marker"
+  }
+}

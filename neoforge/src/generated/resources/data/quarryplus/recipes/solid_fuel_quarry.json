@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "solid_fuel_quarry"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "tag": "forge:storage_blocks/gold"
+    },
+    "G": {
+      "item": "minecraft:diamond_pickaxe"
+    },
+    "I": {
+      "item": "minecraft:furnace"
+    },
+    "R": {
+      "item": "minecraft:redstone_torch"
+    }
+  },
+  "pattern": [
+    "III",
+    "GDG",
+    "RRR"
+  ],
+  "result": {
+    "item": "quarryplus:solid_fuel_quarry"
+  },
+  "show_notification": true
+}

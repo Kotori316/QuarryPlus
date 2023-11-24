@@ -1,0 +1,27 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "quarryplus:debug_enabled"
+    }
+  ],
+  "type": "quarryplus:workbench_recipe",
+  "energy": 640.0,
+  "ingredients": [
+    [
+      {
+        "count": 8,
+        "item": "minecraft:iron_ingot"
+      },
+      {
+        "count": 4,
+        "tag": "forge:ingots/gold"
+      }
+    ]
+  ],
+  "result": {
+    "Count": 2,
+    "id": "minecraft:diamond"
+  },
+  "showInJEI": true,
+  "subType": "default"
+}

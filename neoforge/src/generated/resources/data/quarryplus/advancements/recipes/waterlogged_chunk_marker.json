@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_marker16": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "quarryplus:marker16"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "quarryplus:waterlogged_marker16"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_marker16"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "quarryplus:waterlogged_marker16"
+    ]
+  },
+  "sends_telemetry_event": false
+}

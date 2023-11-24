@@ -1,0 +1,34 @@
+{
+  "parent": "block/block",
+  "display": {
+    "gui": {
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.8, 0.8, 0.8 ]
+    },
+    "fixed": {
+      "rotation": [ 0, 90, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.8, 0.8, 0.8 ]
+    }
+  },
+  "ambientocclusion": false,
+  "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/) Thanks!",
+  "textures": {
+    "texture": "quarryplus:blocks/plainpipe"
+  },
+  "elements": [
+    {
+      "from": [ 4, 0, 4 ],
+      "to": [ 12, 16, 12 ],
+      "faces": {
+        "down": {"uv": [ 4, 4, 12, 12 ], "texture": "#texture"},
+        "up": {"uv": [ 4, 4, 12, 12 ], "texture": "#texture"},
+        "north": {"uv": [ 4, 0, 12, 16 ], "texture": "#texture"},
+        "south": {"uv": [ 4, 0, 12, 16 ], "texture": "#texture"},
+        "west": {"uv": [ 4, 0, 12, 16 ], "texture": "#texture"},
+        "east": {"uv": [ 4, 0, 12, 16 ], "texture": "#texture"}
+      },
+      "__comment": "Center box"
+    }
+  ]
+}

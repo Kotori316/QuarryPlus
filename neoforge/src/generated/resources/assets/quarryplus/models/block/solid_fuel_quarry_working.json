@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "quarryplus:block/solid_fuel_quarry_front",
+    "side": "quarryplus:block/solid_fuel_quarry",
+    "top": "quarryplus:block/solid_fuel_quarry_top_bb"
+  }
+}

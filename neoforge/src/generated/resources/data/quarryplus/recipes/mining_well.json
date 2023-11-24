@@ -1,0 +1,30 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "mining_well"
+    }
+  ],
+  "type": "quarryplus:workbench_recipe",
+  "energy": 160000.0,
+  "ingredients": [
+    {
+      "count": 3,
+      "tag": "forge:ingots/gold"
+    },
+    {
+      "count": 16,
+      "tag": "forge:ingots/iron"
+    },
+    {
+      "count": 8,
+      "tag": "forge:dusts/redstone"
+    }
+  ],
+  "result": {
+    "Count": 1,
+    "id": "quarryplus:mining_well"
+  },
+  "showInJEI": true,
+  "subType": "default"
+}

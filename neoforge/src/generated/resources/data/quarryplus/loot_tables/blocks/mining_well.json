@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:block",
+  "functions": [
+    {
+      "function": "quarryplus:drop_function"
+    }
+  ],
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "quarryplus:mining_well"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "quarryplus:blocks/mining_well"
+}

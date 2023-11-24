@@ -1,0 +1,26 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "filter_module"
+    }
+  ],
+  "type": "quarryplus:workbench_recipe",
+  "energy": 3200.0,
+  "ingredients": [
+    {
+      "count": 2,
+      "item": "minecraft:book"
+    },
+    {
+      "count": 1,
+      "tag": "forge:ender_pearls"
+    }
+  ],
+  "result": {
+    "Count": 1,
+    "id": "quarryplus:filter_module"
+  },
+  "showInJEI": true,
+  "subType": "default"
+}

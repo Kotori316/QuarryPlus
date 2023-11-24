@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:block",
+  "functions": [
+    {
+      "function": "quarryplus:drop_function"
+    },
+    {
+      "function": "quarryplus:drop_function_quarry"
+    },
+    {
+      "function": "quarryplus:drop_function_module"
+    }
+  ],
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "quarryplus:quarry"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "quarryplus:blocks/quarry"
+}

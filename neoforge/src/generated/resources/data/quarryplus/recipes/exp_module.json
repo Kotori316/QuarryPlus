@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "exp_module"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "quarryplus:group_module",
+  "ingredients": [
+    {
+      "item": "quarryplus:exp_pump"
+    }
+  ],
+  "result": {
+    "item": "quarryplus:exp_module"
+  }
+}

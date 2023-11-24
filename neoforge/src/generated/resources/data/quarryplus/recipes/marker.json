@@ -1,0 +1,38 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "marker"
+    }
+  ],
+  "type": "quarryplus:workbench_recipe",
+  "energy": 20000.0,
+  "ingredients": [
+    {
+      "count": 7,
+      "tag": "forge:ingots/gold"
+    },
+    {
+      "count": 8,
+      "tag": "forge:ingots/iron"
+    },
+    {
+      "count": 12,
+      "tag": "forge:dusts/redstone"
+    },
+    {
+      "count": 4,
+      "tag": "forge:dusts/glowstone"
+    },
+    {
+      "count": 12,
+      "item": "minecraft:lapis_lazuli"
+    }
+  ],
+  "result": {
+    "Count": 1,
+    "id": "quarryplus:marker"
+  },
+  "showInJEI": true,
+  "subType": "default"
+}

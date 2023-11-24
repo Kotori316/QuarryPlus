@@ -1,0 +1,30 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "repeat_tick_module"
+    }
+  ],
+  "type": "quarryplus:workbench_recipe",
+  "energy": 160000.0,
+  "ingredients": [
+    {
+      "count": 1,
+      "item": "quarryplus:fuel_module_normal"
+    },
+    {
+      "count": 4,
+      "item": "minecraft:prismarine_shard"
+    },
+    {
+      "count": 4,
+      "item": "minecraft:amethyst_shard"
+    }
+  ],
+  "result": {
+    "Count": 1,
+    "id": "quarryplus:repeat_tick_module"
+  },
+  "showInJEI": true,
+  "subType": "default"
+}

@@ -1,0 +1,41 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "remote_placer"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_placer_plus": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "quarryplus:placer_plus"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "quarryplus:remote_placer"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_placer_plus"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "quarryplus:remote_placer"
+    ]
+  },
+  "sends_telemetry_event": false
+}

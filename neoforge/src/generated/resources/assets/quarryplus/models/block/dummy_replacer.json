@@ -1,0 +1,4 @@
+{
+  "parent": "minecraft:block/glass",
+  "render_type": "minecraft:translucent"
+}
