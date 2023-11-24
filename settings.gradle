@@ -11,6 +11,16 @@ pluginManagement {
 
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version("0.5.0")
+    id("com.gradle.enterprise") version("3.+")
+}
+
+gradleEnterprise {
+    buildScan {
+        if (System.getenv("CI") != null) {
+            termsOfServiceUrl = "https://gradle.com/terms-of-service"
+            termsOfServiceAgree = "yes"
+        }
+    }
 }
 
 if (!Boolean.parseBoolean(System.getenv("DISABLE_FORGE"))) {

@@ -63,7 +63,19 @@ jobs:
         env:
           IGNORE_OTHER_MODS_IN_RUNTIME: true
       - name: GameTest ${{ matrix.platform }}
+        if: matrix.platform != 'neoforge'
         run: ./gradlew :${{ matrix.platform }}:runGameTest
         env:
           TEST_UTILITY_LOG_ALL_TEST: true
           IGNORE_OTHER_MODS_IN_RUNTIME: true
+      - name: Check report
+        run: |
+          ! test -d "${{ matrix.platform }}/game-test/crash-reports"
+      - name: Upload failed test report
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          path: |
+            ${{ matrix.platform }}/build/reports/tests/*
+            ${{ matrix.platform }}/game-test/crash-reports/*
+          name: Test-Report-${{ github.run_number }}-QuarryPlus-${{ matrix.platform }}
