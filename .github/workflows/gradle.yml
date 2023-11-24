@@ -62,6 +62,8 @@ jobs:
         run: ./gradlew :${{ matrix.platform }}:runData
         env:
           IGNORE_OTHER_MODS_IN_RUNTIME: true
+      - name: Check updated files
+        run: git diff --exit-code
       - name: GameTest ${{ matrix.platform }}
         if: matrix.platform != 'neoforge'
         run: ./gradlew :${{ matrix.platform }}:runGameTest
