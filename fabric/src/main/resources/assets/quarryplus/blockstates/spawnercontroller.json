@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "working=true": {"model": "quarryplus:block/spawnercontroller"},
+    "working=false": {"model": "quarryplus:block/spawnercontroller"}
+  }
+}

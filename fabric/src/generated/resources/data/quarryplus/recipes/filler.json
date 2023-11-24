@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:iron_axe"
+    },
+    "i": {
+      "tag": "c:iron_ingots"
+    },
+    "l": {
+      "item": "minecraft:ladder"
+    }
+  },
+  "pattern": [
+    "iii",
+    "ala",
+    "iii"
+  ],
+  "result": {
+    "item": "quarryplus:filler"
+  },
+  "show_notification": true
+}

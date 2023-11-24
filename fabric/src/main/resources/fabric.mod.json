@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "id": "quarryplus",
+  "version": "${version}",
+  "name": "QuarryPlus",
+  "description": "QuarryPlus",
+  "authors": [
+    "Kotori316"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Kotori316",
+    "sources": "https://github.com/Kotori316/QuarryPlus",
+    "issues": "https://github.com/Kotori316/QuarryPlus/issues"
+  },
+  "license": "All rights reserved",
+  "icon": "assets/quarryplus/textures/block/mod_quarryplus.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.yogpc.qp.QuarryPlus"
+    ],
+    "client": [
+      "com.yogpc.qp.QuarryPlusClient"
+    ],
+    "modmenu": [
+      "com.yogpc.qp.integration.QuarryModMenuIntegration"
+    ],
+    "fabric-datagen": [
+      "com.yogpc.qp.data.QuarryDataGenerator"
+    ],
+    "jade": [
+      "com.yogpc.qp.integration.jade.QuarryJadePlugin"
+    ]
+  },
+  "mixins": [
+    "quarryplus.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.0",
+    "fabric": ">=0.80.0+1.19.4",
+    "minecraft": "1.20.x",
+    "cloth-config2": ">=5.0.0"
+  },
+  "conflicts": {
+    "team_reborn_energy": "<2.0.0-beta0"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "textures": {
+    "particle": "quarryplus:block/frame",
+    "texture": "quarryplus:block/frame"
+  },
+  "elements": [
+    {
+      "from": [ 4, 4, 4 ],
+      "to": [ 12, 12, 12 ],
+      "faces": {
+        "down": {"uv": [ 4, 4, 12, 12 ], "texture": "#texture"},
+        "up": {"uv": [ 4, 4, 12, 12 ], "texture": "#texture"},
+        "north": {"uv": [ 4, 4, 12, 12 ], "texture": "#texture"},
+        "south": {"uv": [ 4, 4, 12, 12 ], "texture": "#texture"},
+        "west": {"uv": [ 4, 4, 12, 12 ], "texture": "#texture"},
+        "east": {"uv": [ 4, 4, 12, 12 ], "texture": "#texture"}
+      },
+      "__comment": "Center box"
+    }
+  ]
+}

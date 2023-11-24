@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "quarryplus:block/plus_stone_side",
+    "down": "quarryplus:block/plus_stone_top",
+    "up": "quarryplus:block/breaker_front_vertical",
+    "north": "quarryplus:block/breaker_front_horizontal",
+    "east": "quarryplus:block/plus_stone_side",
+    "south": "quarryplus:block/plus_stone_side",
+    "west": "quarryplus:block/plus_stone_side"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_column",
+  "textures": {
+    "particle": "quarryplus:block/spawner_controller",
+    "side": "quarryplus:block/spawner_controller",
+    "end": "quarryplus:block/spawner_controller"
+  }
+}

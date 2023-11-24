@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "b": {
+      "tag": "c:empty_buckets"
+    },
+    "d": {
+      "tag": "c:diamonds"
+    },
+    "g": {
+      "tag": "c:green_dyes"
+    },
+    "m": {
+      "tag": "quarryplus:markers"
+    },
+    "q": {
+      "item": "quarryplus:quarry"
+    }
+  },
+  "pattern": [
+    "bdb",
+    "mqm",
+    "gdg"
+  ],
+  "result": {
+    "item": "quarryplus:adv_pump"
+  },
+  "show_notification": true
+}

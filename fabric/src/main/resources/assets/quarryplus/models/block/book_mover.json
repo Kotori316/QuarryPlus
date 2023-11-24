@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "quarryplus:block/book_mover",
+    "down": "quarryplus:block/book_mover",
+    "up": "quarryplus:block/book_mover",
+    "north": "quarryplus:block/book_mover",
+    "east": "quarryplus:block/book_mover",
+    "south": "quarryplus:block/book_mover",
+    "west": "quarryplus:block/book_mover"
+  }
+}

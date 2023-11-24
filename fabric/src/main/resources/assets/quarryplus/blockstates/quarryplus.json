@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "facing=down,working=false": {"model": "quarryplus:block/quarryplus", "x": 90},
+    "facing=up,working=false": {"model": "quarryplus:block/quarryplus", "x": 270},
+    "facing=north,working=false": {"model": "quarryplus:block/quarryplus"},
+    "facing=south,working=false": {"model": "quarryplus:block/quarryplus", "y": 180},
+    "facing=west,working=false": {"model": "quarryplus:block/quarryplus", "y": 270},
+    "facing=east,working=false": {"model": "quarryplus:block/quarryplus", "y": 90},
+    "facing=down,working=true": {"model": "quarryplus:block/quarryplus_working", "x": 90},
+    "facing=up,working=true": {"model": "quarryplus:block/quarryplus_working", "x": 270},
+    "facing=north,working=true": {"model": "quarryplus:block/quarryplus_working"},
+    "facing=south,working=true": {"model": "quarryplus:block/quarryplus_working", "y": 180},
+    "facing=west,working=true": {"model": "quarryplus:block/quarryplus_working", "y": 270},
+    "facing=east,working=true": {"model": "quarryplus:block/quarryplus_working", "y": 90}
+  }
+}
