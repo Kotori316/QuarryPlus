@@ -14,7 +14,8 @@ build
 
 FILES
 libs
-/Minecraft
+Minecraft
+run
 run-server
 run-server-client
 test_run

@@ -1,61 +1,20 @@
-import com.kotori316.plugin.cf.CallVersionFunctionTask
-
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-}
 plugins {
-    id("maven-publish")
-    id("signing")
+    id("com.kotori316.common")
+    id("com.kotori316.jars")
+    id("com.kotori316.publishments")
     id("scala")
     id("net.minecraftforge.gradle") version("[6.0,6.2)")
     id("org.parchmentmc.librarian.forgegradle") version("1.+")
-    id("com.github.breadmoirai.github-release") version("2.4.1")
-    id("com.matthewprenger.cursegradle") version("1.4.0")
-    id("com.modrinth.minotaur").version("2.+")
-    id("com.kotori316.plugin.cf").version("1.6")
 }
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-
-String createVersion() {
-    String mcVersion = "%-4s".formatted(project.minecraftVersion.replace(".", "")).replace(' ', '0')
-    String major = project.modVersionMajor
-    String minor = System.getenv("GITHUB_RUN_NUMBER") ?: project.modVersionMinor ?: "0"
-    if (Boolean.parseBoolean(project.isSnapshotVersion)) {
-        return "$mcVersion.$major.$minor-SNAPSHOT"
-    } else {
-        return "$mcVersion.$major.$minor"
-    }
-}
-
-version = createVersion()
-group = "com.kotori316" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "AdditionalEnchantedMiner-" + project.minecraftVersion
 
 compileScala {
     scalaCompileOptions.additionalParameters = ["-Wconf:cat=deprecation:w,any:e"]
 }
 
-@SuppressWarnings("SpellCheckingInspection")
-private static boolean isInCI() {
-    return Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")) || Boolean.parseBoolean(System.getenv("CI")) ||
-            (!System.getProperty("os.name").toLowerCase().startsWith("windows") && Files.exists(Paths.get("/", ".dockerenv")))
-}
-
-println("Java: ${System.getProperty("java.version")} " +
-        "JVM: ${System.getProperty("java.vm.version")}(${System.getProperty("java.vendor")}) " +
-        "Arch: ${System.getProperty("os.arch")} " +
-        "Project version: ${project.version} Loader: ${project.forgeVersion}")
 minecraft {
     mappings channel: "parchment", version: ((project.parchmentMapping + "-" + project.minecraftVersion) as String)
 //    mappings channel: "official", version: (project.minecraftVersion as String)
@@ -153,69 +112,6 @@ minecraft {
     }
 }
 
-tasks.named("processResources", ProcessResources).configure {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-repositories {
-    /*maven {
-        // location of a maven mirror for JEI files, as a fallback
-        name = "ModMaven-k-4u.nl"
-        url = "https://modmaven.dev/"
-    }*/
-    maven {
-        name = "CraftTweaker"
-        url = "https://maven.blamejared.com"
-        content {
-            //noinspection SpellCheckingInspection
-            includeModule("com.blamejared.crafttweaker", "CraftTweaker-1.16.4")
-            includeGroup("mezz.jei")
-        }
-    }
-
-    maven {
-        name = "FTB NEW"
-        url = "https://maven.saps.dev/releases/"
-        content {
-            includeGroup("dev.ftb.mods")
-            includeGroup("dev.latvian.mods")
-        }
-    }
-
-    maven {
-        name = "architectury"
-        url = uri("https://maven.architectury.dev/")
-        content {
-            it.includeGroup("dev.architectury")
-            it.includeVersion("me.shedaniel", "RoughlyEnoughItems-forge", project.reiVersion)
-            it.includeModule("me.shedaniel.cloth", "cloth-config-forge")
-        }
-    }
-
-    maven {
-        name = "Azure-SLP"
-        url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
-        content {
-            it.includeVersion("com.kotori316", "ScalableCatsForce".toLowerCase(), project.slpVersion as String)
-            it.includeVersion("com.kotori316", "test_utility", project.testUtilVersion as String)
-            it.includeVersion("com.kotori316", "test_utility_dependency", "2.0-SNAPSHOT")
-            it.includeVersion("org.typelevel", "cats-core_3", project.catsVersion as String)
-            it.includeVersion("org.typelevel", "cats-kernel_3", project.catsVersion as String)
-        }
-    }
-    maven {
-        url = "https://www.cursemaven.com"
-        content {
-            it.includeGroup("curse.maven")
-        }
-    }
-    mavenLocal()
-}
-
-configurations {
-    game_test
-}
-
 dependencies {
     String forgeVersion = System.getenv("CI_FORGE") ?: project.forgeVersion
     minecraft("net.minecraftforge:forge:" + forgeVersion)
@@ -284,116 +180,13 @@ dependencies {
     game_test(group: "org.junit.platform", name: "junit-platform-launcher", version: project.jupiterPlatformVersion)
 }
 
-// Example for how to get properties into the manifest for reading at runtime.
-def jarAttributeMap = [
-        "Specification-Title"     : project.name,
-        "Specification-Vendor"    : "Kotori316",
-        "Specification-Version"   : "1", // We are version 1 of ourselves
-        "Implementation-Title"    : project.name,
-        "Implementation-Version"  : project.version,
-        "Implementation-Vendor"   : "Kotori316",
-        "Implementation-Timestamp": ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT),
-        "Commit"                  : getCommit(project.branch as String),
-        "Automatic-Module-Name"   : "quarryplus",
-]
-
 tasks.named("jar", org.gradle.jvm.tasks.Jar).configure {
-    manifest {
-        attributes(jarAttributeMap)
-    }
-
     finalizedBy("reobfJar", "jksSignJar")
 }
 
-sourceSets {
-    main {
-        resources {
-            srcDir("src/main/resources")
-            srcDir("src/generated/resources")
-        }
-    }
-}
-
-tasks.register("srcJar", Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier.set("sources")
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.register("deobfJar", Jar) {
-    from sourceSets.main.output
-    archiveClassifier.set("deobf")
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    manifest {
-        attributes(jarAttributeMap)
-    }
-}
-
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(17)
-}
-
-// Tell the artifact system about our extra jars
-artifacts {
-    archives(srcJar, deobfJar)
-}
-
-tasks.register("jksSignJar") {
+tasks.register("jksSignJar", com.kotori316.common.JarSignTask.class) {
     dependsOn("reobfJar")
-    boolean executeCondition = project.hasProperty("jarSign.keyAlias") &&
-            project.hasProperty("jarSign.keyLocation") &&
-            project.hasProperty("jarSign.storePass")
-    onlyIf { executeCondition }
-    doLast {
-        //noinspection HttpUrlsUsage
-        ant.signjar(
-                jar: jar.archiveFile.get(),
-                alias: project.findProperty("jarSign.keyAlias") ?: "",
-                keystore: project.findProperty("jarSign.keyLocation") ?: "",
-                storepass: project.findProperty("jarSign.storePass") ?: "",
-                sigalg: "Ed25519",
-                digestalg: "SHA-256",
-                tsaurl: "http://timestamp.digicert.com",
-        )
-    }
-}
-
-def changeLogHeader() {
-    return ("""\
-            For Minecraft ${project.minecraftVersion} and Minecraft Forge.
-            Released at ${ZonedDateTime.now(ZoneId.of("Asia/Tokyo")).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}
-
-            This mod requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force)
-            Build with ${project.forgeVersion}, Mapping: parchment ${project.parchmentMapping + "-" + project.minecraftVersion}
-            """ as String).stripIndent()
-}
-
-def combinedLog() {
-    def header = changeLogHeader() + System.lineSeparator() * 2
-    def file = new File("temp_changelog.md")
-    def fileText = file.exists() ? file.text : "No changelog provided."
-    return header + fileText
-}
-
-static String getCommit(String branch) {
-    try {
-        ProcessBuilder builder = new ProcessBuilder("git", "rev-parse", branch)
-        def process = builder.start()
-        process.waitFor(1L, TimeUnit.SECONDS)
-        try (def stream = new InputStreamReader(process.getInputStream())
-             def reader = new BufferedReader(stream)) {
-            def commit = reader.readLine()
-            return commit ?: ""
-        }
-    } catch (IOException ignored) {
-        if (!isInCI())
-            println("Caught $ignored")
-        return ""
-    }
-}
-
-String getChangeLog() {
-    return changeLogHeader() + System.lineSeparator() + getShortChangelog(true)
+    jarTask = (project.tasks.jar as org.gradle.jvm.tasks.Jar)
 }
 
 String getShortChangelog(boolean includeVersion) {
@@ -409,164 +202,11 @@ String getShortChangelog(boolean includeVersion) {
                     Stream.of(version, ""),
                     content
             ).collect(Collectors.joining(System.lineSeparator()))
-        }else{
+        } else {
             content.collect(Collectors.joining(System.lineSeparator()))
         }
 
     } else {
         return version.toString()
     }
-}
-
-curseforge {
-    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: System.getenv("CURSE_TOKEN") ?: ""
-    project {
-        id = "282837"
-        changelogType = "markdown"
-        changelog = combinedLog()
-        releaseType = "release"
-        addGameVersion(project.minecraftVersion)
-        mainArtifact(jar) {
-            displayName = "v" + project.version + "-forge" + " [${project.minecraftVersion}]"
-        }
-        addArtifact(deobfJar)
-        addArtifact(srcJar)
-        relations {
-            requiredDependency "scalable-cats-force"
-        }
-    }
-    options {
-        curseGradleOptions.debug = false // defaults to false
-        curseGradleOptions.javaVersionAutoDetect = false
-    }
-}
-
-modrinth {
-    token.set((project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String)
-    projectId = "additional-enchanted-miner"
-    versionType = "release"
-    versionName = "${project.version}-forge"
-    versionNumber.set(project.version.toString())
-    uploadFile = tasks.jar
-    getAdditionalFiles().set([
-            tasks.deobfJar,
-            tasks.srcJar,
-    ])
-    getGameVersions().set([project.minecraftVersion])
-    getLoaders().set(["forge"])
-    changelog = project.getChangeLog()
-    debugMode = false
-    dependencies {
-        required.project("scalable-cats-force")
-    }
-}
-
-githubRelease {
-    repo.set("QuarryPlus")
-    token = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN") ?: ""
-    targetCommitish.set(project.branch as String)
-    prerelease.set(project.version.toString().contains("SNAPSHOT"))
-    body.set(getChangeLog())
-    releaseAssets = files(
-            jar,
-            deobfJar,
-            srcJar,
-    )
-}
-
-test {
-    useJUnitPlatform()
-}
-
-tasks.register("checkCompileOption") {
-    setDescription("Verify the compile option.")
-    doLast {
-        System.out.println("Changelog for GitHub")
-        System.out.println("-" * 30 as String)
-        System.out.println(getChangeLog())
-        System.out.println("-" * 30 as String)
-        System.out.println("Git commit")
-        System.out.println(getCommit(project.branch as String))
-        System.out.println("-" * 30 as String)
-        System.out.println(getShortChangelog(false))
-    }
-}
-
-tasks.register("copyToDrive", Copy) {
-    dependsOn("build")
-    description = "Copy jar files to directory specified in environmental value of `drive_path`"
-    def PATH_NAME = "drive_path"
-    from(jar.getArchiveFile(), deobfJar.getArchiveFile(), srcJar.getArchiveFile())
-    into(file(java.util.Optional.ofNullable(System.getenv(PATH_NAME)).orElse(".")))
-    onlyIf {
-        System.getenv(PATH_NAME) != null &&
-                Files.exists(Paths.get(System.getenv(PATH_NAME)))
-    }
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/Kotori316/QuarryPlus")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR") ?: ""
-                password = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN")
-            }
-        }
-        maven {
-            name = "AzureRepository"
-            url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
-            credentials {
-                username = project.findProperty("azureUserName") ?: System.getenv("AZURE_USER_NAME") ?: ""
-                password = project.findProperty("azureToken") ?: System.getenv("AZURE_TOKEN") ?: "TOKEN"
-            }
-        }
-    }
-    publications {
-        register("mavenJava", MavenPublication) {
-            artifactId = "AdditionalEnchantedMiner".toLowerCase()
-            from components.java
-            artifact(tasks.deobfJar)
-            artifact(tasks.srcJar)
-            pom {
-                name = archivesBaseName
-                description = "QuarryPlus for Minecraft ${project.minecraftVersion} and Forge ${project.forgeVersion}"
-                url = "https://github.com/Kotori316/QuarryPlus"
-                packaging = "jar"
-            }
-        }
-    }
-}
-
-signing {
-    sign(publishing.publications)
-    sign(tasks.jar, tasks.deobfJar, tasks.srcJar)
-}
-
-boolean hasGpgSignature = project.hasProperty("signing.keyId") &&
-        project.hasProperty("signing.password") &&
-        project.hasProperty("signing.secretKeyRingFile")
-
-tasks.withType(Sign).configureEach {
-    it.onlyIf {
-        hasGpgSignature
-    }
-}
-
-tasks.withType(AbstractPublishToMaven).configureEach {
-    if (hasGpgSignature) {
-        it.dependsOn(":signJar")
-        it.dependsOn(":signSrcJar")
-        it.dependsOn(":signDeobfJar")
-    }
-}
-
-tasks.register("registerVersion", CallVersionFunctionTask.class) {
-    functionEndpoint = readVersionFunctionEndpoint(project)
-    gameVersion = project.findProperty("minecraftVersion")
-    platform = "forge"
-    modName = "quarryplus"
-    changelog = getShortChangelog(false)
-    homepage = "https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner"
 }

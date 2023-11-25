@@ -1,0 +1,10 @@
+[versions]
+minecraft = "1.20.2"
+forge = "1.20.2-48.0.19"
+fabric = "0.90.7+1.20.2"
+neoforge = "20.2.61-beta"
+
+slp_forge = "3.3.1-build-0"
+slp_fabric = "2.2.0"
+
+[libraries]
