@@ -62,7 +62,7 @@ dependencies {
     // library
     implementation(libs.findbugs)
 
-    modCompileOnly(libs.rei) {
+    modCompileOnly(libs.rei.fabric) {
         exclude(group = "net.fabricmc.fabric-api")
         exclude(group = "net.fabricmc")
     }
@@ -77,7 +77,7 @@ dependencies {
         modImplementation(libs.reborncore) { isTransitive = false }
         modImplementation(libs.techreborn) { isTransitive = false }
     }
-    modImplementation(libs.cloth) {
+    modImplementation(libs.cloth.fabric) {
         exclude(group = "net.fabricmc.fabric-api")
         exclude(group = "net.fabricmc")
     }

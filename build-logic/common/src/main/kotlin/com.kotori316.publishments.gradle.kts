@@ -155,3 +155,9 @@ publishing {
         }
     }
 }
+
+afterEvaluate {
+    rootProject.tasks.named("githubRelease") {
+        dependsOn(":${platformName}:assemble")
+    }
+}

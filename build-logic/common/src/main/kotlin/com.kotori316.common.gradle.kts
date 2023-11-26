@@ -44,6 +44,7 @@ repositories {
             includeGroup("com.kotori316")
             includeModule("org.typelevel", "cats-core_3")
             includeModule("org.typelevel", "cats-kernel_3")
+            includeModule("org.typelevel", "cats-free_3")
         }
     }
     maven {
