@@ -1,10 +1,54 @@
 [versions]
 minecraft = "1.20.2"
 forge = "1.20.2-48.0.19"
-fabric = "0.90.7+1.20.2"
+fabric_api = "0.90.7+1.20.2"
+fabric_loader = "0.14.+"
 neoforge = "20.2.61-beta"
 
 slp_forge = "3.3.1-build-0"
 slp_fabric = "2.2.0"
 
+# https://maven.shedaniel.me/me/shedaniel/RoughlyEnoughItems-fabric/
+rei = "13.0.678"
+# https://maven.shedaniel.me/me/shedaniel/cloth/cloth-config-fabric/
+cloth = "12.0.111"
+# https://modmaven.dev/teamreborn/energy/
+fabric_energy = "3.0.0"
+# https://modmaven.dev/TechReborn/TechReborn-1.20/
+techreborn = "5.9.1"
+# https://maven.terraformersmc.com/releases/com/terraformersmc/modmenu
+modmenu = "8.0.0"
+
+# https://www.curseforge.com/minecraft/mc-mods/jade
+jade_fabric = "4858827"
+
+# https://www.curseforge.com/minecraft/mc-mods/wthit/files
+wthit_fabric = "fabric-9.1.2"
+
+jupiter_api = "5.10.1"
+
 [libraries]
+minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
+findbugs = { group = "com.google.code.findbugs", name = "jsr305", version = "3.0.1" }
+
+# Fabric
+fabric_api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabric_api" }
+fabric_loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric_loader" }
+fabric_junit = { group = "net.fabricmc", name = "fabric-loader-junit", version.ref = "fabric_loader" }
+slp_fabric = { group = "com.kotori316", name = "scalable-cats-force-fabric", version.ref = "slp_fabric" }
+rei = { group = "me.shedaniel", name = "RoughlyEnoughItems-fabric", version.ref = "rei" }
+cloth = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version.ref = "cloth" }
+fabric_energy = { group = "teamreborn", name = "energy", version.ref = "fabric_energy" }
+jade_fabric = { group = "curse.maven", name = "jade-324717", version.ref = "jade_fabric" }
+reborncore = { group = "RebornCore", name = "RebornCore-1.20", version.ref = "techreborn" }
+techreborn = { group = "TechReborn", name = "TechReborn-1.20", version.ref = "techreborn" }
+modmenu = { group = "com.terraformersmc", name = "modmenu", version.ref = "modmenu" }
+wthit_fabric_api = { group = "mcp.mobius.waila", name = "wthit-api", version.ref = "wthit_fabric" }
+
+# Test
+jupiter_api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "jupiter_api" }
+jupiter_param = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "jupiter_api" }
+jupiter_engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "jupiter_api" }
+
+[bundles]
+jupiter = ["jupiter_api", "jupiter_param", "jupiter_engine"]

@@ -1,0 +1,106 @@
+plugins {
+    id("com.kotori316.common")
+    id("com.kotori316.jars")
+    id("com.kotori316.publishments")
+    // id("scala")
+    id("idea")
+    // https://maven.fabricmc.net/net/fabricmc/fabric-loom/
+    id("fabric-loom") version ("1.4-SNAPSHOT")
+}
+
+loom {
+    runs {
+        getByName("client") {
+            configName = "Client"
+            runDir = "Minecraft"
+            programArgs("--username", "Kotori")
+        }
+        getByName("server") {
+            configName = "Server"
+            runDir = "run-server"
+        }
+        create("data") {
+            client()
+            configName = "Data"
+            runDir = "run-server"
+            property("fabric-api.datagen")
+            property("fabric-api.datagen.output-dir", "${file("src/generated/resources")}")
+            property("fabric-api.datagen.strict-validation")
+
+            isIdeConfigGenerated = true
+            source(sourceSets["test"])
+        }
+        create("gameTest") {
+            configName = "GameTest"
+            runDir = "build/game_test"
+            server()
+            vmArg("-ea")
+            property("fabric-api.gametest")
+            property(
+                "fabric-api.gametest.report-file",
+                "${project.layout.buildDirectory.dir("test-results/test/game_test.xml").get()}"
+            )
+            source(sourceSets["test"])
+        }
+    }
+}
+
+dependencies {
+    //to change the versions see the gradle.properties file
+    minecraft(libs.minecraft)
+    mappings(loom.officialMojangMappings())
+    modImplementation(libs.fabric.loader)
+
+    // Fabric API. This is technically optional, but you probably want it anyway.
+    modImplementation(libs.fabric.api)
+    modRuntimeOnly(libs.slp.fabric) {
+        exclude(group = "net.fabricmc.fabric-api")
+        exclude(group = "net.fabricmc")
+        exclude(group = "org.typelevel")
+    }
+
+    // library
+    implementation(libs.findbugs)
+
+    modCompileOnly(libs.rei) {
+        exclude(group = "net.fabricmc.fabric-api")
+        exclude(group = "net.fabricmc")
+    }
+    modImplementation(libs.fabric.energy)
+    modCompileOnly(libs.wthit.fabric.api)
+    if (System.getenv("CI").toBoolean()) {
+        modCompileOnly(libs.jade.fabric)
+        modCompileOnly(libs.reborncore) { isTransitive = false }
+        modCompileOnly(libs.techreborn) { isTransitive = false }
+    } else {
+        modImplementation(libs.jade.fabric)
+        modImplementation(libs.reborncore) { isTransitive = false }
+        modImplementation(libs.techreborn) { isTransitive = false }
+    }
+    modImplementation(libs.cloth) {
+        exclude(group = "net.fabricmc.fabric-api")
+        exclude(group = "net.fabricmc")
+    }
+    modImplementation(libs.modmenu) { isTransitive = false }
+
+    // Test Dependencies.
+    testImplementation(libs.fabric.junit)
+    testImplementation(libs.bundles.jupiter)
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir("src/main/scala")
+        }
+    }
+}
+
+tasks.named("remapJar") {
+    finalizedBy("jksSignJar")
+}
+
+tasks.register("jksSignJar", com.kotori316.common.JarSignTask::class) {
+    dependsOn("jar", "remapJar")
+    jarTask = tasks.named("jar", Jar::class)
+}

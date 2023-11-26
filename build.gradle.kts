@@ -23,7 +23,7 @@ githubRelease {
         | -- | -- |
         | Minecraft | ${libs.versions.minecraft} |
         | Forge | ${libs.versions.forge} |
-        | Fabric | ${libs.versions.fabric} |
+        | Fabric | ${libs.versions.fabric.api} |
         | NeoForge | ${libs.versions.neoforge} |
         | Scalable Cat's Force for Forge and NeoForge | ${libs.versions.slp.forge} |
         | Scalable Cat's Force for Fabric | ${libs.versions.slp.fabric} |
