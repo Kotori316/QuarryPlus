@@ -55,7 +55,7 @@ minecraft {
                 }
             }
             lazyToken("minecraft_classpath") {
-                configurations.game_test.get().artifacts.joinToString(File.pathSeparator) { it.file.absolutePath }
+                configurations.game_test.get().resolvedConfiguration.files.joinToString(File.pathSeparator) { it.absolutePath }
             }
         }
 
@@ -116,7 +116,7 @@ minecraft {
                 }
             }
             lazyToken("minecraft_classpath") {
-                configurations.game_test.get().artifacts.joinToString(File.pathSeparator) { it.file.absolutePath }
+                configurations.game_test.get().resolvedConfiguration.files.joinToString(File.pathSeparator) { it.absolutePath }
             }
         }
     }
