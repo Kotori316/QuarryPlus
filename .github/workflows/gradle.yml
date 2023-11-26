@@ -65,7 +65,6 @@ jobs:
       - name: Check updated files
         run: git diff --exit-code
       - name: GameTest ${{ matrix.platform }}
-        if: matrix.platform != 'neoforge'
         run: ./gradlew :${{ matrix.platform }}:runGameTest
         env:
           TEST_UTILITY_LOG_ALL_TEST: true
