@@ -11,6 +11,7 @@ import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile;
 import com.yogpc.qp.machines.miningwell.MiningWellTile;
 import com.yogpc.qp.machines.quarry.TileQuarry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -21,7 +22,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 @GameTestHolder(QuarryPlus.modID)
+@PrefixGameTestTemplate(value = false)
 public final class DropTest {
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void existence(GameTestHelper helper) {

@@ -21,6 +21,7 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import org.junit.platform.commons.function.Try;
 import org.junit.platform.commons.support.ReflectionSupport;
 
@@ -32,6 +33,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 @GameTestHolder(QuarryPlus.modID)
+@PrefixGameTestTemplate(value = false)
 public final class LoadRecipeTest {
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     public void accessTag(GameTestHelper helper) {
@@ -100,8 +102,8 @@ public final class LoadRecipeTest {
               ],
               "energy": 100.0,
               "result": {
-                "item": "diamond",
-                "count": 1
+                "id": "diamond",
+                "Count": 1
               }
             }""");
         var r1 = managerFromJson(new ResourceLocation("quarryplus:cheat_diamond2"), object, context);

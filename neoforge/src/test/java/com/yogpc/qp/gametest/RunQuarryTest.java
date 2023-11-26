@@ -14,6 +14,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.Map;
 
@@ -21,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @GameTestHolder(QuarryPlus.modID)
+@PrefixGameTestTemplate(value = false)
 final class RunQuarryTest {
     private static final String BATCH_NORMAL_RUN = "runQuarryTestNormal";
 
@@ -61,6 +63,7 @@ final class RunQuarryTest {
         helper.setBlock(quarryPos, Holder.BLOCK_QUARRY.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.NORTH));
         var quarry = (TileQuarry) helper.getBlockEntity(quarryPos);
         assertNotNull(quarry);
+        quarry.onLoad();
         assertTrue(quarry.hasPumpModule());
         quarry.setArea(area);
         quarry.digMinY = helper.absolutePos(basePos).getY();

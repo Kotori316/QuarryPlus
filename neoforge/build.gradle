@@ -1,41 +1,15 @@
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit
-import java.util.stream.Collectors
-import java.util.stream.Stream
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-}
 plugins {
     id("com.kotori316.common")
     id("com.kotori316.jars")
     id("com.kotori316.publishments")
-    id("maven-publish")
-    id("signing")
     id("scala")
-    id("net.neoforged.gradle.userdev") version("7.+")
+    id("net.neoforged.gradle.userdev") version("[7.0.49, 8)")
     // id("org.parchmentmc.librarian.forgegradle") version("1.+")
-    id("com.github.breadmoirai.github-release") version("2.4.1")
-    id("com.matthewprenger.cursegradle") version("1.4.0")
-    id("com.modrinth.minotaur").version("2.+")
-    id("com.kotori316.plugin.cf").version("1.6")
 }
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 compileScala {
     scalaCompileOptions.additionalParameters = ["-Wconf:cat=deprecation:w,any:e"]
-}
-
-@SuppressWarnings("SpellCheckingInspection")
-private static boolean isInCI() {
-    return Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS")) || Boolean.parseBoolean(System.getenv("CI")) ||
-            (!System.getProperty("os.name").toLowerCase().startsWith("windows") && Files.exists(Paths.get("/", ".dockerenv")))
 }
 
 runs {
@@ -90,11 +64,10 @@ runs {
 
         modSources.add(project.sourceSets.main)
         modSources.add(project.sourceSets.test)
+        dependencies {
+            runtime configuration(project.configurations.game_test)
+        }
     }
-}
-
-configurations {
-    game_test
 }
 
 dependencies {
@@ -167,103 +140,4 @@ tasks.named("jar", org.gradle.jvm.tasks.Jar).configure {
 tasks.register("jksSignJar", com.kotori316.common.JarSignTask.class) {
     dependsOn(project.tasks.jar)
     jarTask = (project.tasks.jar as org.gradle.jvm.tasks.Jar)
-}
-
-def changeLogHeader() {
-    return ("""\
-            For Minecraft ${project.minecraftVersion} and NeoForge.
-            Released at ${ZonedDateTime.now(ZoneId.of("Asia/Tokyo")).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}
-
-            This mod requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force)
-            Build with ${project.forgeVersion}, Mapping: parchment ${project.parchmentMapping + "-" + project.minecraftVersion}
-            """ as String).stripIndent()
-}
-
-def combinedLog() {
-    def header = changeLogHeader() + System.lineSeparator() * 2
-    def file = new File("temp_changelog.md")
-    def fileText = file.exists() ? file.text : "No changelog provided."
-    return header + fileText
-}
-
-static String getCommit(String branch) {
-    try {
-        ProcessBuilder builder = new ProcessBuilder("git", "rev-parse", branch)
-        def process = builder.start()
-        process.waitFor(1L, TimeUnit.SECONDS)
-        try (def stream = new InputStreamReader(process.getInputStream())
-             def reader = new BufferedReader(stream)) {
-            def commit = reader.readLine()
-            return commit ?: ""
-        }
-    } catch (IOException ignored) {
-        if (!isInCI())
-            println("Caught $ignored")
-        return ""
-    }
-}
-
-String getChangeLog() {
-    return changeLogHeader() + System.lineSeparator() + getShortChangelog(true)
-}
-
-String getShortChangelog(boolean includeVersion) {
-    def f = file("temp_changelog.md")
-    if (f.exists()) {
-        String version = f.readLines().find { s -> s.startsWith("#") }
-        def content = f.readLines()
-                .drop(4 - 2)
-                .takeWhile { s -> !s.isEmpty() }
-                .stream() as Stream<String>
-        if (includeVersion) {
-            return Stream.concat(
-                    Stream.of(version, ""),
-                    content
-            ).collect(Collectors.joining(System.lineSeparator()))
-        } else {
-            content.collect(Collectors.joining(System.lineSeparator()))
-        }
-
-    } else {
-        return version.toString()
-    }
-}
-
-githubRelease {
-    repo.set("QuarryPlus")
-    token = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN") ?: ""
-    targetCommitish.set(project.branch as String)
-    prerelease.set(project.version.toString().contains("SNAPSHOT"))
-    body.set(getChangeLog())
-    releaseAssets = files(
-            jar,
-            deobfJar,
-            sourcesJar,
-    )
-}
-
-tasks.register("checkCompileOption") {
-    setDescription("Verify the compile option.")
-    doLast {
-        System.out.println("Changelog for GitHub")
-        System.out.println("-" * 30 as String)
-        System.out.println(getChangeLog())
-        System.out.println("-" * 30 as String)
-        System.out.println("Git commit")
-        System.out.println(getCommit(project.branch as String))
-        System.out.println("-" * 30 as String)
-        System.out.println(getShortChangelog(false))
-    }
-}
-
-tasks.register("copyToDrive", Copy) {
-    dependsOn("build")
-    description = "Copy jar files to directory specified in environmental value of `drive_path`"
-    def PATH_NAME = "drive_path"
-    from(jar.getArchiveFile(), deobfJar.getArchiveFile(), sourcesJar.getArchiveFile())
-    into(file(java.util.Optional.ofNullable(System.getenv(PATH_NAME)).orElse(".")))
-    onlyIf {
-        System.getenv(PATH_NAME) != null &&
-                Files.exists(Paths.get(System.getenv(PATH_NAME)))
-    }
 }
