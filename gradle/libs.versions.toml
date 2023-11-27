@@ -12,7 +12,7 @@ scala2 = "2.13.12"
 scala3 = "3.3.1"
 cats = "2.10.0-kotori"
 
-slp_forge = "3.3.1-build-0"
+slp_forge = "3.3.1-build-2"
 slp_fabric = "2.2.0"
 
 jei = "16.0.0.28"
@@ -74,6 +74,12 @@ reborncore = { group = "RebornCore", name = "RebornCore-1.20", version.ref = "te
 techreborn = { group = "TechReborn", name = "TechReborn-1.20", version.ref = "techreborn" }
 modmenu = { group = "com.terraformersmc", name = "modmenu", version.ref = "modmenu" }
 wthit_fabric_api = { group = "mcp.mobius.waila", name = "wthit-api", version.ref = "wthit_fabric" }
+
+# NeoForge
+neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
+slp_neoforge = { group = "com.kotori316", name = "scalablecatsforce-neoforge", version.ref = "slp_forge" }
+architectury_neoforge = { group = "dev.architectury", name = "architectury-neoforge", version.ref = "architectury" }
+rei_neoforge = { group = "me.shedaniel", name = "RoughlyEnoughItems-neoforge", version.ref = "rei" }
 
 # Test
 jupiter_api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "jupiter_api" }
