@@ -26,7 +26,8 @@ jobs:
         with:
           cache-read-only: false
           gradle-home-cache-cleanup: true
-      - run: ./gradlew checkJarSetting checkChangeLog checkReleaseVersion assemble --scan
+      - run: ./gradlew assemble --scan
+      - run: ./gradlew checkJarSetting checkChangeLog checkReleaseVersion --no-parallel
 
   platforms:
     runs-on: ubuntu-latest

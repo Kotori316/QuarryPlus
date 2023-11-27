@@ -37,8 +37,8 @@ tasks.register("checkJarSetting") {
     description = "Verify the jar setting"
     group = "help"
     doLast {
-        println("Archive: ${base.archivesName}")
-        println("Group: $group")
+        println("Archive: ${base.archivesName.orNull}")
+        println("Group: ${project.group}")
         println("Version: $version")
         println("*".repeat(30))
         println("jar: ${tasks.jar.get().archiveFile.get()}")

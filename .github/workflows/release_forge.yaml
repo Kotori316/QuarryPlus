@@ -7,6 +7,8 @@ jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: gradle/wrapper-validation-action@v1
@@ -15,8 +17,19 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       - run: chmod +x ./gradlew
-      - name: Test
-        run: ./gradlew test runGameTestServer --scan
+      - uses: gradle/gradle-build-action@v2
+        with:
+          cache-disabled: true
+          dependency-graph: generate-and-submit
+      - name: JUnit
+        run: ./gradlew test
+      - name: Get run resources
+        run: |
+          (./gradlew downloadMCMeta downloadAssets writeMinecraftClasspathGameTestServer) || \
+            (sleep 5 && ./gradlew downloadMCMeta downloadAssets writeMinecraftClasspathGameTestServer) || \
+            (sleep 5 && ./gradlew downloadMCMeta downloadAssets writeMinecraftClasspathGameTestServer) || true
+      - name: GameTest
+        run: ./gradlew runGameTestServer
 
   release:
     runs-on: ubuntu-latest
@@ -34,10 +47,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - run: chmod +x ./gradlew
-      - run: ./gradlew checkReleaseVersion
-        env:
-          RELEASE_DEBUG: false
       - uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: ${{secrets.GCP_IDENTITY_PROVIDER}}
@@ -61,6 +70,7 @@ jobs:
             modrinth_token:kotori316-mods-resources/modrinth_token
             curseforge_token:kotori316-mods-resources/curseforge_token
             azure_token:kotori316-mods-resources/azure_token
+      - run: chmod +x ./gradlew
       - name: Release
         run: >-
           ./gradlew
@@ -70,7 +80,7 @@ jobs:
           -PjarSign.keyLocation="${HOME}/kotori316_keystore.jks"
           -PjarSign.keyAlias="ko316"
           -PjarSign.storePass="${JAR_PASSWORD}"
-          assemble publishToMavenLocal curseforge modrinth githubRelease registerVersion publish
+          checkReleaseVersion assemble publishToMavenLocal curseforge modrinth githubRelease registerVersion publish
         env:
           REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
           AZURE_TOKEN: ${{steps.get-secrets.outputs.azure_token}}

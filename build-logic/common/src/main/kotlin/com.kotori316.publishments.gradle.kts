@@ -6,6 +6,11 @@ import com.matthewprenger.cursegradle.CurseRelation
 import com.matthewprenger.cursegradle.Options
 import groovy.util.Node
 import groovy.util.NodeList
+import java.nio.file.Files
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.stream.Collectors
 
 plugins {
     id("java")
@@ -19,23 +24,48 @@ plugins {
 val minecraft: String by project
 val platformName: String = project.name
 
+fun changelogHeader(): String {
+    val time = ZonedDateTime.now(ZoneId.of("Asia/Tokyo")).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+    return """
+        QuarryPlus for Minecraft $minecraft with $platformName
+        Released at $time
+        
+        This mod requires Scalable Cat's Force([CurseForge](https://curseforge.com/minecraft/mc-mods/scalable-cats-force), [Modrinth](https://modrinth.com/mod/scalable-cats-force))
+    """.trimIndent()
+}
+
 fun changelog(): String {
-    return ""
+    val file = rootProject.file("temp_changelog.md")
+    return if (file.exists()) {
+        file.useLines { c ->
+            changelogHeader() + System.lineSeparator().repeat(2) + c.joinToString(System.lineSeparator())
+        }
+    } else {
+        changelogHeader() + System.lineSeparator().repeat(2) + "No changelog provided"
+    }
 }
 
 fun shortChangelog(): String {
-    return ""
+    val file = rootProject.file("temp_changelog.md").toPath()
+    return if (Files.exists(file)) {
+        val content = Files.lines(file)
+            .takeWhile { s -> !s.startsWith("-") }
+            .collect(Collectors.joining(System.lineSeparator()))
+        changelogHeader() + System.lineSeparator().repeat(2) + content
+    } else {
+        changelogHeader() + System.lineSeparator().repeat(2) + "No changelog provided"
+    }
 }
 
 tasks.register("checkChangeLog") {
     description = "Verify the changelog"
     group = "help"
     doLast {
-        print("Long changelog in $platformName")
+        println("Long changelog in $platformName")
         println("*".repeat(30))
         println(changelog())
         println("*".repeat(30))
-        print("Short changelog in $platformName")
+        println("Short changelog in $platformName")
         println("*".repeat(30))
         println(shortChangelog())
         println("*".repeat(30))
@@ -52,6 +82,7 @@ tasks.register("registerVersion", CallVersionFunctionTask::class) {
         if (platformName == "forge") "https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner"
         else "https://modrinth.com/mod/additional-enchanted-miner"
     )
+    isDryRun = releaseDebug
 }
 
 tasks.register("checkReleaseVersion", CallVersionCheckFunctionTask::class) {
@@ -80,11 +111,11 @@ curseforge {
                 else -> throw IllegalArgumentException("Unknown platform $platformName")
             }
         )
-        mainArtifact(tasks.jar, closureOf<CurseArtifact> {
+        mainArtifact(tasks.jar.flatMap { it.archiveFile }.get(), closureOf<CurseArtifact> {
             displayName = "v${project.version}-${platformName} [$minecraft]"
         })
-        addArtifact(tasks.named("deobfJar"))
-        addArtifact(tasks.named("sourcesJar"))
+        addArtifact(tasks.named("deobfJar", Jar::class).flatMap { it.archiveFile }.get())
+        addArtifact(tasks.named("sourcesJar", Jar::class).flatMap { it.archiveFile }.get())
         relations(closureOf<CurseRelation> {
             requiredDependency("scalable-cats-force")
             if (platformName == "fabric") {
@@ -168,5 +199,6 @@ publishing {
 afterEvaluate {
     rootProject.tasks.named("githubRelease") {
         dependsOn(":${platformName}:assemble")
+        mustRunAfter(":${platformName}:signMavenJavaPublication")
     }
 }
