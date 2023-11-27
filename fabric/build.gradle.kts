@@ -30,7 +30,7 @@ loom {
             isIdeConfigGenerated = true
             source(sourceSets["test"])
         }
-        create("gameTest") {
+        create("gameTestServer") {
             configName = "GameTest"
             runDir = "build/game_test"
             server()

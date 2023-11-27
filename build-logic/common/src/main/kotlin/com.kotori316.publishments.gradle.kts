@@ -1,3 +1,4 @@
+import com.kotori316.plugin.cf.CallVersionCheckFunctionTask
 import com.kotori316.plugin.cf.CallVersionFunctionTask
 import com.matthewprenger.cursegradle.CurseArtifact
 import com.matthewprenger.cursegradle.CurseProject
@@ -51,6 +52,14 @@ tasks.register("registerVersion", CallVersionFunctionTask::class) {
         if (platformName == "forge") "https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner"
         else "https://modrinth.com/mod/additional-enchanted-miner"
     )
+}
+
+tasks.register("checkReleaseVersion", CallVersionCheckFunctionTask::class) {
+    gameVersion = minecraft
+    platform = platformName
+    modName = "QuarryPlus".lowercase()
+    version = project.version.toString()
+    failIfExists = !releaseDebug
 }
 
 val releaseDebug: Boolean = (System.getenv("RELEASE_DEBUG") ?: "true").toBoolean()

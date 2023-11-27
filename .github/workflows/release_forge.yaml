@@ -1,40 +1,43 @@
-name: Release Forge
+name: Release
 
 on:
   workflow_dispatch:
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/wrapper-validation-action@v1
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - run: chmod +x ./gradlew
+      - name: Test
+        run: ./gradlew test runGameTestServer --scan
+
   release:
     runs-on: ubuntu-latest
+    needs:
+      - check
     timeout-minutes: 30
     permissions:
       id-token: write
       contents: write
       packages: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: gradle/wrapper-validation-action@v1
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
-      - run: chmod +x ./gradlew  
-      - uses: gradle/gradle-build-action@v2
-        with:
-          cache-read-only: false
-          gradle-home-cache-cleanup: true
-      - name: Enable daemon
-        run: sed -i -e 's/org.gradle.daemon=false/org.gradle.daemon=true/' gradle.properties
-      - name: Compile
-        run: ./gradlew testClasses
-      - name: JUnit
-        run: ./gradlew test
-      - name: GameTest
-        run: |
-          (./gradlew downloadMCMeta downloadAssets) || \
-          (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || \
-          (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || true
-          ./gradlew runGameTestServer
+      - run: chmod +x ./gradlew
+      - run: ./gradlew checkReleaseVersion
+        env:
+          RELEASE_DEBUG: false
       - uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: ${{secrets.GCP_IDENTITY_PROVIDER}}
@@ -67,7 +70,7 @@ jobs:
           -PjarSign.keyLocation="${HOME}/kotori316_keystore.jks"
           -PjarSign.keyAlias="ko316"
           -PjarSign.storePass="${JAR_PASSWORD}"
-          clean build publishToMavenLocal curseforge modrinth githubRelease registerVersion publish -x test
+          assemble publishToMavenLocal curseforge modrinth githubRelease registerVersion publish
         env:
           REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
           AZURE_TOKEN: ${{steps.get-secrets.outputs.azure_token}}
@@ -85,7 +88,7 @@ jobs:
             gpg --verify "$f" "${f:0:-4}"
           done
       - name: Verify Main Jar
-        run: jarsigner -verify -keystore "${HOME}/kotori316_keystore.jks" "$(ls build/libs/*.jar | grep -v "deobf" | grep -v "sources")" -strict
+        run: jarsigner -verify -keystore "${HOME}/kotori316_keystore.jks" "$(ls */build/libs/*.jar | grep -v "deobf" | grep -v "sources")" -strict
       - name: Verify Maven Local
         run: |
           for f in $(find ~/.m2 -name "*.asc") ; do
@@ -98,4 +101,4 @@ jobs:
         with:
           name: QuarryPlus-Release-${{ github.run_number }}
           path: |
-            build/libs/
+            */build/libs/
