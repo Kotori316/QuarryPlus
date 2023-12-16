@@ -121,7 +121,7 @@ dependencies {
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.
-    implementation(group = "com.kotori316", name = "test_utility_neo", version = "20.6.5")
+    implementation(group = "com.kotori316", name = "test-utility-neoforge", version = libs.versions.tu.get())
 
     testImplementation(libs.bundles.jupiter)
     game_test(libs.bundles.jupiter)

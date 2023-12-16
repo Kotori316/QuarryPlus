@@ -182,9 +182,11 @@ dependencies {
         fg.deobf(
             mapOf(
                 "group" to "com.kotori316",
-                "name" to "test_utility",
-                "version" to "20.5.5-SNAPSHOT"
-            )
+                "name" to "test-utility-forge",
+                "version" to libs.versions.tu.get()
+            ), closureOf<ExternalModuleDependency> {
+                isTransitive = false
+            }
         )
     )
     testImplementation(libs.bundles.jupiter)
