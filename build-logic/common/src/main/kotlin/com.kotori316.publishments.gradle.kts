@@ -170,6 +170,18 @@ publishing {
                 password = project.findProperty("azureToken") as? String ?: System.getenv("AZURE_TOKEN") ?: "TOKEN"
             }
         }
+        if (System.getenv("CLOUDFLARE_S3_ENDPOINT") != null) {
+            val r2AccessKey = (project.findProperty("r2_access_key") ?: System.getenv("R2_ACCESS_KEY") ?: "") as String
+            val r2SecretKey = (project.findProperty("r2_secret_key") ?: System.getenv("R2_SECRET_KEY") ?: "") as String
+            maven {
+                name = "kotori316-maven"
+                url = uri("s3://kotori316-maven")
+                credentials(AwsCredentials::class) {
+                    accessKey = r2AccessKey
+                    secretKey = r2SecretKey
+                }
+            }
+        }
     }
     publications {
         register("mavenJava", MavenPublication::class) {

@@ -70,6 +70,9 @@ jobs:
             modrinth_token:kotori316-mods-resources/modrinth_token
             curseforge_token:kotori316-mods-resources/curseforge_token
             azure_token:kotori316-mods-resources/azure_token
+            cloudflare_s3_endpoint:kotori316-mods-resources/cloudflare_s3_endpoint
+            cloudflare_access_key:kotori316-mods-resources/cloudflare_access_key
+            cloudflare_secret_key:kotori316-mods-resources/cloudflare_secret_key
       - run: chmod +x ./gradlew
       - name: Release
         run: >-
@@ -80,6 +83,7 @@ jobs:
           -PjarSign.keyLocation="${HOME}/kotori316_keystore.jks"
           -PjarSign.keyAlias="ko316"
           -PjarSign.storePass="${JAR_PASSWORD}"
+          -Dorg.gradle.s3.endpoint="${CLOUDFLARE_S3_ENDPOINT}"
           checkReleaseVersion assemble publishToMavenLocal curseforge modrinth githubRelease registerVersion publish
         env:
           REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -89,6 +93,9 @@ jobs:
           JAR_PASSWORD: ${{steps.get-secrets.outputs.jar_password}}
           CURSE_TOKEN: ${{steps.get-secrets.outputs.curseforge_token}}
           MODRINTH_TOKEN: ${{steps.get-secrets.outputs.modrinth_token}}
+          CLOUDFLARE_S3_ENDPOINT: ${{steps.get-secrets.outputs.cloudflare_s3_endpoint}}
+          R2_ACCESS_KEY: ${{steps.get-secrets.outputs.cloudflare_access_key}}
+          R2_SECRET_KEY: ${{steps.get-secrets.outputs.cloudflare_secret_key}}
           VERSION_FUNCTION_ENDPOINT: ${{ secrets.GCP_VERSION_FUNCTION_ENDPOINT }}
           SERVICE_ACCOUNT: ${{ secrets.GCP_FUNCTION_EXECUTION_ACCOUNT }}
       - name: Verify Build Files
