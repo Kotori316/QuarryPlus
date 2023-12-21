@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.misc;
 
-import java.util.List;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
@@ -25,6 +23,8 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class CreativeGeneratorBlock extends QPBlock implements EntityBlock {
     public static final String NAME = "creative_generator";

@@ -7,11 +7,11 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.block.AbstractGlassBlock;
+import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 
-public class ReplacerDummyBlock extends AbstractGlassBlock {
+public class ReplacerDummyBlock extends TransparentBlock {
     public static final String NAME = "dummy_replacer";
     public final ResourceLocation location = new ResourceLocation(QuarryPlus.modID, NAME);
     public final BlockItem blockItem;

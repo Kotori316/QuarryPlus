@@ -90,7 +90,7 @@ class IngredientRecipeSerialize implements WorkbenchRecipeSerializer.PacketSeria
 
     @Override
     public void toPacket(FriendlyByteBuf buffer, IngredientRecipe recipe) {
-        buffer.writeItemStack(recipe.output, false);
+        buffer.writeItem(recipe.output);
         buffer.writeLong(recipe.getRequiredEnergy()).writeBoolean(recipe.showInJEI());
 
         buffer.writeVarInt(recipe.inputs().size());

@@ -1,10 +1,5 @@
 package com.yogpc.qp.machines.quarry;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.QPBlock;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -16,6 +11,11 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 class ItemQuarry extends QPBlock.QPBlockItem implements EnchantableItem {
     ItemQuarry(QPBlock block) {

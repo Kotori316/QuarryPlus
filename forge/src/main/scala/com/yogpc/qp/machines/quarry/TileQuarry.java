@@ -474,7 +474,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             var min = level != null ? level.getMinBuildHeight() : 0;
             return new AABB(area.minX(), min, area.minZ(), area.maxX(), area.maxY(), area.maxZ());
         } else {
-            return new AABB(getBlockPos(), getBlockPos().offset(1, 1, 1));
+            return AABB.encapsulatingFullBlocks(getBlockPos(), getBlockPos());
         }
     }
 

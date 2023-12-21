@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines;
 
+import com.mojang.serialization.MapCodec;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import net.minecraft.core.BlockPos;
@@ -39,6 +40,24 @@ public class QPBlock extends Block {
 
     public QPBlock(Properties properties, String name) {
         this(properties, name, b -> new QPBlockItem(b, new Item.Properties()));
+    }
+
+    private final MapCodec<? extends QPBlock> codec = createCodec();
+
+    protected MapCodec<? extends QPBlock> createCodec() {
+        return simpleCodec(p -> {
+            try {
+                var constructor = getClass().getConstructor();
+                return constructor.newInstance();
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalStateException(e);
+            }
+        });
+    }
+
+    @Override
+    protected MapCodec<? extends Block> codec() {
+        return this.codec;
     }
 
     public ResourceLocation getRegistryName() {

@@ -15,28 +15,24 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public final class FillerEntity extends PowerTile implements CheckerLog, PowerConfig.Provider, MenuProvider {
+public final class FillerEntity extends PowerTile implements CheckerLog, PowerConfig.Provider, MenuProvider, HasItemHandler {
     private static final Logger LOGGER = QuarryPlus.getLogger(FillerEntity.class);
     final FillerContainer container;
-    LazyOptional<IItemHandler> handler;
+    IItemHandler itemHandler;
     final FillerAction fillerAction;
 
     public FillerEntity(@NotNull BlockPos pos, BlockState state) {
         super(Holder.FILLER_TYPE, pos, state);
         container = new FillerContainer(27);
-        handler = container.createHandler();
+        itemHandler = container.createHandler();
         fillerAction = new FillerAction();
     }
 
@@ -99,23 +95,8 @@ public final class FillerEntity extends PowerTile implements CheckerLog, PowerCo
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
-            return handler.cast();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        this.handler.invalidate();
-    }
-
-    @Override
-    public void reviveCaps() {
-        super.reviveCaps();
-        this.handler = container.createHandler();
+    public IItemHandler getItemCapability(Direction ignore) {
+        return itemHandler;
     }
 
     @Override

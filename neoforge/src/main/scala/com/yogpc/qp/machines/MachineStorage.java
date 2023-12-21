@@ -12,8 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -31,16 +30,16 @@ import static com.yogpc.qp.utils.MapStreamSyntax.*;
 public class MachineStorage {
     protected Map<ItemKey, Long> itemMap = new LinkedHashMap<>();
     protected Map<FluidKey, Long> fluidMap = new LinkedHashMap<>();
-    protected LazyOptional<IItemHandler> itemHandler;
-    protected LazyOptional<IFluidHandler> fluidHandler;
+    protected IItemHandler itemHandler;
+    protected IFluidHandler fluidHandler;
 
     public MachineStorage() {
         setHandler();
     }
 
     protected void setHandler() {
-        itemHandler = LazyOptional.of(StorageItemHandler::new);
-        fluidHandler = LazyOptional.of(StorageFluidHandler::new);
+        itemHandler = new StorageItemHandler();
+        fluidHandler = new StorageFluidHandler();
     }
 
     public void addItem(ItemStack stack) {
@@ -113,8 +112,17 @@ public class MachineStorage {
         }
     }
 
-    public interface HasStorage {
+    public interface HasStorage extends HasItemHandler {
         MachineStorage getStorage();
+
+        @Override
+        default IItemHandler getItemCapability(Direction ignore) {
+            return getStorage().itemHandler;
+        }
+
+        default IFluidHandler getFluidCapability(Direction ignore) {
+            return getStorage().fluidHandler;
+        }
     }
 
     private static final int MAX_TRANSFER = 4;
@@ -126,8 +134,7 @@ public class MachineStorage {
             var storage = blockEntity.getStorage();
             int count = 0;
             for (var direction : INSERT_ORDER) {
-                var destination = Optional.ofNullable(world.getBlockEntity(pos.relative(direction)));
-                var handler = destination.flatMap(d -> d.getCapability(Capabilities.ITEM_HANDLER, direction.getOpposite()).resolve()).orElse(null);
+                var handler = world.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(direction), direction.getOpposite());
                 if (handler == null) continue;
                 var itemMap = new ArrayList<>(storage.itemMap.entrySet());
                 for (Map.Entry<ItemKey, Long> entry : itemMap) {
@@ -166,10 +173,7 @@ public class MachineStorage {
             var storage = blockEntity.getStorage();
             int count = 0;
             for (Direction direction : INSERT_ORDER) {
-                var destPos = pos.relative(direction);
-                var handler = Optional.ofNullable(world.getBlockEntity(destPos))
-                    .flatMap(d -> d.getCapability(Capabilities.FLUID_HANDLER, direction.getOpposite()).resolve())
-                    .orElse(null);
+                var handler = world.getCapability(Capabilities.FluidHandler.BLOCK, pos.relative(direction), direction.getOpposite());
                 if (handler == null) continue;
                 var fluidMap = new ArrayList<>(storage.getFluidMap().entrySet());
                 for (Map.Entry<FluidKey, Long> entry : fluidMap) {

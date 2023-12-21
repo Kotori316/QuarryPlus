@@ -1,13 +1,5 @@
 package com.yogpc.qp.machines.marker;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.CheckerLog;
@@ -27,6 +19,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog, ClientSync {
     public static final int MAX_SEARCH = 256;

@@ -14,7 +14,7 @@ final class GuiSlotEntities extends ObjectSelectionList<GuiSlotEntities.Entry> {
     private final GuiController parent;
 
     public GuiSlotEntities(Minecraft mcIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn, GuiController parent) {
-        super(mcIn, widthIn, heightIn, topIn, bottomIn, slotHeightIn);
+        super(mcIn, widthIn, bottomIn - topIn, topIn, slotHeightIn);
         this.parent = parent;
         this.refreshList();
     }

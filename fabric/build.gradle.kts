@@ -74,8 +74,8 @@ dependencies {
         modCompileOnly(libs.techreborn) { isTransitive = false }
     } else {
         modImplementation(libs.jade.fabric)
-        modImplementation(libs.reborncore) { isTransitive = false }
-        modImplementation(libs.techreborn) { isTransitive = false }
+        modCompileOnly(libs.reborncore) { isTransitive = false }
+        modCompileOnly(libs.techreborn) { isTransitive = false }
     }
     modImplementation(libs.cloth.fabric) {
         exclude(group = "net.fabricmc.fabric-api")

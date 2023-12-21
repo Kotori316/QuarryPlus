@@ -126,7 +126,7 @@ public class TileFlexMarker extends BlockEntity implements QuarryMarker, Checker
 
     @Override
     public AABB getRenderBoundingBox() {
-        return new AABB(min, max);
+        return AABB.encapsulatingFullBlocks(min, max);
     }
 
     @Override

@@ -9,13 +9,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
 
 public class InvUtils {
     /**
@@ -30,18 +29,17 @@ public class InvUtils {
     public static ItemStack injectToNearTile(Level level, BlockPos pos, ItemStack stack) {
         var remain = stack.copy();
         for (Direction d : Direction.values()) {
-            Optional.ofNullable(level.getBlockEntity(pos.relative(d)))
-                .flatMap(t -> t.getCapability(Capabilities.ITEM_HANDLER, d.getOpposite()).resolve())
-                .ifPresent(handler -> {
-                    var simulate = ItemHandlerHelper.insertItem(handler, remain.copy(), true);
-                    if (simulate.getCount() < remain.getCount()) {
-                        var notMoved = ItemHandlerHelper.insertItem(handler,
-                            ItemHandlerHelper.copyStackWithSize(remain, remain.getCount() - simulate.getCount()), false);
-                        // notMoved should be empty.
-                        int remainCount = simulate.getCount() + notMoved.getCount();
-                        remain.setCount(remainCount);
-                    }
-                });
+            var handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(d), d.getOpposite());
+            if (handler != null) {
+                var simulate = ItemHandlerHelper.insertItem(handler, remain.copy(), true);
+                if (simulate.getCount() < remain.getCount()) {
+                    var notMoved = ItemHandlerHelper.insertItem(handler,
+                        ItemHandlerHelper.copyStackWithSize(remain, remain.getCount() - simulate.getCount()), false);
+                    // notMoved should be empty.
+                    int remainCount = simulate.getCount() + notMoved.getCount();
+                    remain.setCount(remainCount);
+                }
+            }
             if (remain.isEmpty()) return ItemStack.EMPTY;
         }
         return remain;

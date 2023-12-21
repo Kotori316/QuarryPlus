@@ -1,6 +1,5 @@
 package com.yogpc.qp.machines.misc;
 
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.machines.quarry.TileQuarry;
 import com.yogpc.qp.packet.ClientSync;

@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.placer;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.IndexedButton;
 import com.yogpc.qp.packet.PacketHandler;
@@ -15,6 +13,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Environment(EnvType.CLIENT)
 public final class RemotePlacerScreen extends PlacerScreen implements Button.OnPress {

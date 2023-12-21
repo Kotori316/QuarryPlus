@@ -1,9 +1,9 @@
 [versions]
 minecraft = "1.20.4"
-forge = "1.20.4-49.0.9"
-fabric_api = "0.91.2+1.20.4"
+forge = "1.20.4-49.0.10"
+fabric_api = "0.91.3+1.20.4"
 fabric_loader = "0.15.+"
-neoforge = "20.4.29-beta"
+neoforge = "20.4.46-beta"
 # https://ldtteam.jfrog.io/ui/native/parchmentmc-public/org/parchmentmc/data/parchment-1.20.2/
 parchment = "1.20.2-2023.10.22"
 # https://mvnrepository.com/artifact/org.scala-lang/scala-library
@@ -12,7 +12,7 @@ scala2 = "2.13.12"
 scala3 = "3.3.1"
 cats = "2.10.0-kotori"
 
-slp_forge = "3.3.1-build-2"
+slp_forge = "3.3.1-build-4"
 slp_fabric = "2.2.0"
 
 jei = "16.0.0.28"

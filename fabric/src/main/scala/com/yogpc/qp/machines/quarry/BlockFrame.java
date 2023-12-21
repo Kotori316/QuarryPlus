@@ -1,12 +1,5 @@
 package com.yogpc.qp.machines.quarry;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.function.BiPredicate;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.machines.Direction8;
 import com.yogpc.qp.machines.QPBlock;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
@@ -26,12 +19,14 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.DOWN;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.EAST;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.NORTH;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.SOUTH;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.UP;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WEST;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiPredicate;
+import java.util.stream.Stream;
+
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 
 public class BlockFrame extends QPBlock {
     public static final String NAME = "frame";

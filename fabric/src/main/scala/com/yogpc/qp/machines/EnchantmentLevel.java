@@ -1,14 +1,7 @@
 package com.yogpc.qp.machines;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.utils.ManualOrder;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -17,6 +10,8 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
 
 public record EnchantmentLevel(Enchantment enchantment, int level) {
     public EnchantmentLevel(Map.Entry<Enchantment, Integer> entry) {

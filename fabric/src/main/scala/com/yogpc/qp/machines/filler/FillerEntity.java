@@ -1,16 +1,7 @@
 package com.yogpc.qp.machines.filler;
 
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machines.Area;
-import com.yogpc.qp.machines.CheckerLog;
-import com.yogpc.qp.machines.EnchantmentLevel;
-import com.yogpc.qp.machines.EnergyConfigAccessor;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.QuarryMarker;
+import com.yogpc.qp.machines.*;
 import com.yogpc.qp.utils.MapMulti;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
@@ -30,6 +21,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public final class FillerEntity extends PowerTile implements CheckerLog, EnchantmentLevel.HasEnchantments, ExtendedScreenHandlerFactory {
     private static final Logger LOGGER = QuarryPlus.getLogger(FillerEntity.class);

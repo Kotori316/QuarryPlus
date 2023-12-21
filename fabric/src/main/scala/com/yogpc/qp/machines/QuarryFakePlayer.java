@@ -1,10 +1,10 @@
 package com.yogpc.qp.machines;
 
-import java.util.UUID;
-
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.UUID;
 
 /**
  * Just a util method to support {@link net.fabricmc.fabric.api.entity.FakePlayer}

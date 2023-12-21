@@ -7,6 +7,7 @@ import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -14,11 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -35,7 +32,6 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
     @Nullable
     private Boolean chunkPreLoaded = null;
     public final boolean enabled;
-    private LazyOptional<IEnergyStorage> energyHandler = LazyOptional.of(() -> this);
     protected final PowerConfig powerConfig;
     private LongSupplier timeProvider;
 
@@ -241,37 +237,9 @@ public abstract class PowerTile extends BlockEntity implements IEnergyStorage {
         }
     }
 
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        energyHandler.invalidate();
-        if (this instanceof MachineStorage.HasStorage storage) {
-            storage.getStorage().itemHandler.invalidate();
-            storage.getStorage().fluidHandler.invalidate();
-        }
-    }
 
-    @Override
-    public void reviveCaps() {
-        super.reviveCaps();
-        energyHandler = LazyOptional.of(() -> this);
-        if (this instanceof MachineStorage.HasStorage storage) {
-            storage.getStorage().setHandler();
-        }
-    }
-
-    @NotNull
-    @Override
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ENERGY) {
-            if (this.canReceive() || this.canExtract())
-                return Capabilities.ENERGY.orEmpty(cap, energyHandler);
-        } else if (cap == Capabilities.ITEM_HANDLER && this instanceof MachineStorage.HasStorage storage) {
-            return storage.getStorage().itemHandler.cast();
-        } else if (cap == Capabilities.FLUID_HANDLER && this instanceof MachineStorage.HasStorage storage) {
-            return storage.getStorage().fluidHandler.cast();
-        }
-        return super.getCapability(cap, side);
+    public IEnergyStorage getEnergyCapability(Direction ignore) {
+        return this;
     }
 
     public static boolean stillValid(PowerTile tile, Player player) {

@@ -1,15 +1,5 @@
 package com.yogpc.qp.machines.placer;
 
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.OptionalInt;
-import java.util.function.BooleanSupplier;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.QuarryItemTransfer;
 import com.yogpc.qp.machines.CheckerLog;
@@ -46,6 +36,12 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.*;
+import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 

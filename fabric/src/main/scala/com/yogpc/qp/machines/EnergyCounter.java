@@ -1,13 +1,13 @@
 package com.yogpc.qp.machines;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public abstract class EnergyCounter {
     private static final Logger LOGGER = LogManager.getLogger(EnergyCounter.class);

@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines.filler;
 
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import net.fabricmc.loader.api.FabricLoader;
@@ -20,6 +16,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public final class FillerAction {
     private static final Logger LOGGER = QuarryPlus.getLogger(FillerAction.class);

@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.Util;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
@@ -50,7 +51,7 @@ public record IngredientWithCount(Ingredient ingredient, int count) implements P
     }
 
     public JsonElement toJson() {
-        var obj = ingredient.toJson(false);
+        var obj = Util.getOrThrow(Ingredient.CODEC.encodeStart(JsonOps.INSTANCE, ingredient), IllegalStateException::new);
         if (obj instanceof JsonArray jsonArray) {
             jsonArray.forEach(e -> e.getAsJsonObject().addProperty(KEY_COUNT, count));
         } else if (obj instanceof JsonObject jsonObject) {

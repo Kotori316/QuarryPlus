@@ -1,11 +1,5 @@
 package com.yogpc.qp.machines.marker;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.CheckerLog;
@@ -13,7 +7,6 @@ import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.render.Box;
 import com.yogpc.qp.render.RenderMarker;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -22,6 +15,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 public class TileFlexMarker extends BlockEntity implements QuarryMarker, CheckerLog, ClientSync {
     private static final int maxRange = TileMarker.MAX_SEARCH;

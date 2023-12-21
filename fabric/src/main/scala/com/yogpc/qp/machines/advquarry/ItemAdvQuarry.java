@@ -1,12 +1,7 @@
 package com.yogpc.qp.machines.advquarry;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import com.yogpc.qp.machines.EnchantableItem;
 import com.yogpc.qp.machines.QPBlock;
-import javax.annotation.Nullable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -14,6 +9,11 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("DuplicatedCode")
 class ItemAdvQuarry extends QPBlock.QPBlockItem implements EnchantableItem {

@@ -1,10 +1,10 @@
 package com.yogpc.qp.machines;
 
-import java.util.List;
-import java.util.function.Predicate;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+
+import java.util.List;
+import java.util.function.Predicate;
 
 public record Direction8(Vec3i vec) {
 

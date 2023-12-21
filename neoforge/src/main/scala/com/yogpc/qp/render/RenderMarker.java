@@ -140,4 +140,10 @@ public class RenderMarker implements BlockEntityRenderer<TileMarker> {
     public boolean shouldRenderOffScreen(TileMarker blockEntity) {
         return true;
     }
+
+    @Override
+    public AABB getRenderBoundingBox(TileMarker blockEntity) {
+        var aabb = blockEntity.getRenderBoundingBox();
+        return Objects.requireNonNullElse(aabb, INFINITE_EXTENT_AABB);
+    }
 }

@@ -1,21 +1,11 @@
 package com.yogpc.qp.machines.advquarry;
 
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.wrench.WrenchItems;
-import com.yogpc.qp.machines.Area;
-import com.yogpc.qp.machines.EnchantedLootFunction;
-import com.yogpc.qp.machines.EnchantmentLevel;
-import com.yogpc.qp.machines.MachineStorage;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.QPBlock;
-import com.yogpc.qp.machines.QuarryMarker;
+import com.yogpc.qp.machines.*;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.MapMulti;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
-import javax.annotation.Nullable;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -26,9 +16,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -40,6 +30,10 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
+
+import javax.annotation.Nullable;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
@@ -134,7 +128,7 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockGetter world, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state) {
         var stack = super.getCloneItemStack(world, pos, state);
         if (world.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
             EnchantedLootFunction.process(stack, quarry);

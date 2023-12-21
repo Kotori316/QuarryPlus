@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -45,5 +46,10 @@ public class RenderFlexMarker implements BlockEntityRenderer<TileFlexMarker> {
     @Override
     public boolean shouldRenderOffScreen(TileFlexMarker blockEntity) {
         return true;
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(TileFlexMarker blockEntity) {
+        return blockEntity.getRenderBoundingBox();
     }
 }

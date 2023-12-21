@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.workbench;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
@@ -10,7 +11,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.neoforged.neoforge.common.crafting.IngredientType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -85,7 +85,7 @@ public class EnchantmentIngredient extends Ingredient {
 
     @Nullable
     private static CompoundTag getTagWithoutEnchantment(ItemStack stack, boolean checkDamage) {
-        return Optional.ofNullable(stack.getShareTag()).map(CompoundTag::copy).map(c -> {
+        return Optional.ofNullable(stack.getTag()).map(CompoundTag::copy).map(c -> {
             c.remove(ItemStack.TAG_ENCH);
             c.remove(EnchantedBookItem.TAG_STORED_ENCHANTMENTS);
             if (!checkDamage) c.remove(ItemStack.TAG_DAMAGE);

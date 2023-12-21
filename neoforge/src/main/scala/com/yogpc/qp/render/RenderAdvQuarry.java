@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -75,5 +76,10 @@ public class RenderAdvQuarry implements BlockEntityRenderer<TileAdvQuarry> {
         }
 
         Minecraft.getInstance().getProfiler().pop();
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(TileAdvQuarry blockEntity) {
+        return blockEntity.getRenderBoundingBox();
     }
 }

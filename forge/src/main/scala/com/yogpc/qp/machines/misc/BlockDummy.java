@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.misc;
 
+import com.mojang.serialization.MapCodec;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Direction8;
 import net.minecraft.core.BlockPos;
@@ -7,14 +8,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.AbstractGlassBlock;
+import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class BlockDummy extends AbstractGlassBlock {
+public class BlockDummy extends TransparentBlock {
     public static final String NAME = "dummy";
     public final ResourceLocation location = new ResourceLocation(QuarryPlus.modID, NAME);
     public final BlockItem blockItem;
@@ -30,6 +31,13 @@ public class BlockDummy extends AbstractGlassBlock {
             .isViewBlocking((state, world, pos) -> false)
         );
         blockItem = new BlockItem(this, new Item.Properties());
+    }
+
+    private static final MapCodec<BlockDummy> CODEC = simpleCodec(p -> new BlockDummy());
+
+    @Override
+    protected MapCodec<BlockDummy> codec() {
+        return CODEC;
     }
 
     private boolean breaking = false;

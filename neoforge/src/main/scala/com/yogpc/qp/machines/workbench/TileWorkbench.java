@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.workbench;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.CheckerLog;
+import com.yogpc.qp.machines.HasItemHandler;
 import com.yogpc.qp.machines.InvUtils;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.packet.PacketHandler;
@@ -29,13 +30,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.ArrayList;
@@ -44,7 +41,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class TileWorkbench extends PowerTile implements Container, MenuProvider, CheckerLog {
+public class TileWorkbench extends PowerTile implements Container, MenuProvider, CheckerLog, HasItemHandler {
     final List<ItemStack> ingredientInventory = NonNullList.withSize(27, ItemStack.EMPTY);
     final List<ItemStack> selectionInventory = NonNullList.withSize(18, ItemStack.EMPTY);
     public List<RecipeHolder<WorkbenchRecipe>> recipesList = Collections.emptyList();
@@ -267,13 +264,9 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
         }
     }
 
-    @NotNull
     @Override
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
-            return Capabilities.ITEM_HANDLER.orEmpty(cap, LazyOptional.of(() -> itemHandler));
-        }
-        return super.getCapability(cap, side);
+    public IItemHandler getItemCapability(Direction ignore) {
+        return itemHandler;
     }
 
     public WorkbenchRecipe getRecipe() {

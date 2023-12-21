@@ -89,9 +89,8 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
         super.saveAdditional(compound);
     }
 
-    @Override
     public AABB getRenderBoundingBox() {
-        return new AABB(min, max);
+        return AABB.encapsulatingFullBlocks(min, max);
     }
 
     // Interface implementations

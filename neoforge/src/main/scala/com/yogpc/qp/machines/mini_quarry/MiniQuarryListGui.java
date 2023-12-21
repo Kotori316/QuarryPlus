@@ -120,7 +120,7 @@ public class MiniQuarryListGui extends Screen implements Button.OnPress {
         private final Supplier<List<BlockStatePredicate>> entriesSupplier;
 
         public EntryList(Minecraft mcIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn, Screen parent, Supplier<List<BlockStatePredicate>> entriesSupplier) {
-            super(mcIn, widthIn, heightIn, topIn, bottomIn, slotHeightIn);
+            super(mcIn, widthIn, bottomIn - topIn, topIn, slotHeightIn);
             this.parent = parent;
             this.entriesSupplier = entriesSupplier;
             updateList();

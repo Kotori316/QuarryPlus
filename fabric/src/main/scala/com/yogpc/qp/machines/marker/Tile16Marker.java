@@ -1,10 +1,5 @@
 package com.yogpc.qp.machines.marker;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.CheckerLog;
@@ -12,7 +7,6 @@ import com.yogpc.qp.machines.QuarryMarker;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.render.Box;
 import com.yogpc.qp.render.RenderMarker;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
@@ -22,6 +16,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLog, ClientSync {
     private BlockPos min = BlockPos.ZERO;

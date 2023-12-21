@@ -19,11 +19,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -103,12 +100,8 @@ public final class SFQuarryEntity extends TileQuarry implements MenuProvider {
     }
 
     @Override
-    @NotNull
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
-            return LazyOptional.of(() -> new InvWrapper(this.fuelContainer)).cast();
-        }
-        return super.getCapability(cap, side);
+    public IItemHandler getItemCapability(Direction ignore) {
+        return new InvWrapper(this.fuelContainer);
     }
 
     @Override

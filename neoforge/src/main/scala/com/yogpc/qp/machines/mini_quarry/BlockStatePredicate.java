@@ -6,6 +6,7 @@ import com.yogpc.qp.QuarryPlus;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -18,7 +19,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.neoforged.neoforge.gametest.GameTestHooks;
-import net.minecraft.core.registries.BuiltInRegistries;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Locale;

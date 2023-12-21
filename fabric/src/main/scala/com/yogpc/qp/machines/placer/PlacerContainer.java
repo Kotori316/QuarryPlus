@@ -1,7 +1,5 @@
 package com.yogpc.qp.machines.placer;
 
-import java.util.Objects;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.SlotContainer;
 import net.minecraft.core.BlockPos;
@@ -11,6 +9,8 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class PlacerContainer extends AbstractContainerMenu {
     public static final String PLACER_GUI_ID = QuarryPlus.modID + ":gui_" + PlacerBlock.NAME;

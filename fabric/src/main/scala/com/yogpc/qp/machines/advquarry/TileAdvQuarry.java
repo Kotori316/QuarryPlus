@@ -81,7 +81,7 @@ public class TileAdvQuarry extends PowerTile implements
         if (area != null)
             return new AABB(area.minX(), 0, area.minZ(), area.maxX(), area.maxY(), area.maxZ());
         else
-            return new AABB(getBlockPos(), getBlockPos().offset(1, 1, 1));
+            return AABB.encapsulatingFullBlocks(getBlockPos(), getBlockPos());
     }
 
     @Override

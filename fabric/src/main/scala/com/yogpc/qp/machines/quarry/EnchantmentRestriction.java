@@ -1,11 +1,11 @@
 package com.yogpc.qp.machines.quarry;
 
+import net.minecraft.world.item.enchantment.Enchantment;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
-
-import net.minecraft.world.item.enchantment.Enchantment;
 
 record EnchantmentRestriction(Map<Enchantment, Integer> restrictionMap)
     implements BiPredicate<Enchantment, Integer> {

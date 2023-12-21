@@ -10,6 +10,14 @@ plugins {
 
 tasks.compileScala {
     scalaCompileOptions.additionalParameters = listOf("-Wconf:cat=deprecation:w,any:e")
+    dependsOn(tasks.processResources)
+}
+
+sourceSets.forEach {
+    val dir = layout.buildDirectory.dir("sourcesSets/${it.name}")
+    it.output.setResourcesDir(dir)
+    it.java.destinationDirectory = dir
+    it.scala.destinationDirectory = dir
 }
 
 val modId: String = "QuarryPlus".lowercase()
@@ -135,7 +143,7 @@ dependencies {
         exclude(group = "org.scala-lang", module = "scala3-library_3")
     }
 
-    val useREI = false // Boolean.parseBoolean(System.getenv("USE_REI"))
+    val useREI = true // Boolean.parseBoolean(System.getenv("USE_REI"))
     compileOnly(fg.deobf(libs.jei.common.api.get()))
     compileOnly(fg.deobf(libs.jei.forge.api.get()))
     if (useREI) {

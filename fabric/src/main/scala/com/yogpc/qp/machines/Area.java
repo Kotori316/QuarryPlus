@@ -1,18 +1,18 @@
 package com.yogpc.qp.machines;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
                    Direction direction) implements Serializable {

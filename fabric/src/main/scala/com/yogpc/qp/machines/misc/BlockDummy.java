@@ -1,9 +1,6 @@
 package com.yogpc.qp.machines.misc;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
+import com.mojang.serialization.MapCodec;
 import com.yogpc.qp.machines.Direction8;
 import com.yogpc.qp.machines.QPBlock;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -11,11 +8,15 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.AbstractGlassBlock;
+import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 
-public class BlockDummy extends AbstractGlassBlock {
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+public class BlockDummy extends TransparentBlock {
     public static final String NAME = "dummy";
     public final BlockItem blockItem;
 
@@ -29,6 +30,13 @@ public class BlockDummy extends AbstractGlassBlock {
             .blockVision((state, world, pos) -> false)
         );
         blockItem = new QPBlock.QPBlockItem(this, new FabricItemSettings());
+    }
+
+    private static final MapCodec<BlockDummy> CODEC = simpleCodec(p -> new BlockDummy());
+
+    @Override
+    protected MapCodec<? extends TransparentBlock> codec() {
+        return CODEC;
     }
 
     private boolean breaking = false;

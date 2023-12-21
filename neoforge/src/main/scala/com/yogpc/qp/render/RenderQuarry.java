@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -762,6 +763,19 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
             buffer.pos(hXPd, MYPd, zF).colored().tex(D_maxU, D_minV).lightedAndEnd();
             buffer.pos(hXPd, MYmd, zF).colored().tex(D_minU, D_minV).lightedAndEnd();
             buffer.pos(hXPd, MYmd, zL).colored().tex(D_minU, fixedV).lightedAndEnd();
+        }
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(TileQuarry blockEntity) {
+        var area = blockEntity.getArea();
+        var level = blockEntity.getLevel();
+        var pos = blockEntity.getBlockPos();
+        if (area != null) {
+            var min = level != null ? level.getMinBuildHeight() : 0;
+            return new AABB(area.minX(), min, area.minZ(), area.maxX(), area.maxY(), area.maxZ());
+        } else {
+            return AABB.encapsulatingFullBlocks(pos, pos);
         }
     }
 }

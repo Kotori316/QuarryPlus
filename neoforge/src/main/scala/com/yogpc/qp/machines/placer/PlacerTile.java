@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.placer;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.CheckerLog;
+import com.yogpc.qp.machines.HasItemHandler;
 import com.yogpc.qp.machines.InvUtils;
 import com.yogpc.qp.machines.QuarryFakePlayer;
 import com.yogpc.qp.packet.PacketHandler;
@@ -32,14 +33,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -53,7 +49,8 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 public class PlacerTile extends BlockEntity implements
     Container,
     CheckerLog,
-    MenuProvider {
+    MenuProvider,
+    HasItemHandler {
     public static final String KEY_ITEM = "items";
     public static final String KEY_LAST_PLACED = "last_placed";
     public static final String KEY_RS_MODE = "redstone_mode";
@@ -225,14 +222,9 @@ public class PlacerTile extends BlockEntity implements
     }
 
     // -------------------- Capability --------------------
-    private final LazyOptional<IItemHandler> itemHandlerOpt = LazyOptional.of(() -> itemHandler);
-
-    @NotNull
     @Override
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER)
-            return Capabilities.ITEM_HANDLER.orEmpty(cap, itemHandlerOpt);
-        return super.getCapability(cap, side);
+    public IItemHandler getItemCapability(Direction ignore) {
+        return itemHandler;
     }
 
     // -------------------- Inventory --------------------

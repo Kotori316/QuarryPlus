@@ -87,16 +87,18 @@ public class Holder {
         return item;
     }
 
-    private static <T extends BlockEntity> BlockEntityType<T> registerEntityType(BlockEntityType.BlockEntitySupplier<T> supplier, QPBlock block, EnableOrNot condition) {
-        return registerEntityType(supplier, List.of(block), condition);
+    @SafeVarargs
+    private static <T extends BlockEntity> BlockEntityType<T> registerEntityType(BlockEntityType.BlockEntitySupplier<T> supplier, QPBlock block, EnableOrNot condition, T... dummy) {
+        return registerEntityType(supplier, List.of(block), condition, dummy);
     }
 
-    private static <T extends BlockEntity> BlockEntityType<T> registerEntityType(BlockEntityType.BlockEntitySupplier<T> supplier, List<QPBlock> block, EnableOrNot condition) {
+    @SafeVarargs
+    private static <T extends BlockEntity> BlockEntityType<T> registerEntityType(BlockEntityType.BlockEntitySupplier<T> supplier, List<QPBlock> block, EnableOrNot condition, T... dummy) {
         if (block.isEmpty()) {
             throw new IllegalArgumentException("Blocks must not be empty.");
         }
         var type = BlockEntityType.Builder.of(supplier, block.toArray(Block[]::new)).build(DSL.emptyPartType());
-        ENTITY_TYPES.add(new NamedEntry<>(block.get(0).getRegistryName(), type));
+        ENTITY_TYPES.add(new NamedEntry<>(block.get(0).getRegistryName(), type, dummy.getClass().arrayType()));
         CONDITION_HOLDERS.add(new EntryConditionHolder(block.get(0).getRegistryName(), condition));
         return type;
     }
@@ -254,7 +256,11 @@ public class Holder {
         }
     }
 
-    public record NamedEntry<T>(ResourceLocation name, T t) {
+    public record NamedEntry<T>(ResourceLocation name, T t, Class<?> relatedClass) {
+        public NamedEntry(ResourceLocation name, T t) {
+            this(name, t, t.getClass());
+        }
+
         public static <T> Consumer<? super NamedEntry<? extends T>> register(RegisterEvent.RegisterHelper<T> helper) {
             return e -> helper.register(e.name(), e.t());
         }

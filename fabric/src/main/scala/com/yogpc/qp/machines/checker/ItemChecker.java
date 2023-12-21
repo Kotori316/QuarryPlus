@@ -1,6 +1,5 @@
 package com.yogpc.qp.machines.checker;
 
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.QPItem;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;

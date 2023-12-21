@@ -1,8 +1,5 @@
 package com.yogpc.qp.machines.misc;
 
-import java.util.Arrays;
-import java.util.stream.IntStream;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.utils.MapMulti;
@@ -11,6 +8,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
 public class CreativeGeneratorTile extends PowerTile {
     private long sendEnergy = 0;

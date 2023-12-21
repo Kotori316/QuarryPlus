@@ -1,17 +1,8 @@
 package com.yogpc.qp.machines.quarry;
 
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.wrench.WrenchItems;
-import com.yogpc.qp.machines.Area;
-import com.yogpc.qp.machines.Direction8;
-import com.yogpc.qp.machines.EnchantedLootFunction;
-import com.yogpc.qp.machines.MachineStorage;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.QPBlock;
-import com.yogpc.qp.machines.QuarryMarker;
+import com.yogpc.qp.machines.*;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.MapMulti;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
@@ -26,8 +17,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -40,6 +31,9 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
+
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class BlockQuarry extends QPBlock implements EntityBlock {
     public static final String NAME = "quarry";
@@ -134,7 +128,7 @@ public class BlockQuarry extends QPBlock implements EntityBlock {
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockGetter world, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state) {
         // Called in client.
         var stack = super.getCloneItemStack(world, pos, state);
         if (world.getBlockEntity(pos) instanceof TileQuarry quarry) {

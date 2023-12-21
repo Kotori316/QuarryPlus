@@ -135,13 +135,12 @@ public class TileMarker extends BlockEntity implements QuarryMarker, CheckerLog,
         return tag;
     }
 
-    @Override
     public AABB getRenderBoundingBox() {
         if (renderBox != null && renderBox.parent.area != null) {
             var area = renderBox.parent.area;
             return new AABB(area.minX(), area.minY(), area.minZ(), area.maxX(), area.maxY(), area.maxZ());
         } else {
-            return INFINITE_EXTENT_AABB;
+            return null;
         }
     }
 

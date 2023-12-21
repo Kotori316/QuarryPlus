@@ -2,8 +2,7 @@ package com.yogpc.qp;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.mojang.serialization.Codec;
-import com.yogpc.qp.machines.QuarryFakePlayer;
-import com.yogpc.qp.machines.TraceQuarryWork;
+import com.yogpc.qp.machines.*;
 import com.yogpc.qp.machines.workbench.EnableCondition;
 import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
 import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
@@ -29,6 +28,8 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ICondition;
@@ -157,6 +158,25 @@ public class QuarryPlus {
 
         public static void registerCreativeTab(RegisterEvent.RegisterHelper<CreativeModeTab> helper) {
             helper.register(new ResourceLocation(QuarryPlus.modID, "tab"), Holder.createTab(CreativeModeTab.builder()));
+        }
+
+        @SuppressWarnings("unchecked")
+        @SubscribeEvent
+        public static void registerCapability(RegisterCapabilitiesEvent event) {
+            for (var entityType : Holder.entityTypes()) {
+                if (PowerTile.class.isAssignableFrom(entityType.relatedClass())) {
+                    var powerTileType = (BlockEntityType<? extends PowerTile>) entityType.t();
+                    event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, powerTileType, PowerTile::getEnergyCapability);
+                }
+                if (HasItemHandler.class.isAssignableFrom(entityType.relatedClass())) {
+                    var storageTileType = (BlockEntityType<? extends HasItemHandler>) entityType.t();
+                    event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, storageTileType, HasItemHandler::getItemCapability);
+                }
+                if (MachineStorage.HasStorage.class.isAssignableFrom(entityType.relatedClass())) {
+                    var storageTileType = (BlockEntityType<? extends MachineStorage.HasStorage>) entityType.t();
+                    event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, storageTileType, MachineStorage.HasStorage::getFluidCapability);
+                }
+            }
         }
     }
 
