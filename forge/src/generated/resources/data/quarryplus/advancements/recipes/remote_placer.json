@@ -36,6 +36,5 @@
     "recipes": [
       "quarryplus:remote_placer"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

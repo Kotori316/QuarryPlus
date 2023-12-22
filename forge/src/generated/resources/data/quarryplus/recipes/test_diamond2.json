@@ -1,26 +1,28 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "energy": 640.0,
   "forge:condition": {
     "type": "quarryplus:debug_enabled",
     "value": {}
   },
-  "ingredients": [
-    [
-      {
-        "count": 8,
-        "item": "minecraft:iron_ingot"
-      },
-      {
-        "count": 4,
-        "tag": "forge:ingots/gold"
-      }
-    ]
-  ],
-  "result": {
-    "count": 2,
-    "item": "minecraft:diamond"
-  },
-  "showInJEI": true,
-  "subType": "default"
+  "value": {
+    "energy": 640,
+    "ingredients": [
+      [
+        {
+          "count": 8,
+          "item": "minecraft:iron_ingot"
+        },
+        {
+          "count": 4,
+          "tag": "forge:ingots/gold"
+        }
+      ]
+    ],
+    "result": {
+      "count": 2,
+      "item": "minecraft:diamond"
+    },
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

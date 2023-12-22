@@ -1,10 +1,12 @@
 package com.yogpc.qp.machines.workbench;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.EnchantedBookItem;
@@ -99,6 +101,10 @@ public class EnchantmentIngredient extends AbstractIngredient {
             if (!checkDamage) c.remove(ItemStack.TAG_DAMAGE);
             return c;
         }).filter(Predicate.not(CompoundTag::isEmpty)).orElse(null);
+    }
+
+    JsonElement toJson() {
+        return Util.getOrThrow(CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
     }
 
     @Override

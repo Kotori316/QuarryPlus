@@ -1,32 +1,34 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "energy": 3200.0,
   "forge:condition": {
     "type": "quarryplus:machine_enabled",
     "value": "fuel_module_normal"
   },
-  "ingredients": [
-    {
-      "count": 16,
-      "tag": "forge:ingots/gold"
+  "value": {
+    "energy": 3200,
+    "ingredients": [
+      {
+        "count": 16,
+        "tag": "forge:ingots/gold"
+      },
+      {
+        "count": 5,
+        "tag": "forge:rods/blaze"
+      },
+      {
+        "count": 64,
+        "tag": "forge:netherrack"
+      },
+      {
+        "count": 3,
+        "item": "minecraft:furnace"
+      }
+    ],
+    "result": {
+      "count": 1,
+      "item": "quarryplus:fuel_module_normal"
     },
-    {
-      "count": 5,
-      "tag": "forge:rods/blaze"
-    },
-    {
-      "count": 64,
-      "tag": "forge:netherrack"
-    },
-    {
-      "count": 3,
-      "item": "minecraft:furnace"
-    }
-  ],
-  "result": {
-    "count": 1,
-    "item": "quarryplus:fuel_module_normal"
-  },
-  "showInJEI": true,
-  "subType": "default"
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

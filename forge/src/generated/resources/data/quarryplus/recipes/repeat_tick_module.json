@@ -1,28 +1,30 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "energy": 160000.0,
   "forge:condition": {
     "type": "quarryplus:machine_enabled",
     "value": "repeat_tick_module"
   },
-  "ingredients": [
-    {
+  "value": {
+    "energy": 160000,
+    "ingredients": [
+      {
+        "count": 1,
+        "item": "quarryplus:fuel_module_normal"
+      },
+      {
+        "count": 4,
+        "item": "minecraft:prismarine_shard"
+      },
+      {
+        "count": 4,
+        "item": "minecraft:amethyst_shard"
+      }
+    ],
+    "result": {
       "count": 1,
-      "item": "quarryplus:fuel_module_normal"
+      "item": "quarryplus:repeat_tick_module"
     },
-    {
-      "count": 4,
-      "item": "minecraft:prismarine_shard"
-    },
-    {
-      "count": 4,
-      "item": "minecraft:amethyst_shard"
-    }
-  ],
-  "result": {
-    "count": 1,
-    "item": "quarryplus:repeat_tick_module"
-  },
-  "showInJEI": true,
-  "subType": "default"
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

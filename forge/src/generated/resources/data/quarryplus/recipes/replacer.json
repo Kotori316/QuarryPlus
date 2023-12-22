@@ -1,56 +1,58 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "energy": 6400000.0,
   "forge:condition": {
     "type": "quarryplus:machine_enabled",
     "value": "replacer"
   },
-  "ingredients": [
-    {
-      "count": 32,
-      "item": "minecraft:water_bucket"
-    },
-    {
-      "count": 32,
-      "item": "minecraft:lava_bucket"
-    },
-    {
-      "count": 16,
-      "tag": "forge:ingots/gold"
-    },
-    {
-      "count": 32,
-      "tag": "forge:ingots/iron"
-    },
-    {
-      "count": 16,
-      "tag": "forge:dusts/redstone"
-    },
-    {
-      "count": 4,
-      "tag": "forge:ender_pearls"
-    },
-    {
-      "count": 12,
-      "item": "minecraft:ender_eye"
-    },
-    {
+  "value": {
+    "energy": 6400000,
+    "ingredients": [
+      {
+        "count": 32,
+        "item": "minecraft:water_bucket"
+      },
+      {
+        "count": 32,
+        "item": "minecraft:lava_bucket"
+      },
+      {
+        "count": 16,
+        "tag": "forge:ingots/gold"
+      },
+      {
+        "count": 32,
+        "tag": "forge:ingots/iron"
+      },
+      {
+        "count": 16,
+        "tag": "forge:dusts/redstone"
+      },
+      {
+        "count": 4,
+        "tag": "forge:ender_pearls"
+      },
+      {
+        "count": 12,
+        "item": "minecraft:ender_eye"
+      },
+      {
+        "count": 1,
+        "item": "minecraft:dragon_head"
+      },
+      {
+        "count": 2,
+        "tag": "forge:nether_stars"
+      },
+      {
+        "count": 1024,
+        "item": "minecraft:stone"
+      }
+    ],
+    "result": {
       "count": 1,
-      "item": "minecraft:dragon_head"
+      "item": "quarryplus:replacer"
     },
-    {
-      "count": 2,
-      "tag": "forge:nether_stars"
-    },
-    {
-      "count": 1024,
-      "item": "minecraft:stone"
-    }
-  ],
-  "result": {
-    "count": 1,
-    "item": "quarryplus:replacer"
-  },
-  "showInJEI": true,
-  "subType": "default"
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

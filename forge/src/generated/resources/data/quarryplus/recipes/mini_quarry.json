@@ -1,36 +1,38 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "energy": 10000.0,
   "forge:condition": {
     "type": "quarryplus:machine_enabled",
     "value": "mini_quarry"
   },
-  "ingredients": [
-    {
-      "count": 2,
-      "tag": "forge:gems/diamond"
+  "value": {
+    "energy": 10000,
+    "ingredients": [
+      {
+        "count": 2,
+        "tag": "forge:gems/diamond"
+      },
+      {
+        "count": 16,
+        "tag": "forge:ingots/gold"
+      },
+      {
+        "count": 32,
+        "tag": "forge:ingots/iron"
+      },
+      {
+        "count": 8,
+        "tag": "forge:dusts/redstone"
+      },
+      {
+        "count": 4,
+        "item": "minecraft:comparator"
+      }
+    ],
+    "result": {
+      "count": 1,
+      "item": "quarryplus:mini_quarry"
     },
-    {
-      "count": 16,
-      "tag": "forge:ingots/gold"
-    },
-    {
-      "count": 32,
-      "tag": "forge:ingots/iron"
-    },
-    {
-      "count": 8,
-      "tag": "forge:dusts/redstone"
-    },
-    {
-      "count": 4,
-      "item": "minecraft:comparator"
-    }
-  ],
-  "result": {
-    "count": 1,
-    "item": "quarryplus:mini_quarry"
-  },
-  "showInJEI": true,
-  "subType": "default"
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

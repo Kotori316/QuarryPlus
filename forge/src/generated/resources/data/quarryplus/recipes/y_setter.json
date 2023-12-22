@@ -1,32 +1,34 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "energy": 80000.0,
   "forge:condition": {
     "type": "quarryplus:machine_enabled",
     "value": "y_setter"
   },
-  "ingredients": [
-    {
-      "count": 32,
-      "tag": "forge:ingots/gold"
+  "value": {
+    "energy": 80000,
+    "ingredients": [
+      {
+        "count": 32,
+        "tag": "forge:ingots/gold"
+      },
+      {
+        "count": 64,
+        "tag": "forge:gems/quartz"
+      },
+      {
+        "count": 16,
+        "item": "minecraft:repeater"
+      },
+      {
+        "count": 8,
+        "item": "minecraft:comparator"
+      }
+    ],
+    "result": {
+      "count": 1,
+      "item": "quarryplus:y_setter"
     },
-    {
-      "count": 64,
-      "tag": "forge:gems/quartz"
-    },
-    {
-      "count": 16,
-      "item": "minecraft:repeater"
-    },
-    {
-      "count": 8,
-      "item": "minecraft:comparator"
-    }
-  ],
-  "result": {
-    "count": 1,
-    "item": "quarryplus:y_setter"
-  },
-  "showInJEI": true,
-  "subType": "default"
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

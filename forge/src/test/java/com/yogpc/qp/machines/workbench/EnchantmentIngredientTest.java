@@ -43,8 +43,8 @@ class EnchantmentIngredientTest {
     @Test
     void instance() {
         var ei = new EnchantmentIngredient(diamondPickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false, true);
-        assertTrue(ei.toJson(true).isJsonObject());
-        assertNotEquals(0, ei.toJson(true).getAsJsonObject().size());
+        assertTrue(ei.toJson().isJsonObject());
+        assertNotEquals(0, ei.toJson().getAsJsonObject().size());
     }
 
     @Nested
@@ -72,8 +72,8 @@ class EnchantmentIngredientTest {
                 """, JsonObject.class);
             var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(diamondPickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false, true);
-            assertEquals(json, loaded.toJson(true));
-            assertEquals(expect.toJson(true), loaded.toJson(true));
+            assertEquals(json, loaded.toJson());
+            assertEquals(expect.toJson(), loaded.toJson());
         }
 
         @Test
@@ -99,8 +99,8 @@ class EnchantmentIngredientTest {
                 """, JsonObject.class);
             var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(diamondPickaxe, List.of(new EnchantmentInstance(Enchantments.BLOCK_EFFICIENCY, 4)), false, false);
-            assertEquals(json, loaded.toJson(true));
-            assertEquals(expect.toJson(true), loaded.toJson(true));
+            assertEquals(json, loaded.toJson());
+            assertEquals(expect.toJson(), loaded.toJson());
         }
 
         @Test
@@ -131,8 +131,8 @@ class EnchantmentIngredientTest {
             var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(diamondPickaxe, List.of(new EnchantmentInstance(Enchantments.BLOCK_EFFICIENCY, 4),
                 new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false, true);
-            assertEquals(json, loaded.toJson(true));
-            assertEquals(expect.toJson(true), loaded.toJson(true));
+            assertEquals(json, loaded.toJson());
+            assertEquals(expect.toJson(), loaded.toJson());
         }
 
         @Test
@@ -163,8 +163,8 @@ class EnchantmentIngredientTest {
             var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(diamondPickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1),
                 new EnchantmentInstance(Enchantments.BLOCK_EFFICIENCY, 4)), false, true);
-            assertEquals(json, loaded.toJson(true));
-            assertEquals(expect.toJson(true), loaded.toJson(true));
+            assertEquals(json, loaded.toJson());
+            assertEquals(expect.toJson(), loaded.toJson());
         }
 
         @Test
@@ -190,8 +190,8 @@ class EnchantmentIngredientTest {
                 """, JsonObject.class);
             var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(new ItemStack(Items.STONE), List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false, true);
-            assertEquals(json, loaded.toJson(true));
-            assertEquals(expect.toJson(true), loaded.toJson(true));
+            assertEquals(json, loaded.toJson());
+            assertEquals(expect.toJson(), loaded.toJson());
         }
 
         @Test
@@ -217,8 +217,8 @@ class EnchantmentIngredientTest {
                 """, JsonObject.class);
             var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(new ItemStack(Items.ENCHANTED_BOOK), List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false, true);
-            assertEquals(json, loaded.toJson(true));
-            assertEquals(expect.toJson(true), loaded.toJson(true));
+            assertEquals(json, loaded.toJson());
+            assertEquals(expect.toJson(), loaded.toJson());
         }
 
         @Test
@@ -246,8 +246,8 @@ class EnchantmentIngredientTest {
                 }""", JsonObject.class);
             var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(new ItemStack(Items.DIAMOND_PICKAXE), List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), true, true);
-            assertEquals(json, loaded.toJson(true));
-            assertEquals(expect.toJson(true), loaded.toJson(true));
+            assertEquals(json, loaded.toJson());
+            assertEquals(expect.toJson(), loaded.toJson());
         }
 
         @Test
@@ -275,8 +275,8 @@ class EnchantmentIngredientTest {
                 }""", JsonObject.class);
             var loaded = assertDoesNotThrow(() -> EnchantmentIngredient.Serializer.INSTANCE.parse(json));
             var expect = new EnchantmentIngredient(new ItemStack(Items.DIAMOND_PICKAXE), List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), true, false);
-            assertEquals(json, loaded.toJson(true));
-            assertEquals(expect.toJson(true), loaded.toJson(true));
+            assertEquals(json, loaded.toJson());
+            assertEquals(expect.toJson(), loaded.toJson());
         }
     }
 

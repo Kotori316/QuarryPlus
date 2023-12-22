@@ -1,54 +1,56 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "energy": 3200000.0,
   "forge:condition": {
     "type": "quarryplus:machine_enabled",
     "value": "adv_quarry"
   },
-  "ingredients": [
-    {
-      "count": 3,
-      "item": "quarryplus:quarry"
-    },
-    [
+  "value": {
+    "energy": 3200000,
+    "ingredients": [
       {
-        "count": 2,
-        "item": "quarryplus:pump_plus"
+        "count": 3,
+        "item": "quarryplus:quarry"
+      },
+      [
+        {
+          "count": 2,
+          "item": "quarryplus:pump_plus"
+        },
+        {
+          "count": 2,
+          "item": "quarryplus:pump_module"
+        }
+      ],
+      {
+        "count": 3,
+        "tag": "quarryplus:markers"
+      },
+      {
+        "count": 8,
+        "tag": "forge:storage_blocks/diamond"
+      },
+      {
+        "count": 8,
+        "tag": "forge:storage_blocks/emerald"
+      },
+      {
+        "count": 64,
+        "item": "minecraft:ender_eye"
       },
       {
         "count": 2,
-        "item": "quarryplus:pump_module"
+        "tag": "forge:nether_stars"
+      },
+      {
+        "count": 1,
+        "item": "minecraft:dragon_head"
       }
     ],
-    {
-      "count": 3,
-      "tag": "quarryplus:markers"
-    },
-    {
-      "count": 8,
-      "tag": "forge:storage_blocks/diamond"
-    },
-    {
-      "count": 8,
-      "tag": "forge:storage_blocks/emerald"
-    },
-    {
-      "count": 64,
-      "item": "minecraft:ender_eye"
-    },
-    {
-      "count": 2,
-      "tag": "forge:nether_stars"
-    },
-    {
+    "result": {
       "count": 1,
-      "item": "minecraft:dragon_head"
-    }
-  ],
-  "result": {
-    "count": 1,
-    "item": "quarryplus:adv_quarry"
-  },
-  "showInJEI": true,
-  "subType": "default"
+      "item": "quarryplus:adv_quarry"
+    },
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

@@ -1,36 +1,38 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "energy": 80000.0,
   "forge:condition": {
     "type": "quarryplus:machine_enabled",
     "value": "status_checker"
   },
-  "ingredients": [
-    {
-      "count": 16,
-      "tag": "forge:ingots/gold"
+  "value": {
+    "energy": 80000,
+    "ingredients": [
+      {
+        "count": 16,
+        "tag": "forge:ingots/gold"
+      },
+      {
+        "count": 24,
+        "tag": "forge:ingots/iron"
+      },
+      {
+        "count": 32,
+        "tag": "forge:dusts/redstone"
+      },
+      {
+        "count": 4,
+        "tag": "forge:obsidian"
+      },
+      {
+        "count": 8,
+        "item": "minecraft:lapis_lazuli"
+      }
+    ],
+    "result": {
+      "count": 1,
+      "item": "quarryplus:status_checker"
     },
-    {
-      "count": 24,
-      "tag": "forge:ingots/iron"
-    },
-    {
-      "count": 32,
-      "tag": "forge:dusts/redstone"
-    },
-    {
-      "count": 4,
-      "tag": "forge:obsidian"
-    },
-    {
-      "count": 8,
-      "item": "minecraft:lapis_lazuli"
-    }
-  ],
-  "result": {
-    "count": 1,
-    "item": "quarryplus:status_checker"
-  },
-  "showInJEI": true,
-  "subType": "default"
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

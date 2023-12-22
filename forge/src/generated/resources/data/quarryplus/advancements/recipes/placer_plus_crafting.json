@@ -74,6 +74,5 @@
     "recipes": [
       "quarryplus:placer_plus_crafting"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

@@ -1,24 +1,26 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "energy": 3200.0,
   "forge:condition": {
     "type": "quarryplus:machine_enabled",
     "value": "filter_module"
   },
-  "ingredients": [
-    {
-      "count": 2,
-      "item": "minecraft:book"
-    },
-    {
+  "value": {
+    "energy": 3200,
+    "ingredients": [
+      {
+        "count": 2,
+        "item": "minecraft:book"
+      },
+      {
+        "count": 1,
+        "tag": "forge:ender_pearls"
+      }
+    ],
+    "result": {
       "count": 1,
-      "tag": "forge:ender_pearls"
-    }
-  ],
-  "result": {
-    "count": 1,
-    "item": "quarryplus:filter_module"
-  },
-  "showInJEI": true,
-  "subType": "default"
+      "item": "quarryplus:filter_module"
+    },
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

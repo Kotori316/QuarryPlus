@@ -13,6 +13,10 @@ tasks.compileScala {
     dependsOn(tasks.processResources)
 }
 
+tasks.compileTestScala {
+    dependsOn(tasks.processTestResources)
+}
+
 sourceSets.forEach {
     val dir = layout.buildDirectory.dir("sourcesSets/${it.name}")
     it.output.setResourcesDir(dir)
@@ -94,6 +98,7 @@ minecraft {
 
         create("data") {
             workingDirectory(project.file("run-server"))
+            property("bsl.debug", "true")
             args(
                 "--mod",
                 modId,
@@ -107,7 +112,7 @@ minecraft {
             mods {
                 create(modId) {
                     source(sourceSets["main"])
-                    source(sourceSets["test"])
+                    // source(sourceSets["test"])
                 }
             }
         }

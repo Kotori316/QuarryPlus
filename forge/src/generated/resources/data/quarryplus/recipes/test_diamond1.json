@@ -1,26 +1,28 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "energy": 640.0,
   "forge:condition": {
     "type": "quarryplus:debug_enabled",
     "value": {}
   },
-  "ingredients": [
-    [
-      {
-        "count": 32,
-        "item": "minecraft:dirt"
-      },
-      {
-        "count": 16,
-        "item": "minecraft:stone"
-      }
-    ]
-  ],
-  "result": {
-    "count": 1,
-    "item": "minecraft:diamond"
-  },
-  "showInJEI": true,
-  "subType": "default"
+  "value": {
+    "energy": 640,
+    "ingredients": [
+      [
+        {
+          "count": 32,
+          "item": "minecraft:dirt"
+        },
+        {
+          "count": 16,
+          "item": "minecraft:stone"
+        }
+      ]
+    ],
+    "result": {
+      "count": 1,
+      "item": "minecraft:diamond"
+    },
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

@@ -1,44 +1,46 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "energy": 320000.0,
   "forge:condition": {
     "type": "quarryplus:machine_enabled",
     "value": "mover"
   },
-  "ingredients": [
-    {
-      "count": 32,
-      "tag": "forge:gems/diamond"
+  "value": {
+    "energy": 320000,
+    "ingredients": [
+      {
+        "count": 32,
+        "tag": "forge:gems/diamond"
+      },
+      {
+        "count": 8,
+        "tag": "forge:ingots/gold"
+      },
+      {
+        "count": 8,
+        "tag": "forge:ingots/iron"
+      },
+      {
+        "count": 48,
+        "tag": "forge:dusts/redstone"
+      },
+      {
+        "count": 64,
+        "tag": "forge:obsidian"
+      },
+      {
+        "count": 2,
+        "item": "minecraft:anvil"
+      },
+      {
+        "count": 2,
+        "tag": "forge:ender_pearls"
+      }
+    ],
+    "result": {
+      "count": 1,
+      "item": "quarryplus:mover"
     },
-    {
-      "count": 8,
-      "tag": "forge:ingots/gold"
-    },
-    {
-      "count": 8,
-      "tag": "forge:ingots/iron"
-    },
-    {
-      "count": 48,
-      "tag": "forge:dusts/redstone"
-    },
-    {
-      "count": 64,
-      "tag": "forge:obsidian"
-    },
-    {
-      "count": 2,
-      "item": "minecraft:anvil"
-    },
-    {
-      "count": 2,
-      "tag": "forge:ender_pearls"
-    }
-  ],
-  "result": {
-    "count": 1,
-    "item": "quarryplus:mover"
-  },
-  "showInJEI": true,
-  "subType": "default"
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

@@ -1,36 +1,38 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "energy": 30000.0,
   "forge:condition": {
     "type": "quarryplus:machine_enabled",
     "value": "placer_plus"
   },
-  "ingredients": [
-    {
+  "value": {
+    "energy": 30000,
+    "ingredients": [
+      {
+        "count": 1,
+        "item": "minecraft:dispenser"
+      },
+      {
+        "count": 2,
+        "tag": "forge:ingots/gold"
+      },
+      {
+        "count": 1,
+        "tag": "forge:ingots/iron"
+      },
+      {
+        "count": 1,
+        "tag": "forge:dusts/redstone"
+      },
+      {
+        "count": 4,
+        "item": "minecraft:mossy_cobblestone"
+      }
+    ],
+    "result": {
       "count": 1,
-      "item": "minecraft:dispenser"
+      "item": "quarryplus:placer_plus"
     },
-    {
-      "count": 2,
-      "tag": "forge:ingots/gold"
-    },
-    {
-      "count": 1,
-      "tag": "forge:ingots/iron"
-    },
-    {
-      "count": 1,
-      "tag": "forge:dusts/redstone"
-    },
-    {
-      "count": 4,
-      "item": "minecraft:mossy_cobblestone"
-    }
-  ],
-  "result": {
-    "count": 1,
-    "item": "quarryplus:placer_plus"
-  },
-  "showInJEI": true,
-  "subType": "default"
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

@@ -1,40 +1,42 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "energy": 640000.0,
   "forge:condition": {
     "type": "quarryplus:machine_enabled",
     "value": "remove_bedrock_module"
   },
-  "ingredients": [
-    {
-      "count": 32,
-      "tag": "forge:obsidian"
-    },
-    {
-      "count": 16,
-      "tag": "forge:storage_blocks/diamond"
-    },
-    {
-      "type": "quarryplus:enchantment_ingredient",
-      "checkDamage": false,
-      "checkOtherTags": false,
-      "count": 1,
-      "enchantments": [
-        {
-          "id": "minecraft:silk_touch",
-          "level": 1
+  "value": {
+    "energy": 640000,
+    "ingredients": [
+      {
+        "count": 32,
+        "tag": "forge:obsidian"
+      },
+      {
+        "count": 16,
+        "tag": "forge:storage_blocks/diamond"
+      },
+      {
+        "type": "quarryplus:enchantment_ingredient",
+        "checkDamage": false,
+        "checkOtherTags": false,
+        "count": 1,
+        "enchantments": [
+          {
+            "id": "minecraft:silk_touch",
+            "level": 1
+          }
+        ],
+        "stack": {
+          "Count": 1,
+          "id": "minecraft:diamond_pickaxe"
         }
-      ],
-      "stack": {
-        "Count": 1,
-        "id": "minecraft:diamond_pickaxe"
       }
-    }
-  ],
-  "result": {
-    "count": 1,
-    "item": "quarryplus:remove_bedrock_module"
-  },
-  "showInJEI": true,
-  "subType": "default"
+    ],
+    "result": {
+      "count": 1,
+      "item": "quarryplus:remove_bedrock_module"
+    },
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

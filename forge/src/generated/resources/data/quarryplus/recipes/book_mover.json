@@ -1,32 +1,34 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "energy": 500000.0,
   "forge:condition": {
     "type": "quarryplus:machine_enabled",
     "value": "book_mover"
   },
-  "ingredients": [
-    {
-      "count": 4,
-      "item": "quarryplus:mover"
+  "value": {
+    "energy": 500000,
+    "ingredients": [
+      {
+        "count": 4,
+        "item": "quarryplus:mover"
+      },
+      {
+        "count": 2,
+        "item": "minecraft:beacon"
+      },
+      {
+        "count": 64,
+        "tag": "forge:bookshelves"
+      },
+      {
+        "count": 16,
+        "tag": "forge:gems/diamond"
+      }
+    ],
+    "result": {
+      "count": 1,
+      "item": "quarryplus:book_mover"
     },
-    {
-      "count": 2,
-      "item": "minecraft:beacon"
-    },
-    {
-      "count": 64,
-      "tag": "forge:bookshelves"
-    },
-    {
-      "count": 16,
-      "tag": "forge:gems/diamond"
-    }
-  ],
-  "result": {
-    "count": 1,
-    "item": "quarryplus:book_mover"
-  },
-  "showInJEI": true,
-  "subType": "default"
+    "showInJEI": true,
+    "subType": "default"
+  }
 }
