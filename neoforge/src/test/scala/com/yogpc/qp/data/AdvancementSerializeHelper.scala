@@ -1,6 +1,8 @@
 package com.yogpc.qp.data
 
 import com.google.gson.{JsonElement, JsonObject}
+import com.mojang.serialization.JsonOps
+import net.minecraft.Util
 import net.minecraft.advancements.critereon.{InventoryChangeTrigger, ItemPredicate, RecipeUnlockedTrigger}
 import net.minecraft.advancements.{Advancement, AdvancementRequirements, AdvancementRewards}
 import net.minecraft.core.HolderLookup
@@ -20,7 +22,9 @@ case class AdvancementSerializeHelper private(location: ResourceLocation,
   extends DataBuilder {
 
   override def build(provider: HolderLookup.Provider): JsonElement = {
-    val obj: JsonObject = builder.save(h => {}, "").value().serializeToJson()
+    val obj: JsonObject = Util.getOrThrow(
+      Advancement.CODEC.encodeStart(JsonOps.INSTANCE, builder.save(h => {}, "").value()).map(_.getAsJsonObject),
+      s => new IllegalStateException(s))
     if (conditions.nonEmpty) {
       ICondition.writeConditions(provider, obj, CollectionConverters.asJava(conditions))
     }

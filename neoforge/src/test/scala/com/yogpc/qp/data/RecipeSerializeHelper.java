@@ -1,14 +1,18 @@
 package com.yogpc.qp.data;
 
 import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
+import net.minecraft.Util;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Recipe;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -17,18 +21,18 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 record RecipeSerializeHelper(
-    FinishedRecipe recipe,
+    Recipe<?> recipe,
     List<ICondition> conditions,
-    @Nullable ResourceLocation saveName
+    @NotNull ResourceLocation saveName
 ) implements DataBuilder {
     @Override
     public ResourceLocation location() {
-        return saveName == null ? recipe.id() : saveName;
+        return saveName;
     }
 
     @Override
     public JsonElement build(HolderLookup.Provider provider) {
-        var o = recipe.serializeRecipe();
+        var o = Util.getOrThrow(Recipe.CODEC.encodeStart(JsonOps.INSTANCE, recipe).map(JsonElement::getAsJsonObject), IllegalStateException::new);
         if (!conditions.isEmpty()) {
             ICondition.writeConditions(provider, o, conditions);
         }
@@ -45,16 +49,16 @@ record RecipeSerializeHelper(
         return new RecipeSerializeHelper(getConsumeValue(c), Collections.emptyList(), saveName);
     }
 
-    static RecipeSerializeHelper by(FinishedRecipe recipe) {
-        return new RecipeSerializeHelper(recipe, Collections.emptyList(), null);
+    static RecipeSerializeHelper by(Recipe<?> recipe, ResourceLocation location) {
+        return new RecipeSerializeHelper(recipe, Collections.emptyList(), location);
     }
 
-    static FinishedRecipe getConsumeValue(RecipeBuilder c) {
+    static Recipe<?> getConsumeValue(RecipeBuilder c) {
         c.unlockedBy("dummy", RecipeUnlockedTrigger.unlocked(QuarryPlusDataProvider.location("dummy")));
-        AtomicReference<FinishedRecipe> reference = new AtomicReference<>();
+        AtomicReference<Recipe<?>> reference = new AtomicReference<>();
         c.save(new RecipeOutput() {
             @Override
-            public void accept(FinishedRecipe recipe, ICondition... conditions) {
+            public void accept(ResourceLocation resourceLocation, Recipe<?> recipe, @Nullable AdvancementHolder advancementHolder, ICondition... iConditions) {
                 reference.set(recipe);
             }
 
