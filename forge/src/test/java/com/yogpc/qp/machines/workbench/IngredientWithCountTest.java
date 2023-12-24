@@ -155,7 +155,7 @@ class IngredientWithCountTest {
         @Test
         void nbtJsonItemIngredientInstance() {
             var i = waterBottleFromJson.ingredient();
-            assertTrue(i instanceof StrictNBTIngredient, "Actual Class: " + i.getClass() + " String: " + i);
+            assertInstanceOf(StrictNBTIngredient.class, i, "Actual Class: " + i.getClass() + " String: " + i);
         }
 
         @Test

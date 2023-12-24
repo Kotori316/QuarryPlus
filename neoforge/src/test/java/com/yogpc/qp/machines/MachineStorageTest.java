@@ -71,9 +71,9 @@ class MachineStorageTest {
         void noInsertFromHandler() {
             var storage = new MachineStorage();
             storage.addItem(new ItemStack(Items.APPLE, 10));
-            var result = storage.itemHandler.map(i -> i.insertItem(0, new ItemStack(Items.APPLE, 15), false));
+            var result = storage.itemHandler.insertItem(0, new ItemStack(Items.APPLE, 15), false);
             assertAll(
-                () -> assertTrue(result.map(i -> ItemStack.isSameItemSameTags(i, new ItemStack(Items.APPLE, 15))).orElse(Boolean.FALSE)),
+                () -> assertTrue(ItemStack.isSameItemSameTags(result, new ItemStack(Items.APPLE, 15))),
                 () -> assertEquals(10, storage.itemMap.get(new ItemKey(Items.APPLE, null)))
             );
         }
@@ -121,7 +121,7 @@ class MachineStorageTest {
 
         @Test
         void size() {
-            var handler = getInstance().itemHandler.orElse(EmptyHandler.INSTANCE);
+            var handler = getInstance().itemHandler;
             assertNotEquals(EmptyHandler.INSTANCE, handler);
 
             assertEquals(4, handler.getSlots());
@@ -130,7 +130,7 @@ class MachineStorageTest {
         @Test
         void extract1() {
             var storage = getInstance();
-            var handler = storage.itemHandler.orElse(EmptyHandler.INSTANCE);
+            var handler = storage.itemHandler;
             assertNotEquals(EmptyHandler.INSTANCE, handler);
 
             var extractItem = handler.extractItem(0, 3, true);
@@ -141,7 +141,7 @@ class MachineStorageTest {
         @Test
         void extract2() {
             var storage = getInstance();
-            var handler = storage.itemHandler.orElse(EmptyHandler.INSTANCE);
+            var handler = storage.itemHandler;
             assertNotEquals(EmptyHandler.INSTANCE, handler);
 
             var extractItem = handler.extractItem(0, 3, false);
@@ -152,7 +152,7 @@ class MachineStorageTest {
         @Test
         void extract3() {
             var storage = getInstance();
-            var handler = storage.itemHandler.orElse(EmptyHandler.INSTANCE);
+            var handler = storage.itemHandler;
             assertNotEquals(EmptyHandler.INSTANCE, handler);
 
             var extractItem = handler.extractItem(0, 30, false);
@@ -163,7 +163,7 @@ class MachineStorageTest {
         @Test
         void extract3Sim() {
             var storage = getInstance();
-            var handler = storage.itemHandler.orElse(EmptyHandler.INSTANCE);
+            var handler = storage.itemHandler;
             assertNotEquals(EmptyHandler.INSTANCE, handler);
 
             var extractItem = handler.extractItem(0, 30, true);
@@ -174,7 +174,7 @@ class MachineStorageTest {
         @Test
         void extractTwice() {
             var storage = getInstance();
-            var handler = storage.itemHandler.orElse(EmptyHandler.INSTANCE);
+            var handler = storage.itemHandler;
             assertNotEquals(EmptyHandler.INSTANCE, handler);
 
             var extractItem1 = handler.extractItem(0, 3, false);
@@ -190,7 +190,7 @@ class MachineStorageTest {
         @Test
         void extractSecond1() {
             var storage = getInstance();
-            var handler = storage.itemHandler.orElse(EmptyHandler.INSTANCE);
+            var handler = storage.itemHandler;
             assertNotEquals(EmptyHandler.INSTANCE, handler);
 
             var extractItem1 = handler.extractItem(0, 3, false);
@@ -207,7 +207,7 @@ class MachineStorageTest {
         @Test
         void extractSecond2() {
             var storage = getInstance();
-            var handler = storage.itemHandler.orElse(EmptyHandler.INSTANCE);
+            var handler = storage.itemHandler;
             assertNotEquals(EmptyHandler.INSTANCE, handler);
 
             var extractItem1 = handler.extractItem(1, 3, false);

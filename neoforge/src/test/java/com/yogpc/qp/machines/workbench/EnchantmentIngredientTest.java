@@ -62,8 +62,8 @@ class EnchantmentIngredientTest {
     @Test
     void instance() {
         var ei = new EnchantmentIngredient(diamondPickaxe, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false, true);
-        assertTrue(ei.toJson(true).isJsonObject());
-        assertNotEquals(0, ei.toJson(true).getAsJsonObject().size());
+        assertTrue(toJson(ei).isJsonObject());
+        assertNotEquals(0, toJson(ei).getAsJsonObject().size());
     }
 
     @Nested

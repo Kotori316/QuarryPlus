@@ -5,12 +5,13 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.QuarryPlusTest;
 import com.yogpc.qp.machines.PowerTile;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -27,6 +28,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class TileWorkbenchTest {
     static TileWorkbench tile() {
         return new TileWorkbench(BlockPos.ZERO, Holder.BLOCK_WORKBENCH.defaultBlockState());
+    }
+
+    static IItemHandler handler(TileWorkbench workbench) {
+        return workbench.getItemCapability(Direction.NORTH);
     }
 
     @Test
@@ -50,7 +55,7 @@ class TileWorkbenchTest {
                 var tile = tile();
                 tile.setItem(0, new ItemStack(Items.APPLE, 64));
 
-                var handler = tile.getCapability(Capabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
+                var handler = handler(tile);
                 var extracted = handler.extractItem(0, 1, true);
                 assertTrue(extracted.isEmpty());
             } finally {
@@ -66,7 +71,7 @@ class TileWorkbenchTest {
                 var tile = tile();
                 tile.setItem(0, new ItemStack(Items.APPLE, 64));
 
-                var handler = tile.getCapability(Capabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
+                var handler = handler(tile);
                 var extracted = handler.extractItem(0, 1, false);
                 assertTrue(ItemStack.matches(extracted, new ItemStack(Items.APPLE, 1)),
                     "Extracted: %s".formatted(extracted));
@@ -87,7 +92,7 @@ class TileWorkbenchTest {
                 var tile = tile();
                 tile.setItem(0, new ItemStack(Items.APPLE, 64));
 
-                var handler = tile.getCapability(Capabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
+                var handler = handler(tile);
                 var extracted = handler.extractItem(0, 1, true);
                 assertTrue(ItemStack.matches(extracted, new ItemStack(Items.APPLE, 1)),
                     "Extracted: %s".formatted(extracted));
@@ -116,16 +121,16 @@ class TileWorkbenchTest {
                 var tile = tile();
                 tile.setItem(0, new ItemStack(Items.APPLE, initial));
 
-                var handler = tile.getCapability(Capabilities.ITEM_HANDLER).orElseThrow(RuntimeException::new);
+                var handler = handler(tile);
                 var extracted = handler.extractItem(0, extractCount, false);
                 assertTrue(ItemStack.matches(extracted, new ItemStack(Items.APPLE, extractCount)),
                     "Extracted: %s".formatted(extracted));
 
                 var tileItem = tile.getItem(0);
-                if(initial - extractCount <= 0){
+                if (initial - extractCount <= 0) {
                     assertTrue(tileItem.isEmpty(),
                         "Item in the tile: %s".formatted(tileItem));
-                }else{
+                } else {
                     assertTrue(ItemStack.matches(tileItem, new ItemStack(Items.APPLE, initial - extractCount)),
                         "Item in the tile: %s".formatted(tileItem));
                 }

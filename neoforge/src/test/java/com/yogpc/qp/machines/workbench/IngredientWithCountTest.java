@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
-import net.neoforged.neoforge.common.crafting.StrictNBTIngredient;
+import net.neoforged.neoforge.common.crafting.NBTIngredient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -104,18 +104,15 @@ class IngredientWithCountTest {
         @BeforeEach
         void setup() {
             waterBottleIngredient = new IngredientWithCount(
-                StrictNBTIngredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)), 1);
+                NBTIngredient.of(false, PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)), 1);
             // language=json
             var json = GSON.fromJson("""
                 {
                   "type": "neoforge:nbt",
                   "count": 128,
-                  "stack": {
-                    "id": "minecraft:potion",
-                    "Count": 128,
-                    "tag": {
-                      "Potion": "minecraft:water"
-                    }
+                  "item": "minecraft:potion",
+                  "tag": {
+                    "Potion": "minecraft:water"
                   }
                 }
                 """, JsonObject.class);
@@ -155,7 +152,7 @@ class IngredientWithCountTest {
         @Test
         void nbtJsonItemIngredientInstance() {
             var i = waterBottleFromJson.ingredient();
-            assertTrue(i instanceof StrictNBTIngredient, "Actual Class: " + i.getClass() + " String: " + i);
+            assertInstanceOf(NBTIngredient.class, i, "Actual Class: " + i.getClass() + " String: " + i);
         }
 
         @Test
