@@ -5,7 +5,7 @@ pluginManagement {
         maven { url = uri("https://maven.neoforged.net/releases") }
         maven { url = uri("https://maven.fabricmc.net") }
         maven { url = uri("https://maven.parchmentmc.org") }
-        maven { url = uri("https://storage.googleapis.com/kotori316-maven-storage/maven/") }
+        maven { url = uri("https://maven.kotori316.com") }
     }
 }
 

@@ -5,7 +5,7 @@ plugins {
 repositories {
     mavenCentral()
     gradlePluginPortal()
-    maven { url = uri("https://storage.googleapis.com/kotori316-maven-storage/maven/") }
+    maven { url = uri("https://maven.kotori316.com") }
 }
 
 dependencies {
