@@ -27,8 +27,8 @@
       }
     ],
     "result": {
-      "count": 1,
-      "item": "quarryplus:adv_pump"
+      "Count": 1,
+      "id": "quarryplus:adv_pump"
     },
     "showInJEI": true,
     "subType": "default"

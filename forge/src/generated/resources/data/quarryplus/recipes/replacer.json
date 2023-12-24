@@ -49,8 +49,8 @@
       }
     ],
     "result": {
-      "count": 1,
-      "item": "quarryplus:replacer"
+      "Count": 1,
+      "id": "quarryplus:replacer"
     },
     "showInJEI": true,
     "subType": "default"

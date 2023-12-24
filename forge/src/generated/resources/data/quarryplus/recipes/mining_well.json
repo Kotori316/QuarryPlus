@@ -21,8 +21,8 @@
       }
     ],
     "result": {
-      "count": 1,
-      "item": "quarryplus:mining_well"
+      "Count": 1,
+      "id": "quarryplus:mining_well"
     },
     "showInJEI": true,
     "subType": "default"

@@ -8,14 +8,11 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.conditions.ConditionCodec;
 import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Map;
-import java.util.Objects;
 
 public class WorkbenchRecipeSerializer implements RecipeSerializer<WorkbenchRecipe> {
     public static final Codec<WorkbenchRecipe> CODEC = new RecipeCodec();
@@ -72,15 +69,6 @@ public class WorkbenchRecipeSerializer implements RecipeSerializer<WorkbenchReci
         T fromPacket(FriendlyByteBuf buffer);
 
         void toPacket(FriendlyByteBuf buffer, T recipe);
-
-        static JsonObject toJson(ItemStack stack) {
-            var o = new JsonObject();
-            o.addProperty("item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(stack.getItem())).toString());
-            o.addProperty("count", stack.getCount());
-            if (stack.getTag() != null)
-                o.addProperty("nbt", stack.getTag().toString());
-            return o;
-        }
     }
 
     private static class RecipeCodec implements Codec<WorkbenchRecipe> {

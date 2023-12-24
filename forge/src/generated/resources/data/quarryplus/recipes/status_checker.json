@@ -29,8 +29,8 @@
       }
     ],
     "result": {
-      "count": 1,
-      "item": "quarryplus:status_checker"
+      "Count": 1,
+      "id": "quarryplus:status_checker"
     },
     "showInJEI": true,
     "subType": "default"

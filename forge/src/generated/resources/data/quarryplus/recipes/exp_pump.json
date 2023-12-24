@@ -46,8 +46,8 @@
       }
     ],
     "result": {
-      "count": 1,
-      "item": "quarryplus:exp_pump"
+      "Count": 1,
+      "id": "quarryplus:exp_pump"
     },
     "showInJEI": true,
     "subType": "default"

@@ -47,8 +47,8 @@
       }
     ],
     "result": {
-      "count": 1,
-      "item": "quarryplus:adv_quarry"
+      "Count": 1,
+      "id": "quarryplus:adv_quarry"
     },
     "showInJEI": true,
     "subType": "default"

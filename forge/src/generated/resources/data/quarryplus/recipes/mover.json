@@ -37,8 +37,8 @@
       }
     ],
     "result": {
-      "count": 1,
-      "item": "quarryplus:mover"
+      "Count": 1,
+      "id": "quarryplus:mover"
     },
     "showInJEI": true,
     "subType": "default"

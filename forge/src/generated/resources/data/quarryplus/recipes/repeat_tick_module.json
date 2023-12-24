@@ -21,8 +21,8 @@
       }
     ],
     "result": {
-      "count": 1,
-      "item": "quarryplus:repeat_tick_module"
+      "Count": 1,
+      "id": "quarryplus:repeat_tick_module"
     },
     "showInJEI": true,
     "subType": "default"

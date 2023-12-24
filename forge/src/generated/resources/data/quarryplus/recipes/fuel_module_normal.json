@@ -25,8 +25,8 @@
       }
     ],
     "result": {
-      "count": 1,
-      "item": "quarryplus:fuel_module_normal"
+      "Count": 1,
+      "id": "quarryplus:fuel_module_normal"
     },
     "showInJEI": true,
     "subType": "default"

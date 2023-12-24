@@ -17,8 +17,8 @@
       }
     ],
     "result": {
-      "count": 1,
-      "item": "quarryplus:filter_module"
+      "Count": 1,
+      "id": "quarryplus:filter_module"
     },
     "showInJEI": true,
     "subType": "default"

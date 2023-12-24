@@ -1,13 +1,15 @@
 package com.yogpc.qp.machines.workbench;
 
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JsonOps;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.utils.MapMulti;
+import net.minecraft.Util;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 
 import java.util.List;
@@ -48,7 +50,7 @@ class IngredientRecipeSerialize implements WorkbenchRecipeSerializer.PacketSeria
 
     @Override
     public IngredientRecipe fromJson(JsonObject jsonObject, ICondition.IContext context) {
-        var result = CraftingHelper.getItemStack(jsonObject.getAsJsonObject("result"), true);
+        var result = Util.getOrThrow(ItemStack.CODEC.decode(JsonOps.INSTANCE, jsonObject.getAsJsonObject("result")).map(Pair::getFirst), IllegalArgumentException::new);
         long energy = (long) (GsonHelper.getAsDouble(jsonObject, "energy", 1000) * PowerTile.ONE_FE);
         var showInJei = GsonHelper.getAsBoolean(jsonObject, "showInJEI", true);
         List<IngredientList> input;
@@ -66,7 +68,7 @@ class IngredientRecipeSerialize implements WorkbenchRecipeSerializer.PacketSeria
 
     @Override
     public JsonObject toJson(JsonObject jsonObject, IngredientRecipe recipe) {
-        jsonObject.add("result", WorkbenchRecipeSerializer.PacketSerialize.toJson(recipe.output));
+        jsonObject.add("result", Util.getOrThrow(ItemStack.CODEC.encodeStart(JsonOps.INSTANCE, recipe.output), RuntimeException::new));
         jsonObject.addProperty("energy", (double) recipe.getRequiredEnergy() / PowerTile.ONE_FE);
         jsonObject.addProperty("showInJEI", recipe.showInJEI());
         jsonObject.add("ingredients",

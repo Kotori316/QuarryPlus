@@ -25,8 +25,8 @@
       }
     ],
     "result": {
-      "count": 1,
-      "item": "quarryplus:book_mover"
+      "Count": 1,
+      "id": "quarryplus:book_mover"
     },
     "showInJEI": true,
     "subType": "default"

@@ -25,8 +25,8 @@
       }
     ],
     "result": {
-      "count": 1,
-      "item": "quarryplus:y_setter"
+      "Count": 1,
+      "id": "quarryplus:y_setter"
     },
     "showInJEI": true,
     "subType": "default"

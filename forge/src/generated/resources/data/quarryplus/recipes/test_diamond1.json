@@ -19,8 +19,8 @@
       ]
     ],
     "result": {
-      "count": 1,
-      "item": "minecraft:diamond"
+      "Count": 1,
+      "id": "minecraft:diamond"
     },
     "showInJEI": true,
     "subType": "default"
