@@ -1,27 +1,30 @@
 {
   "neoforge:conditions": [
     {
-      "type": "quarryplus:debug_enabled"
+      "type": "quarryplus:debug_enabled",
+      "value": {}
     }
   ],
   "type": "quarryplus:workbench_recipe",
-  "energy": 640.0,
-  "ingredients": [
-    [
-      {
-        "count": 32,
-        "item": "minecraft:dirt"
-      },
-      {
-        "count": 16,
-        "item": "minecraft:stone"
-      }
-    ]
-  ],
-  "result": {
-    "Count": 1,
-    "id": "minecraft:diamond"
-  },
-  "showInJEI": true,
-  "subType": "default"
+  "value": {
+    "energy": 640,
+    "ingredients": [
+      [
+        {
+          "count": 32,
+          "item": "minecraft:dirt"
+        },
+        {
+          "count": 16,
+          "item": "minecraft:stone"
+        }
+      ]
+    ],
+    "result": {
+      "Count": 1,
+      "id": "minecraft:diamond"
+    },
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

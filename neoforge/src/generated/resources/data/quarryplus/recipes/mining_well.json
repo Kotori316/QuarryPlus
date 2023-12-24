@@ -6,25 +6,27 @@
     }
   ],
   "type": "quarryplus:workbench_recipe",
-  "energy": 160000.0,
-  "ingredients": [
-    {
-      "count": 3,
-      "tag": "forge:ingots/gold"
+  "value": {
+    "energy": 160000,
+    "ingredients": [
+      {
+        "count": 3,
+        "tag": "forge:ingots/gold"
+      },
+      {
+        "count": 16,
+        "tag": "forge:ingots/iron"
+      },
+      {
+        "count": 8,
+        "tag": "forge:dusts/redstone"
+      }
+    ],
+    "result": {
+      "Count": 1,
+      "id": "quarryplus:mining_well"
     },
-    {
-      "count": 16,
-      "tag": "forge:ingots/iron"
-    },
-    {
-      "count": 8,
-      "tag": "forge:dusts/redstone"
-    }
-  ],
-  "result": {
-    "Count": 1,
-    "id": "quarryplus:mining_well"
-  },
-  "showInJEI": true,
-  "subType": "default"
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

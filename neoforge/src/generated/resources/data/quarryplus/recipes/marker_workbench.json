@@ -6,17 +6,19 @@
     }
   ],
   "type": "quarryplus:workbench_recipe",
-  "energy": 20000.0,
-  "ingredients": [
-    {
-      "count": 1,
-      "item": "quarryplus:flex_marker"
-    }
-  ],
-  "result": {
-    "Count": 1,
-    "id": "quarryplus:marker"
-  },
-  "showInJEI": true,
-  "subType": "default"
+  "value": {
+    "energy": 20000,
+    "ingredients": [
+      {
+        "count": 1,
+        "item": "quarryplus:flex_marker"
+      }
+    ],
+    "result": {
+      "Count": 1,
+      "id": "quarryplus:marker"
+    },
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

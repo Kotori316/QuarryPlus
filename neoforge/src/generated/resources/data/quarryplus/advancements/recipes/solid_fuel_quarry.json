@@ -54,6 +54,5 @@
     "recipes": [
       "quarryplus:solid_fuel_quarry"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

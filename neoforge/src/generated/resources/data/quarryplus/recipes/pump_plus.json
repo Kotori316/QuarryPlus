@@ -6,33 +6,35 @@
     }
   ],
   "type": "quarryplus:workbench_recipe",
-  "energy": 320000.0,
-  "ingredients": [
-    {
-      "count": 16,
-      "tag": "forge:ingots/gold"
+  "value": {
+    "energy": 320000,
+    "ingredients": [
+      {
+        "count": 16,
+        "tag": "forge:ingots/gold"
+      },
+      {
+        "count": 48,
+        "tag": "forge:ingots/iron"
+      },
+      {
+        "count": 64,
+        "tag": "forge:dusts/redstone"
+      },
+      {
+        "count": 512,
+        "tag": "forge:glass/colorless"
+      },
+      {
+        "count": 80,
+        "item": "minecraft:cactus"
+      }
+    ],
+    "result": {
+      "Count": 1,
+      "id": "quarryplus:pump_plus"
     },
-    {
-      "count": 48,
-      "tag": "forge:ingots/iron"
-    },
-    {
-      "count": 64,
-      "tag": "forge:dusts/redstone"
-    },
-    {
-      "count": 512,
-      "tag": "forge:glass/colorless"
-    },
-    {
-      "count": 80,
-      "item": "minecraft:cactus"
-    }
-  ],
-  "result": {
-    "Count": 1,
-    "id": "quarryplus:pump_plus"
-  },
-  "showInJEI": true,
-  "subType": "default"
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

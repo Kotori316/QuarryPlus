@@ -6,31 +6,33 @@
     }
   ],
   "type": "quarryplus:workbench_recipe",
-  "energy": 3200000.0,
-  "ingredients": [
-    [
+  "value": {
+    "energy": 3200000,
+    "ingredients": [
+      [
+        {
+          "count": 2,
+          "item": "quarryplus:pump_plus"
+        },
+        {
+          "count": 2,
+          "item": "quarryplus:pump_module"
+        }
+      ],
       {
         "count": 2,
-        "item": "quarryplus:pump_plus"
+        "item": "quarryplus:mining_well"
       },
       {
-        "count": 2,
-        "item": "quarryplus:pump_module"
+        "count": 3,
+        "tag": "quarryplus:markers"
       }
     ],
-    {
-      "count": 2,
-      "item": "quarryplus:mining_well"
+    "result": {
+      "Count": 1,
+      "id": "quarryplus:adv_pump"
     },
-    {
-      "count": 3,
-      "tag": "quarryplus:markers"
-    }
-  ],
-  "result": {
-    "Count": 1,
-    "id": "quarryplus:adv_pump"
-  },
-  "showInJEI": true,
-  "subType": "default"
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

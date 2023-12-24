@@ -6,48 +6,47 @@
     }
   ],
   "type": "quarryplus:workbench_recipe",
-  "energy": 320000.0,
-  "ingredients": [
-    {
-      "count": 16,
-      "tag": "forge:ingots/gold"
-    },
-    {
-      "count": 40,
-      "tag": "forge:ingots/iron"
-    },
-    {
-      "count": 64,
-      "tag": "forge:dusts/redstone"
-    },
-    [
+  "value": {
+    "energy": 320000,
+    "ingredients": [
       {
-        "type": "neoforge:nbt",
-        "Count": 1,
-        "count": 128,
-        "id": "minecraft:potion",
-        "tag": {
-          "Potion": "minecraft:water"
-        }
+        "count": 16,
+        "tag": "forge:ingots/gold"
       },
       {
-        "count": 1,
-        "item": "minecraft:experience_bottle"
+        "count": 40,
+        "tag": "forge:ingots/iron"
+      },
+      {
+        "count": 64,
+        "tag": "forge:dusts/redstone"
+      },
+      [
+        {
+          "type": "neoforge:nbt",
+          "count": 128,
+          "item": "minecraft:potion",
+          "tag": "{Potion:\"minecraft:water\"}"
+        },
+        {
+          "count": 1,
+          "item": "minecraft:experience_bottle"
+        }
+      ],
+      {
+        "count": 32,
+        "item": "minecraft:hay_block"
+      },
+      {
+        "count": 2,
+        "tag": "forge:ender_pearls"
       }
     ],
-    {
-      "count": 32,
-      "item": "minecraft:hay_block"
+    "result": {
+      "Count": 1,
+      "id": "quarryplus:exp_pump"
     },
-    {
-      "count": 2,
-      "tag": "forge:ender_pearls"
-    }
-  ],
-  "result": {
-    "Count": 1,
-    "id": "quarryplus:exp_pump"
-  },
-  "showInJEI": true,
-  "subType": "default"
+    "showInJEI": true,
+    "subType": "default"
+  }
 }

@@ -45,11 +45,11 @@ record RecipeSerializeHelper(
         return new RecipeSerializeHelper(recipe, copy, saveName);
     }
 
-    static RecipeSerializeHelper by(RecipeBuilder c, ResourceLocation saveName) {
+    static RecipeSerializeHelper by(RecipeBuilder c, @NotNull ResourceLocation saveName) {
         return new RecipeSerializeHelper(getConsumeValue(c), Collections.emptyList(), saveName);
     }
 
-    static RecipeSerializeHelper by(Recipe<?> recipe, ResourceLocation location) {
+    static RecipeSerializeHelper by(Recipe<?> recipe, @NotNull ResourceLocation location) {
         return new RecipeSerializeHelper(recipe, Collections.emptyList(), location);
     }
 

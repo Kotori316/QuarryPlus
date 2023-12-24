@@ -269,7 +269,7 @@ class Recipe extends QuarryDataProvider {
                     .define('R', Items.REDSTONE)
                     .define('I', Tags.Items.STORAGE_BLOCKS_IRON)
                     .define('G', Tags.Items.STORAGE_BLOCKS_GOLD),
-                null
+                Holder.BLOCK_WORKBENCH.getRegistryName()
             ).addCondition(new EnableCondition(BlockWorkbench.NAME)));
         list.add(
             // Flexible Marker
@@ -279,7 +279,7 @@ class Recipe extends QuarryDataProvider {
                     .pattern("T")
                     .define('E', Tags.Items.GEMS_EMERALD)
                     .define('T', Holder.BLOCK_MARKER),
-                null
+                Holder.BLOCK_FLEX_MARKER.getRegistryName()
             )
         );
         list.add(
@@ -293,7 +293,7 @@ class Recipe extends QuarryDataProvider {
                         Holder.BLOCK_MARKER, Holder.BLOCK_WATERLOGGED_MARKER,
                         Holder.BLOCK_FLEX_MARKER, Holder.BLOCK_WATERLOGGED_FLEX_MARKER
                     )),
-                null
+                Holder.BLOCK_16_MARKER.getRegistryName()
             )
         );
         list.add(
@@ -304,7 +304,7 @@ class Recipe extends QuarryDataProvider {
                     .pattern("M")
                     .define('G', Tags.Items.DYES_GREEN)
                     .define('M', Holder.BLOCK_MARKER),
-                null
+                Holder.BLOCK_WATERLOGGED_MARKER.getRegistryName()
             )
         );
         list.add(
@@ -315,7 +315,7 @@ class Recipe extends QuarryDataProvider {
                     .pattern("M")
                     .define('G', Tags.Items.DYES_GREEN)
                     .define('M', Holder.BLOCK_FLEX_MARKER),
-                null
+                Holder.BLOCK_WATERLOGGED_FLEX_MARKER.getRegistryName()
             )
         );
         list.add(
@@ -326,7 +326,7 @@ class Recipe extends QuarryDataProvider {
                     .pattern("M")
                     .define('G', Tags.Items.DYES_GREEN)
                     .define('M', Holder.BLOCK_16_MARKER),
-                null
+                Holder.BLOCK_WATERLOGGED_16_MARKER.getRegistryName()
             )
         );
         list.add(
@@ -334,7 +334,7 @@ class Recipe extends QuarryDataProvider {
             RecipeSerializeHelper.by(
                 ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Holder.ITEM_PUMP_MODULE)
                     .requires(Holder.BLOCK_PUMP)
-                    .group(MODULE_RECIPE_GROUP), null
+                    .group(MODULE_RECIPE_GROUP), Holder.ITEM_PUMP_MODULE.getRegistryName()
             ).addCondition(new EnableCondition(PumpModuleItem.NAME))
         );
         list.add(
@@ -342,7 +342,7 @@ class Recipe extends QuarryDataProvider {
             RecipeSerializeHelper.by(
                 ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Holder.ITEM_EXP_MODULE)
                     .requires(Holder.BLOCK_EXP_PUMP)
-                    .group(MODULE_RECIPE_GROUP), null
+                    .group(MODULE_RECIPE_GROUP), Holder.ITEM_EXP_MODULE.getRegistryName()
             ).addCondition(new EnableCondition(ExpModuleItem.NAME))
         );
         list.add(
@@ -350,7 +350,7 @@ class Recipe extends QuarryDataProvider {
             RecipeSerializeHelper.by(
                 ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Holder.ITEM_REPLACER_MODULE)
                     .requires(Holder.BLOCK_REPLACER)
-                    .group(MODULE_RECIPE_GROUP), null
+                    .group(MODULE_RECIPE_GROUP), Holder.ITEM_REPLACER_MODULE.getRegistryName()
             ).addCondition(new EnableCondition(ReplacerModuleItem.NAME))
         );
         list.add(
@@ -377,14 +377,14 @@ class Recipe extends QuarryDataProvider {
                     .define('D', Tags.Items.STORAGE_BLOCKS_GOLD)
                     .define('R', Items.REDSTONE_TORCH)
                     .define('I', Items.FURNACE)
-                    .define('G', Items.DIAMOND_PICKAXE), null
+                    .define('G', Items.DIAMOND_PICKAXE), Holder.BLOCK_SOLID_FUEL_QUARRY.getRegistryName()
             ).addCondition(new EnableCondition(SFQuarryBlock.NAME)));
         list.add(
             // Filler Module
             RecipeSerializeHelper.by(
                 ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Holder.ITEM_FILLER_MODULE)
                     .requires(Holder.BLOCK_FILLER)
-                    .group(MODULE_RECIPE_GROUP), null
+                    .group(MODULE_RECIPE_GROUP), Holder.ITEM_FILLER_MODULE.getRegistryName()
             ).addCondition(new EnableCondition(FillerModuleItem.NAME)));
         list.add(
             // Remote Placer
@@ -394,7 +394,7 @@ class Recipe extends QuarryDataProvider {
                 .define('e', Tags.Items.ENDER_PEARLS)
                 .define('i', Tags.Items.INGOTS_IRON)
                 .define('d', Tags.Items.GEMS_DIAMOND)
-                .define('p', Holder.BLOCK_PLACER), null
+                .define('p', Holder.BLOCK_PLACER), Holder.BLOCK_REMOTE_PLACER.getRegistryName()
             ).addCondition(new EnableCondition(RemotePlacerBlock.NAME)));
         return list;
     }

@@ -1,7 +1,8 @@
 {
   "neoforge:conditions": [
     {
-      "type": "quarryplus:debug_enabled"
+      "type": "quarryplus:debug_enabled",
+      "value": {}
     }
   ],
   "type": "minecraft:crafting_shapeless",
