@@ -18,16 +18,16 @@ import com.yogpc.qp.machines.workbench.ScreenWorkbench;
 import com.yogpc.qp.render.*;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 
 // @Mod.EventBusSubscriber(modid = QuarryPlus.modID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class QuarryPlusClient {
 
-    static void registerClientBus() {
-        FMLJavaModLoadingContext.get().getModEventBus().register(QuarryPlusClient.class);
-        FMLJavaModLoadingContext.get().getModEventBus().register(Sprites.class);
+    static void registerClientBus(IEventBus modBus) {
+        modBus.register(QuarryPlusClient.class);
+        modBus.register(Sprites.class);
     }
 
     @SubscribeEvent

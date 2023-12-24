@@ -12,7 +12,7 @@ scala2 = "2.13.12"
 scala3 = "3.3.1"
 cats = "2.10.0-kotori"
 
-slp_forge = "3.3.1-build-4"
+slp_forge = "3.3.1-build-5"
 slp_fabric = "2.2.0"
 
 jei = "16.0.0.28"

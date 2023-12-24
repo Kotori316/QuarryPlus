@@ -21,12 +21,12 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
@@ -50,11 +50,11 @@ public class QuarryPlus {
     public static ClientConfig clientConfig;
     public static ServerConfig serverConfig;
 
-    public QuarryPlus() {
+    public QuarryPlus(IEventBus modBus) {
         registerConfig(false);
-        FMLJavaModLoadingContext.get().getModEventBus().register(Register.class);
+        modBus.register(Register.class);
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            QuarryPlusClient.registerClientBus();
+            QuarryPlusClient.registerClientBus(modBus);
         }
         NeoForge.EVENT_BUS.register(ConfigCommand.class);
         NeoForge.EVENT_BUS.register(QuarryFakePlayer.class);

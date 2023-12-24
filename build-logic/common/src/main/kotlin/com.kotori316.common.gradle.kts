@@ -38,6 +38,13 @@ sourceSets {
 
 repositories {
     maven {
+        name = "Kotori316-main"
+        url = uri("https://maven.kotori316.com/")
+        content {
+            includeGroup("com.kotori316")
+        }
+    }
+    maven {
         name = "Azure-SLP"
         url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
         content {
@@ -45,13 +52,6 @@ repositories {
             includeModule("org.typelevel", "cats-core_3")
             includeModule("org.typelevel", "cats-kernel_3")
             includeModule("org.typelevel", "cats-free_3")
-        }
-    }
-    maven {
-        name = "Kotori316-main"
-        url = uri("https://maven.kotori316.com/")
-        content {
-            includeGroup("com.kotori316")
         }
     }
     maven {
