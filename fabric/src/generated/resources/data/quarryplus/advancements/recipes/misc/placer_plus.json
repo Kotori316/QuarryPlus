@@ -30,6 +30,5 @@
     "recipes": [
       "quarryplus:placer_plus"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

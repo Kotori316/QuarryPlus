@@ -28,6 +28,5 @@
     "recipes": [
       "quarryplus:status_checker"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

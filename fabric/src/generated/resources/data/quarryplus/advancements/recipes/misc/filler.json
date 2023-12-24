@@ -28,6 +28,5 @@
     "recipes": [
       "quarryplus:filler"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

@@ -28,6 +28,5 @@
     "recipes": [
       "quarryplus:adv_pump"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

@@ -28,6 +28,5 @@
     "recipes": [
       "quarryplus:y_setter"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }
