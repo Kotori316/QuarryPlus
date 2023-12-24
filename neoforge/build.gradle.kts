@@ -64,9 +64,9 @@ runs {
 
         modSources.add(sourceSets.getByName("main"))
         modSources.add(sourceSets.getByName("test"))
-        // dependencies {
-        //     this.runtime(this.configuration(configurations.getByName("game_test")))
-        // }
+        dependencies {
+            this.runtime(configurations.getByName("game_test"))
+        }
     }
 }
 

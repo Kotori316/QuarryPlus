@@ -4,20 +4,23 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.kotori316.testutil.GameTestUtil;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JsonOps;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
+import net.minecraft.Util;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
-import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
-import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +38,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class IngredientRecipeTest {
     static final String BATCH = "IngredientRecipe";
     static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-    static final IngredientRecipeSerialize SERIALIZE = new IngredientRecipeSerialize();
 
     static String itemNames(List<ItemStack> stacks) {
         if (stacks.isEmpty()) return "none";
@@ -56,7 +58,7 @@ class IngredientRecipeTest {
              Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
             jsonObject = GSON.fromJson(reader, JsonObject.class);
         }
-        var recipe = SERIALIZE.fromJson(jsonObject, ICondition.IContext.EMPTY);
+        var recipe = assertInstanceOf(WorkbenchRecipe.class, Util.getOrThrow(Recipe.CODEC.decode(JsonOps.INSTANCE, jsonObject).map(Pair::getFirst), AssertionError::new));
         assertNotNull(recipe);
         assertEquals(5000 * PowerTile.ONE_FE, recipe.getRequiredEnergy());
         assertTrue(recipe.showInJEI());
