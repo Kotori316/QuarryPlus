@@ -63,6 +63,7 @@ jobs:
         run: ./gradlew :${{ matrix.platform }}:runData
         env:
           IGNORE_OTHER_MODS_IN_RUNTIME: true
+          RUN_DATA: true
       - name: Check updated files
         run: git diff --exit-code
       - name: GameTest ${{ matrix.platform }}
@@ -70,6 +71,7 @@ jobs:
         env:
           TEST_UTILITY_LOG_ALL_TEST: true
           IGNORE_OTHER_MODS_IN_RUNTIME: true
+          RUN_GAME_TEST: true
       - name: Check report
         run: |
           ! test -d "${{ matrix.platform }}/game-test/crash-reports"

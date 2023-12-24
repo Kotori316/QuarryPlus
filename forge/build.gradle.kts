@@ -17,6 +17,34 @@ tasks.compileTestScala {
     dependsOn(tasks.processTestResources)
 }
 
+sourceSets {
+    create("runGame")
+}
+
+configurations {
+    getByName("runGameCompileClasspath") {
+        extendsFrom(compileClasspath.get())
+        extendsFrom(testCompileClasspath.get())
+    }
+    getByName("runGameRuntimeClasspath") {
+        extendsFrom(runtimeClasspath.get())
+        extendsFrom(testRuntimeClasspath.get())
+    }
+}
+
+tasks.named("compileRunGameScala", ScalaCompile::class) {
+    source(
+        sourceSets.main.get().java, sourceSets.main.get().scala,
+        sourceSets.test.get().java, sourceSets.test.get().scala,
+    )
+    dependsOn("processRunGameResources")
+}
+
+tasks.named("processRunGameResources", ProcessResources::class) {
+    from(sourceSets.main.get().resources, sourceSets.test.get().resources)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 sourceSets.forEach {
     val dir = layout.buildDirectory.dir("sourcesSets/${it.name}")
     it.output.setResourcesDir(dir)
@@ -62,7 +90,7 @@ minecraft {
 
             mods {
                 create(modId) {
-                    source(sourceSets["main"])
+                    source(sourceSets["runGame"])
                     // source(sourceSets.test)
                 }
             }
@@ -111,7 +139,7 @@ minecraft {
 
             mods {
                 create(modId) {
-                    source(sourceSets["main"])
+                    source(sourceSets["runGame"])
                     // source(sourceSets["test"])
                 }
             }
@@ -124,8 +152,8 @@ minecraft {
 
             mods {
                 create(modId) {
-                    source(sourceSets["main"])
-                    source(sourceSets["test"])
+                    source(sourceSets["runGame"])
+                    // source(sourceSets["test"])
                 }
             }
             lazyToken("minecraft_classpath") {
@@ -163,7 +191,9 @@ dependencies {
         compileOnly(fg.deobf(libs.cloth.forge.get()))
         compileOnly(fg.deobf(libs.architectury.forge.get()))
     }
-    runtimeOnly(variantOf(libs.slp.forge) { classifier("with-library") }) {
+    val slpClassifier =
+        if (listOf("RUN_DATA", "RUN_GAME_TEST").any { System.getenv(it).toBoolean() }) "dev" else "with-library"
+    runtimeOnly(variantOf(libs.slp.forge) { classifier(slpClassifier) }) {
         isTransitive = false
     }
 

@@ -1,32 +1,33 @@
 {
   "type": "quarryplus:workbench_recipe",
-  "id": "quarryplus:builtin_pump_plus",
-  "ingredients": [
-    {
-      "item": "minecraft:gold_ingot",
-      "count": 16
-    },
-    {
-      "item": "minecraft:iron_ingot",
-      "count": 48
-    },
-    {
-      "item": "minecraft:redstone",
-      "count": 64
-    },
-    {
-      "item": "minecraft:glass",
-      "count": 512
-    },
-    {
-      "item": "minecraft:cactus",
-      "count": 80
+  "value": {
+    "ingredients": [
+      {
+        "item": "minecraft:gold_ingot",
+        "count": 16
+      },
+      {
+        "item": "minecraft:iron_ingot",
+        "count": 48
+      },
+      {
+        "item": "minecraft:redstone",
+        "count": 64
+      },
+      {
+        "item": "minecraft:glass",
+        "count": 512
+      },
+      {
+        "item": "minecraft:cactus",
+        "count": 80
+      }
+    ],
+    "energy": 5000.0,
+    "showInJEI": true,
+    "result": {
+      "id": "minecraft:emerald_block",
+      "Count": 1
     }
-  ],
-  "energy": 5000.0,
-  "showInJEI": true,
-  "result": {
-    "item": "minecraft:emerald_block",
-    "count": 1
   }
 }

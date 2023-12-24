@@ -4,17 +4,20 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.kotori316.testutil.GameTestUtil;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JsonOps;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
+import net.minecraft.Util;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.gametest.GameTestDontPrefix;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -56,7 +59,7 @@ class IngredientRecipeTest {
              Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
             jsonObject = GSON.fromJson(reader, JsonObject.class);
         }
-        var recipe = SERIALIZE.fromJson(jsonObject, ICondition.IContext.EMPTY);
+        var recipe = assertInstanceOf(WorkbenchRecipe.class, Util.getOrThrow(Recipe.CODEC.decode(JsonOps.INSTANCE, jsonObject).map(Pair::getFirst), AssertionError::new));
         assertNotNull(recipe);
         assertEquals(5000 * PowerTile.ONE_FE, recipe.getRequiredEnergy());
         assertTrue(recipe.showInJEI());

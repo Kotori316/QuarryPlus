@@ -2,10 +2,13 @@ package com.yogpc.qp.gametest;
 
 import com.google.gson.JsonObject;
 import com.kotori316.testutil.GameTestUtil;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JsonOps;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
+import net.minecraft.Util;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
@@ -56,7 +59,7 @@ public final class LoadRecipeTest {
         var context = GameTestUtil.getContext(helper);
         var recipe = assertDoesNotThrow(() -> managerFromJson(new ResourceLocation(QuarryPlus.modID, "flex_marker_workbench"), jsonObject, context));
         assertAll(
-            () -> assertTrue(recipe instanceof WorkbenchRecipe),
+            () -> assertInstanceOf(WorkbenchRecipe.class, recipe),
             () -> assertTrue(ItemStack.isSameItemSameTags(recipe.getResultItem(helper.getLevel().registryAccess()), new ItemStack(Holder.BLOCK_FLEX_MARKER)))
         );
         var inputs = ((WorkbenchRecipe) recipe).inputs().stream().flatMap(i -> i.stackList().stream()).toList();
@@ -86,26 +89,27 @@ public final class LoadRecipeTest {
         var context = GameTestUtil.getContext(helper);
         JsonObject object = GsonHelper.parse("""
             {
-              "type": "quarryplus:workbench_recipe",
-              "id": "quarryplus:cheat_diamond2",
-              "ingredients": [
-                {
-                  "item": "minecraft:stone",
-                  "count": 130
-                },
-                {
-                  "item": "minecraft:coal",
-                  "count": 256
-                }
-              ],
-              "energy": 100.0,
-              "result": {
-                "item": "diamond",
-                "count": 1
-              }
-            }""");
+               "type": "quarryplus:workbench_recipe",
+               "value": {
+                 "ingredients": [
+                   {
+                     "item": "minecraft:stone",
+                     "count": 130
+                   },
+                   {
+                     "item": "minecraft:coal",
+                     "count": 256
+                   }
+                 ],
+                 "energy": 100.0,
+                 "result": {
+                   "id": "diamond",
+                   "Count": 1
+                 }
+               }
+             }""");
         var r1 = managerFromJson(new ResourceLocation("quarryplus:cheat_diamond2"), object, context);
-        var r2 = WorkbenchRecipe.SERIALIZER.fromJson(object, context);
+        var r2 = assertInstanceOf(WorkbenchRecipe.class, Util.getOrThrow(Recipe.CODEC.decode(JsonOps.INSTANCE, object).map(Pair::getFirst), AssertionError::new));
         assertEquals(r1, r2);
 
         var inputs = r2.inputs().stream().flatMap(i -> i.stackList().stream()).toList();
