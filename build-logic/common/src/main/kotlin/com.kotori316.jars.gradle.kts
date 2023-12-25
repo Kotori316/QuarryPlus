@@ -120,8 +120,10 @@ tasks.withType(Sign::class) {
     onlyIf("runs only with signing keys") { hasGpgSignature }
 }
 
-tasks.withType(AbstractPublishToMaven::class) {
-    if (hasGpgSignature) {
-        dependsOn(*tasks.filterIsInstance<Sign>().toTypedArray())
+afterEvaluate {
+    tasks.withType(AbstractPublishToMaven::class) {
+        if (hasGpgSignature) {
+            dependsOn(*tasks.filterIsInstance<Sign>().toTypedArray())
+        }
     }
 }

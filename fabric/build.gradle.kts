@@ -105,6 +105,7 @@ tasks.register("jksSignJar", com.kotori316.common.JarSignTask::class) {
     dependsOn("jar", "remapJar")
     jarTask = tasks.named("jar", org.gradle.jvm.tasks.Jar::class)
 }
+
 tasks.register("jksSignRemapJar", com.kotori316.common.JarSignTask::class) {
     dependsOn("jar", "remapJar")
     jarTask = tasks.named("remapJar", org.gradle.jvm.tasks.Jar::class)
