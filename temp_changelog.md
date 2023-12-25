@@ -1,10 +1,9 @@
-## LATEST 1.20.2
+## LATEST 1.20.4
 
-* Make all in one repository for Forge, Fabric and NeoForge
+* Update for 1.20.4
 
 ---
 
-## Logs for 1.20.2
+## Logs for 1.20.4
 
-* Update for 1.20.2
-* Change pack format, including stack representation in recipes
+* Update for 1.20.4

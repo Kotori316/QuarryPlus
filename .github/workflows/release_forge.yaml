@@ -105,7 +105,10 @@ jobs:
             gpg --verify "$f" "${f:0:-4}"
           done
       - name: Verify Main Jar
-        run: jarsigner -verify -keystore "${HOME}/kotori316_keystore.jks" "$(ls */build/libs/*.jar | grep -v "deobf" | grep -v "sources")" -strict
+        run: |
+          for f in $(ls */build/libs/*.jar | grep -v -e "common" -e "deobf" -e "sources") ; do
+            jarsigner -verify -keystore "${HOME}/kotori316_keystore.jks" "$f" -strict
+          done
       - name: Verify Maven Local
         run: |
           for f in $(find ~/.m2 -name "*.asc") ; do
