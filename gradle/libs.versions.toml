@@ -39,7 +39,8 @@ wthit_fabric = "fabric-10.0.1"
 tu = "20.4.4"
 
 jupiter_api = "5.10.1"
-mockito = "4.11.0"
+mockito_core = "4.11.0"
+mockito_inline = "4.11.0"
 
 [libraries]
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
@@ -88,8 +89,8 @@ rei_neoforge = { group = "me.shedaniel", name = "RoughlyEnoughItems-neoforge", v
 jupiter_api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "jupiter_api" }
 jupiter_param = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "jupiter_api" }
 jupiter_engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "jupiter_api" }
-mockito_core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
-mockito_inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito" }
+mockito_core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito_core" }
+mockito_inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito_inline" }
 
 [bundles]
 jupiter = ["jupiter_api", "jupiter_param", "jupiter_engine", "mockito_core", "mockito_inline"]
