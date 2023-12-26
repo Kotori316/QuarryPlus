@@ -28,7 +28,7 @@ fabric_energy = "3.0.0"
 # https://modmaven.dev/TechReborn/TechReborn-1.20/
 techreborn = "5.9.1"
 # https://maven.terraformersmc.com/releases/com/terraformersmc/modmenu
-modmenu = "9.0.0-pre.1"
+modmenu = "9.0.0"
 
 # https://www.curseforge.com/minecraft/mc-mods/jade
 jade_fabric = "4957713"
