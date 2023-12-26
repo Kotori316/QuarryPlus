@@ -8,6 +8,7 @@ plugins {
 }
 
 githubRelease {
+    owner = "Kotori316"
     repo = "QuarryPlus"
     token(project.findProperty("githubToken") as? String ?: System.getenv("REPO_TOKEN") ?: "")
     val branch: String by project
