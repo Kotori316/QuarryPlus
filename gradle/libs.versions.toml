@@ -39,8 +39,8 @@ wthit_fabric = "fabric-10.0.1"
 tu = "20.4.4"
 
 jupiter_api = "5.10.1"
-mockito_core = "4.11.0"
-mockito_inline = "4.11.0"
+mockito_core = "5.8.0"
+mockito_inline = "5.2.0"
 
 [libraries]
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
