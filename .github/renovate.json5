@@ -14,7 +14,12 @@
       ],
       "matchPackagePatterns": [
         "curse.maven",
-        "org.typelevel"
+        "org.typelevel",
+        "com.mojang:minecraft",
+        "net.minecraftforge:forge",
+        "teamreborn",
+        "RebornCore",
+        "TechReborn"
       ],
       "enabled": false
     },
@@ -23,12 +28,34 @@
         "gradle"
       ],
       "matchPackagePatterns": [
-        "net.minecraftforge:forge",
-        "net.fabricmc.fabric-api",
-        "dev.architectury.loom",
+        "^net.fabricmc*"
+      ],
+      "registryUrls": [
+        "https://maven.fabricmc.net"
+      ]
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "matchPackagePatterns": [
+        "^net.neoforged*"
+      ],
+      "registryUrls": [
+        "https://maven.neoforged.net/releases"
+      ]
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "matchPackagePatterns": [
+        "^dev.architectury.loom*",
         "architectury-plugin"
       ],
-      "enabled": false
+      "registryUrls": [
+        "https://maven.architectury.dev"
+      ]
     },
     {
       "matchManagers": [
@@ -43,7 +70,7 @@
       "matchPackagePatterns": [
         "^com.kotori316:test-utility"
       ],
-      registryUrls: [
+      "registryUrls": [
         "https://maven.kotori316.com"
       ],
       "automerge": true

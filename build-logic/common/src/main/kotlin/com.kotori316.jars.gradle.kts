@@ -1,6 +1,3 @@
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -19,18 +16,6 @@ java {
 
 configurations {
     create("game_test")
-}
-
-fun getCommit(branch: String): String {
-    return try {
-        val builder = ProcessBuilder("git", "rev-parse", branch)
-        val process = builder.start()
-        process.waitFor(1L, TimeUnit.SECONDS)
-        BufferedReader(InputStreamReader(process.inputStream)).use { it.readLine() }
-    } catch (e: IOException) {
-        println("Caught $e")
-        ""
-    }
 }
 
 tasks.register("checkJarSetting") {
@@ -64,7 +49,6 @@ val jarAttributeMap = mapOf(
     "Implementation-Vendor" to "Kotori316",
     "Implementation-Version" to project.version as String,
     "Implementation-Timestamp" to ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT),
-    "Commit" to getCommit(project.findProperty("branch") as? String ?: "main"),
 )
 
 tasks.jar {
