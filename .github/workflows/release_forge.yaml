@@ -95,7 +95,7 @@ jobs:
           -PjarSign.keyAlias="ko316"
           -PjarSign.storePass="${JAR_PASSWORD}"
           -Dorg.gradle.s3.endpoint="${CLOUDFLARE_S3_ENDPOINT}"
-          checkReleaseVersion assemble publishToMavenLocal curseforge modrinth githubRelease registerVersion publish
+          checkReleaseVersion assemble publishToMavenLocal curseforge modrinth githubRelease registerVersion publish --continue
         env:
           RELEASE_DEBUG: false
           REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
