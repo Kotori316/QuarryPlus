@@ -19,7 +19,7 @@ jobs:
       - run: chmod +x ./gradlew
       - uses: gradle/gradle-build-action@v2
         with:
-          cache-disabled: true
+          cache-read-only: true
           dependency-graph: generate-and-submit
       - name: JUnit
         run: ./gradlew test
@@ -34,6 +34,10 @@ jobs:
           TEST_UTILITY_LOG_ALL_TEST: false
           IGNORE_OTHER_MODS_IN_RUNTIME: true
           RUN_GAME_TEST: true
+      - name: Check version
+        run: ./gradlew checkReleaseVersion
+        env:
+          RELEASE_DEBUG: false
 
   release:
     runs-on: ubuntu-latest
@@ -51,6 +55,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+      - uses: gradle/gradle-build-action@v2
+        with:
+          cache-disabled: true
       - uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: ${{secrets.GCP_IDENTITY_PROVIDER}}
@@ -90,6 +97,7 @@ jobs:
           -Dorg.gradle.s3.endpoint="${CLOUDFLARE_S3_ENDPOINT}"
           checkReleaseVersion assemble publishToMavenLocal curseforge modrinth githubRelease registerVersion publish
         env:
+          RELEASE_DEBUG: false
           REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
           AZURE_TOKEN: ${{steps.get-secrets.outputs.azure_token}}
           KEY_PASSWORD: ${{steps.get-secrets.outputs.key_password}}
