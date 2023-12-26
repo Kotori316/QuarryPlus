@@ -43,7 +43,7 @@ mockito = "4.11.0"
 
 [libraries]
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
-findbugs = { group = "com.google.code.findbugs", name = "jsr305", version = "3.0.1" }
+findbugs = { group = "com.google.code.findbugs", name = "jsr305", version = "3.0.2" }
 scala2 = { group = "org.scala-lang", name = "scala-library", version.ref = "scala2" }
 scala3 = { group = "org.scala-lang", name = "scala3-library_3", version.ref = "scala3" }
 cats_kernel = { group = "org.typelevel", name = "cats-kernel_3", version.ref = "cats" }
