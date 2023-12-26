@@ -114,3 +114,9 @@ tasks.register("jksSignRemapJar", com.kotori316.common.JarSignTask::class) {
 signing {
     sign(tasks.remapJar.get())
 }
+
+afterEvaluate {
+    tasks.named("signJar") {
+        mustRunAfter("jksSignJar", "jksSignRemapJar")
+    }
+}
