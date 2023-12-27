@@ -72,7 +72,7 @@ jobs:
           gpg --import "${HOME}/pgp_public.pub"
       - name: Get credentials
         id: get-secrets
-        uses: google-github-actions/get-secretmanager-secrets@v1
+        uses: google-github-actions/get-secretmanager-secrets@v2
         with:
           secrets: |-
             key_id:kotori316-mods-resources/signing-key-id
