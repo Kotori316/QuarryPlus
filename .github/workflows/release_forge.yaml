@@ -113,8 +113,9 @@ jobs:
       - name: Verify Build Files
         run: |
           for f in $(find ./ -name "*.asc") ; do
-            echo "${f:0:-4}"
+            echo "::group::${f:0:-4}"
             gpg --verify "$f" "${f:0:-4}"
+            echo "::endgroup::"
           done
       - name: Verify Main Jar
         run: |
@@ -124,8 +125,9 @@ jobs:
       - name: Verify Maven Local
         run: |
           for f in $(find ~/.m2 -name "*.asc") ; do
-            echo "${f:0:-4}"
+            echo "::group::${f:0:-4}"
             gpg --verify "$f" "${f:0:-4}"
+            echo "::endgroup::"
           done
       - name: Upload Artifacts
         if: always()
