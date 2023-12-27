@@ -4,7 +4,7 @@ import java.time.format.DateTimeFormatter
 
 plugins {
     id("org.jetbrains.gradle.plugin.idea-ext") version ("1.1.7")
-    id("com.github.breadmoirai.github-release") version ("2.4.1")
+    id("com.github.breadmoirai.github-release") version ("2.5.2")
 }
 
 githubRelease {
