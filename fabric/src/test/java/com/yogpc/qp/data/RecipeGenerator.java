@@ -4,10 +4,7 @@ import com.yogpc.qp.QuarryPlus;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
-import net.minecraft.data.recipes.RecipeBuilder;
-import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 
@@ -33,14 +30,10 @@ final class RecipeGenerator extends FabricRecipeProvider {
             .define('o', Items.OBSIDIAN)
             .unlockedBy("has_obsidian", has(Items.OBSIDIAN))
         );
-        /*builders.add(ShapedRecipeBuilder.shaped(RecipeCategory.MISC, QuarryPlus.ModObjects.BLOCK_MARKER)
-            .pattern("glg")
-            .pattern(" r ")
-            .define('r', Items.REDSTONE_TORCH)
-            .define('g', Items.GLOWSTONE_DUST)
-            .define('l', ConventionalItemTags.LAPIS)
-            .unlockedBy("has_redstone_torch", has(Items.REDSTONE_TORCH))
-        );*/
+        builders.add(ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, QuarryPlus.ModObjects.BLOCK_MARKER)
+            .requires(QuarryPlus.ModObjects.BLOCK_FLEX_MARKER)
+            .unlockedBy("has_marker", has(QuarryPlus.ModObjects.BLOCK_FLEX_MARKER))
+        );
         builders.add(ShapedRecipeBuilder.shaped(RecipeCategory.MISC, QuarryPlus.ModObjects.BLOCK_16_MARKER)
             .pattern("m ")
             .pattern("mm")
