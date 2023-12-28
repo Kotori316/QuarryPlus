@@ -7,6 +7,14 @@ plugins {
     id("com.github.breadmoirai.github-release") version ("2.5.2")
 }
 
+val minecraft: String by project
+val mcVersionSplit = minecraft.split(".").drop(1)
+val major = mcVersionSplit[0]
+val minor = mcVersionSplit.getOrElse(1) { _ -> "0" }
+val versionMinor: String? by project
+val patch = System.getenv("GITHUB_RUN_NUMBER") ?: versionMinor ?: "0"
+version = "${major}.${minor}.${patch}"
+
 githubRelease {
     owner = "Kotori316"
     repo = "QuarryPlus"
