@@ -6,6 +6,7 @@ import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.machines.placer.PlacerBlock;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -15,7 +16,6 @@ import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.List;
 import java.util.Objects;
@@ -160,14 +160,16 @@ final class StateAndModelProvider extends BlockStateProvider {
 
     void workDirectionalBlockAndItem(QPBlock block, String modelName) {
         var basePath = block.getRegistryName().getPath();
-        var normalModel = models().orientable("block/" + modelName,
+        var normalModel = models().orientableWithBottom("block/" + modelName,
             blockTexture(block),
             blockTexture(basePath + "_front"),
+            blockTexture(block),
             blockTexture(basePath + "_top")
         );
-        var workingModel = models().orientable("block/" + modelName + "_working",
+        var workingModel = models().orientableWithBottom("block/" + modelName + "_working",
             blockTexture(block),
             blockTexture(basePath + "_front"),
+            blockTexture(block),
             blockTexture(basePath + "_top_bb")
         );
         getVariantBuilder(block).forAllStates(blockState -> {

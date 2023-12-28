@@ -1,8 +1,5 @@
 package com.yogpc.qp.data;
 
-import java.util.List;
-import java.util.Objects;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
@@ -19,6 +16,9 @@ import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.List;
+import java.util.Objects;
 
 final class StateAndModelProvider extends BlockStateProvider {
     StateAndModelProvider(DataGenerator gen, ExistingFileHelper exFileHelper) {
@@ -160,14 +160,16 @@ final class StateAndModelProvider extends BlockStateProvider {
 
     void workDirectionalBlockAndItem(QPBlock block, String modelName) {
         var basePath = block.getRegistryName().getPath();
-        var normalModel = models().orientable("block/" + modelName,
+        var normalModel = models().orientableWithBottom("block/" + modelName,
             blockTexture(block),
             blockTexture(basePath + "_front"),
+            blockTexture(block),
             blockTexture(basePath + "_top")
         );
-        var workingModel = models().orientable("block/" + modelName + "_working",
+        var workingModel = models().orientableWithBottom("block/" + modelName + "_working",
             blockTexture(block),
             blockTexture(basePath + "_front"),
+            blockTexture(block),
             blockTexture(basePath + "_top_bb")
         );
         getVariantBuilder(block).forAllStates(blockState -> {
