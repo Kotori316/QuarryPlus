@@ -42,6 +42,10 @@ jupiter_api = "5.10.1"
 mockito_core = "5.8.0"
 mockito_inline = "5.2.0"
 
+gradle_curse = "1.4.0"
+gradle_minotaur = "2.8.4"
+gradle_cf = "1.7"
+
 [libraries]
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
 findbugs = { group = "com.google.code.findbugs", name = "jsr305", version = "3.0.2" }
@@ -95,3 +99,8 @@ mockito_inline = { group = "org.mockito", name = "mockito-inline", version.ref =
 [bundles]
 jupiter = ["jupiter_api", "jupiter_param", "jupiter_engine", "mockito_core", "mockito_inline"]
 cats = ["cats_kernel", "cats_core", "cats_free"]
+
+[plugins]
+cursegradle = { id = "com.matthewprenger.cursegradle", version.ref = "gradle_curse" }
+minotaur = { id = "com.modrinth.minotaur", version.ref = "gradle_minotaur" }
+cf = { id = "com.kotori316.plugin.cf", version.ref = "gradle_cf" }
