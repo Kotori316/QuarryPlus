@@ -71,7 +71,8 @@
         "gradle"
       ],
       "matchPackagePatterns": [
-        "^com.kotori316:test-utility"
+        "^com.kotori316:test-utility",
+        "^com.kotori316:debug-utility"
       ],
       "registryUrls": [
         "https://maven.kotori316.com"
