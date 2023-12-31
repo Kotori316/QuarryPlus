@@ -84,3 +84,14 @@ jobs:
             ${{ matrix.platform }}/build/reports/tests/*
             ${{ matrix.platform }}/game-test/crash-reports/*
           name: Test-Report-${{ github.run_number }}-QuarryPlus-${{ matrix.platform }}
+
+  merge-checker:
+    runs-on: ubuntu-latest
+    needs:
+      - assemble
+      - platforms
+    steps:
+      - name: Check needs
+        run: echo "${NEED_CONTEXT}" | jq
+        env:
+          NEED_CONTEXT: ${{ toJSON(needs) }}
