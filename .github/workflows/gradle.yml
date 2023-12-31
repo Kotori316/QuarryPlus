@@ -62,6 +62,7 @@ jobs:
       - name: Data ${{ matrix.platform }}
         run: ./gradlew :${{ matrix.platform }}:runData
         env:
+          TEST_UTILITY_LOG_ALL_DATA: true
           IGNORE_OTHER_MODS_IN_RUNTIME: true
           RUN_DATA: true
       - name: Check updated files

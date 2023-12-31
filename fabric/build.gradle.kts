@@ -10,6 +10,9 @@ plugins {
 
 loom {
     runs {
+        configureEach {
+            property("mixin.debug.export", "true")
+        }
         getByName("client") {
             configName = "Client"
             runDir = "Minecraft"
