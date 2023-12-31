@@ -36,7 +36,7 @@ jade_fabric = "4957713"
 # https://www.curseforge.com/minecraft/mc-mods/wthit/files
 wthit_fabric = "fabric-10.0.1"
 
-tu = "20.4.6"
+tu = "20.4.7"
 du = "20.4.6"
 
 jupiter_api = "5.10.1"
