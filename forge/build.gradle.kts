@@ -221,17 +221,12 @@ dependencies {
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.
-    testImplementation(
-        fg.deobf(
-            mapOf(
-                "group" to "com.kotori316",
-                "name" to "test-utility-forge",
-                "version" to libs.versions.tu.get()
-            ), closureOf<ExternalModuleDependency> {
-                isTransitive = false
-            }
-        )
-    )
+    testImplementation(fg.deobf(libs.tu.forge.get(), closureOf<ExternalModuleDependency> {
+        isTransitive = false
+    }))
+    testImplementation(fg.deobf(libs.du.forge.get(), closureOf<ExternalModuleDependency> {
+        isTransitive = false
+    }))
     testImplementation(libs.bundles.jupiter)
     game_test(libs.bundles.jupiter)
 }

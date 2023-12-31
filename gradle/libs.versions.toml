@@ -37,6 +37,7 @@ jade_fabric = "4957713"
 wthit_fabric = "fabric-10.0.1"
 
 tu = "20.4.4"
+du = "20.4.5"
 
 jupiter_api = "5.10.1"
 mockito_core = "5.8.0"
@@ -68,6 +69,8 @@ ftb_chunks_forge = { group = "dev.ftb.mods", name = "ftb-chunks-forge", version 
 ftb_library_forge = { group = "dev.ftb.mods", name = "ftb-library-forge", version = "2001.1.4" }
 ftb_teams_forge = { group = "dev.ftb.mods", name = "ftb-teams-forge", version = "2001.1.4" }
 ic2 = { group = "curse.maven", name = "ic2-classic-242942", version = "4441313" }
+tu_forge = { group = "com.kotori316", name = "test-utility-forge", version.ref = "tu" }
+du_forge = { group = "com.kotori316", name = "debug-utility-forge", version.ref = "du" }
 
 # Fabric
 fabric_api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabric_api" }
@@ -82,12 +85,16 @@ reborncore = { group = "RebornCore", name = "RebornCore-1.20", version.ref = "te
 techreborn = { group = "TechReborn", name = "TechReborn-1.20", version.ref = "techreborn" }
 modmenu = { group = "com.terraformersmc", name = "modmenu", version.ref = "modmenu" }
 wthit_fabric_api = { group = "mcp.mobius.waila", name = "wthit-api", version.ref = "wthit_fabric" }
+tu_fabric = { group = "com.kotori316", name = "test-utility-fabric", version.ref = "tu" }
+du_fabric = { group = "com.kotori316", name = "debug-utility-fabric", version.ref = "du" }
 
 # NeoForge
 neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
 slp_neoforge = { group = "com.kotori316", name = "scalablecatsforce-neoforge", version.ref = "slp_forge" }
 architectury_neoforge = { group = "dev.architectury", name = "architectury-neoforge", version.ref = "architectury" }
 rei_neoforge = { group = "me.shedaniel", name = "RoughlyEnoughItems-neoforge", version.ref = "rei" }
+tu_neoforge = { group = "com.kotori316", name = "test-utility-neoforge", version.ref = "tu" }
+du_neoforge = { group = "com.kotori316", name = "debug-utility-neoforge", version.ref = "du" }
 
 # Test
 jupiter_api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "jupiter_api" }

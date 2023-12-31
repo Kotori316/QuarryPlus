@@ -82,7 +82,8 @@ dependencies {
         exclude(group = "net.fabricmc")
     }
     modImplementation(libs.modmenu) { isTransitive = false }
-    modImplementation(group = "com.kotori316", name = "test-utility-fabric", version = libs.versions.tu.get())
+    modImplementation(libs.tu.fabric)
+    modImplementation(libs.du.fabric)
 
     // Test Dependencies.
     testImplementation(libs.fabric.junit)
