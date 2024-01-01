@@ -45,7 +45,7 @@ mockito_inline = "5.2.0"
 
 gradle_curse = "1.4.0"
 gradle_minotaur = "2.8.7"
-gradle_cf = "2.1"
+gradle_cf = "2.2"
 
 [libraries]
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
