@@ -126,8 +126,7 @@ public class TileAdvPump extends PowerTile
                         pump.target = null;
                         world.setBlock(pos, state.setValue(BlockAdvPump.WORKING, false), Block.UPDATE_ALL);
                         pump.logUsage();
-                        if (pump.placeFrame)
-                            removeDummyBlock(world, pos, pump.y);
+                        removeDummyBlock(world, pos, pump.y);
                     } else {
                         // Go to the next Y.
                         pump.target = Target.getTarget(world, nextPos, pump.enchantmentEfficiency.rangePredicate(nextPos),
