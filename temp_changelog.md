@@ -1,3 +1,8 @@
+## Version 18.22
+
+* Add GUI for Adv Pump
+* Change internal logic of chaining of Dummy Block, removing the number limitation
+
 ## Version 18.21
 
 * Limit the number of chaining of Dummy Block. #278
