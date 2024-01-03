@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.advpump;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.*;
+import com.yogpc.qp.machines.advquarry.AdvQuarryMenu;
 import com.yogpc.qp.machines.module.*;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.ClientSyncMessage;
@@ -14,6 +15,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -35,7 +40,7 @@ import java.util.stream.Stream;
 
 public class TileAdvPump extends PowerTile
     implements MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments,
-    CheckerLog, ClientSync, ModuleInventory.HasModuleInventory {
+    CheckerLog, ClientSync, ModuleInventory.HasModuleInventory, MenuProvider {
 
     private final MachineStorage storage = new MachineStorage();
     private int y;
@@ -274,6 +279,16 @@ public class TileAdvPump extends PowerTile
     @Override
     public Set<QuarryModule> getLoadedModules() {
         return modules;
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+        return new AdvQuarryMenu(i, player, getBlockPos());
     }
 
     private class AdvPumpCache {
