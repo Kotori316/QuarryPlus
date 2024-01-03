@@ -205,7 +205,7 @@ public class Holder {
     public static final MenuType<FillerMenu> FILLER_MENU_TYPE = registerMenuType((windowId, inv, data) ->
         new FillerMenu(windowId, inv.player, data.readBlockPos()), FillerMenu.GUI_ID);
     public static final MenuType<AdvPumpMenu> ADV_PUMP_MENU_TYPE = registerMenuType((windowId, inv, data) ->
-        new AdvPumpMenu(windowId, inv.player, data.readBlockPos()), AdvQuarryMenu.GUI_ID);
+        new AdvPumpMenu(windowId, inv.player, data.readBlockPos()), AdvPumpMenu.GUI_ID);
 
     public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = Registry.register(Registry.LOOT_FUNCTION_TYPE,
         new ResourceLocation(QuarryPlus.modID, EnchantedLootFunction.NAME), new LootItemFunctionType(EnchantedLootFunction.SERIALIZER));

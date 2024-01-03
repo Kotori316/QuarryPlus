@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.IndexedButton;
+import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -45,7 +46,6 @@ public final class AdvPumpScreen extends AbstractContainerScreen<AdvPumpMenu> im
         final int buttonWidth = 80;
         this.addRenderableWidget(new IndexedButton(0, getGuiLeft() + getXSize() / 2 - buttonWidth, getGuiTop() + 22, buttonWidth, 20, text("Frame", getMenu().pump.placeFrame), this));
         this.addRenderableWidget(new IndexedButton(1, getGuiLeft() + getXSize() / 2, getGuiTop() + 22, buttonWidth, 20, text("Delete", getMenu().pump.deleteFluid), this));
-        this.addRenderableWidget(new IndexedButton(2, getGuiLeft() + 60, getGuiTop() + 50, 120, 20, text("Frame", getMenu().pump.placeFrame), this));
     }
 
     private Component text(String prefix, boolean state) {
@@ -54,6 +54,21 @@ public final class AdvPumpScreen extends AbstractContainerScreen<AdvPumpMenu> im
 
     @Override
     public void onPress(Button button) {
-
+        if (button instanceof IndexedButton indexedButton) {
+            switch (indexedButton.getIndex()) {
+                case 0 -> {
+                    getMenu().pump.placeFrame = !getMenu().pump.placeFrame;
+                    indexedButton.setMessage(text("Frame", getMenu().pump.placeFrame));
+                    PacketHandler.sendToServer(new AdvPumpMessage(getMenu().pump));
+                }
+                case 1 -> {
+                    getMenu().pump.deleteFluid = !getMenu().pump.deleteFluid;
+                    indexedButton.setMessage(text("Delete", getMenu().pump.deleteFluid));
+                    PacketHandler.sendToServer(new AdvPumpMessage(getMenu().pump));
+                }
+                default -> {
+                }
+            }
+        }
     }
 }

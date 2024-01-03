@@ -2,7 +2,6 @@ package com.yogpc.qp.machines.advpump;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.*;
-import com.yogpc.qp.machines.advquarry.AdvQuarryMenu;
 import com.yogpc.qp.machines.module.*;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.ClientSyncMessage;
@@ -182,7 +181,7 @@ public class TileAdvPump extends PowerTile
         }
     }
 
-    public void setEnchantment(EnchantmentEfficiency enchantmentEfficiency) {
+    void setEnchantment(EnchantmentEfficiency enchantmentEfficiency) {
         this.enchantmentEfficiency = enchantmentEfficiency;
         this.setMaxEnergy(enchantmentEfficiency.energyCapacity);
         if (level != null && !level.isClientSide)
@@ -288,7 +287,7 @@ public class TileAdvPump extends PowerTile
 
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-        return new AdvQuarryMenu(i, player, getBlockPos());
+        return new AdvPumpMenu(i, player, getBlockPos());
     }
 
     private class AdvPumpCache {
