@@ -9,7 +9,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -49,7 +48,7 @@ public final class AdvPumpScreen extends AbstractContainerScreen<AdvPumpMenu> im
     }
 
     private Component text(String prefix, boolean state) {
-        return new TextComponent("%s %s".formatted(prefix, state ? "on" : "off"));
+        return Component.literal("%s %s".formatted(prefix, state ? "on" : "off"));
     }
 
     @Override

@@ -92,7 +92,7 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
                     if (stack.getItem() instanceof QuarryModuleProvider.Item) {
                         ContainerQuarryModule.InteractionObject.openScreen(pump, (ServerPlayer) player, getName());
                     } else {
-                        NetworkHooks.openGui((ServerPlayer) player, pump, pos);
+                        NetworkHooks.openScreen((ServerPlayer) player, pump, pos);
                     }
                 }
             }
