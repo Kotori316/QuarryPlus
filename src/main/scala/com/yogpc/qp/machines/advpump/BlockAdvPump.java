@@ -8,6 +8,7 @@ import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.module.ContainerQuarryModule;
+import com.yogpc.qp.machines.module.QuarryModuleProvider;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.minecraft.core.BlockPos;
@@ -33,6 +34,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockAdvPump extends QPBlock implements EntityBlock {
@@ -87,7 +89,11 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
         if (!player.isShiftKeyDown()) {
             if (!world.isClientSide) {
                 if (world.getBlockEntity(pos) instanceof TileAdvPump pump) {
-                    ContainerQuarryModule.InteractionObject.openScreen(pump, (ServerPlayer) player, getName());
+                    if (stack.getItem() instanceof QuarryModuleProvider.Item) {
+                        ContainerQuarryModule.InteractionObject.openScreen(pump, (ServerPlayer) player, getName());
+                    } else {
+                        NetworkHooks.openGui((ServerPlayer) player, pump, pos);
+                    }
                 }
             }
             return InteractionResult.SUCCESS;
