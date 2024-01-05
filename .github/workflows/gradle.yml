@@ -87,11 +87,12 @@ jobs:
 
   merge-checker:
     runs-on: ubuntu-latest
+    if: always()
     needs:
       - assemble
       - platforms
     steps:
       - name: Check needs
-        run: echo "${NEED_CONTEXT}" | jq
+        run: echo "${NEED_CONTEXT}" | jq --exit-status 'all(.. | .result? | strings | . == "success")'
         env:
           NEED_CONTEXT: ${{ toJSON(needs) }}
