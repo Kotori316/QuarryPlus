@@ -4,8 +4,9 @@ forge = "1.20.4-49.0.13"
 fabric_api = "0.92.0+1.20.4"
 fabric_loader = "0.15.+"
 neoforge = "20.4.65-beta"
-# https://ldtteam.jfrog.io/ui/native/parchmentmc-public/org/parchmentmc/data/parchment-1.20.2/
-parchment = "1.20.2-2023.10.22"
+# https://ldtteam.jfrog.io/ui/native/parchmentmc-public/org/parchmentmc/data/parchment-1.20.3/
+parchment_minecraft = "1.20.3"
+parchment_mapping = "2023.12.31"
 # https://mvnrepository.com/artifact/org.scala-lang/scala-library
 scala2 = "2.13.12"
 # https://mvnrepository.com/artifact/org.scala-lang/scala3-library

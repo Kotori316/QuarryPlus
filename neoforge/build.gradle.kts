@@ -3,7 +3,7 @@ plugins {
     id("com.kotori316.jars")
     id("com.kotori316.publishments")
     id("scala")
-    id("net.neoforged.gradle.userdev") version ("[7.0.49, 8)")
+    id("net.neoforged.gradle.userdev") version ("[7.0.80, 8)")
     // id("org.parchmentmc.librarian.forgegradle") version("1.+")
 }
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
@@ -67,6 +67,13 @@ runs {
         dependencies {
             this.runtime(configurations.getByName("game_test"))
         }
+    }
+}
+
+subsystems {
+    parchment {
+        minecraftVersion = libs.versions.parchment.minecraft.get()
+        mappingsVersion = libs.versions.parchment.mapping.get()
     }
 }
 

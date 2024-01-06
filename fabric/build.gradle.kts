@@ -51,7 +51,10 @@ loom {
 dependencies {
     //to change the versions see the gradle.properties file
     minecraft(libs.minecraft)
-    mappings(loom.officialMojangMappings())
+    mappings(loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${libs.versions.parchment.minecraft.get()}:${libs.versions.parchment.mapping.get()}@zip")
+    })
     modImplementation(libs.fabric.loader)
 
     // Fabric API. This is technically optional, but you probably want it anyway.

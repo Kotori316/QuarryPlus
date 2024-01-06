@@ -101,6 +101,10 @@ repositories {
             includeGroup("dev.latvian.mods")
         }
     }
+    maven {
+        name = "ParchmentMC"
+        url = uri("https://maven.parchmentmc.org")
+    }
     mavenCentral()
     mavenLocal()
 }

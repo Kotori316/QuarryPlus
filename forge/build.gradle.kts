@@ -57,7 +57,7 @@ minecraft {
     mappings(
         mapOf(
             "channel" to "parchment",
-            "version" to libs.versions.parchment.get() + "-" + libs.versions.minecraft.get(),
+            "version" to "${libs.versions.parchment.minecraft.get()}-${libs.versions.parchment.mapping.get()}-${libs.versions.minecraft.get()}",
         )
     )
 
