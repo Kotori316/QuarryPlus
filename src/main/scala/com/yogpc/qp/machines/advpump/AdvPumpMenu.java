@@ -21,7 +21,7 @@ public final class AdvPumpMenu extends AbstractContainerMenu {
 
     public AdvPumpMenu(int id, Player player, BlockPos pos) {
         super(Holder.ADV_PUMP_MENU_TYPE, id);
-        this.pump = Objects.requireNonNull(Holder.ADV_PUMP_TYPE.getBlockEntity(player.level, pos));
+        this.pump = Objects.requireNonNull(Holder.ADV_PUMP_TYPE.getBlockEntity(player.level(), pos));
 
         final int oneBox = 18;
         for (int h = 0; h < 3; h++) {
@@ -32,7 +32,7 @@ public final class AdvPumpMenu extends AbstractContainerMenu {
         for (int vertical = 0; vertical < 9; vertical++) {
             this.addSlot(new Slot(player.getInventory(), vertical, 8 + vertical * oneBox, 142));
         }
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             PacketHandler.sendToClientPlayer(new ClientSyncMessage(this.pump), (ServerPlayer) player);
         }
     }

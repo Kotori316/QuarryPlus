@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.misc;
 
+import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.Direction8;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
