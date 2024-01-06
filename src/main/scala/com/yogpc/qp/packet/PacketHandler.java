@@ -1,6 +1,7 @@
 package com.yogpc.qp.packet;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.advpump.AdvPumpMessage;
 import com.yogpc.qp.machines.advquarry.AdvActionMessage;
 import com.yogpc.qp.machines.advquarry.AdvQuarryInitialMessage;
 import com.yogpc.qp.machines.controller.ControllerOpenMessage;
@@ -65,6 +66,7 @@ public class PacketHandler {
             .messageBuilder(RemotePlacerMessage.class).encoder(RemotePlacerMessage::write).decoder(RemotePlacerMessage::new).consumerNetworkThread(setHandled(RemotePlacerMessage::onReceive)).add()
             .messageBuilder(AdvQuarryInitialMessage.class).encoder(AdvQuarryInitialMessage::write).decoder(AdvQuarryInitialMessage::new).consumerNetworkThread(setHandled(AdvQuarryInitialMessage::onReceive)).add()
             .messageBuilder(AdvQuarryInitialMessage.Ask.class).encoder(AdvQuarryInitialMessage.Ask::write).decoder(AdvQuarryInitialMessage.Ask::new).consumerNetworkThread(setHandled(AdvQuarryInitialMessage.Ask::onReceive)).add()
+            .messageBuilder(AdvPumpMessage.class).encoder(AdvPumpMessage::write).decoder(AdvPumpMessage::new).consumerNetworkThread(setHandled(AdvPumpMessage::onReceive)).add()
             ;
     }
 

@@ -1,5 +1,6 @@
 package com.yogpc.qp;
 
+import com.yogpc.qp.machines.advpump.AdvPumpScreen;
 import com.yogpc.qp.machines.advquarry.AdvQuarryScreen;
 import com.yogpc.qp.machines.bookmover.BookMoverScreen;
 import com.yogpc.qp.machines.filler.FillerScreen;
@@ -54,5 +55,6 @@ public class QuarryPlusClient {
         MenuScreens.register(Holder.SOLID_FUEL_QUARRY_MENU_TYPE, SFQuarryScreen::new);
         MenuScreens.register(Holder.FILLER_MENU_TYPE, FillerScreen::new);
         MenuScreens.register(Holder.FILTER_MODULE_MENU_TYPE, FilterModuleScreen::new);
+        MenuScreens.register(Holder.ADV_PUMP_MENU_TYPE, AdvPumpScreen::new);
     }
 }

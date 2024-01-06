@@ -4,6 +4,7 @@ import com.mojang.datafixers.DSL;
 import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.QPItem;
+import com.yogpc.qp.machines.advpump.AdvPumpMenu;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
 import com.yogpc.qp.machines.advpump.TileAdvPump;
 import com.yogpc.qp.machines.advquarry.AdvQuarryMenu;
@@ -222,6 +223,8 @@ public class Holder {
         new FillerMenu(windowId, inv.player, data.readBlockPos()), FillerMenu.GUI_ID);
     public static final MenuType<FilterModuleMenu> FILTER_MODULE_MENU_TYPE = registerMenuType(((windowId, inv, data) ->
         new FilterModuleMenu(windowId, inv.player, inv.getItem(inv.selected))), FilterModuleMenu.GUI_ID);
+    public static final MenuType<AdvPumpMenu> ADV_PUMP_MENU_TYPE = registerMenuType((windowId, inv, data) ->
+        new AdvPumpMenu(windowId, inv.player, data.readBlockPos()), AdvPumpMenu.GUI_ID);
 
     public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
         new ResourceLocation(QuarryPlus.modID, EnchantedLootFunction.NAME), new LootItemFunctionType(EnchantedLootFunction.SERIALIZER));

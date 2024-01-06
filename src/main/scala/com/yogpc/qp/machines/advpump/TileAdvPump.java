@@ -13,6 +13,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -34,7 +38,7 @@ import java.util.stream.Stream;
 
 public class TileAdvPump extends PowerTile
     implements MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments,
-    CheckerLog, ClientSync, ModuleInventory.HasModuleInventory {
+    CheckerLog, ClientSync, ModuleInventory.HasModuleInventory, MenuProvider {
 
     private final MachineStorage storage = new MachineStorage();
     private int y;
@@ -121,8 +125,7 @@ public class TileAdvPump extends PowerTile
                         pump.target = null;
                         world.setBlock(pos, state.setValue(BlockAdvPump.WORKING, false), Block.UPDATE_ALL);
                         pump.logUsage();
-                        if (pump.placeFrame)
-                            removeDummyBlock(world, pos, pump.y);
+                        removeDummyBlock(world, pos, pump.y);
                     } else {
                         // Go to the next Y.
                         pump.target = Target.getTarget(world, nextPos, pump.enchantmentEfficiency.rangePredicate(nextPos),
@@ -273,6 +276,16 @@ public class TileAdvPump extends PowerTile
     @Override
     public Set<QuarryModule> getLoadedModules() {
         return modules;
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+        return new AdvPumpMenu(i, player, getBlockPos());
     }
 
     private class AdvPumpCache {
