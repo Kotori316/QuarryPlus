@@ -35,7 +35,6 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockAdvPump extends QPBlock implements EntityBlock {
@@ -95,7 +94,7 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
                     if (stack.getItem() instanceof QuarryModuleProvider.Item) {
                         ContainerQuarryModule.InteractionObject.openScreen(pump, (ServerPlayer) player, getName());
                     } else {
-                        NetworkHooks.openScreen((ServerPlayer) player, pump, pos);
+                        ((ServerPlayer) player).openMenu(pump, pos);
                     }
                 }
             }

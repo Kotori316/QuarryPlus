@@ -9,10 +9,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * To server only
@@ -49,9 +48,9 @@ public final class AdvPumpMessage implements IMessage {
         buf.writeBoolean(placeFrame).writeBoolean(deleteFluid);
     }
 
-    public static void onReceive(AdvPumpMessage message, Supplier<NetworkEvent.Context> supplier) {
-        var level = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
-        supplier.get().enqueueWork(() ->
+    public static void onReceive(AdvPumpMessage message, CustomPayloadEvent.Context supplier) {
+        var level = PacketHandler.getWorld(supplier, message.pos, message.dim);
+        supplier.enqueueWork(() ->
             level.flatMap(l -> l.getBlockEntity(message.pos, Holder.ADV_PUMP_TYPE))
                 .ifPresentOrElse(pump -> {
                         pump.deleteFluid = message.deleteFluid;
