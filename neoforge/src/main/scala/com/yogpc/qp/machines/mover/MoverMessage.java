@@ -4,11 +4,11 @@ import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.neoforged.neoforge.network.NetworkEvent;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 /**
  * To Server only.
@@ -37,9 +37,9 @@ public final class MoverMessage implements IMessage {
         buf.writeResourceLocation(enchantment);
     }
 
-    public static void onReceive(MoverMessage message, NetworkEvent.Context supplier) {
-        supplier.enqueueWork(() ->
-            PacketHandler.getPlayer(supplier)
+    public static void onReceive(MoverMessage message, PlayPayloadContext context) {
+        context.workHandler().execute(() ->
+            PacketHandler.getPlayer(context)
                 .map(p -> p.containerMenu)
                 .filter(m -> m.containerId == message.windowId)
                 .flatMap(MapMulti.optCast(ContainerMover.class))

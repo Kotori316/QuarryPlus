@@ -8,7 +8,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 /**
  * To Server only.
@@ -36,9 +36,9 @@ public final class SetSpawnerEntityMessage implements IMessage {
         buf.writeResourceLocation(entity);
     }
 
-    public static void onReceive(SetSpawnerEntityMessage message, NetworkEvent.Context supplier) {
-        supplier.enqueueWork(() ->
-            PacketHandler.getWorld(supplier, message.pos, message.dim)
+    public static void onReceive(SetSpawnerEntityMessage message, PlayPayloadContext context) {
+        context.workHandler().execute(() ->
+            PacketHandler.getWorld(context, message.pos, message.dim)
                 .ifPresent(level -> BlockController.setSpawnerEntity(level, message.pos, message.entity))
         );
     }

@@ -4,6 +4,7 @@ import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
+import com.yogpc.qp.utils.ScreenUtil;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,7 +32,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -69,7 +69,7 @@ public class PlacerBlock extends QPBlock implements EntityBlock {
                     });
                 } else {
                     world.getBlockEntity(pos, Holder.PLACER_TYPE).ifPresent(o ->
-                        NetworkHooks.openScreen((ServerPlayer) player, o, pos));
+                        ScreenUtil.openScreen((ServerPlayer) player, o, pos));
                 }
             }
             return InteractionResult.SUCCESS;

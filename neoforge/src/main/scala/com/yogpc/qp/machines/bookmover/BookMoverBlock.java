@@ -5,6 +5,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
+import com.yogpc.qp.utils.ScreenUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,7 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class BookMoverBlock extends QPBlock implements EntityBlock {
@@ -44,7 +44,7 @@ public class BookMoverBlock extends QPBlock implements EntityBlock {
         }
         if (!player.isShiftKeyDown()) {
             if (!world.isClientSide && world.getBlockEntity(pos) instanceof BookMoverEntity mover) {
-                NetworkHooks.openScreen((ServerPlayer) player, mover, pos);
+                ScreenUtil.openScreen((ServerPlayer) player, mover, pos);
             }
             return InteractionResult.sidedSuccess(world.isClientSide);
         }

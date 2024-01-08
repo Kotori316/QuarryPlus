@@ -6,6 +6,7 @@ import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
+import com.yogpc.qp.utils.ScreenUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,7 +27,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public final class FillerBlock extends QPBlock implements EntityBlock {
@@ -66,7 +66,7 @@ public final class FillerBlock extends QPBlock implements EntityBlock {
         }
         if (!player.isShiftKeyDown()) {
             if (!level.isClientSide && level.getBlockEntity(pos) instanceof FillerEntity filler) {
-                NetworkHooks.openScreen((ServerPlayer) player, filler, pos);
+                ScreenUtil.openScreen((ServerPlayer) player, filler, pos);
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }

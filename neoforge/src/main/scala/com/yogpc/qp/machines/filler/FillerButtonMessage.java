@@ -9,7 +9,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 /**
  * To Server only
@@ -37,16 +37,16 @@ public final class FillerButtonMessage implements IMessage {
         buf.writeEnum(this.action);
     }
 
-    public static void onReceive(FillerButtonMessage message, NetworkEvent.Context supplier) {
-        var world = PacketHandler.getWorld(supplier, message.pos, message.dim);
-        supplier.enqueueWork(() ->
+    public static void onReceive(FillerButtonMessage message, PlayPayloadContext context) {
+        var world = PacketHandler.getWorld(context, message.pos, message.dim);
+        context.workHandler().execute(() ->
             world.map(w -> w.getBlockEntity(message.pos))
                 .flatMap(MapMulti.optCast(FillerEntity.class))
                 .ifPresent(f -> {
                     f.start(message.action);
                     if (f.fillerAction.isFinished()) {
                         // Filler work is not started.
-                        PacketHandler.getPlayer(supplier).ifPresent(p ->
+                        PacketHandler.getPlayer(context).ifPresent(p ->
                             p.displayClientMessage(Component.literal("Filler work isn't started. You must place a marker near Filler."), false));
                     }
                 }));

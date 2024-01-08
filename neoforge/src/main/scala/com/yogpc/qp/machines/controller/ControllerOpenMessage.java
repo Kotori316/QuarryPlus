@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -43,8 +43,8 @@ public final class ControllerOpenMessage implements IMessage {
         allEntities.forEach(buf::writeResourceLocation);
     }
 
-    public static void onReceive(ControllerOpenMessage message, NetworkEvent.Context supplier) {
-        supplier.enqueueWork(() -> openScreen(message));
+    public static void onReceive(ControllerOpenMessage message, PlayPayloadContext context) {
+        context.workHandler().execute(() -> openScreen(message));
     }
 
     @OnlyIn(Dist.CLIENT)

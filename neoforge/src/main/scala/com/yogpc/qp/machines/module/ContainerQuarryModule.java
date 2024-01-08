@@ -3,6 +3,7 @@ package com.yogpc.qp.machines.module;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.misc.SlotContainer;
+import com.yogpc.qp.utils.ScreenUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,7 +14,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.NetworkHooks;
 
 import java.util.Objects;
 
@@ -92,7 +92,7 @@ public class ContainerQuarryModule extends AbstractContainerMenu {
 
         public static <T extends BlockEntity & ModuleInventory.HasModuleInventory> void openScreen(T tile, ServerPlayer player, Component name) {
             if (tile.getLevel() != null && !tile.getLevel().isClientSide) {
-                NetworkHooks.openScreen(player, new InteractionObject(tile.getBlockPos(), name), tile.getBlockPos());
+                ScreenUtil.openScreen(player, new InteractionObject(tile.getBlockPos(), name), tile.getBlockPos());
             }
         }
     }

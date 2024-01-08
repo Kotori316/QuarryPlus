@@ -11,6 +11,7 @@ import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.MapMulti;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
+import com.yogpc.qp.utils.ScreenUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -36,7 +37,6 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -108,7 +108,7 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
                 if (stack.getItem() instanceof QuarryModuleProvider.Item) {
                     quarry.openModuleGui((ServerPlayer) player);
                 } else {
-                    NetworkHooks.openScreen((ServerPlayer) player, quarry, pos);
+                    ScreenUtil.openScreen((ServerPlayer) player, quarry, pos);
                 }
             }
             return InteractionResult.SUCCESS;

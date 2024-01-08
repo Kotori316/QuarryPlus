@@ -11,6 +11,7 @@ import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
+import com.yogpc.qp.utils.ScreenUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -34,7 +35,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
@@ -108,7 +108,7 @@ public final class SFQuarryBlock extends QPBlock implements EntityBlock {
                         quarry.target = null;
                     } else {
                         // Open Fuel Slot GUI
-                        NetworkHooks.openScreen((ServerPlayer) player, quarry, pos);
+                        ScreenUtil.openScreen((ServerPlayer) player, quarry, pos);
                     }
                 }
             }

@@ -4,6 +4,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.packet.TileMessage;
+import com.yogpc.qp.utils.ScreenUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +18,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.network.NetworkHooks;
 
 
 public class YSetterItem extends QPItem {
@@ -36,7 +36,7 @@ public class YSetterItem extends QPItem {
             if (!level.isClientSide) {
                 if (player instanceof ServerPlayer p) {
                     PacketHandler.sendToClientPlayer(new TileMessage(tile), p);
-                    NetworkHooks.openScreen(p, new YSetterScreenHandler(tile.getBlockPos(), tile.getBlockState().getBlock()), context.getClickedPos());
+                    ScreenUtil.openScreen(p, new YSetterScreenHandler(tile.getBlockPos(), tile.getBlockState().getBlock()), context.getClickedPos());
                 }
 
                 return InteractionResult.CONSUME;

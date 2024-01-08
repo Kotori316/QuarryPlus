@@ -5,6 +5,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
+import com.yogpc.qp.utils.ScreenUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -23,7 +24,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
@@ -51,7 +51,7 @@ public class BlockWorkbench extends QPBlock implements EntityBlock {
         if (!player.isShiftKeyDown()) {
             if (!level.isClientSide) {
                 level.getBlockEntity(pos, Holder.WORKBENCH_TYPE)
-                    .ifPresent(w -> NetworkHooks.openScreen((ServerPlayer) player, w, pos));
+                    .ifPresent(w -> ScreenUtil.openScreen((ServerPlayer) player, w, pos));
             }
             return InteractionResult.SUCCESS;
         }

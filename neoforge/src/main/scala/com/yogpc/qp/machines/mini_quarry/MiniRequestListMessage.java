@@ -8,9 +8,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.NetworkEvent;
-
-import java.util.Objects;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 /**
  * To Server only.
@@ -34,10 +32,10 @@ public final class MiniRequestListMessage implements IMessage {
         buf.writeBlockPos(pos).writeResourceLocation(dim.location());
     }
 
-    public static void onReceive(MiniRequestListMessage message, NetworkEvent.Context supplier) {
-        supplier.enqueueWork(() -> PacketHandler.getWorld(supplier, message.pos, message.dim)
-                .flatMap(l -> l.getBlockEntity(message.pos, Holder.MINI_QUARRY_TYPE))
-                .ifPresent(t ->
-                    PacketHandler.sendToClientPlayer(new MiniListSyncMessage(t), Objects.requireNonNull(supplier.getSender()))));
+    public static void onReceive(MiniRequestListMessage message, PlayPayloadContext context) {
+        context.workHandler().execute(() -> PacketHandler.getWorld(context, message.pos, message.dim)
+            .flatMap(l -> l.getBlockEntity(message.pos, Holder.MINI_QUARRY_TYPE))
+            .ifPresent(t ->
+                context.replyHandler().send(new MiniListSyncMessage(t))));
     }
 }

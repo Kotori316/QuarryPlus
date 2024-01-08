@@ -7,7 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 /**
  * To both client and server.
@@ -38,9 +38,9 @@ public final class TileMessage implements IMessage {
         buf.writeNbt(this.tag);
     }
 
-    public static void onReceive(TileMessage message, NetworkEvent.Context supplier) {
-        var world = PacketHandler.getWorld(supplier, message.pos, message.dim);
-        supplier.enqueueWork(() -> world.map(l -> l.getBlockEntity(message.pos)).ifPresent(t -> t.load(message.tag)));
+    public static void onReceive(TileMessage message, PlayPayloadContext context) {
+        var world = PacketHandler.getWorld(context, message.pos, message.dim);
+        context.workHandler().execute(() -> world.map(l -> l.getBlockEntity(message.pos)).ifPresent(t -> t.load(message.tag)));
     }
 
 }

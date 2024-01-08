@@ -7,7 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import static com.yogpc.qp.utils.MapMulti.optCast;
 
@@ -40,9 +40,9 @@ public final class ClientSyncMessage implements IMessage {
         buf.writeNbt(this.tag);
     }
 
-    public static void onReceive(ClientSyncMessage message, NetworkEvent.Context supplier) {
-        var world = PacketHandler.getWorld(supplier, message.pos, message.dim);
-        supplier.enqueueWork(() ->
+    public static void onReceive(ClientSyncMessage message, PlayPayloadContext context) {
+        var world = PacketHandler.getWorld(context, message.pos, message.dim);
+        context.workHandler().execute(() ->
             world.map(l -> l.getBlockEntity(message.pos))
                 .flatMap(optCast(ClientSync.class))
                 .ifPresent(t -> t.fromClientTag(message.tag)));

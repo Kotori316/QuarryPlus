@@ -13,10 +13,8 @@ import com.yogpc.qp.machines.mini_quarry.MiniListSyncMessage;
 import com.yogpc.qp.machines.mini_quarry.MiniRequestListMessage;
 import com.yogpc.qp.machines.mover.MoverMessage;
 import com.yogpc.qp.machines.placer.RemotePlacerMessage;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -24,60 +22,49 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.network.NetworkEvent;
-import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.simple.MessageFunctions;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
 
 public class PacketHandler {
     private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-        new ResourceLocation(QuarryPlus.modID, "main"),
-        () -> PROTOCOL_VERSION,
-        PROTOCOL_VERSION::equals,
-        PROTOCOL_VERSION::equals
-    );
-
     private static final Proxy PROXY = ProxyProvider.getInstance();
 
-    public static void init() {
-        AtomicInteger id = new AtomicInteger(1);
-        INSTANCE.registerMessage(id.getAndIncrement(), TileMessage.class, TileMessage::write, TileMessage::new, setHandled(TileMessage::onReceive));
-        INSTANCE.registerMessage(id.getAndIncrement(), ClientSyncMessage.class, ClientSyncMessage::write, ClientSyncMessage::new, setHandled(ClientSyncMessage::onReceive));
-        INSTANCE.registerMessage(id.getAndIncrement(), Marker16Message.class, Marker16Message::write, Marker16Message::new, setHandled(Marker16Message::onReceive));
-        INSTANCE.registerMessage(id.getAndIncrement(), FlexMarkerMessage.class, FlexMarkerMessage::write, FlexMarkerMessage::new, setHandled(FlexMarkerMessage::onReceive));
-        INSTANCE.registerMessage(id.getAndIncrement(), LevelMessage.class, LevelMessage::write, LevelMessage::new, setHandled(LevelMessage::onReceive));
-        INSTANCE.registerMessage(id.getAndIncrement(), MoverMessage.class, MoverMessage::write, MoverMessage::new, setHandled(MoverMessage::onReceive));
-        INSTANCE.registerMessage(id.getAndIncrement(), AdvActionMessage.class, AdvActionMessage::write, AdvActionMessage::new, setHandled(AdvActionMessage::onReceive));
-        INSTANCE.registerMessage(id.getAndIncrement(), SetSpawnerEntityMessage.class, SetSpawnerEntityMessage::write, SetSpawnerEntityMessage::new, setHandled(SetSpawnerEntityMessage::onReceive));
-        INSTANCE.registerMessage(id.getAndIncrement(), ControllerOpenMessage.class, ControllerOpenMessage::write, ControllerOpenMessage::new, setHandled(ControllerOpenMessage::onReceive));
-        INSTANCE.registerMessage(id.getAndIncrement(), MiniListSyncMessage.class, MiniListSyncMessage::write, MiniListSyncMessage::new, setHandled(MiniListSyncMessage::onReceive));
-        INSTANCE.registerMessage(id.getAndIncrement(), MiniRequestListMessage.class, MiniRequestListMessage::write, MiniRequestListMessage::new, setHandled(MiniRequestListMessage::onReceive));
-        INSTANCE.registerMessage(id.getAndIncrement(), FillerButtonMessage.class, FillerButtonMessage::write, FillerButtonMessage::new, setHandled(FillerButtonMessage::onReceive));
-        INSTANCE.registerMessage(id.getAndIncrement(), RemotePlacerMessage.class, RemotePlacerMessage::write, RemotePlacerMessage::new, setHandled(RemotePlacerMessage::onReceive));
-        INSTANCE.registerMessage(id.getAndIncrement(), AdvQuarryInitialMessage.class, AdvQuarryInitialMessage::write, AdvQuarryInitialMessage::new, setHandled(AdvQuarryInitialMessage::onReceive));
-        INSTANCE.registerMessage(id.getAndIncrement(), AdvQuarryInitialMessage.Ask.class, AdvQuarryInitialMessage.Ask::write, AdvQuarryInitialMessage.Ask::new, setHandled(AdvQuarryInitialMessage.Ask::onReceive));
-        INSTANCE.registerMessage(id.getAndIncrement(), AdvPumpMessage.class, AdvPumpMessage::write, AdvPumpMessage::new, setHandled(AdvPumpMessage::onReceive));
+    public static void init(RegisterPayloadHandlerEvent event) {
+        var registrar = event.registrar(QuarryPlus.modID).versioned(PROTOCOL_VERSION);
+        registrar.play(IMessage.createIdentifier(TileMessage.class), TileMessage::new, handler -> handler.client(TileMessage::onReceive).server(TileMessage::onReceive));
+        registrar.play(IMessage.createIdentifier(ClientSyncMessage.class), ClientSyncMessage::new, handler -> handler.client(ClientSyncMessage::onReceive));
+        registrar.play(IMessage.createIdentifier(Marker16Message.class), Marker16Message::new, handler -> handler.server(Marker16Message::onReceive));
+        registrar.play(IMessage.createIdentifier(FlexMarkerMessage.class), FlexMarkerMessage::new, handler -> handler.server(FlexMarkerMessage::onReceive));
+        registrar.play(IMessage.createIdentifier(LevelMessage.class), LevelMessage::new, handler -> handler.server(LevelMessage::onReceive));
+        registrar.play(IMessage.createIdentifier(MoverMessage.class), MoverMessage::new, handler -> handler.server(MoverMessage::onReceive));
+        registrar.play(IMessage.createIdentifier(AdvActionMessage.class), AdvActionMessage::new, handler -> handler.server(AdvActionMessage::onReceive));
+        registrar.play(IMessage.createIdentifier(SetSpawnerEntityMessage.class), SetSpawnerEntityMessage::new, handler -> handler.server(SetSpawnerEntityMessage::onReceive));
+        registrar.play(IMessage.createIdentifier(ControllerOpenMessage.class), ControllerOpenMessage::new, handler -> handler.client(ControllerOpenMessage::onReceive));
+        registrar.play(IMessage.createIdentifier(MiniListSyncMessage.class), MiniListSyncMessage::new, handler -> handler.client(MiniListSyncMessage::onReceive).server(MiniListSyncMessage::onReceive));
+        registrar.play(IMessage.createIdentifier(MiniRequestListMessage.class), MiniRequestListMessage::new, handler -> handler.server(MiniRequestListMessage::onReceive));
+        registrar.play(IMessage.createIdentifier(FillerButtonMessage.class), FillerButtonMessage::new, handler -> handler.server(FillerButtonMessage::onReceive));
+        registrar.play(IMessage.createIdentifier(RemotePlacerMessage.class), RemotePlacerMessage::new, handler -> handler.server(RemotePlacerMessage::onReceive));
+        registrar.play(IMessage.createIdentifier(AdvQuarryInitialMessage.class), AdvQuarryInitialMessage::new, handler -> handler.server(AdvQuarryInitialMessage::onReceive));
+        registrar.play(IMessage.createIdentifier(AdvQuarryInitialMessage.Ask.class), AdvQuarryInitialMessage.Ask::new, handler -> handler.client(AdvQuarryInitialMessage.Ask::onReceive));
+        registrar.play(IMessage.createIdentifier(AdvPumpMessage.class), AdvPumpMessage::new, handler -> handler.server(AdvPumpMessage::onReceive));
 
     }
 
     public static void sendToClient(@NotNull IMessage message, @NotNull Level world) {
-        INSTANCE.send(PacketDistributor.DIMENSION.with(world::dimension), message);
+        PacketDistributor.DIMENSION.with(world.dimension()).send(message);
     }
 
     public static void sendToClientPlayer(@NotNull IMessage message, @NotNull ServerPlayer player) {
-        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
+        PacketDistributor.PLAYER.with(player).send(message);
     }
 
     public static void sendToServer(@NotNull IMessage message) {
-        INSTANCE.sendToServer(message);
+        PacketDistributor.SERVER.noArg().send(message);
     }
 
     @NotNull
@@ -89,22 +76,15 @@ public class PacketHandler {
     }
 
     @NotNull
-    public static Optional<Level> getWorld(@NotNull NetworkEvent.Context context, @NotNull BlockPos pos, @NotNull ResourceKey<Level> expectedDim) {
+    public static Optional<Level> getWorld(@NotNull PlayPayloadContext context, @NotNull BlockPos pos, @NotNull ResourceKey<Level> expectedDim) {
         return PROXY.getPacketWorld(context)
             .filter(l -> l.dimension().equals(expectedDim))
             .filter(l -> l.isLoaded(pos));
     }
 
     @NotNull
-    public static Optional<Player> getPlayer(@NotNull NetworkEvent.Context context) {
+    public static Optional<Player> getPlayer(@NotNull PlayPayloadContext context) {
         return PROXY.getPacketPlayer(context);
-    }
-
-    private static <T> MessageFunctions.MessageConsumer<T> setHandled(BiConsumer<T, NetworkEvent.Context> execution) {
-        return (t, supplier) -> {
-            execution.accept(t, supplier);
-            supplier.setPacketHandled(true);
-        };
     }
 
     private static class ProxyProvider {
@@ -132,22 +112,22 @@ public class PacketHandler {
 
     private static abstract class Proxy {
         @NotNull
-        abstract Optional<Level> getPacketWorld(@NotNull NetworkEvent.Context context);
+        abstract Optional<Level> getPacketWorld(@NotNull PlayPayloadContext context);
 
         @NotNull
-        abstract Optional<Player> getPacketPlayer(@NotNull NetworkEvent.Context context);
+        abstract Optional<Player> getPacketPlayer(@NotNull PlayPayloadContext context);
     }
 
     private static class ProxyServer extends Proxy {
 
         @Override
-        Optional<Level> getPacketWorld(NetworkEvent.Context context) {
-            return Optional.ofNullable(context.getSender()).map(ServerPlayer::serverLevel);
+        Optional<Level> getPacketWorld(PlayPayloadContext context) {
+            return context.level();
         }
 
         @Override
-        Optional<Player> getPacketPlayer(NetworkEvent.Context context) {
-            return Optional.ofNullable(context.getSender());
+        Optional<Player> getPacketPlayer(PlayPayloadContext context) {
+            return context.player();
         }
     }
 
@@ -155,18 +135,13 @@ public class PacketHandler {
     private static class ProxyClient extends Proxy {
 
         @Override
-        Optional<Level> getPacketWorld(NetworkEvent.Context context) {
-            var sender = context.getSender();
-            if (sender == null) {
-                return Optional.ofNullable(Minecraft.getInstance().level);
-            } else {
-                return Optional.of(sender).map(ServerPlayer::serverLevel);
-            }
+        Optional<Level> getPacketWorld(PlayPayloadContext context) {
+            return context.level();
         }
 
         @Override
-        Optional<Player> getPacketPlayer(NetworkEvent.Context context) {
-            return Optional.<Player>ofNullable(context.getSender()).or(() -> Optional.ofNullable(Minecraft.getInstance().player));
+        Optional<Player> getPacketPlayer(PlayPayloadContext context) {
+            return context.player();
         }
     }
 }

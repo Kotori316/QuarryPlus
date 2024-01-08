@@ -36,6 +36,7 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.gametest.GameTestHooks;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.logging.log4j.Logger;
@@ -153,7 +154,11 @@ public class QuarryPlus {
 
         @SubscribeEvent
         public static void setup(FMLCommonSetupEvent event) {
-            PacketHandler.init();
+        }
+
+        @SubscribeEvent
+        public static void setupNetwork(RegisterPayloadHandlerEvent event) {
+            PacketHandler.init(event);
         }
 
         public static void registerCreativeTab(RegisterEvent.RegisterHelper<CreativeModeTab> helper) {

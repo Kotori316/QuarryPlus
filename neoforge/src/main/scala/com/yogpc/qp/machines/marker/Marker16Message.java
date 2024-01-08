@@ -9,7 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.Objects;
 
@@ -48,9 +48,9 @@ public final class Marker16Message implements IMessage {
         buffer.writeVarInt(yMin);
     }
 
-    public static void onReceive(Marker16Message message, NetworkEvent.Context supplier) {
-        var world = PacketHandler.getWorld(supplier, message.pos, message.dim);
-        supplier.enqueueWork(() ->
+    public static void onReceive(Marker16Message message, PlayPayloadContext context) {
+        var world = PacketHandler.getWorld(context, message.pos, message.dim);
+        context.workHandler().execute(() ->
             world.map(w -> w.getBlockEntity(message.pos))
                 .flatMap(MapMulti.optCast(Tile16Marker.class))
                 .ifPresent(m -> {
