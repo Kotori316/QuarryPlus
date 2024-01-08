@@ -86,13 +86,10 @@ jobs:
           name: Test-Report-${{ github.run_number }}-QuarryPlus-${{ matrix.platform }}
 
   merge-checker:
-    runs-on: ubuntu-latest
     if: always()
     needs:
       - assemble
       - platforms
-    steps:
-      - name: Check needs
-        run: echo "${NEED_CONTEXT}" | jq --exit-status 'all(.. | .result? | strings | . == "success")'
-        env:
-          NEED_CONTEXT: ${{ toJSON(needs) }}
+    uses: 'Kotori316/common-script/.github/workflows/merge-checker.yaml@main'
+    with:
+      needs: ${{ toJSON(needs) }}
