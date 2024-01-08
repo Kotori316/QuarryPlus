@@ -1,6 +1,7 @@
 package com.yogpc.qp.packet;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.advpump.AdvPumpMessage;
 import com.yogpc.qp.machines.advquarry.AdvActionMessage;
 import com.yogpc.qp.machines.advquarry.AdvQuarryInitialMessage;
 import com.yogpc.qp.machines.controller.ControllerOpenMessage;
@@ -63,6 +64,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id.getAndIncrement(), RemotePlacerMessage.class, RemotePlacerMessage::write, RemotePlacerMessage::new, setHandled(RemotePlacerMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), AdvQuarryInitialMessage.class, AdvQuarryInitialMessage::write, AdvQuarryInitialMessage::new, setHandled(AdvQuarryInitialMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), AdvQuarryInitialMessage.Ask.class, AdvQuarryInitialMessage.Ask::write, AdvQuarryInitialMessage.Ask::new, setHandled(AdvQuarryInitialMessage.Ask::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), AdvPumpMessage.class, AdvPumpMessage::write, AdvPumpMessage::new, setHandled(AdvPumpMessage::onReceive));
 
     }
 
