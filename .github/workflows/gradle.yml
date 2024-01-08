@@ -24,7 +24,7 @@ jobs:
       - run: chmod +x ./gradlew
       - uses: gradle/gradle-build-action@v2
         with:
-          cache-read-only: false
+          cache-read-only: ${{ github.event_name != 'push' }}
           gradle-home-cache-cleanup: true
       - run: ./gradlew assemble --scan
       - run: ./gradlew checkJarSetting checkChangeLog checkReleaseVersion --no-parallel
@@ -48,7 +48,7 @@ jobs:
           java-version: '17'
       - uses: gradle/gradle-build-action@v2
         with:
-          cache-read-only: false
+          cache-read-only: ${{ github.event_name != 'push' }}
           gradle-home-cache-cleanup: true
       - name: Compile main ${{ matrix.platform }}
         run: ./gradlew :${{ matrix.platform }}:classes
