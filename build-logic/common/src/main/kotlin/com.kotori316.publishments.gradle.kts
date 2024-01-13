@@ -45,6 +45,19 @@ fun changelog(): String {
     }
 }
 
+fun latestChangelog(): String {
+    val file = rootProject.file("temp_changelog.md").toPath()
+    return if (Files.exists(file)) {
+        Files.lines(file)
+            .takeWhile { s -> !s.startsWith("-") }
+            .skip(2)
+            .filter { it.isNotBlank() }
+            .collect(Collectors.joining(System.lineSeparator()))
+    } else {
+        "No changelog provided"
+    }
+}
+
 fun shortChangelog(): String {
     val file = rootProject.file("temp_changelog.md").toPath()
     return if (Files.exists(file)) {
@@ -69,15 +82,31 @@ tasks.register("checkChangeLog") {
         println("*".repeat(30))
         println(shortChangelog())
         println("*".repeat(30))
+        println("Head changelog in $platformName")
+        println("*".repeat(30))
+        println(latestChangelog())
+        println("*".repeat(30))
     }
+}
+
+fun getPlatformVersion(platform: String): String {
+    val catalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
+    val key = when (platform) {
+        "forge" -> "forge"
+        "fabric" -> "fabric.api"
+        "neoforge" -> "neoforge"
+        else -> throw IllegalArgumentException("Unknown platform: $platform")
+    }
+    return catalog.findVersion(key).map { it.requiredVersion }.get()
 }
 
 tasks.register("registerVersion", CallVersionFunctionTask::class) {
     functionEndpoint = CallVersionFunctionTask.readVersionFunctionEndpoint(project)
     gameVersion = minecraft
     platform = platformName
+    platformVersion = getPlatformVersion(platformName)
     modName = "QuarryPlus".lowercase()
-    changelog = shortChangelog()
+    changelog = latestChangelog()
     homepage.set(
         if (platformName == "forge") "https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner"
         else "https://modrinth.com/mod/additional-enchanted-miner"
