@@ -54,6 +54,12 @@ jobs:
         run: ./gradlew :${{ matrix.platform }}:classes
       - name: Compile test ${{ matrix.platform }}
         run: ./gradlew :${{ matrix.platform }}:testClasses
+      - name: Get run resources
+        if: matrix.platform != 'neoforge'
+        run: |
+          (./gradlew downloadAssets) || \
+            (sleep 5 && ./gradlew downloadAssets) || \
+            (sleep 5 && ./gradlew downloadAssets) || true
       - name: JUnit ${{ matrix.platform }}
         run: ./gradlew :${{ matrix.platform }}:test
         env:
@@ -68,7 +74,7 @@ jobs:
       - name: Check updated files
         run: git diff --exit-code
       - name: GameTest ${{ matrix.platform }}
-        run: ./gradlew :${{ matrix.platform }}:runGameTest
+        run: ./gradlew :${{ matrix.platform }}:runGameTestServer
         env:
           TEST_UTILITY_LOG_ALL_TEST: true
           IGNORE_OTHER_MODS_IN_RUNTIME: true
