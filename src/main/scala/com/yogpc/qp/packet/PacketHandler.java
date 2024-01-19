@@ -10,6 +10,7 @@ import com.yogpc.qp.machines.marker.FlexMarkerMessage;
 import com.yogpc.qp.machines.marker.Marker16Message;
 import com.yogpc.qp.machines.mini_quarry.MiniListSyncMessage;
 import com.yogpc.qp.machines.mini_quarry.MiniRequestListMessage;
+import com.yogpc.qp.machines.misc.CreativeGeneratorSyncMessage;
 import com.yogpc.qp.machines.mover.MoverMessage;
 import com.yogpc.qp.machines.placer.RemotePlacerMessage;
 import net.minecraft.client.Minecraft;
@@ -61,6 +62,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id.getAndIncrement(), FillerButtonMessage.class, FillerButtonMessage::write, FillerButtonMessage::new, setHandled(FillerButtonMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), RemotePlacerMessage.class, RemotePlacerMessage::write, RemotePlacerMessage::new, setHandled(RemotePlacerMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), AdvPumpMessage.class, AdvPumpMessage::write, AdvPumpMessage::new, setHandled(AdvPumpMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), CreativeGeneratorSyncMessage.class, CreativeGeneratorSyncMessage::write, CreativeGeneratorSyncMessage::new, setHandled(CreativeGeneratorSyncMessage::onReceive));
     }
 
     public static void sendToClient(@NotNull IMessage message, @NotNull Level world) {
