@@ -1,24 +1,13 @@
 package com.yogpc.qp.machines.quarry;
 
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.integration.ftbchunks.FTBChunksProtectionCheck;
 import com.yogpc.qp.integration.wrench.WrenchItems;
-import com.yogpc.qp.machines.Area;
-import com.yogpc.qp.machines.Direction8;
-import com.yogpc.qp.machines.EnchantedLootFunction;
-import com.yogpc.qp.machines.MachineStorage;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.QPBlock;
-import com.yogpc.qp.machines.QuarryMarker;
+import com.yogpc.qp.machines.*;
 import com.yogpc.qp.machines.module.ContainerQuarryModule;
 import com.yogpc.qp.machines.module.EnergyModuleItem;
 import com.yogpc.qp.machines.module.ModuleLootFunction;
-import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.MapMulti;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
@@ -50,6 +39,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
 public class QuarryBlock extends QPBlock implements EntityBlock {
@@ -80,7 +72,7 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
     @SuppressWarnings("DuplicatedCode")
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(level, pos, state, entity, stack);
-        if (!level.isClientSide) {
+        if (!level.isClientSide && !this.disallowedDim().contains(level.dimension().location())) {
             Direction facing = entity == null ? Direction.NORTH : entity.getDirection().getOpposite();
             if (level.getBlockEntity(pos) instanceof TileQuarry quarry) {
                 quarry.setEnchantments(EnchantmentHelper.getEnchantments(stack));
@@ -99,7 +91,7 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
                 quarry.updateModules();
                 var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, quarry.enabled);
                 quarry.setChunkPreLoaded(preForced);
-                PacketHandler.sendToClient(new TileMessage(quarry), level);
+                quarry.sync();
             }
         }
     }
@@ -157,7 +149,8 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
         return level.isClientSide ? null : checkType(blockEntityType, Holder.QUARRY_TYPE,
-            new CombinedBlockEntityTicker<>(
+            CombinedBlockEntityTicker.of(
+                this, level,
                 PowerTile.getGenerator(),
                 EnergyModuleItem.energyModuleTicker(),
                 TileQuarry::tick,

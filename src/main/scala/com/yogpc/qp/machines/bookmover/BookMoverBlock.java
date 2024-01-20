@@ -68,6 +68,8 @@ public class BookMoverBlock extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide ? null : checkType(type, Holder.BOOK_MOVER_TYPE,
-            new CombinedBlockEntityTicker<>(PowerTile.getGenerator(), (l, p, s, t) -> t.workInTick(), PowerTile.logTicker()));
+            CombinedBlockEntityTicker.of(
+                this, level,
+                PowerTile.getGenerator(), (l, p, s, t) -> t.workInTick(), PowerTile.logTicker()));
     }
 }

@@ -47,6 +47,15 @@ public class Config {
         return !FMLEnvironment.production || common.debug.get();
     }
 
+    public Map<String, Map<String, ?>> getAll() {
+        return Map.of(
+            "common", common.getAll(),
+            "enableMap", enableMap.getAll(),
+            "powerMap", powerMap.getAll(),
+            "acceptableEnchantmentsMap", acceptableEnchantmentsMap.getAll()
+        );
+    }
+
     public static class Common {
         public final ForgeConfigSpec.IntValue netherTop;
         private final ForgeConfigSpec.BooleanValue debug;
@@ -89,6 +98,11 @@ public class Config {
             logAllQuarryWork = builder.comment("Trace quarry work").define("logAllQuarryWork", inDev);
             builder.pop();
         }
+
+        @VisibleForTesting
+        Map<String, Object> getAll() {
+            return getAllInClass(this);
+        }
     }
 
     public static class EnableMap {
@@ -127,6 +141,12 @@ public class Config {
 
         public void set(String name, boolean value) {
             this.machinesMap.put(name, () -> value);
+        }
+
+        @VisibleForTesting
+        Map<String, Boolean> getAll() {
+            return machinesMap.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getAsBoolean()));
         }
     }
 
@@ -213,6 +233,14 @@ public class Config {
                 )
                 .toList();
         }
+
+        @VisibleForTesting
+        Map<String, Map<String, Double>> getAll() {
+            return map.entrySet().stream()
+                .map(MapStreamSyntax.values(m ->
+                    m.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get()))
+                )).collect(MapStreamSyntax.entryToMap());
+        }
     }
 
     public static class AcceptableEnchantmentsMap {
@@ -264,5 +292,27 @@ public class Config {
                 .map(ForgeRegistries.ENCHANTMENTS::getValue)
                 .collect(Collectors.toSet());
         }
+
+        @VisibleForTesting
+        Map<String, List<? extends String>> getAll() {
+            return enchantmentsMap.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get()));
+        }
+    }
+
+    static <T> Map<String, Object> getAllInClass(T instance) {
+        return Stream.of(instance.getClass().getDeclaredFields())
+            .filter(f -> ForgeConfigSpec.ConfigValue.class.isAssignableFrom(f.getType()))
+            .map(f -> {
+                try {
+                    f.setAccessible(true);
+                    var config = (ForgeConfigSpec.ConfigValue<?>) f.get(instance);
+                    var value = config.get();
+                    return Map.entry(f.getName(), value);
+                } catch (ReflectiveOperationException e) {
+                    throw new RuntimeException(e);
+                }
+            })
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

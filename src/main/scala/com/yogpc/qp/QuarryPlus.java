@@ -1,12 +1,15 @@
 package com.yogpc.qp;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
+import com.yogpc.qp.machines.TraceQuarryWork;
 import com.yogpc.qp.machines.workbench.EnableCondition;
 import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
 import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.ConfigCommand;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
@@ -19,6 +22,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -39,22 +43,27 @@ public class QuarryPlus {
     public static final Logger LOGGER = getLogger(Mod_Name);
     public static Config config;
     public static ClientConfig clientConfig;
+    public static ServerConfig serverConfig;
 
     public QuarryPlus() {
         registerConfig(false);
         FMLJavaModLoadingContext.get().getModEventBus().register(Register.class);
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> QuarryPlusClient::registerClientBus);
         MinecraftForge.EVENT_BUS.register(ConfigCommand.class);
+        MinecraftForge.EVENT_BUS.addListener(QuarryPlus::onServerStart);
     }
 
     @VisibleForTesting
     static void registerConfig(boolean inJUnitTest) {
         ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
         ForgeConfigSpec.Builder client = new ForgeConfigSpec.Builder();
+        ForgeConfigSpec.Builder server = new ForgeConfigSpec.Builder();
         config = new Config(common);
         clientConfig = new ClientConfig(client);
+        serverConfig = new ServerConfig(server);
         ForgeConfigSpec build = common.build();
         ForgeConfigSpec clientBuild = client.build();
+        ForgeConfigSpec serverBuild = server.build();
         if (inJUnitTest || ForgeGameTestHooks.isGametestServer()) {
             // In game test. Use in-memory config.
             final CommentedConfig commentedConfig = CommentedConfig.inMemory();
@@ -65,9 +74,13 @@ public class QuarryPlus {
             final CommentedConfig clientConfig = CommentedConfig.inMemory();
             clientBuild.correct(clientConfig);
             clientBuild.acceptConfig(clientConfig);
+            final CommentedConfig serverConfig = CommentedConfig.inMemory();
+            serverBuild.correct(serverConfig);
+            serverBuild.acceptConfig(serverConfig);
         } else {
             ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, build);
             ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, clientBuild);
+            ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, serverBuild);
         }
     }
 
@@ -82,6 +95,7 @@ public class QuarryPlus {
             event.register(Registries.MENU, Register::registerContainers);
             event.register(Registries.RECIPE_SERIALIZER, Register::registerRecipe);
             event.register(Registries.RECIPE_TYPE, Register::registerRecipeType);
+            event.register(Registry.COMMAND_ARGUMENT_TYPE_REGISTRY, Register::registerArgument);
         }
 
         public static void registerBlocks(RegisterEvent.RegisterHelper<Block> blockRegisterHelper) {
@@ -115,6 +129,11 @@ public class QuarryPlus {
             helper.register(WorkbenchRecipe.recipeLocation, WorkbenchRecipe.RECIPE_TYPE);
         }
 
+        public static void registerArgument(RegisterEvent.RegisterHelper<ArgumentTypeInfo<?, ?>> helper) {
+            helper.register(new ResourceLocation(modID, "config_argument"),
+                ArgumentTypeInfos.registerByClass(ConfigCommand.SelectorArgument.class, ConfigCommand.INFO));
+        }
+
         @SubscribeEvent
         public static void setup(FMLCommonSetupEvent event) {
             PacketHandler.init();
@@ -139,5 +158,9 @@ public class QuarryPlus {
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Can't access to LOGGER in loader.", e);
         }
+    }
+
+    static void onServerStart(ServerStartedEvent event) {
+        TraceQuarryWork.initialLog(event.getServer());
     }
 }

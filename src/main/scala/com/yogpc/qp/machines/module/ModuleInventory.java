@@ -1,15 +1,5 @@
 package com.yogpc.qp.machines.module;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.nbt.CompoundTag;
@@ -20,6 +10,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.VisibleForTesting;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class ModuleInventory extends SimpleContainer implements INBTSerializable<CompoundTag> {
     private final Consumer<ModuleInventory> onUpdate;
@@ -125,6 +125,11 @@ public class ModuleInventory extends SimpleContainer implements INBTSerializable
 
         default Stream<FilterModule> getFilterModules() {
             return getLoadedModules().stream().mapMulti(MapMulti.cast(FilterModule.class));
+        }
+
+        default int getRepeatWorkCount() {
+            return getLoadedModules().stream().mapMulti(MapMulti.cast(RepeatTickModuleItem.RepeatTickModule.class))
+                .mapToInt(RepeatTickModuleItem.RepeatTickModule::stackSize).sum() + 1;
         }
     }
 }

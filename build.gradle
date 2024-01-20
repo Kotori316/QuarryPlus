@@ -22,7 +22,7 @@ plugins {
     id("com.github.breadmoirai.github-release") version("2.4.1")
     id("com.matthewprenger.cursegradle") version("1.4.0")
     id("com.modrinth.minotaur").version("2.+")
-    id("com.kotori316.plugin.cf").version("1.+")
+    id("com.kotori316.plugin.cf").version("2.3")
 }
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
@@ -346,24 +346,24 @@ artifacts {
 // This is the preferred method to reobfuscate your jar file
 jar.finalizedBy("reobfJar")
 
-jar.finalizedBy("signJar")
+jar.finalizedBy("jksSignJar")
 
-tasks.register("signJar") {
+tasks.register("jksSignJar") {
     dependsOn("reobfJar")
-    boolean executeCondition = project.hasProperty("keyStoreAlias") &&
-            project.hasProperty("keyStore") &&
-            project.hasProperty("keyStorePass")
+    boolean executeCondition = project.hasProperty("jarSign.keyAlias") &&
+            project.hasProperty("jarSign.keyLocation") &&
+            project.hasProperty("jarSign.storePass")
     onlyIf { executeCondition }
     doLast {
         //noinspection HttpUrlsUsage
         ant.signjar(
                 jar: jar.archiveFile.get(),
-                alias: project.hasProperty("keyStoreAlias") ? project.getProperty("keyStoreAlias") : "",
-                keystore: project.hasProperty("keyStore") ? project.getProperty("keyStore") : "",
-                storepass: project.hasProperty("keyStorePass") ? project.getProperty("keyStorePass") : "",
-                sigalg: "SHA1withRSA",
+                alias: project.findProperty("jarSign.keyAlias") ?: "",
+                keystore: project.findProperty("jarSign.keyLocation") ?: "",
+                storepass: project.findProperty("jarSign.storePass") ?: "",
+                sigalg: "Ed25519",
                 digestalg: "SHA-256",
-                tsaurl: "http://timestamp.digicert.com"
+                tsaurl: "http://timestamp.digicert.com",
         )
     }
 }
@@ -403,22 +403,33 @@ static String getCommit(String branch) {
 }
 
 String getChangeLog() {
-    def header = changeLogHeader()
+    return changeLogHeader() + System.lineSeparator() + getShortChangelog(true)
+}
+
+String getShortChangelog(boolean includeVersion) {
     def f = file("temp_changelog.md")
     if (f.exists()) {
         String version = f.readLines().find { s -> s.startsWith("#") }
-        return header + System.lineSeparator() + Stream.concat(
-                Stream.of(version, ""),
-                f.readLines()
-                        .drop(4 - 2)
-                        .takeWhile { s -> !s.isEmpty() }
-                        .stream() as Stream<String>
-        ).collect(Collectors.joining(System.lineSeparator()))
-    } else return header
+        def content = f.readLines()
+                .drop(4 - 2)
+                .takeWhile { s -> !s.isEmpty() }
+                .stream() as Stream<String>
+        if (includeVersion) {
+            return Stream.concat(
+                    Stream.of(version, ""),
+                    content
+            ).collect(Collectors.joining(System.lineSeparator()))
+        }else{
+            content.collect(Collectors.joining(System.lineSeparator()))
+        }
+
+    } else {
+        return version.toString()
+    }
 }
 
 curseforge {
-    apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : ""
+    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: System.getenv("CURSE_TOKEN") ?: ""
     project {
         id = "282837"
         changelogType = "markdown"
@@ -486,6 +497,7 @@ tasks.register("checkCompileOption") {
         System.out.println("Git commit")
         System.out.println(getCommit(project.branch as String))
         System.out.println("-" * 30 as String)
+        System.out.println(getShortChangelog(false))
     }
 }
 
@@ -546,5 +558,8 @@ tasks.register("registerVersion", CallVersionFunctionTask.class) {
     functionEndpoint = readVersionFunctionEndpoint(project)
     gameVersion = project.findProperty("minecraftVersion")
     platform = "forge"
+    platformVersion = project.findProperty("forgeVersion") as String
     modName = "quarryplus"
+    changelog = getShortChangelog(false)
+    homepage = "https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner"
 }

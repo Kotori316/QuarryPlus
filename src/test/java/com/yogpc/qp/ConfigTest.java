@@ -1,16 +1,5 @@
 package com.yogpc.qp;
 
-import java.io.InputStreamReader;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.TileQuarry;
@@ -19,24 +8,21 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import java.io.InputStreamReader;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(QuarryPlusTest.class)
 final class ConfigTest {
@@ -200,6 +186,49 @@ final class ConfigTest {
             } catch (ReflectiveOperationException e) {
                 fail(e);
             }
+        }
+    }
+
+    @Nested
+    class GetAllTest {
+        @Test
+        void common() {
+            var c = QuarryPlus.config.common;
+            var map = assertDoesNotThrow(c::getAll);
+            assertFalse(map.isEmpty());
+        }
+
+        @Test
+        void enableMap() {
+            var c = QuarryPlus.config.enableMap;
+            var map = assertDoesNotThrow(c::getAll);
+            assertFalse(map.isEmpty());
+        }
+
+        @Test
+        void powerMap() {
+            var c = QuarryPlus.config.powerMap;
+            var map = assertDoesNotThrow(c::getAll);
+            assertFalse(map.isEmpty());
+        }
+
+        @Test
+        void acceptableEnchantmentsMap() {
+            var c = QuarryPlus.config.acceptableEnchantmentsMap;
+            var map = assertDoesNotThrow(c::getAll);
+            assertFalse(map.isEmpty());
+        }
+
+        @Test
+        void all() {
+            var c = QuarryPlus.config;
+            var map = assertDoesNotThrow(c::getAll);
+            var fieldCount = Config.class.getFields().length;
+            assertEquals(fieldCount, map.size());
+            var fieldNames = Stream.of(Config.class.getFields())
+                .map(Field::getName)
+                .collect(Collectors.toSet());
+            assertEquals(fieldNames, map.keySet());
         }
     }
 }

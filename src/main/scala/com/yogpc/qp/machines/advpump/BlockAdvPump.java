@@ -8,6 +8,7 @@ import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.module.ContainerQuarryModule;
+import com.yogpc.qp.machines.module.QuarryModuleProvider;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.minecraft.core.BlockPos;
@@ -33,6 +34,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockAdvPump extends QPBlock implements EntityBlock {
@@ -60,7 +62,9 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
         return world.isClientSide ? null : checkType(type, Holder.ADV_PUMP_TYPE,
-            new CombinedBlockEntityTicker<>(PowerTile.getGenerator(), TileAdvPump::tick, PowerTile.logTicker(), MachineStorage.passFluid()));
+            CombinedBlockEntityTicker.of(
+                this, world,
+                PowerTile.getGenerator(), TileAdvPump::tick, PowerTile.logTicker(), MachineStorage.passFluid()));
     }
 
     @Override
@@ -85,7 +89,11 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
         if (!player.isShiftKeyDown()) {
             if (!world.isClientSide) {
                 if (world.getBlockEntity(pos) instanceof TileAdvPump pump) {
-                    ContainerQuarryModule.InteractionObject.openScreen(pump, (ServerPlayer) player, getName());
+                    if (stack.getItem() instanceof QuarryModuleProvider.Item) {
+                        ContainerQuarryModule.InteractionObject.openScreen(pump, (ServerPlayer) player, getName());
+                    } else {
+                        NetworkHooks.openScreen((ServerPlayer) player, pump, pos);
+                    }
                 }
             }
             return InteractionResult.SUCCESS;
@@ -96,7 +104,7 @@ public class BlockAdvPump extends QPBlock implements EntityBlock {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(level, pos, state, entity, stack);
-        if (!level.isClientSide) {
+        if (!level.isClientSide && !this.disallowedDim().contains(level.dimension().location())) {
             if (level.getBlockEntity(pos) instanceof TileAdvPump pump) {
                 var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, pump.enabled);
                 pump.setEnchantment(EnchantmentEfficiency.fromMap(EnchantmentHelper.getEnchantments(stack)));

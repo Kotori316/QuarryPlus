@@ -1,12 +1,21 @@
 package com.yogpc.qp;
 
 import net.minecraftforge.common.ForgeConfigSpec;
+import org.jetbrains.annotations.VisibleForTesting;
+
+import java.util.Map;
 
 public final class ClientConfig {
     public final ChunkDestroyerSetting chunkDestroyerSetting;
 
     public ClientConfig(ForgeConfigSpec.Builder builder) {
         this.chunkDestroyerSetting = new ChunkDestroyerSetting(builder);
+    }
+
+    public Map<String, Map<String, ?>> getAll() {
+        return Map.of(
+            "chunkDestroyerSetting", chunkDestroyerSetting.getAll()
+        );
     }
 
     public static final class ChunkDestroyerSetting {
@@ -20,6 +29,11 @@ public final class ClientConfig {
             this.chunkByChunk = builder.comment("If true, quarry works for a chunk and go next chunk when finished.").define("chunkByChunk", false);
             this.startImmediately = builder.comment("If true, quarry starts when it has enough power. If false it starts when you click start button in GUI.")
                 .define("startImmediately", true);
+        }
+
+        @VisibleForTesting
+        Map<String, Object> getAll() {
+            return Config.getAllInClass(this);
         }
     }
 }

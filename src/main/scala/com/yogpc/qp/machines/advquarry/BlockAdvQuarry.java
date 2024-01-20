@@ -124,7 +124,10 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
     @SuppressWarnings("deprecation")
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onPlace(state, level, pos, oldState, isMoving);
-        if (state.getBlock() != oldState.getBlock() && !level.isClientSide && level.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
+        if (state.getBlock() != oldState.getBlock() &&
+            !level.isClientSide &&
+            !this.disallowedDim().contains(level.dimension().location()) &&
+            level.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
             quarry.initialSetting();
             Direction facing = state.getValue(FACING);
             if (!quarry.setArea(findArea(level, pos, facing.getOpposite(), quarry.getStorage()::addItem))) {
@@ -144,7 +147,7 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(level, pos, state, entity, stack);
-        if (!level.isClientSide) {
+        if (!level.isClientSide && !this.disallowedDim().contains(level.dimension().location())) {
             if (level.getBlockEntity(pos) instanceof TileAdvQuarry quarry) {
                 var enchantment = EnchantmentLevel.fromItem(stack);
                 enchantment.sort(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR);
@@ -161,7 +164,8 @@ public class BlockAdvQuarry extends QPBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide ? null : checkType(type, Holder.ADV_QUARRY_TYPE,
-            new CombinedBlockEntityTicker<>(
+            CombinedBlockEntityTicker.of(
+                this, level,
                 PowerTile.getGenerator(),
                 EnergyModuleItem.energyModuleTicker(),
                 TileAdvQuarry::tick,

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public class YSetterContainer extends AbstractContainerMenu {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_y_setter";
     @Nullable
-    final YAccessor yAccessor;
+    final YAccessor<?> yAccessor;
 
     public YSetterContainer(int syncId, Player player, BlockPos pos) {
         super(Holder.Y_SETTER_MENU_TYPE, syncId);

@@ -1,11 +1,7 @@
 package com.yogpc.qp.packet;
 
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
-
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machines.advpump.AdvPumpMessage;
 import com.yogpc.qp.machines.advquarry.AdvActionMessage;
 import com.yogpc.qp.machines.advquarry.AdvQuarryInitialMessage;
 import com.yogpc.qp.machines.controller.ControllerOpenMessage;
@@ -15,6 +11,7 @@ import com.yogpc.qp.machines.marker.FlexMarkerMessage;
 import com.yogpc.qp.machines.marker.Marker16Message;
 import com.yogpc.qp.machines.mini_quarry.MiniListSyncMessage;
 import com.yogpc.qp.machines.mini_quarry.MiniRequestListMessage;
+import com.yogpc.qp.machines.misc.CreativeGeneratorSyncMessage;
 import com.yogpc.qp.machines.mover.MoverMessage;
 import com.yogpc.qp.machines.placer.RemotePlacerMessage;
 import net.minecraft.client.Minecraft;
@@ -35,6 +32,11 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
+
 public class PacketHandler {
     private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
@@ -47,7 +49,6 @@ public class PacketHandler {
 
     public static void init() {
         AtomicInteger id = new AtomicInteger(1);
-        INSTANCE.registerMessage(id.getAndIncrement(), TileMessage.class, TileMessage::write, TileMessage::new, setHandled(TileMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), ClientSyncMessage.class, ClientSyncMessage::write, ClientSyncMessage::new, setHandled(ClientSyncMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), Marker16Message.class, Marker16Message::write, Marker16Message::new, setHandled(Marker16Message::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), FlexMarkerMessage.class, FlexMarkerMessage::write, FlexMarkerMessage::new, setHandled(FlexMarkerMessage::onReceive));
@@ -62,6 +63,8 @@ public class PacketHandler {
         INSTANCE.registerMessage(id.getAndIncrement(), RemotePlacerMessage.class, RemotePlacerMessage::write, RemotePlacerMessage::new, setHandled(RemotePlacerMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), AdvQuarryInitialMessage.class, AdvQuarryInitialMessage::write, AdvQuarryInitialMessage::new, setHandled(AdvQuarryInitialMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), AdvQuarryInitialMessage.Ask.class, AdvQuarryInitialMessage.Ask::write, AdvQuarryInitialMessage.Ask::new, setHandled(AdvQuarryInitialMessage.Ask::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), AdvPumpMessage.class, AdvPumpMessage::write, AdvPumpMessage::new, setHandled(AdvPumpMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), CreativeGeneratorSyncMessage.class, CreativeGeneratorSyncMessage::write, CreativeGeneratorSyncMessage::new, setHandled(CreativeGeneratorSyncMessage::onReceive));
     }
 
     public static void sendToClient(@NotNull IMessage message, @NotNull Level world) {

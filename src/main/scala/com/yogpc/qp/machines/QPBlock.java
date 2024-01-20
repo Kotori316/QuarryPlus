@@ -1,11 +1,18 @@
 package com.yogpc.qp.machines;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.utils.CombinedBlockEntityTicker;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -15,6 +22,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,12 +55,32 @@ public class QPBlock extends Block {
         return this.blockItem;
     }
 
+    @Override
+    public void setPlacedBy(Level level, BlockPos pPos, BlockState pState, @Nullable LivingEntity pPlacer, ItemStack pStack) {
+        super.setPlacedBy(level, pPos, pState, pPlacer, pStack);
+        if (!level.isClientSide && this.disallowedDim().contains(level.dimension().location())) {
+            if (pPlacer instanceof Player player) {
+                player.displayClientMessage(Component.literal("This block doesn't work in this dimension by server config"), false);
+            }
+        }
+    }
+
+    /**
+     * Machines must not work in these dimensions.
+     */
+    public Set<ResourceLocation> disallowedDim() {
+        return QuarryPlus.serverConfig.machineWork.unworkableDimensions.get().stream()
+            .map(ResourceLocation::tryParse)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
+    }
+
     /**
      * Helper method copied from {@link net.minecraft.world.level.block.BaseEntityBlock}
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> checkType(BlockEntityType<A> type1, BlockEntityType<E> exceptedType, BlockEntityTicker<? super E> ticker) {
+    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> checkType(BlockEntityType<A> type1, BlockEntityType<E> exceptedType, CombinedBlockEntityTicker<? super E> ticker) {
         return exceptedType == type1 ? (BlockEntityTicker<A>) ticker : null;
     }
 

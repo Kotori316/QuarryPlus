@@ -1,16 +1,10 @@
 package com.yogpc.qp;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
 import com.mojang.datafixers.DSL;
 import com.yogpc.qp.machines.EnchantedLootFunction;
 import com.yogpc.qp.machines.QPBlock;
 import com.yogpc.qp.machines.QPItem;
+import com.yogpc.qp.machines.advpump.AdvPumpMenu;
 import com.yogpc.qp.machines.advpump.BlockAdvPump;
 import com.yogpc.qp.machines.advpump.TileAdvPump;
 import com.yogpc.qp.machines.advquarry.AdvQuarryMenu;
@@ -24,53 +18,18 @@ import com.yogpc.qp.machines.controller.BlockController;
 import com.yogpc.qp.machines.filler.FillerBlock;
 import com.yogpc.qp.machines.filler.FillerEntity;
 import com.yogpc.qp.machines.filler.FillerMenu;
-import com.yogpc.qp.machines.marker.BlockExMarker;
-import com.yogpc.qp.machines.marker.BlockMarker;
-import com.yogpc.qp.machines.marker.BlockWaterloggedMarker;
-import com.yogpc.qp.machines.marker.ContainerMarker;
-import com.yogpc.qp.machines.marker.Tile16Marker;
-import com.yogpc.qp.machines.marker.TileFlexMarker;
-import com.yogpc.qp.machines.marker.TileMarker;
+import com.yogpc.qp.machines.marker.*;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryBlock;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryMenu;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryTile;
 import com.yogpc.qp.machines.miningwell.MiningWellBlock;
 import com.yogpc.qp.machines.miningwell.MiningWellTile;
-import com.yogpc.qp.machines.misc.BlockDummy;
-import com.yogpc.qp.machines.misc.CreativeGeneratorBlock;
-import com.yogpc.qp.machines.misc.CreativeGeneratorMenu;
-import com.yogpc.qp.machines.misc.CreativeGeneratorTile;
-import com.yogpc.qp.machines.misc.YSetterContainer;
-import com.yogpc.qp.machines.misc.YSetterItem;
-import com.yogpc.qp.machines.module.BedrockModuleItem;
-import com.yogpc.qp.machines.module.ContainerQuarryModule;
-import com.yogpc.qp.machines.module.EnergyModuleItem;
-import com.yogpc.qp.machines.module.ExpModuleItem;
-import com.yogpc.qp.machines.module.ExpPumpBlock;
-import com.yogpc.qp.machines.module.ExpPumpTile;
-import com.yogpc.qp.machines.module.FillerModuleItem;
-import com.yogpc.qp.machines.module.FilterModuleItem;
-import com.yogpc.qp.machines.module.FilterModuleMenu;
-import com.yogpc.qp.machines.module.ModuleLootFunction;
-import com.yogpc.qp.machines.module.PumpModuleItem;
-import com.yogpc.qp.machines.module.PumpPlusBlock;
-import com.yogpc.qp.machines.module.ReplacerBlock;
-import com.yogpc.qp.machines.module.ReplacerDummyBlock;
-import com.yogpc.qp.machines.module.ReplacerModuleItem;
+import com.yogpc.qp.machines.misc.*;
+import com.yogpc.qp.machines.module.*;
 import com.yogpc.qp.machines.mover.BlockMover;
 import com.yogpc.qp.machines.mover.ContainerMover;
-import com.yogpc.qp.machines.placer.PlacerBlock;
-import com.yogpc.qp.machines.placer.PlacerContainer;
-import com.yogpc.qp.machines.placer.PlacerTile;
-import com.yogpc.qp.machines.placer.RemotePlacerBlock;
-import com.yogpc.qp.machines.placer.RemotePlacerTile;
-import com.yogpc.qp.machines.quarry.FrameBlock;
-import com.yogpc.qp.machines.quarry.QuarryBlock;
-import com.yogpc.qp.machines.quarry.QuarryLootFunction;
-import com.yogpc.qp.machines.quarry.SFQuarryBlock;
-import com.yogpc.qp.machines.quarry.SFQuarryEntity;
-import com.yogpc.qp.machines.quarry.SFQuarryMenu;
-import com.yogpc.qp.machines.quarry.TileQuarry;
+import com.yogpc.qp.machines.placer.*;
+import com.yogpc.qp.machines.quarry.*;
 import com.yogpc.qp.machines.workbench.BlockWorkbench;
 import com.yogpc.qp.machines.workbench.ContainerWorkbench;
 import com.yogpc.qp.machines.workbench.TileWorkbench;
@@ -93,6 +52,12 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.network.IContainerFactory;
 import net.minecraftforge.registries.RegisterEvent;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class Holder {
     private static final List<Supplier<List<ItemStack>>> TAB_ITEM = new ArrayList<>();
@@ -205,8 +170,9 @@ public class Holder {
     public static final ExpModuleItem ITEM_EXP_MODULE = registerItem(new ExpModuleItem(), EnableOrNot.CONFIG_ON);
     public static final BedrockModuleItem ITEM_BEDROCK_MODULE = registerItem(new BedrockModuleItem(), EnableOrNot.CONFIG_OFF);
     public static final EnergyModuleItem ITEM_FUEL_MODULE_NORMAL = registerItem(new EnergyModuleItem(5, "fuel_module_normal"), EnableOrNot.CONFIG_ON);
-    public static final FillerModuleItem ITEM_FILLER_MODULE = registerItem(new FillerModuleItem(), EnableOrNot.CONFIG_ON);
+    public static final FillerModuleItem ITEM_FILLER_MODULE = registerItem(new FillerModuleItem(), EnableOrNot.CONFIG_OFF);
     public static final FilterModuleItem ITEM_FILTER_MODULE = registerItem(new FilterModuleItem(), EnableOrNot.CONFIG_ON);
+    public static final RepeatTickModuleItem ITEM_REPEAT_MODULE = registerItem(new RepeatTickModuleItem(), EnableOrNot.CONFIG_OFF);
 
     public static final BlockEntityType<TileQuarry> QUARRY_TYPE = registerEntityType(TileQuarry::new, BLOCK_QUARRY, EnableOrNot.CONFIG_ON);
     public static final BlockEntityType<SFQuarryEntity> SOLID_FUEL_QUARRY_TYPE = registerEntityType(SFQuarryEntity::new, BLOCK_SOLID_FUEL_QUARRY, EnableOrNot.CONFIG_ON);
@@ -255,6 +221,8 @@ public class Holder {
         new FillerMenu(windowId, inv.player, data.readBlockPos()), FillerMenu.GUI_ID);
     public static final MenuType<FilterModuleMenu> FILTER_MODULE_MENU_TYPE = registerMenuType(((windowId, inv, data) ->
         new FilterModuleMenu(windowId, inv.player, inv.getItem(inv.selected))), FilterModuleMenu.GUI_ID);
+    public static final MenuType<AdvPumpMenu> ADV_PUMP_MENU_TYPE = registerMenuType((windowId, inv, data) ->
+        new AdvPumpMenu(windowId, inv.player, data.readBlockPos()), AdvPumpMenu.GUI_ID);
 
     public static final LootItemFunctionType ENCHANTED_LOOT_TYPE = Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
         new ResourceLocation(QuarryPlus.modID, EnchantedLootFunction.NAME), new LootItemFunctionType(EnchantedLootFunction.SERIALIZER));

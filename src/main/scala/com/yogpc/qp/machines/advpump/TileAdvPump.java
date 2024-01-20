@@ -1,25 +1,8 @@
 package com.yogpc.qp.machines.advpump;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
-import com.yogpc.qp.machines.BreakResult;
-import com.yogpc.qp.machines.CheckerLog;
-import com.yogpc.qp.machines.EnchantmentLevel;
-import com.yogpc.qp.machines.MachineStorage;
-import com.yogpc.qp.machines.PowerTile;
-import com.yogpc.qp.machines.module.EnergyModuleItem;
-import com.yogpc.qp.machines.module.ModuleInventory;
-import com.yogpc.qp.machines.module.QuarryModule;
-import com.yogpc.qp.machines.module.QuarryModuleProvider;
-import com.yogpc.qp.machines.module.ReplacerModule;
+import com.yogpc.qp.machines.*;
+import com.yogpc.qp.machines.module.*;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
@@ -30,6 +13,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -40,9 +27,18 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.fluids.FluidType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class TileAdvPump extends PowerTile
     implements MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments,
-    CheckerLog, ClientSync, ModuleInventory.HasModuleInventory {
+    CheckerLog, ClientSync, ModuleInventory.HasModuleInventory, MenuProvider {
 
     private final MachineStorage storage = new MachineStorage();
     private int y;
@@ -66,25 +62,36 @@ public class TileAdvPump extends PowerTile
     @Override
     public void saveNbtData(CompoundTag nbt) {
         nbt.put("storage", storage.toNbt());
+        toClientTag(nbt);
+        nbt.put("moduleInventory", moduleInventory.serializeNBT());
+    }
+
+    @Override
+    public CompoundTag toClientTag(CompoundTag nbt) {
         nbt.putInt("y", y);
         nbt.put("enchantments", enchantmentEfficiency.toNbt());
         nbt.putBoolean("finished", finished);
         nbt.putBoolean("deleteFluid", deleteFluid);
         nbt.putBoolean("placeFrame", placeFrame);
-        nbt.put("moduleInventory", moduleInventory.serializeNBT());
+        return nbt;
     }
 
     @Override
     public void load(CompoundTag nbt) {
         super.load(nbt);
         storage.readNbt(nbt.getCompound("storage"));
+        fromClientTag(nbt);
+        moduleInventory.deserializeNBT(nbt.getCompound("moduleInventory"));
+        isBlockModuleLoaded = false;
+    }
+
+    @Override
+    public void fromClientTag(CompoundTag nbt) {
         y = nbt.getInt("y");
         setEnchantment(EnchantmentEfficiency.fromNbt(nbt.getCompound("enchantments")));
         finished = nbt.getBoolean("finished");
         deleteFluid = nbt.getBoolean("deleteFluid");
         placeFrame = nbt.getBoolean("placeFrame");
-        moduleInventory.deserializeNBT(nbt.getCompound("moduleInventory"));
-        isBlockModuleLoaded = false;
     }
 
     public static void tick(Level world, BlockPos pos, BlockState state, TileAdvPump pump) {
@@ -92,6 +99,12 @@ public class TileAdvPump extends PowerTile
             pump.updateModule();
             pump.isBlockModuleLoaded = true;
         }
+        for (int i = 0; i < pump.getRepeatWorkCount(); i++) {
+            drainOnce(world, pos, state, pump);
+        }
+    }
+
+    private static void drainOnce(Level world, BlockPos pos, BlockState state, TileAdvPump pump) {
         long fluidSum = pump.storage.getFluidMap().values().stream().mapToLong(Long::longValue).sum();
         if (pump.hasEnoughEnergy() && !pump.finished && fluidSum <= pump.enchantmentEfficiency.fluidCapacity) {
             // In server world.
@@ -123,8 +136,7 @@ public class TileAdvPump extends PowerTile
                         pump.target = null;
                         world.setBlock(pos, state.setValue(BlockAdvPump.WORKING, false), Block.UPDATE_ALL);
                         pump.logUsage();
-                        if (pump.placeFrame)
-                            removeDummyBlock(world, pos, pump.y);
+                        removeDummyBlock(world, pos, pump.y);
                     } else {
                         // Go to the next Y.
                         pump.target = Target.getTarget(world, nextPos, pump.enchantmentEfficiency.rangePredicate(nextPos),
@@ -230,16 +242,6 @@ public class TileAdvPump extends PowerTile
         ).map(Component::literal)).toList();
     }
 
-    @Override
-    public void fromClientTag(CompoundTag tag) {
-        load(tag);
-    }
-
-    @Override
-    public CompoundTag toClientTag(CompoundTag tag) {
-        return saveWithoutMetadata();
-    }
-
     public void sync() {
         if (level != null && !level.isClientSide)
             PacketHandler.sendToClient(new ClientSyncMessage(this), level);
@@ -260,7 +262,11 @@ public class TileAdvPump extends PowerTile
     }
 
     static boolean isCapableModule(QuarryModule module) {
-        return module instanceof EnergyModuleItem.EnergyModule || module instanceof ReplacerModule || module == QuarryModule.Constant.FILLER;
+        return module instanceof EnergyModuleItem.EnergyModule
+            || module instanceof ReplacerModule
+            || module == QuarryModule.Constant.FILLER
+            || module instanceof RepeatTickModuleItem.RepeatTickModule
+            ;
     }
 
     @Override
@@ -271,6 +277,16 @@ public class TileAdvPump extends PowerTile
     @Override
     public Set<QuarryModule> getLoadedModules() {
         return modules;
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+        return new AdvPumpMenu(i, player, getBlockPos());
     }
 
     private class AdvPumpCache {

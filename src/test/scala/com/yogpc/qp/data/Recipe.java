@@ -1,9 +1,5 @@
 package com.yogpc.qp.data;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
 import com.google.gson.JsonObject;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.PowerTile;
@@ -13,31 +9,17 @@ import com.yogpc.qp.machines.bookmover.BookMoverBlock;
 import com.yogpc.qp.machines.checker.ItemChecker;
 import com.yogpc.qp.machines.filler.FillerBlock;
 import com.yogpc.qp.machines.marker.BlockExMarker;
+import com.yogpc.qp.machines.marker.BlockMarker;
 import com.yogpc.qp.machines.mini_quarry.MiniQuarryBlock;
 import com.yogpc.qp.machines.miningwell.MiningWellBlock;
 import com.yogpc.qp.machines.misc.YSetterItem;
-import com.yogpc.qp.machines.module.BedrockModuleItem;
-import com.yogpc.qp.machines.module.ExpModuleItem;
-import com.yogpc.qp.machines.module.ExpPumpBlock;
-import com.yogpc.qp.machines.module.FillerModuleItem;
-import com.yogpc.qp.machines.module.FilterModuleItem;
-import com.yogpc.qp.machines.module.PumpModuleItem;
-import com.yogpc.qp.machines.module.PumpPlusBlock;
-import com.yogpc.qp.machines.module.ReplacerBlock;
-import com.yogpc.qp.machines.module.ReplacerModuleItem;
+import com.yogpc.qp.machines.module.*;
 import com.yogpc.qp.machines.mover.BlockMover;
 import com.yogpc.qp.machines.placer.PlacerBlock;
 import com.yogpc.qp.machines.placer.RemotePlacerBlock;
 import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.SFQuarryBlock;
-import com.yogpc.qp.machines.workbench.BlockWorkbench;
-import com.yogpc.qp.machines.workbench.EnableCondition;
-import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
-import com.yogpc.qp.machines.workbench.IngredientList;
-import com.yogpc.qp.machines.workbench.IngredientRecipe;
-import com.yogpc.qp.machines.workbench.IngredientWithCount;
-import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
-import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
+import com.yogpc.qp.machines.workbench.*;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
@@ -61,6 +43,10 @@ import net.minecraftforge.common.crafting.conditions.NotCondition;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static com.yogpc.qp.data.QuarryPlusDataProvider.location;
 
@@ -107,14 +93,10 @@ class Recipe extends QuarryDataProvider {
             makeList(Holder.TAG_MARKERS, 3)
         )))).addCondition(new EnableCondition(BlockAdvPump.NAME)));
         // Marker Plus
-        /*list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
-            location(BlockMarker.NAME), new ItemStack(Holder.BLOCK_MARKER), 20000 * PowerTile.ONE_FE, true, List.of(
-            makeList(Tags.Items.INGOTS_GOLD, 7),
-            makeList(Tags.Items.INGOTS_IRON, 8),
-            makeList(Tags.Items.DUSTS_REDSTONE, 12),
-            makeList(Tags.Items.DUSTS_GLOWSTONE, 4),
-            makeList(Items.LAPIS_LAZULI, 12)
-        )))).addCondition(new EnableCondition(BlockMarker.NAME)));*/
+        list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
+            location(BlockMarker.NAME + "_workbench"), new ItemStack(Holder.BLOCK_MARKER), 20000 * PowerTile.ONE_FE, true, List.of(
+            makeList(Holder.BLOCK_FLEX_MARKER, 1)
+        )))).addCondition(new EnableCondition(BlockMarker.NAME)));
         // Flexible Marker
         list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
             location(BlockExMarker.BlockFlexMarker.NAME + "_workbench"), new ItemStack(Holder.BLOCK_FLEX_MARKER), 20000 * PowerTile.ONE_FE, true, List.of(
@@ -253,6 +235,13 @@ class Recipe extends QuarryDataProvider {
             makeList(Items.LADDER, 32),
             makeList(Items.IRON_AXE, 6)
         )))).addCondition(new EnableCondition(FillerBlock.NAME)));
+        // Repeat Tick Module
+        list.add(RecipeSerializeHelper.by(new FinishedWorkbenchRecipe(new IngredientRecipe(
+            location(RepeatTickModuleItem.NAME), new ItemStack(Holder.ITEM_REPEAT_MODULE), 160000 * PowerTile.ONE_FE, true, List.of(
+            makeList(Holder.ITEM_FUEL_MODULE_NORMAL, 1),
+            makeList(Items.PRISMARINE_SHARD, 4),
+            makeList(Items.AMETHYST_SHARD, 4)
+        )))).addCondition(new EnableCondition(RepeatTickModuleItem.NAME)));
 
         return list;
     }
