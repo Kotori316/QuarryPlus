@@ -563,7 +563,7 @@ tasks.withType(AbstractPublishToMaven).configureEach {
 
 tasks.register("registerVersion", CallVersionFunctionTask.class) {
     functionEndpoint = readVersionFunctionEndpoint(project)
-    gameVersion = project.findProperty("minecraftVersion")
+    gameVersion = project.findProperty("minecraftVersion") as String
     platform = "forge"
     platformVersion = project.findProperty("forgeVersion") as String
     modName = "quarryplus"
