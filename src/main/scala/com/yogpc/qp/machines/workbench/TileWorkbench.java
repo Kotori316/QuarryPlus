@@ -116,7 +116,13 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
 
     @Override
     public void fromClientTag(CompoundTag nbt) {
-        load(nbt);
+        setEnergy(nbt.getLong("energy"), false);
+        setMaxEnergy(nbt.getLong("maxEnergy"));
+        var recipeLocation = new ResourceLocation(nbt.getString("recipe"));
+        initRecipeTask = () -> {
+            updateRecipeOutputs();
+            setCurrentRecipe(recipeLocation);
+        };
     }
 
     @Override
@@ -139,7 +145,9 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
 
     @Override
     public CompoundTag toClientTag(CompoundTag nbt) {
-        saveAdditional(nbt);
+        nbt.putLong("energy", getEnergy());
+        nbt.putLong("maxEnergy", getMaxEnergy());
+        nbt.putString("recipe", currentRecipe.getId().toString());
         return nbt;
     }
 

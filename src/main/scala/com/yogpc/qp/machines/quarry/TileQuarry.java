@@ -79,6 +79,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         nbt.putString("state", state.name());
         nbt.put("storage", storage.toNbt());
         toClientTag(nbt);
+        nbt.put("moduleInventory", moduleInventory.serializeNBT());
     }
 
     @Override
@@ -88,6 +89,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         state = QuarryState.valueOf(nbt.getString("state"));
         storage.readNbt(nbt.getCompound("storage"));
         fromClientTag(nbt);
+        moduleInventory.deserializeNBT(nbt.getCompound("moduleInventory"));
         init = true;
     }
 
@@ -105,7 +107,6 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         tag.putDouble("headY", headY);
         tag.putDouble("headZ", headZ);
         tag.putInt("digMinY", digMinY);
-        tag.put("moduleInventory", moduleInventory.serializeNBT());
         return tag;
     }
 
@@ -123,7 +124,6 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         headY = tag.getDouble("headY");
         headZ = tag.getDouble("headZ");
         digMinY = tag.getInt("digMinY");
-        moduleInventory.deserializeNBT(tag.getCompound("moduleInventory"));
     }
 
     @Override
