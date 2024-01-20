@@ -1,3 +1,7 @@
+## Version 18.23
+
+* Fix a bug of item duplication
+
 ## Version 18.22
 
 * Add GUI for Adv Pump
