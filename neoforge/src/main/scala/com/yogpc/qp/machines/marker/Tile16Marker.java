@@ -4,6 +4,7 @@ import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.Area;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.QuarryMarker;
+import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.render.Box;
 import com.yogpc.qp.render.RenderMarker;
 import net.minecraft.core.BlockPos;
@@ -23,7 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLog {
+public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLog, ClientSync {
     private BlockPos min = BlockPos.ZERO;
     private BlockPos max = BlockPos.ZERO;
     @Nullable
@@ -123,4 +124,16 @@ public class Tile16Marker extends BlockEntity implements QuarryMarker, CheckerLo
         level.removeBlock(getBlockPos(), false);
         return List.of(new ItemStack(getBlockState().getBlock()));
     }
+
+    @Override
+    public void fromClientTag(CompoundTag tag) {
+        load(tag);
+    }
+
+    @Override
+    public CompoundTag toClientTag(CompoundTag tag) {
+        saveAdditional(tag);
+        return tag;
+    }
+
 }

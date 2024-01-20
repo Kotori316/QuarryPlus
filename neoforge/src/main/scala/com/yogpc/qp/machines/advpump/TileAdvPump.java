@@ -62,25 +62,36 @@ public class TileAdvPump extends PowerTile
     @Override
     public void saveNbtData(CompoundTag nbt) {
         nbt.put("storage", storage.toNbt());
+        toClientTag(nbt);
+        nbt.put("moduleInventory", moduleInventory.serializeNBT());
+    }
+
+    @Override
+    public CompoundTag toClientTag(CompoundTag nbt) {
         nbt.putInt("y", y);
         nbt.put("enchantments", enchantmentEfficiency.toNbt());
         nbt.putBoolean("finished", finished);
         nbt.putBoolean("deleteFluid", deleteFluid);
         nbt.putBoolean("placeFrame", placeFrame);
-        nbt.put("moduleInventory", moduleInventory.serializeNBT());
+        return nbt;
     }
 
     @Override
     public void load(CompoundTag nbt) {
         super.load(nbt);
         storage.readNbt(nbt.getCompound("storage"));
+        fromClientTag(nbt);
+        moduleInventory.deserializeNBT(nbt.getCompound("moduleInventory"));
+        isBlockModuleLoaded = false;
+    }
+
+    @Override
+    public void fromClientTag(CompoundTag nbt) {
         y = nbt.getInt("y");
         setEnchantment(EnchantmentEfficiency.fromNbt(nbt.getCompound("enchantments")));
         finished = nbt.getBoolean("finished");
         deleteFluid = nbt.getBoolean("deleteFluid");
         placeFrame = nbt.getBoolean("placeFrame");
-        moduleInventory.deserializeNBT(nbt.getCompound("moduleInventory"));
-        isBlockModuleLoaded = false;
     }
 
     public static void tick(Level world, BlockPos pos, BlockState state, TileAdvPump pump) {
@@ -229,16 +240,6 @@ public class TileAdvPump extends PowerTile
             "%sFrame:%s %s".formatted(ChatFormatting.GREEN, ChatFormatting.RESET, placeFrame),
             energyString()
         ).map(Component::literal)).toList();
-    }
-
-    @Override
-    public void fromClientTag(CompoundTag tag) {
-        load(tag);
-    }
-
-    @Override
-    public CompoundTag toClientTag(CompoundTag tag) {
-        return saveWithoutMetadata();
     }
 
     public void sync() {
