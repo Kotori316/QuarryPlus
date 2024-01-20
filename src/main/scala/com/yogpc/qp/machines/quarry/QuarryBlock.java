@@ -8,8 +8,6 @@ import com.yogpc.qp.machines.*;
 import com.yogpc.qp.machines.module.ContainerQuarryModule;
 import com.yogpc.qp.machines.module.EnergyModuleItem;
 import com.yogpc.qp.machines.module.ModuleLootFunction;
-import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.MapMulti;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
@@ -93,7 +91,7 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
                 quarry.updateModules();
                 var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, quarry.enabled);
                 quarry.setChunkPreLoaded(preForced);
-                PacketHandler.sendToClient(new TileMessage(quarry), level);
+                quarry.sync();
             }
         }
     }

@@ -1,11 +1,8 @@
 package com.yogpc.qp.machines.marker;
 
-import java.util.Objects;
-import java.util.function.Supplier;
-
+import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -13,6 +10,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
+
+import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * To server only.
@@ -56,7 +56,7 @@ public final class Marker16Message implements IMessage {
                 .flatMap(MapMulti.optCast(Tile16Marker.class))
                 .ifPresent(m -> {
                     m.changeSize(message.amount, message.yMax, message.yMin);
-                    PacketHandler.sendToClient(new TileMessage(m), Objects.requireNonNull(m.getLevel()));
+                    PacketHandler.sendToClient(new ClientSyncMessage(m), Objects.requireNonNull(m.getLevel()));
                 }));
     }
 

@@ -2,8 +2,8 @@ package com.yogpc.qp.machines.misc;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -30,7 +30,7 @@ public class CreativeGeneratorMenu extends AbstractContainerMenu {
             this.addSlot(new Slot(player.getInventory(), l, 8 + l * 18, 142));
         }
         if (!player.level.isClientSide && tile != null) {
-            PacketHandler.sendToClientPlayer(new TileMessage(tile), (ServerPlayer) player);
+            PacketHandler.sendToClientPlayer(new ClientSyncMessage(tile), (ServerPlayer) player);
         }
     }
 

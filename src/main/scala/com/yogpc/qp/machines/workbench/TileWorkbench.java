@@ -1,17 +1,13 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.InvUtils;
 import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.packet.ClientSync;
+import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -41,7 +37,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
-public class TileWorkbench extends PowerTile implements Container, MenuProvider, CheckerLog {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
+
+public class TileWorkbench extends PowerTile implements Container, MenuProvider, CheckerLog, ClientSync {
     final List<ItemStack> ingredientInventory = NonNullList.withSize(27, ItemStack.EMPTY);
     final List<ItemStack> selectionInventory = NonNullList.withSize(18, ItemStack.EMPTY);
     public List<WorkbenchRecipe> recipesList = Collections.emptyList();
@@ -78,7 +79,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
             addEnergy(5 * ONE_FE, false);
         }
         if (!openPlayers.isEmpty()) {
-            PacketHandler.sendToClient(new TileMessage(this), level);
+            PacketHandler.sendToClient(new ClientSyncMessage(this), level);
         }
     }
 
@@ -114,6 +115,11 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
     }
 
     @Override
+    public void fromClientTag(CompoundTag nbt) {
+        load(nbt);
+    }
+
+    @Override
     public void saveNbtData(CompoundTag nbt) {
         ListTag items = new ListTag();
         for (int i = 0; i < ingredientInventory.size(); i++) {
@@ -129,6 +135,12 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
         }
         nbt.put("Items", items);
         nbt.putString("recipe", currentRecipe.getId().toString());
+    }
+
+    @Override
+    public CompoundTag toClientTag(CompoundTag nbt) {
+        saveAdditional(nbt);
+        return nbt;
     }
 
     // Implementation of Inventory.
@@ -231,7 +243,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
                     logUsage();
                 }
             }
-            PacketHandler.sendToClient(new TileMessage(this), level);
+            PacketHandler.sendToClient(new ClientSyncMessage(this), level);
         }
     }
 

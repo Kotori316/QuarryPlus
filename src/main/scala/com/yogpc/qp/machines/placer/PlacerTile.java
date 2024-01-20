@@ -1,23 +1,13 @@
 package com.yogpc.qp.machines.placer;
 
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.OptionalInt;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BooleanSupplier;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.InvUtils;
 import com.yogpc.qp.machines.QuarryFakePlayer;
+import com.yogpc.qp.packet.ClientSync;
+import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -52,11 +42,19 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
 public class PlacerTile extends BlockEntity implements
     Container,
     CheckerLog,
+    ClientSync,
     MenuProvider {
     public static final String KEY_ITEM = "items";
     public static final String KEY_LAST_PLACED = "last_placed";
@@ -191,7 +189,7 @@ public class PlacerTile extends BlockEntity implements
 
     void sendPacket() {
         if (level != null && !level.isClientSide)
-            PacketHandler.sendToClient(new TileMessage(this), level);
+            PacketHandler.sendToClient(new ClientSyncMessage(this), level);
     }
 
     private static ItemStack getSilkPickaxe() {
@@ -205,8 +203,7 @@ public class PlacerTile extends BlockEntity implements
     @Override
     protected void saveAdditional(CompoundTag compound) {
         compound.put(KEY_ITEM, ContainerHelper.saveAllItems(new CompoundTag(), inventory));
-        compound.putInt(KEY_LAST_PLACED, lastPlacedIndex);
-        compound.putString(KEY_RS_MODE, redstoneMode.name());
+        toClientTag(compound);
         super.saveAdditional(compound);
     }
 
@@ -214,6 +211,16 @@ public class PlacerTile extends BlockEntity implements
     public void load(CompoundTag compound) {
         super.load(compound);
         ContainerHelper.loadAllItems(compound.getCompound(KEY_ITEM), inventory);
+        fromClientTag(compound);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        return this.serializeNBT();
+    }
+
+    @Override
+    public void fromClientTag(CompoundTag compound) {
         lastPlacedIndex = compound.getInt(KEY_LAST_PLACED);
         try {
             redstoneMode = RedstoneMode.valueOf(compound.getString(KEY_RS_MODE));
@@ -224,8 +231,10 @@ public class PlacerTile extends BlockEntity implements
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return this.serializeNBT();
+    public CompoundTag toClientTag(CompoundTag compound) {
+        compound.putInt(KEY_LAST_PLACED, lastPlacedIndex);
+        compound.putString(KEY_RS_MODE, redstoneMode.name());
+        return compound;
     }
 
     // -------------------- Capability --------------------
