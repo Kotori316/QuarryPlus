@@ -1,10 +1,11 @@
 ## Version LATEST for 1.19.2
 
-* Add GUI for Adv Pump
-* Change internal logic of chaining break of dummy blocks
+* Fix a bug of item duplication
 
 ## Version for 1.19.2
 
+* Add GUI for Adv Pump
+* Change internal logic of chaining break of dummy blocks
 * Fix a bug of save/load of Chunk Destroyer
 * Add server config to disable machine in specific dimension
 * Fix deadlock with some item transfer mod
