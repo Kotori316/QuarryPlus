@@ -4,13 +4,14 @@ import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.advquarry.TileAdvQuarry;
 import com.yogpc.qp.machines.miningwell.MiningWellTile;
 import com.yogpc.qp.machines.quarry.TileQuarry;
+import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.LevelMessage;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class YAccessor {
+public abstract class YAccessor<T extends BlockEntity & ClientSync> {
     public abstract int getDigMinY();
 
     public abstract void setDigMinY(int newValue);
@@ -21,8 +22,10 @@ public abstract class YAccessor {
 
     abstract boolean stillValid(Player player);
 
+    abstract T getEntity();
+
     @Nullable
-    public static YAccessor get(@Nullable BlockEntity entity) {
+    public static YAccessor<?> get(@Nullable BlockEntity entity) {
         if (entity instanceof TileQuarry quarry)
             return new QuarryYAccessor(quarry);
         else if (entity instanceof MiningWellTile miningWell)
@@ -34,7 +37,7 @@ public abstract class YAccessor {
     }
 }
 
-class QuarryYAccessor extends YAccessor {
+class QuarryYAccessor extends YAccessor<TileQuarry> {
     private final TileQuarry quarry;
 
     QuarryYAccessor(TileQuarry quarry) {
@@ -66,9 +69,14 @@ class QuarryYAccessor extends YAccessor {
     boolean stillValid(Player player) {
         return PowerTile.stillValid(quarry, player);
     }
+
+    @Override
+    TileQuarry getEntity() {
+        return quarry;
+    }
 }
 
-class MiningWellYAccessor extends YAccessor {
+class MiningWellYAccessor extends YAccessor<MiningWellTile> {
     private final MiningWellTile miningWell;
 
     MiningWellYAccessor(MiningWellTile miningWell) {
@@ -100,9 +108,14 @@ class MiningWellYAccessor extends YAccessor {
     boolean stillValid(Player player) {
         return PowerTile.stillValid(miningWell, player);
     }
+
+    @Override
+    MiningWellTile getEntity() {
+        return miningWell;
+    }
 }
 
-class AdvQuarryYAccessor extends YAccessor {
+class AdvQuarryYAccessor extends YAccessor<TileAdvQuarry> {
     private final TileAdvQuarry quarry;
 
     AdvQuarryYAccessor(TileAdvQuarry quarry) {
@@ -133,5 +146,10 @@ class AdvQuarryYAccessor extends YAccessor {
     @Override
     boolean stillValid(Player player) {
         return PowerTile.stillValid(quarry, player);
+    }
+
+    @Override
+    TileAdvQuarry getEntity() {
+        return quarry;
     }
 }

@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -73,7 +72,7 @@ public class CreativeGeneratorScreen extends AbstractContainerScreen<CreativeGen
             long e = Long.parseLong(s);
             if (e >= 0) {
                 getMenu().tile.sendEnergy = e;
-                PacketHandler.sendToServer(new TileMessage(getMenu().tile));
+                PacketHandler.sendToServer(new CreativeGeneratorSyncMessage(getMenu().tile));
             }
         } catch (NumberFormatException ignore) {
         }
