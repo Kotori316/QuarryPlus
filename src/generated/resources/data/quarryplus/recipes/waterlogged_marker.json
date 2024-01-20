@@ -15,5 +15,6 @@
   ],
   "result": {
     "item": "quarryplus:waterlogged_marker"
-  }
+  },
+  "show_notification": true
 }

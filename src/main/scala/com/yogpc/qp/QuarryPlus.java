@@ -22,8 +22,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -95,7 +95,7 @@ public class QuarryPlus {
             event.register(Registries.MENU, Register::registerContainers);
             event.register(Registries.RECIPE_SERIALIZER, Register::registerRecipe);
             event.register(Registries.RECIPE_TYPE, Register::registerRecipeType);
-            event.register(Registry.COMMAND_ARGUMENT_TYPE_REGISTRY, Register::registerArgument);
+            event.register(Registries.COMMAND_ARGUMENT_TYPE, Register::registerArgument);
         }
 
         public static void registerBlocks(RegisterEvent.RegisterHelper<Block> blockRegisterHelper) {

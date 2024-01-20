@@ -26,5 +26,6 @@
   ],
   "result": {
     "item": "quarryplus:marker16"
-  }
+  },
+  "show_notification": true
 }

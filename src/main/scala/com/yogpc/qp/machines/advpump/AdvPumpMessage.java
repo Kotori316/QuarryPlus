@@ -5,7 +5,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
@@ -37,7 +37,7 @@ public final class AdvPumpMessage implements IMessage {
     public AdvPumpMessage(FriendlyByteBuf buf) {
         this(
             buf.readBlockPos(),
-            ResourceKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation()),
+            buf.readResourceKey(Registries.DIMENSION),
             buf.readBoolean(),
             buf.readBoolean()
         );
@@ -45,7 +45,7 @@ public final class AdvPumpMessage implements IMessage {
 
     @Override
     public void write(FriendlyByteBuf buf) {
-        buf.writeBlockPos(pos).writeResourceLocation(dim.location());
+        buf.writeBlockPos(pos).writeResourceKey(dim);
         buf.writeBoolean(placeFrame).writeBoolean(deleteFluid);
     }
 

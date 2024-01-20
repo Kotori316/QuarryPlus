@@ -17,7 +17,7 @@ public final class RepeatTickModuleItem extends QPItem implements QuarryModulePr
     public static final String NAME = "repeat_tick_module";
 
     public RepeatTickModuleItem() {
-        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties().tab(Holder.TAB));
+        super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties());
     }
 
     @Override
