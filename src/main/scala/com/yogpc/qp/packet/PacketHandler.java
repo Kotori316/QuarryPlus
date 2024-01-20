@@ -11,6 +11,7 @@ import com.yogpc.qp.machines.marker.FlexMarkerMessage;
 import com.yogpc.qp.machines.marker.Marker16Message;
 import com.yogpc.qp.machines.mini_quarry.MiniListSyncMessage;
 import com.yogpc.qp.machines.mini_quarry.MiniRequestListMessage;
+import com.yogpc.qp.machines.misc.CreativeGeneratorSyncMessage;
 import com.yogpc.qp.machines.mover.MoverMessage;
 import com.yogpc.qp.machines.placer.RemotePlacerMessage;
 import net.minecraft.client.Minecraft;
@@ -64,6 +65,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id.getAndIncrement(), AdvQuarryInitialMessage.class, AdvQuarryInitialMessage::write, AdvQuarryInitialMessage::new, setHandled(AdvQuarryInitialMessage::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), AdvQuarryInitialMessage.Ask.class, AdvQuarryInitialMessage.Ask::write, AdvQuarryInitialMessage.Ask::new, setHandled(AdvQuarryInitialMessage.Ask::onReceive));
         INSTANCE.registerMessage(id.getAndIncrement(), AdvPumpMessage.class, AdvPumpMessage::write, AdvPumpMessage::new, setHandled(AdvPumpMessage::onReceive));
+        INSTANCE.registerMessage(id.getAndIncrement(), CreativeGeneratorSyncMessage.class, CreativeGeneratorSyncMessage::write, CreativeGeneratorSyncMessage::new, setHandled(CreativeGeneratorSyncMessage::onReceive));
     }
 
     public static void sendToClient(@NotNull IMessage message, @NotNull Level world) {

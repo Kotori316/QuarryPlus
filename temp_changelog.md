@@ -24,6 +24,10 @@
 * Improve logging of machine. #275
 * Fix a crash due to some mods' compatibility. #279
 
+## Version 18.23
+
+* Fix a bug of item duplication
+
 ## Version 18.17
 
 * Fixed a bug where swapping items in Workbench Plus could give over-stacked items. #253

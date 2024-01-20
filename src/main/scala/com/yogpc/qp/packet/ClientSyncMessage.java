@@ -1,7 +1,5 @@
 package com.yogpc.qp.packet;
 
-import java.util.function.Supplier;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -9,7 +7,10 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 import static com.yogpc.qp.utils.MapMulti.optCast;
 
@@ -44,6 +45,9 @@ public final class ClientSyncMessage implements IMessage {
 
     public static void onReceive(ClientSyncMessage message, Supplier<NetworkEvent.Context> supplier) {
         var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
+        if (supplier.get().getDirection().getReceptionSide() != LogicalSide.CLIENT) {
+            throw new IllegalStateException("Message was sent to unexpected side.");
+        }
         supplier.get().enqueueWork(() ->
             world.map(l -> l.getBlockEntity(message.pos))
                 .flatMap(optCast(ClientSync.class))
