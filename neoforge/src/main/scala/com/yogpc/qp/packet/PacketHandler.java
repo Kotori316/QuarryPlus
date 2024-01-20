@@ -11,6 +11,7 @@ import com.yogpc.qp.machines.marker.FlexMarkerMessage;
 import com.yogpc.qp.machines.marker.Marker16Message;
 import com.yogpc.qp.machines.mini_quarry.MiniListSyncMessage;
 import com.yogpc.qp.machines.mini_quarry.MiniRequestListMessage;
+import com.yogpc.qp.machines.misc.CreativeGeneratorSyncMessage;
 import com.yogpc.qp.machines.mover.MoverMessage;
 import com.yogpc.qp.machines.placer.RemotePlacerMessage;
 import net.minecraft.core.BlockPos;
@@ -36,7 +37,6 @@ public class PacketHandler {
 
     public static void init(RegisterPayloadHandlerEvent event) {
         var registrar = event.registrar(QuarryPlus.modID).versioned(PROTOCOL_VERSION);
-        registrar.play(IMessage.createIdentifier(TileMessage.class), TileMessage::new, handler -> handler.client(TileMessage::onReceive).server(TileMessage::onReceive));
         registrar.play(IMessage.createIdentifier(ClientSyncMessage.class), ClientSyncMessage::new, handler -> handler.client(ClientSyncMessage::onReceive));
         registrar.play(IMessage.createIdentifier(Marker16Message.class), Marker16Message::new, handler -> handler.server(Marker16Message::onReceive));
         registrar.play(IMessage.createIdentifier(FlexMarkerMessage.class), FlexMarkerMessage::new, handler -> handler.server(FlexMarkerMessage::onReceive));
@@ -52,6 +52,7 @@ public class PacketHandler {
         registrar.play(IMessage.createIdentifier(AdvQuarryInitialMessage.class), AdvQuarryInitialMessage::new, handler -> handler.server(AdvQuarryInitialMessage::onReceive));
         registrar.play(IMessage.createIdentifier(AdvQuarryInitialMessage.Ask.class), AdvQuarryInitialMessage.Ask::new, handler -> handler.client(AdvQuarryInitialMessage.Ask::onReceive));
         registrar.play(IMessage.createIdentifier(AdvPumpMessage.class), AdvPumpMessage::new, handler -> handler.server(AdvPumpMessage::onReceive));
+        registrar.play(IMessage.createIdentifier(CreativeGeneratorSyncMessage.class), CreativeGeneratorSyncMessage::new, handler -> handler.server(CreativeGeneratorSyncMessage::onReceive));
 
     }
 
