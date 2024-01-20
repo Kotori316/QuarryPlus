@@ -1,7 +1,6 @@
 ## Version LATEST for 1.20.1
 
-* Add GUI for Adv Pump
-* Change internal logic of chaining break of dummy blocks
+* Fix a bug of item duplication
 
 ## Version for 1.20.1
 
@@ -21,6 +20,8 @@
 * Limit the number of chaining of Dummy Block. #278
 * Improve logging of machine. #275
 * Fix a crash due to some mods' compatibility. #279
+* Add GUI for Adv Pump
+* Change internal logic of chaining break of dummy blocks
 
 ## Version 1192.2.3
 

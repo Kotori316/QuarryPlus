@@ -2,6 +2,7 @@ package com.yogpc.qp.machines.misc;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,7 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Arrays;
 
-public class CreativeGeneratorTile extends PowerTile implements MenuProvider {
+public class CreativeGeneratorTile extends PowerTile implements MenuProvider, ClientSync {
     long sendEnergy = ONE_FE * 100000L;
 
     public CreativeGeneratorTile(BlockPos pos, BlockState state) {
@@ -50,5 +51,16 @@ public class CreativeGeneratorTile extends PowerTile implements MenuProvider {
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
         return new CreativeGeneratorMenu(id, player, getBlockPos());
+    }
+
+    @Override
+    public void fromClientTag(CompoundTag tag) {
+        load(tag);
+    }
+
+    @Override
+    public CompoundTag toClientTag(CompoundTag tag) {
+        saveAdditional(tag);
+        return tag;
     }
 }
