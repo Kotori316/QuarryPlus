@@ -17,11 +17,11 @@ import com.yogpc.qp.machines.placer.RemotePlacerScreen;
 import com.yogpc.qp.machines.quarry.SFQuarryScreen;
 import com.yogpc.qp.machines.workbench.ScreenWorkbench;
 import com.yogpc.qp.render.*;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 // @Mod.EventBusSubscriber(modid = QuarryPlus.modID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class QuarryPlusClient {
@@ -39,22 +39,25 @@ public class QuarryPlusClient {
         BlockEntityRenderers.register(Holder.MARKER_16_TYPE, Render16Marker::new);
         BlockEntityRenderers.register(Holder.ADV_QUARRY_TYPE, RenderAdvQuarry::new);
         BlockEntityRenderers.register(Holder.SOLID_FUEL_QUARRY_TYPE, RenderSFQuarry::new);
+    }
 
-        MenuScreens.register(Holder.FLEX_MARKER_MENU_TYPE, ScreenFlexMarker::new);
-        MenuScreens.register(Holder.MARKER_16_MENU_TYPE, Screen16Marker::new);
-        MenuScreens.register(Holder.Y_SETTER_MENU_TYPE, YSetterScreen::new);
-        MenuScreens.register(Holder.WORKBENCH_MENU_TYPE, ScreenWorkbench::new);
-        MenuScreens.register(Holder.MOVER_MENU_TYPE, MoverScreen::new);
-        MenuScreens.register(Holder.MODULE_MENU_TYPE, ScreenQuarryModule::new);
-        MenuScreens.register(Holder.PLACER_MENU_TYPE, PlacerScreen::new);
-        MenuScreens.register(Holder.REMOTE_PLACER_MENU_TYPE, RemotePlacerScreen::new);
-        MenuScreens.register(Holder.BOOK_MOVER_MENU_TYPE, BookMoverScreen::new);
-        MenuScreens.register(Holder.CREATIVE_GENERATOR_MENU_TYPE, CreativeGeneratorScreen::new);
-        MenuScreens.register(Holder.ADV_QUARRY_MENU_TYPE, AdvQuarryScreen::new);
-        MenuScreens.register(Holder.MINI_QUARRY_MENU_TYPE, MiniQuarryScreen::new);
-        MenuScreens.register(Holder.SOLID_FUEL_QUARRY_MENU_TYPE, SFQuarryScreen::new);
-        MenuScreens.register(Holder.FILLER_MENU_TYPE, FillerScreen::new);
-        MenuScreens.register(Holder.FILTER_MODULE_MENU_TYPE, FilterModuleScreen::new);
-        MenuScreens.register(Holder.ADV_PUMP_MENU_TYPE, AdvPumpScreen::new);
+    @SubscribeEvent
+    public static void registerMenuScreens(RegisterMenuScreensEvent event) {
+        event.register(Holder.FLEX_MARKER_MENU_TYPE, ScreenFlexMarker::new);
+        event.register(Holder.MARKER_16_MENU_TYPE, Screen16Marker::new);
+        event.register(Holder.Y_SETTER_MENU_TYPE, YSetterScreen::new);
+        event.register(Holder.WORKBENCH_MENU_TYPE, ScreenWorkbench::new);
+        event.register(Holder.MOVER_MENU_TYPE, MoverScreen::new);
+        event.register(Holder.MODULE_MENU_TYPE, ScreenQuarryModule::new);
+        event.register(Holder.PLACER_MENU_TYPE, PlacerScreen::new);
+        event.register(Holder.REMOTE_PLACER_MENU_TYPE, RemotePlacerScreen::new);
+        event.register(Holder.BOOK_MOVER_MENU_TYPE, BookMoverScreen::new);
+        event.register(Holder.CREATIVE_GENERATOR_MENU_TYPE, CreativeGeneratorScreen::new);
+        event.register(Holder.ADV_QUARRY_MENU_TYPE, AdvQuarryScreen::new);
+        event.register(Holder.MINI_QUARRY_MENU_TYPE, MiniQuarryScreen::new);
+        event.register(Holder.SOLID_FUEL_QUARRY_MENU_TYPE, SFQuarryScreen::new);
+        event.register(Holder.FILLER_MENU_TYPE, FillerScreen::new);
+        event.register(Holder.FILTER_MODULE_MENU_TYPE, FilterModuleScreen::new);
+        event.register(Holder.ADV_PUMP_MENU_TYPE, AdvPumpScreen::new);
     }
 }
