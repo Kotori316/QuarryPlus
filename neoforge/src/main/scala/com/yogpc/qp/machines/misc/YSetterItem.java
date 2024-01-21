@@ -2,8 +2,8 @@ package com.yogpc.qp.machines.misc;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.QPItem;
+import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.ScreenUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -32,10 +32,11 @@ public class YSetterItem extends QPItem {
         var level = context.getLevel();
         var player = context.getPlayer();
         var tile = level.getBlockEntity(context.getClickedPos());
-        if (YAccessor.get(tile) != null) {
+        YAccessor<?> accessor = YAccessor.get(tile);
+        if (accessor != null) {
             if (!level.isClientSide) {
                 if (player instanceof ServerPlayer p) {
-                    PacketHandler.sendToClientPlayer(new TileMessage(tile), p);
+                    PacketHandler.sendToClientPlayer(new ClientSyncMessage(accessor.getEntity()), p);
                     ScreenUtil.openScreen(p, new YSetterScreenHandler(tile.getBlockPos(), tile.getBlockState().getBlock()), context.getClickedPos());
                 }
 

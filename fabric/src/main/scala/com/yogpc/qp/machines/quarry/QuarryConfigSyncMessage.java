@@ -25,7 +25,7 @@ public final class QuarryConfigSyncMessage implements IMessage<QuarryConfigSyncM
         this(quarry.getBlockPos(), Optional.ofNullable(quarry.getLevel()).map(Level::dimension).orElse(Level.OVERWORLD), quarry.quarryConfig);
     }
 
-    public QuarryConfigSyncMessage(BlockPos pos, ResourceKey<Level> dim, QuarryConfig quarryConfig) {
+    QuarryConfigSyncMessage(BlockPos pos, ResourceKey<Level> dim, QuarryConfig quarryConfig) {
         this.pos = pos;
         this.dim = dim;
         this.quarryConfig = quarryConfig;

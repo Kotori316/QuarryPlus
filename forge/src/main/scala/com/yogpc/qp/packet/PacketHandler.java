@@ -11,6 +11,7 @@ import com.yogpc.qp.machines.marker.FlexMarkerMessage;
 import com.yogpc.qp.machines.marker.Marker16Message;
 import com.yogpc.qp.machines.mini_quarry.MiniListSyncMessage;
 import com.yogpc.qp.machines.mini_quarry.MiniRequestListMessage;
+import com.yogpc.qp.machines.misc.CreativeGeneratorSyncMessage;
 import com.yogpc.qp.machines.mover.MoverMessage;
 import com.yogpc.qp.machines.placer.RemotePlacerMessage;
 import net.minecraft.client.Minecraft;
@@ -51,7 +52,6 @@ public class PacketHandler {
 
     private static SimpleChannel registerMessage(SimpleChannel channel) {
         return channel
-            .messageBuilder(TileMessage.class).encoder(TileMessage::write).decoder(TileMessage::new).consumerNetworkThread(setHandled(TileMessage::onReceive)).add()
             .messageBuilder(ClientSyncMessage.class).encoder(ClientSyncMessage::write).decoder(ClientSyncMessage::new).consumerNetworkThread(setHandled(ClientSyncMessage::onReceive)).add()
             .messageBuilder(Marker16Message.class).encoder(Marker16Message::write).decoder(Marker16Message::new).consumerNetworkThread(setHandled(Marker16Message::onReceive)).add()
             .messageBuilder(FlexMarkerMessage.class).encoder(FlexMarkerMessage::write).decoder(FlexMarkerMessage::new).consumerNetworkThread(setHandled(FlexMarkerMessage::onReceive)).add()
@@ -67,6 +67,7 @@ public class PacketHandler {
             .messageBuilder(AdvQuarryInitialMessage.class).encoder(AdvQuarryInitialMessage::write).decoder(AdvQuarryInitialMessage::new).consumerNetworkThread(setHandled(AdvQuarryInitialMessage::onReceive)).add()
             .messageBuilder(AdvQuarryInitialMessage.Ask.class).encoder(AdvQuarryInitialMessage.Ask::write).decoder(AdvQuarryInitialMessage.Ask::new).consumerNetworkThread(setHandled(AdvQuarryInitialMessage.Ask::onReceive)).add()
             .messageBuilder(AdvPumpMessage.class).encoder(AdvPumpMessage::write).decoder(AdvPumpMessage::new).consumerNetworkThread(setHandled(AdvPumpMessage::onReceive)).add()
+            .messageBuilder(CreativeGeneratorSyncMessage.class).encoder(CreativeGeneratorSyncMessage::write).decoder(CreativeGeneratorSyncMessage::new).consumerNetworkThread(setHandled(CreativeGeneratorSyncMessage::onReceive)).add()
             ;
     }
 

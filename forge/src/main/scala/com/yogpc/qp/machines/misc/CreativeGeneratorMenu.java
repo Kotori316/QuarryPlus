@@ -2,17 +2,19 @@ package com.yogpc.qp.machines.misc;
 
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class CreativeGeneratorMenu extends AbstractContainerMenu {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + CreativeGeneratorBlock.NAME;
+    @NotNull
     final CreativeGeneratorTile tile;
 
     public CreativeGeneratorMenu(int id, Player player, BlockPos pos) {
@@ -28,7 +30,7 @@ public class CreativeGeneratorMenu extends AbstractContainerMenu {
             this.addSlot(new Slot(player.getInventory(), l, 8 + l * 18, 142));
         }
         if (!player.level().isClientSide && tile != null) {
-            PacketHandler.sendToClientPlayer(new TileMessage(tile), (ServerPlayer) player);
+            PacketHandler.sendToClientPlayer(new ClientSyncMessage(tile), (ServerPlayer) player);
         }
     }
 
