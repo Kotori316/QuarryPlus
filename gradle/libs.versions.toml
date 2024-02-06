@@ -19,7 +19,7 @@ slp_fabric = "2.2.0"
 jei = "16.0.0.28"
 
 # https://maven.architectury.dev/dev/architectury/architectury/
-architectury = "11.0.11"
+architectury = "11.0.12"
 # https://maven.shedaniel.me/me/shedaniel/RoughlyEnoughItems-fabric/
 rei = "14.0.688"
 # https://maven.shedaniel.me/me/shedaniel/cloth/cloth-config-fabric/
