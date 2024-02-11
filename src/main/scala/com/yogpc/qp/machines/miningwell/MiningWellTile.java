@@ -9,7 +9,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -60,8 +59,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
 
             if (state.isAir() || state.is(Holder.BLOCK_DUMMY)) continue;
             var pickaxe = EnchantmentLevel.HasEnchantments.super.getPickaxe();
-            var fakePlayer = QuarryFakePlayer.get((ServerLevel) level);
-            fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
+            var fakePlayer = QuarryFakePlayer.getAndSetPosition((ServerLevel) level, targetPos, pickaxe);
             var breakEvent = new BlockEvent.BreakEvent(level, targetPos, state, fakePlayer);
             MinecraftForge.EVENT_BUS.post(breakEvent);
             if (breakEvent.isCanceled()) continue;

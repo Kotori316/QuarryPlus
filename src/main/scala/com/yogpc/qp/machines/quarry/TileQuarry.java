@@ -16,7 +16,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -217,8 +216,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                     }));
         }
         var pickaxe = getPickaxe();
-        var fakePlayer = QuarryFakePlayer.get(targetWorld);
-        fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
+        var fakePlayer = QuarryFakePlayer.getAndSetPosition(targetWorld, targetPos, pickaxe);
         // Check breakable
         var state = targetWorld.getBlockState(targetPos);
         var breakEvent = new BlockEvent.BreakEvent(targetWorld, targetPos, state, fakePlayer);

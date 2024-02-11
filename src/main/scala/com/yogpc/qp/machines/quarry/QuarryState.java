@@ -182,7 +182,7 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
             Set<BlockPos> fluidPoses = countFluid(targetWorld, original, quarry.getArea());
             TraceQuarryWork.progress(quarry, quarryPos, original, "Remove %d fluids".formatted(fluidPoses.size()));
             if (quarry.useEnergy(PowerManager.getBreakBlockFluidEnergy(quarry) * fluidPoses.size(), PowerTile.Reason.REMOVE_FLUID, true)) {
-                var fakePlayer = QuarryFakePlayer.get(targetWorld);
+                var fakePlayer = QuarryFakePlayer.getAndSetPosition(targetWorld, original, null);
                 for (BlockPos fluidPos : fluidPoses) {
                     var blockState = targetWorld.getBlockState(fluidPos);
                     if (blockState.getBlock() instanceof LiquidBlock) {

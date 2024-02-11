@@ -72,7 +72,7 @@ public final class MiniQuarryTile extends PowerTile implements CheckerLog,
                 continue; // The block is in deny list or unbreakable.
             }
 
-            var fakePlayer = QuarryFakePlayer.get(level);
+            var fakePlayer = QuarryFakePlayer.getAndSetPosition(level, pos, null);
             var event = new BlockEvent.BreakEvent(level, pos, state, fakePlayer);
             if (MinecraftForge.EVENT_BUS.post(event)) {
                 TraceQuarryWork.blockRemoveFailed(this, getBlockPos(), pos, state, BreakResult.FAIL_EVENT);

@@ -193,6 +193,15 @@ repositories {
     }
 
     maven {
+        name = "CoFH"
+        url = uri("https://maven.covers1624.net/")
+        content {
+            includeModule("com.teamcofh", "cofh_core")
+            includeModule("com.teamcofh", "ensorcellation")
+        }
+    }
+
+    maven {
         name = "Azure-SLP"
         url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
         content {
@@ -268,6 +277,9 @@ dependencies {
         compileOnly(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
         // testCompileOnly(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
     }
+    // Ensorcellation by CoFH
+    runtimeOnly(fg.deobf("com.teamcofh:cofh_core:1.20.1-11.0.0.51") { transitive(false) })
+    runtimeOnly(fg.deobf("com.teamcofh:ensorcellation:1.20.1-5.0.0.21") { transitive(false) })
 
     // Test Dependencies.
     // Required these libraries to execute the tests.
@@ -408,7 +420,7 @@ String getShortChangelog(boolean includeVersion) {
                     Stream.of(version, ""),
                     content
             ).collect(Collectors.joining(System.lineSeparator()))
-        }else{
+        } else {
             content.collect(Collectors.joining(System.lineSeparator()))
         }
 

@@ -114,8 +114,7 @@ public class PlacerTile extends BlockEntity implements
         BlockPos pos = getTargetPos();
         BlockState state = level.getBlockState(pos);
         if (state.getDestroySpeed(level, pos) < 0) return; // Unbreakable.
-        Player fake = QuarryFakePlayer.get(((ServerLevel) level));
-        fake.setItemInHand(InteractionHand.MAIN_HAND, getSilkPickaxe());
+        Player fake = QuarryFakePlayer.getAndSetPosition(((ServerLevel) level), pos, getSilkPickaxe());
         List<ItemStack> drops = InvUtils.getBlockDrops(state, ((ServerLevel) level), pos, level.getBlockEntity(pos), fake, fake.getMainHandItem());
         level.removeBlock(pos, false);
         drops.stream().map(s -> ItemHandlerHelper.insertItem(this.itemHandler, s, false)) // Return not-inserted items.
@@ -131,7 +130,7 @@ public class PlacerTile extends BlockEntity implements
         BlockPos pos = getTargetPos();
         Vec3 hitPos = DIRECTION_VEC3D_MAP.get(facing.getOpposite()).add(pos.getX(), pos.getY(), pos.getZ());
         BlockHitResult rayTrace = new BlockHitResult(hitPos, facing.getOpposite(), pos, false);
-        Player fake = QuarryFakePlayer.get(((ServerLevel) level));
+        Player fake = QuarryFakePlayer.getAndSetPosition(((ServerLevel) level), pos, null);
 
         AtomicBoolean result = new AtomicBoolean(false);
         findEntry(inventory,
