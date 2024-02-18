@@ -50,6 +50,7 @@
         "id": "quarryplus:wthit_plugin",
         "initializer": "com.yogpc.qp.integration.wthit.QuarryWthitPlugin"
       }
-    ]
+    ],
+    "kotori316_version_checker": "${update_url}"
   }
 }

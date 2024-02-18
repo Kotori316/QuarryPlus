@@ -32,6 +32,7 @@ if (isInCI()) {
 
     println("Set version to $version because I'm in CI.")
     println("CURSEFORGE_KEY: ${System.getenv().containsKey('CURSEFORGE_KEY')}")
+    println("MODRINTH_TOKEN: ${System.getenv().containsKey('MODRINTH_TOKEN')}")
 } else {
     version = (version + ".0")
 }
@@ -130,6 +131,7 @@ repositories {
             it.includeGroup("curse.maven")
         }
     }
+    maven { url = uri("https://maven.kotori316.com") }
     repositories.stream()
             .filter { repo -> repo instanceof MavenArtifactRepository && !repo.getUrl().getScheme().contains("file") }
             .forEach { repo ->
@@ -155,6 +157,9 @@ dependencies {
 
     // library
     implementation "com.google.code.findbugs:jsr305:3.0.1"
+    modImplementation("com.kotori316:VersionCheckerMod:${project.property("automatic_potato_version")}") {
+        transitive = false
+    }
 
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}") {
         exclude(group: "net.fabricmc.fabric-api")
@@ -212,7 +217,10 @@ processResources {
     inputs.property "version", project.version
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand(
+                "version": project.version,
+                "update_url": "https://version.kotori316.com/get-version/${project.property("minecraft_version")}/fabric/quarryplus",
+        )
     }
 }
 
@@ -329,6 +337,7 @@ curseforge {
             requiredDependency 'fabric-language-scala'
             requiredDependency 'fabric-api'
             requiredDependency 'cloth-config'
+            requiredDependency 'automatic-potato'
             //noinspection SpellCheckingInspection
             // requiredDependency 'libblockattributes'
         }
@@ -364,10 +373,11 @@ modrinth {
             .filter { s -> !s.contains("Fabric Language Scala") }
             .collect(Collectors.joining(System.lineSeparator()))
             .replace("https://www.curseforge.com/minecraft/mc-mods/", "https://modrinth.com/mod/")
-    debugMode = true
+    debugMode = false
     dependencies {
         required.project("fabric-api")
         required.project("cloth-config")
+        required.project("automatic-potato")
     }
 }
 
