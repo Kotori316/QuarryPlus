@@ -148,15 +148,6 @@ repositories {
         }
     }
     maven {
-        name = "FTB OLD"
-        url = "https://maven.latmod.com/"
-        content {
-            includeModule("com.feed_the_beast.mods", "ftb-chunks")
-            includeModule("com.feed_the_beast.mods", "ftb-gui-library")
-        }
-    }
-
-    maven {
         name = "FTB NEW"
         url = "https://maven.saps.dev/minecraft/"
         content {
@@ -188,17 +179,10 @@ dependencies {
     implementation fg.deobf(group: "mezz.jei", name: "jei-1.16.5", version: project.jeiVersion)
     //noinspection SpellCheckingInspection
     implementation fg.deobf(group: "com.blamejared.crafttweaker", name: "CraftTweaker-1.16.5", version: project.craftTweakerVersion)
-    compileOnly(fg.deobf("com.feed_the_beast.mods:ftb-chunks:1604.2.2.54") {
+    compileOnly(fg.deobf("dev.ftb.mods:ftb-library-forge:1605.3.4-build.90") {
         transitive = false
     })
-    compileOnly(fg.deobf("dev.ftb.mods:ftb-library-forge:1605.3.1-build.20") {
-        transitive = false
-    })
-    compileOnly(fg.deobf("dev.ftb.mods:ftb-chunks-forge:1605.3.1-build.20") {
-        transitive = false
-    })
-    // This mod cause crash when running data generation
-    compileOnly(fg.deobf("com.feed_the_beast.mods:ftb-gui-library:1604.1.1.26") {
+    compileOnly(fg.deobf("dev.ftb.mods:ftb-chunks-forge:1605.3.4-build.220") {
         transitive = false
     })
 
