@@ -66,5 +66,5 @@ jobs:
     # See https://github.com/Kotori316/common-script/blob/main/.github/workflows/release-prod-gradle.yaml
     uses: 'Kotori316/common-script/.github/workflows/release-prod-gradle.yaml@main'
     with:
-      release_command: 'checkReleaseVersion assemble publishToMavenLocal registerVersion curseforge publish'
+      release_command: 'checkReleaseVersion assemble publishToMavenLocal registerVersion curseforge modrinth publish'
     secrets: inherit

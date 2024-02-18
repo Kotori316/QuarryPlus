@@ -6,6 +6,7 @@
 * Added - Plugin for Jade. WTHIT is already supported.
 * Added - A tag of markers.
 * Added - GUI of QuarryPlus to change whether to remove fluids.
+* Added - Version checker integration
 
 ### Fixed
 
