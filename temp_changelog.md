@@ -1,5 +1,12 @@
 This mod requires a library, [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force).
 
+## Version 16.1.14
+
+* Change internal logic of publishing
+* Remove support of old FTB Chunks
+* Fix a problem of item output of ChunkDestroyer
+  * Use round-robin like logic
+
 ## Version 16.1.11
 
 * Removed `removeBedrock` in config.

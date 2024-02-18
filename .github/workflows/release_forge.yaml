@@ -12,7 +12,6 @@ jobs:
     # See https://github.com/Kotori316/common-script/blob/main/.github/workflows/release-prod-gradle.yaml
     uses: 'Kotori316/common-script/.github/workflows/release-prod-gradle.yaml@main'
     with:
-      # release_command: 'assemble publishToMavenLocal curseforge githubRelease registerVersion publish --continue'
-      release_command: 'assemble publishToMavenLocal'
+      release_command: 'assemble publishToMavenLocal curseforge githubRelease registerVersion publish --continue'
       enable_signature_check: true
     secrets: inherit

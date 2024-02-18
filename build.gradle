@@ -20,6 +20,7 @@ buildscript {
 }
 plugins {
     id("maven-publish")
+    id("signing")
     id "com.github.breadmoirai.github-release" version "2.2.12"
     id("com.kotori316.plugin.cf") version("2.3")
 }
@@ -306,44 +307,33 @@ test {
     useJUnitPlatform()
 }
 
-task signJar2() {
+tasks.register('signJar2') {
     doLast {
         ant.signjar(
                 jar: jar.archiveFile.get(),
-                alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
-                keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
-                storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
-                sigalg: "SHA1withRSA",
+                alias: project.findProperty("jarSign.keyAlias"),
+                keystore: project.findProperty("jarSign.keyLocation"),
+                storepass: project.findProperty("jarSign.storePass"),
+                sigalg: "Ed25519",
                 digestalg: "SHA-256",
                 tsaurl: "http://timestamp.digicert.com"
         )
     }
     onlyIf {
-        project.hasProperty('keyStoreAlias') &&
-                project.hasProperty('keyStore') &&
-                project.hasProperty('keyStorePass')
+        project.hasProperty("jarSign.keyAlias") &&
+                project.hasProperty("jarSign.keyLocation") &&
+                project.hasProperty("jarSign.storePass")
+    }
+    dependsOn("jar")
+}
+afterEvaluate {
+    tasks.named("reobfJar") {
+        finalizedBy(tasks.signJar2)
     }
 }
 
-/*task signJar(type: net.minecraftforge.gradle.common.task.SignJar) {
-    alias = project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : ""
-    keyStore = project.hasProperty('keyStore') ? project.getProperty("keyStore") : ""
-    storePass = project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : ""
-    keyPass = project.hasProperty("keyStoreKeyPass") ? project.getProperty('keyStoreKeyPass') : ""
-
-    inputFile = jar.archiveFile.get()
-    outputFile = jar.archiveFile.get()
-
-    onlyIf {
-        project.hasProperty('keyStoreAlias') &&
-                project.hasProperty('keyStore') &&
-                project.hasProperty('keyStorePass')
-    }
-}*/
-
 if (!isInCI()) {
     // Runs this task automatically when build is ran.
-//    assemble.dependsOn(signJar)
     assemble.dependsOn(signJar2)
 }
 
@@ -464,6 +454,11 @@ publishing {
             artifact reobfArtifact
         }
     }
+}
+
+signing {
+    sign(publishing.publications)
+    sign(tasks.jar, tasks.deobfJar, tasks.srcJar)
 }
 
 tasks.register("registerVersion", com.kotori316.plugin.cf.CallVersionFunctionTask.class) {
