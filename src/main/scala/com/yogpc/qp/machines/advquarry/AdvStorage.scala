@@ -21,8 +21,8 @@ class AdvStorage extends HasStorage.Storage with INBTSerializable[CompoundNBT] {
 
   import AdvQuarryWork.MARKER
 
-  val itemMap = new mutable.HashMap[ItemDamage, ItemElement]()
-  val fluidMap = new mutable.HashMap[FluidElement, Long]()
+  val itemMap = new mutable.LinkedHashMap[ItemDamage, ItemElement]()
+  val fluidMap = new mutable.LinkedHashMap[FluidElement, Long]()
 
   override def insertItem(stack: ItemStack): Unit = {
     if (!stack.isEmpty) {
