@@ -21,6 +21,7 @@ buildscript {
 plugins {
     id("maven-publish")
     id "com.github.breadmoirai.github-release" version "2.2.12"
+    id("com.kotori316.plugin.cf") version("2.3")
 }
 apply plugin: 'scala'
 apply plugin: 'net.minecraftforge.gradle'
@@ -463,4 +464,14 @@ publishing {
             artifact reobfArtifact
         }
     }
+}
+
+tasks.register("registerVersion", com.kotori316.plugin.cf.CallVersionFunctionTask.class) {
+    functionEndpoint = readVersionFunctionEndpoint(project)
+    gameVersion = "1.16"
+    platform = "forge"
+    platformVersion = project.findProperty("forgeVersion") as String
+    modName = "quarryplus"
+    changelog = "QuarryPlus for 1.16"
+    homepage = "https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner"
 }

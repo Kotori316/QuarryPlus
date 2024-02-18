@@ -9,25 +9,21 @@ on:
       - "!*"
     paths:
       - "src/main/**"
+      - "build.gradle"
       - ".github/workflows/gradle.yml"
 
 jobs:
   check:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.16.5
-      credentials:
-        username: kotori316
-        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout QuarryPlus repo
-        uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
+        uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '8'
+          java-version: '17'
       - name: Compile
-        run: chmod +x ./gradlew && ./gradlew compileScala
+        run: chmod +x ./gradlew && ./gradlew classes
       - name: download_assets
         run: chmod +x ./gradlew && (./gradlew clean downloadAssets || true)
         continue-on-error: true
