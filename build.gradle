@@ -1,3 +1,6 @@
+import com.kotori316.plugin.cf.CallVersionCheckFunctionTask
+import com.kotori316.plugin.cf.CallVersionFunctionTask
+
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.ZoneId
@@ -17,6 +20,7 @@ plugins {
     //noinspection SpellCheckingInspection
     id "com.matthewprenger.cursegradle" version "1.4.0"
     id "com.modrinth.minotaur" version "2.+"
+    id("com.kotori316.plugin.cf") version("2.3")
 }
 
 archivesBaseName = "AdditionalEnchantedMiner-1.19-fabric"
@@ -482,4 +486,22 @@ publishing {
             }
         }
     }
+}
+
+tasks.register("registerVersion", CallVersionFunctionTask.class) {
+    functionEndpoint = readVersionFunctionEndpoint(project)
+    gameVersion = project.property("minecraft_version").toString()
+    platform = "fabric"
+    platformVersion = project.property("fabric_version").toString()
+    modName = "quarryplus"
+    changelog = "Version ${project.version}"
+    homepage = "https://modrinth.com/mod/additional-enchanted-miner"
+    isDryRun = false
+}
+tasks.register("checkReleaseVersion", CallVersionCheckFunctionTask.class) {
+    gameVersion = project.property("minecraft_version").toString()
+    platform = "fabric"
+    modName = "quarryplus"
+    version = project.version.toString()
+    failIfExists = true
 }

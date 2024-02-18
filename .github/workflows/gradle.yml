@@ -56,16 +56,16 @@ jobs:
         run: ./gradlew runGameTest
         env:
           RUN_GAME_TEST: true
-      - name: Test and Publish
-        if: ${{ contains(github.event.head_commit.message, '[release]') && github.event_name != 'pull_request'}}
-        run: chmod +x ./gradlew && ./gradlew build curseforge publish --no-daemon
-        env:
-          CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
-          AZURE_USER_NAME: 'Kotori316'
-          AZURE_TOKEN: ${{ secrets.AZURE_TOKEN }}
-      - name: Upload Artifacts
-        if: ${{ contains(github.event.head_commit.message, '[release]') && github.event_name != 'pull_request'}}
-        uses: actions/upload-artifact@v3
-        with:
-          path: build/libs/*
-          name: ${{ github.event.repository.name }}-${{ github.run_number }}
+  deploy:
+    needs:
+      - build
+    permissions:
+      id-token: write
+      contents: write
+      packages: write
+    if: ${{ contains(github.event.head_commit.message, '[release]') && github.event_name != 'pull_request'}}
+    # See https://github.com/Kotori316/common-script/blob/main/.github/workflows/release-prod-gradle.yaml
+    uses: 'Kotori316/common-script/.github/workflows/release-prod-gradle.yaml@main'
+    with:
+      release_command: 'checkReleaseVersion assemble publishToMavenLocal registerVersion curseforge publish'
+    secrets: inherit
