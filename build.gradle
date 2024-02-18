@@ -266,7 +266,7 @@ def curseForgeLog() {
 }
 
 curseforge {
-    apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : ""
+    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: System.getenv("CURSE_TOKEN") ?: ""
     project {
         id = '282837'
         changelogType = 'markdown'
@@ -459,6 +459,14 @@ publishing {
 signing {
     sign(publishing.publications)
     sign(tasks.jar, tasks.deobfJar, tasks.srcJar)
+}
+
+tasks.withType(Sign.class).configureEach {
+    onlyIf {
+        project.hasProperty("signing.keyId") &&
+                project.hasProperty("signing.password") &&
+                project.hasProperty("signing.secretKeyRingFile")
+    }
 }
 
 tasks.register("registerVersion", com.kotori316.plugin.cf.CallVersionFunctionTask.class) {
