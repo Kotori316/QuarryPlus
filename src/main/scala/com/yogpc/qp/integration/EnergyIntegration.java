@@ -19,8 +19,8 @@ public class EnergyIntegration {
                 }
             } catch (Throwable error) {
                 var rebornMods = FabricLoader.getInstance().getAllMods().stream()
-                        .map(ModContainer::getMetadata).filter(s -> s.getId().contains("reborn"))
-                        .map(m -> String.format("%s@%s", m.getId(), m.getVersion().getFriendlyString())).toList();
+                    .map(ModContainer::getMetadata).filter(s -> s.getId().contains("reborn"))
+                    .map(m -> String.format("%s@%s", m.getId(), m.getVersion().getFriendlyString())).toList();
                 QuarryPlus.LOGGER.error("QuarryPlus caught energy integration error. RebornMods: " + rebornMods, error);
             }
         }
@@ -32,10 +32,10 @@ public class EnergyIntegration {
 
     static BlockEntityType<?>[] getBlockEntityTypes() {
         return new BlockEntityType<?>[]{
-                QuarryPlus.ModObjects.QUARRY_TYPE,
-                QuarryPlus.ModObjects.ADV_QUARRY_TYPE,
-                QuarryPlus.ModObjects.ADV_PUMP_TYPE,
-                QuarryPlus.ModObjects.FILLER_TYPE
+            QuarryPlus.ModObjects.QUARRY_TYPE,
+            QuarryPlus.ModObjects.ADV_QUARRY_TYPE,
+            QuarryPlus.ModObjects.ADV_PUMP_TYPE,
+            QuarryPlus.ModObjects.FILLER_TYPE
         };
     }
 }
@@ -43,10 +43,10 @@ public class EnergyIntegration {
 class RebornEnergyRegister {
     static boolean register() {
         EnergyStorage.SIDED.registerForBlockEntities((blockEntity, context) -> {
-                    if (blockEntity instanceof PowerTile powerTile) return new RebornEnergyStorage(powerTile);
-                    else return null;
-                },
-                EnergyIntegration.getBlockEntityTypes());
+                if (blockEntity instanceof PowerTile powerTile) return new RebornEnergyStorage(powerTile);
+                else return null;
+            },
+            EnergyIntegration.getBlockEntityTypes());
         EnergyStorage.SIDED.registerForBlockEntity((g, d) -> new RebornEnergyGenerator(g), QuarryPlus.ModObjects.CREATIVE_GENERATOR_TYPE);
         return true;
     }

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "1.20-fabric"
+      - "1.20.1-fabric"
     tags:
       - "!*"
     paths:
@@ -14,7 +14,7 @@ on:
       - "gradle.properties"
   pull_request:
     branches:
-      - "1.20-fabric"
+      - "1.20.1-fabric"
 
 jobs:
   commit-info:
@@ -28,8 +28,8 @@ jobs:
         run: echo "${MESSAGES}" | jq
         env:
           MESSAGES: ${{ toJSON(github.event.commits.*.message) }}
-      - name: Check Publish ${{ !contains(github.event.head_commit.message, '[skip release]') && github.event_name != 'pull_request' }}
-        run: echo "Release ${{ !contains(github.event.head_commit.message, '[skip release]') && github.event_name != 'pull_request' }}"
+      - name: Check Publish ${{ contains(github.event.head_commit.message, '[release]') && github.event_name != 'pull_request' }}
+        run: echo "Release ${{ contains(github.event.head_commit.message, '[release]') && github.event_name != 'pull_request' }}"
 
   build:
     runs-on: ubuntu-latest
@@ -44,9 +44,9 @@ jobs:
           github.event_name != 'pull_request') && 'true' || 'false'
         }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'temurin'
@@ -67,59 +67,16 @@ jobs:
         run: ./gradlew runGameTest
         env:
           RUN_GAME_TEST: true
-      - uses: google-github-actions/auth@v1
-        with:
-          workload_identity_provider: ${{secrets.GCP_IDENTITY_PROVIDER}}
-          service_account: ${{secrets.GCP_SERVICE_ACCOUNT}}
-      - name: Download Private Key
-        if: ${{fromJson(env.DO_RELEASE)}}
-        run: gcloud storage cp gs://kotori316-resources/secring.gpg "${HOME}/secring.gpg"
-      - name: Download JKS
-        if: ${{fromJson(env.DO_RELEASE)}}
-        run: gcloud storage cp gs://kotori316-resources/kotori316_keystore.jks "${HOME}/kotori316_keystore.jks"
-      - name: Download Public Key
-        if: ${{fromJson(env.DO_RELEASE)}}
-        run: |
-          gcloud storage cp gs://kotori316-resources/pgp_public.pub "${HOME}/pgp_public.pub"
-          gpg --import "${HOME}/pgp_public.pub"
-      - name: Get credentials
-        id: get-secrets
-        uses: google-github-actions/get-secretmanager-secrets@v1
-        with:
-          secrets: |-
-            key_id:kotori316-mods-resources/signing-key-id
-            key_password:kotori316-mods-resources/signing-password
-            jar_password:kotori316-mods-resources/jar-sign-key-password
-            modrinth_token:kotori316-mods-resources/modrinth_token
-            curseforge_token:kotori316-mods-resources/curseforge_token
-            azure_token:kotori316-mods-resources/azure_token
-      - name: Publish Check
-        run: ./gradlew curseforge modrinth
-        env:
-          RELEASE_DEBUG: true
-          CURSE_TOKEN: ${{steps.get-secrets.outputs.curseforge_token}}
-          MODRINTH_TOKEN: ${{steps.get-secrets.outputs.modrinth_token}}
-      - name: Test and Publish
-        if: ${{fromJson(env.DO_RELEASE)}}
-        run: >-
-          ./gradlew
-          -Psigning.secretKeyRingFile="${HOME}/secring.gpg"
-          -Psigning.password="${KEY_PASSWORD}"
-          -Psigning.keyId="${KEY_ID}"
-          -PjarSign.keyLocation="${HOME}/kotori316_keystore.jks"
-          -PjarSign.keyAlias="ko316"
-          -PjarSign.storePass="${JAR_PASSWORD}"
-          clean build publishToMavenLocal curseforge modrinth publish
-        env:
-          KEY_PASSWORD: ${{steps.get-secrets.outputs.key_password}}
-          KEY_ID: ${{steps.get-secrets.outputs.key_id}}
-          JAR_PASSWORD: ${{steps.get-secrets.outputs.jar_password}}
-          AZURE_TOKEN: ${{steps.get-secrets.outputs.azure_token}}
-          CURSE_TOKEN: ${{steps.get-secrets.outputs.curseforge_token}}
-          MODRINTH_TOKEN: ${{steps.get-secrets.outputs.modrinth_token}}
-      - name: Upload Artifacts
-        if: ${{fromJson(env.DO_RELEASE)}}
-        uses: actions/upload-artifact@v3
-        with:
-          path: build/libs/*
-          name: ${{ github.event.repository.name }}-${{ github.run_number }}
+  deploy:
+    needs:
+      - build
+    permissions:
+      id-token: write
+      contents: write
+      packages: write
+    if: ${{ contains(github.event.head_commit.message, '[release]') && github.event_name != 'pull_request'}}
+    # See https://github.com/Kotori316/common-script/blob/main/.github/workflows/release-prod-gradle.yaml
+    uses: 'Kotori316/common-script/.github/workflows/release-prod-gradle.yaml@main'
+    with:
+      release_command: 'checkReleaseVersion assemble publishToMavenLocal registerVersion curseforge modrinth publish'
+    secrets: inherit

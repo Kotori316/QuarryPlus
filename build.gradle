@@ -1,3 +1,6 @@
+import com.kotori316.plugin.cf.CallVersionCheckFunctionTask
+import com.kotori316.plugin.cf.CallVersionFunctionTask
+
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.ZoneId
@@ -12,12 +15,13 @@ plugins {
     id("maven-publish")
     id("signing")
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom/
-    id 'fabric-loom' version "1.2-SNAPSHOT"
+    id("fabric-loom") version "1.5-SNAPSHOT"
     //noinspection SpellCheckingInspection
     id "com.github.breadmoirai.github-release" version "2.2.12"
     //noinspection SpellCheckingInspection
     id "com.matthewprenger.cursegradle" version "1.4.0"
     id "com.modrinth.minotaur" version "2.+"
+    id("com.kotori316.plugin.cf") version("2.3")
 }
 
 archivesBaseName = "AdditionalEnchantedMiner-${project.minecraft_version}-fabric"
@@ -29,6 +33,7 @@ if (isInCI()) {
 
     println("Set version to $version because I'm in CI.")
     println("CURSE_TOKEN: ${System.getenv().containsKey('CURSE_TOKEN')}")
+    println("MODRINTH_TOKEN: ${System.getenv().containsKey('MODRINTH_TOKEN')}")
 } else {
     version = (version + ".0")
 }
@@ -134,6 +139,7 @@ repositories {
             includeVersion("com.kotori316", "scalable-cats-force-fabric", project.kotori_scala_version)
         }
     }
+    maven { url = uri("https://maven.kotori316.com") }
     repositories.stream()
             .filter { repo -> repo instanceof MavenArtifactRepository && !repo.getUrl().getScheme().contains("file") }
             .forEach { repo ->
@@ -160,6 +166,9 @@ dependencies {
 
     // library
     implementation "com.google.code.findbugs:jsr305:3.0.1"
+    modImplementation("com.kotori316:VersionCheckerMod:${project.property("automatic_potato_version")}") {
+        transitive = false
+    }
 
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}") {
         exclude(group: "net.fabricmc.fabric-api")
@@ -217,7 +226,10 @@ processResources {
     inputs.property "version", project.version
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand(
+                "version": project.version,
+                "update_url": "https://version.kotori316.com/get-version/${project.property("minecraft_version")}/fabric/quarryplus",
+        )
     }
 }
 
@@ -338,7 +350,7 @@ String modrinthChangelog() {
 boolean inReleaseDebug = Boolean.parseBoolean(System.getenv("RELEASE_DEBUG"))
 
 curseforge {
-    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: (System.getenv("CURSE_TOKEN") ?: "")
+    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: System.getenv("CURSE_TOKEN") ?: ""
     project {
         id = '282837'
         changelogType = 'markdown'
@@ -353,6 +365,7 @@ curseforge {
             requiredDependency 'scalable-cats-force'
             requiredDependency 'fabric-api'
             requiredDependency 'cloth-config'
+            requiredDependency 'automatic-potato'
             //noinspection SpellCheckingInspection
             // requiredDependency 'libblockattributes'
         }
@@ -389,6 +402,7 @@ modrinth {
         required.project("fabric-api")
         required.project("cloth-config")
         required.project("scalable-cats-force")
+        required.project("automatic-potato")
     }
 }
 
@@ -556,4 +570,22 @@ tasks.withType(AbstractPublishToMaven).configureEach {
     if (hasGpgSignature) {
         it.dependsOn(":signRemapJar")
     }
+}
+
+tasks.register("registerVersion", CallVersionFunctionTask.class) {
+    functionEndpoint = readVersionFunctionEndpoint(project)
+    gameVersion = project.property("minecraft_version").toString()
+    platform = "fabric"
+    platformVersion = project.property("fabric_version").toString()
+    modName = "quarryplus"
+    changelog = "Version ${project.version}"
+    homepage = "https://modrinth.com/mod/additional-enchanted-miner"
+    isDryRun = false
+}
+tasks.register("checkReleaseVersion", CallVersionCheckFunctionTask.class) {
+    gameVersion = project.property("minecraft_version").toString()
+    platform = "fabric"
+    modName = "quarryplus"
+    version = project.version.toString()
+    failIfExists = true
 }
