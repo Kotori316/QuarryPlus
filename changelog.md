@@ -12,6 +12,7 @@
 
 * Fixed - Recipes of some machines were wrong. Close #194
 * Fixed - Fluid Unit was wrong.
+* Fixed - Filler didn't accept energy from TechReborn
 
 ### Misc
 
