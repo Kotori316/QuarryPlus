@@ -43,5 +43,8 @@
   },
   "conflicts": {
     "team_reborn_energy": "<2.0.0-beta0"
+  },
+  "custom": {
+    "kotori316_version_checker": "${update_url}"
   }
 }
