@@ -6,6 +6,7 @@
 
 ### Misc
 
+* Update for 1.20.2
 * Update for 1.20.1
 
 ## 1.19
