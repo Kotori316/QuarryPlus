@@ -10,7 +10,7 @@ parchment_mapping = "2023.12.31"
 # https://mvnrepository.com/artifact/org.scala-lang/scala-library
 scala2 = "2.13.12"
 # https://mvnrepository.com/artifact/org.scala-lang/scala3-library
-scala3 = "3.3.1"
+scala3 = "3.4.0"
 cats = "2.10.0-kotori"
 
 slp_forge = "3.3.1-build-5"
