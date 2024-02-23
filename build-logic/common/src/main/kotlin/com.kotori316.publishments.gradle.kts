@@ -150,6 +150,7 @@ curseforge {
             if (platformName == "fabric") {
                 requiredDependency("fabric-api")
                 requiredDependency("cloth-config")
+                requiredDependency("automatic-potato")
             }
         })
     })
@@ -177,6 +178,7 @@ modrinth {
         if (platformName == "fabric") {
             required.project("fabric-api")
             required.project("cloth-config")
+            required.project("automatic-potato")
         }
     }
 }
