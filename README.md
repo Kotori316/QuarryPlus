@@ -57,9 +57,17 @@ repositories {
         name "Kotori316 Azure Maven"
         url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
     }
+    // since 1.20.4
+    maven {
+        name "Kotori316"
+        url = uri("https://maven.kotori316.com/com/kotori316")
+    }
 }
 dependencies {
     // https://dev.azure.com/Kotori316/minecraft/_artifacts/feed/mods/maven/com.kotori316%2Fadditionalenchantedminer/versions
     implementation(fg.deobf("com.kotori316:AdditionalEnchantedMiner:VERSION".toLowerCase(Locale.ROOT)))
+    // since 1.20.4 See https://maven.kotori316.com/com/kotori316
+    // "AdditionalEnchantedMiner" is for Forge. For fabric and NeoForge, use the version with suffix.
+    implementation(fg.deobf("com.kotori316:AdditionalEnchantedMiner:20.4.x".toLowerCase(Locale.ROOT)))
 }
 ```

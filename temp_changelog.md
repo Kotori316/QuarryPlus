@@ -1,6 +1,6 @@
 ## LATEST 1.20.4
 
-* Fix item duplication in some conditions
+* Add version checker in fabric
 
 ---
 
@@ -11,3 +11,4 @@
 * Add recipe of Marker Plus in fabric
 * Support neoforge with network change
 * Fix item duplication in some conditions
+* Add version checker in fabric
