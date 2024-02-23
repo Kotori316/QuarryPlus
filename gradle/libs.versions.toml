@@ -8,7 +8,7 @@ neoforge = "20.4.171"
 parchment_minecraft = "1.20.3"
 parchment_mapping = "2023.12.31"
 # https://mvnrepository.com/artifact/org.scala-lang/scala-library
-scala2 = "2.13.12"
+scala2 = "2.13.13"
 # https://mvnrepository.com/artifact/org.scala-lang/scala3-library
 scala3 = "3.3.1"
 cats = "2.10.0-kotori"
