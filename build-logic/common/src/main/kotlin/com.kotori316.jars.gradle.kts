@@ -76,7 +76,7 @@ artifacts {
 }
 
 tasks.processResources {
-    val minecraft: String by project
+    val mcVersion = project.property("minecraft").toString()
     val modId = "quarryplus"
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     inputs.property("version", project.version)
@@ -85,8 +85,8 @@ tasks.processResources {
         filesMatching(fileName) {
             expand(
                 "version" to project.version,
-                "update_url" to "https://version.kotori316.com/get-version/${minecraft}/${project.name}/${modId}",
-                "mc_version" to minecraft,
+                "update_url" to "https://version.kotori316.com/get-version/${mcVersion}/${project.name}/${modId}",
+                "mc_version" to mcVersion,
             )
         }
     }
