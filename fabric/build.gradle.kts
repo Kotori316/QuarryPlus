@@ -90,6 +90,7 @@ dependencies {
     modImplementation(libs.modmenu) { isTransitive = false }
     modImplementation(libs.tu.fabric)
     modImplementation(libs.du.fabric)
+    modImplementation(libs.vc.fabric) { isTransitive = false }
 
     // Test Dependencies.
     testImplementation(libs.fabric.junit)

@@ -39,6 +39,7 @@ wthit_fabric = "fabric-10.0.1"
 
 tu = "20.4.11"
 du = "20.4.11"
+version_checker = "2.1.0"
 
 jupiter_api = "5.10.2"
 mockito_core = "5.10.0"
@@ -88,6 +89,7 @@ modmenu = { group = "com.terraformersmc", name = "modmenu", version.ref = "modme
 wthit_fabric_api = { group = "mcp.mobius.waila", name = "wthit-api", version.ref = "wthit_fabric" }
 tu_fabric = { group = "com.kotori316", name = "test-utility-fabric", version.ref = "tu" }
 du_fabric = { group = "com.kotori316", name = "debug-utility-fabric", version.ref = "du" }
+vc_fabric = { group = "com.kotori316", name = "VersionCheckerMod", version.ref = "version_checker" }
 
 # NeoForge
 neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }

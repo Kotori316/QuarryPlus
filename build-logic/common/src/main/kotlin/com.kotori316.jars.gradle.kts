@@ -76,11 +76,19 @@ artifacts {
 }
 
 tasks.processResources {
+    val mcVersion = project.property("minecraft").toString()
+    val modId = "quarryplus"
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     inputs.property("version", project.version)
 
-    filesMatching("fabric.mod.json") {
-        expand("version" to project.version)
+    listOf("fabric.mod.json", "META-INF/mods.toml").forEach { fileName ->
+        filesMatching(fileName) {
+            expand(
+                "version" to project.version,
+                "update_url" to "https://version.kotori316.com/get-version/${mcVersion}/${project.name}/${modId}",
+                "mc_version" to mcVersion,
+            )
+        }
     }
 }
 

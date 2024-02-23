@@ -43,6 +43,16 @@ tasks.named("compileRunGameScala", ScalaCompile::class) {
 tasks.named("processRunGameResources", ProcessResources::class) {
     from(sourceSets.main.get().resources, sourceSets.test.get().resources)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    val mcVersion = project.property("minecraft").toString()
+    listOf("fabric.mod.json", "META-INF/mods.toml").forEach { fileName ->
+        filesMatching(fileName) {
+            expand(
+                "version" to project.version,
+                "update_url" to "https://version.kotori316.com/get-version/${mcVersion}/${project.name}/${modId}",
+                "mc_version" to mcVersion,
+            )
+        }
+    }
 }
 
 sourceSets.forEach {
