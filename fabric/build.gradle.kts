@@ -5,7 +5,7 @@ plugins {
     // id("scala")
     id("idea")
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom/
-    id("fabric-loom") version ("1.5.7")
+    id("fabric-loom") version ("1.5.8")
 }
 
 loom {
