@@ -3,7 +3,7 @@ minecraft = "1.20.4"
 forge = "1.20.4-49.0.30"
 fabric_api = "0.96.4+1.20.4"
 fabric_loader = "0.15.+"
-neoforge = "20.4.187"
+neoforge = "20.4.188"
 # https://ldtteam.jfrog.io/ui/native/parchmentmc-public/org/parchmentmc/data/parchment-1.20.3/
 parchment_minecraft = "1.20.3"
 parchment_mapping = "2023.12.31"
