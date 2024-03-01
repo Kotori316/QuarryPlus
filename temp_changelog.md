@@ -1,6 +1,6 @@
 ## LATEST 1.20.4
 
-* Add version checker in fabric
+* Improve publish logic
 
 ---
 
@@ -12,3 +12,4 @@
 * Support neoforge with network change
 * Fix item duplication in some conditions
 * Add version checker in fabric
+* Improve publish logic

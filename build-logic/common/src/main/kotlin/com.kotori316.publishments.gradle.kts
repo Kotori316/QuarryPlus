@@ -140,11 +140,21 @@ curseforge {
                 else -> throw IllegalArgumentException("Unknown platform $platformName")
             }
         )
-        mainArtifact(tasks.jar.flatMap { it.archiveFile }.get(), closureOf<CurseArtifact> {
-            displayName = "v${project.version}-${platformName} [$minecraft]"
-        })
-        addArtifact(tasks.named("deobfJar", Jar::class).flatMap { it.archiveFile }.get())
-        addArtifact(tasks.named("sourcesJar", Jar::class).flatMap { it.archiveFile }.get())
+        if (platformName == "fabric") {
+            afterEvaluate {
+                mainArtifact(
+                    tasks.named("remapJar", org.gradle.jvm.tasks.Jar::class).flatMap { it.archiveFile }.get(),
+                    closureOf<CurseArtifact> {
+                        displayName = "v${project.version}-${platformName} [$minecraft]"
+                    })
+            }
+        } else {
+            mainArtifact(tasks.jar.flatMap { it.archiveFile }.get(), closureOf<CurseArtifact> {
+                displayName = "v${project.version}-${platformName} [$minecraft]"
+            })
+        }
+        addArtifact(tasks.named("deobfJar", org.gradle.jvm.tasks.Jar::class).flatMap { it.archiveFile }.get())
+        addArtifact(tasks.named("sourcesJar", org.gradle.jvm.tasks.Jar::class).flatMap { it.archiveFile }.get())
         relations(closureOf<CurseRelation> {
             requiredDependency("scalable-cats-force")
             if (platformName == "fabric") {
@@ -167,7 +177,14 @@ modrinth {
     versionType = "release"
     versionName = "${project.version}-${platformName}"
     versionNumber = project.version.toString()
-    uploadFile = tasks.jar.get()
+    afterEvaluate {
+        uploadFile = if (platformName == "fabric") {
+            tasks.named("remapJar", org.gradle.jvm.tasks.Jar::class).flatMap { it.archiveFile }
+        } else {
+            tasks.jar.get()
+        }
+    }
+
     additionalFiles = listOf(tasks.named("deobfJar"), tasks.named("sourcesJar"))
     gameVersions = listOf(minecraft)
     loaders = listOf(platformName)
