@@ -140,19 +140,10 @@ curseforge {
                 else -> throw IllegalArgumentException("Unknown platform $platformName")
             }
         )
-        if (platformName == "fabric") {
-            afterEvaluate {
-                mainArtifact(
-                    tasks.named("remapJar", org.gradle.jvm.tasks.Jar::class).flatMap { it.archiveFile }.get(),
-                    closureOf<CurseArtifact> {
-                        displayName = "v${project.version}-${platformName} [$minecraft]"
-                    })
-            }
-        } else {
-            mainArtifact(tasks.jar.flatMap { it.archiveFile }.get(), closureOf<CurseArtifact> {
-                displayName = "v${project.version}-${platformName} [$minecraft]"
-            })
-        }
+        // Using tasks.jar in fabric is OK, I don't know why
+        mainArtifact(tasks.jar.flatMap { it.archiveFile }.get(), closureOf<CurseArtifact> {
+            displayName = "v${project.version}-${platformName} [$minecraft]"
+        })
         addArtifact(tasks.named("deobfJar", org.gradle.jvm.tasks.Jar::class).flatMap { it.archiveFile }.get())
         addArtifact(tasks.named("sourcesJar", org.gradle.jvm.tasks.Jar::class).flatMap { it.archiveFile }.get())
         relations(closureOf<CurseRelation> {
