@@ -67,7 +67,7 @@ jei_forge_run = { group = "mezz.jei", name = "jei-1.20.2-forge", version.ref = "
 architectury_forge = { group = "dev.architectury", name = "architectury-forge", version.ref = "architectury" }
 rei_forge = { group = "me.shedaniel", name = "RoughlyEnoughItems-forge", version.ref = "rei" }
 cloth_forge = { group = "me.shedaniel.cloth", name = "cloth-config-forge", version.ref = "cloth" }
-ftb_chunks_forge = { group = "dev.ftb.mods", name = "ftb-chunks-forge", version = "2001.2.5" }
+ftb_chunks_forge = { group = "dev.ftb.mods", name = "ftb-chunks-forge", version = "2001.2.6" }
 ftb_library_forge = { group = "dev.ftb.mods", name = "ftb-library-forge", version = "2001.1.5" }
 ftb_teams_forge = { group = "dev.ftb.mods", name = "ftb-teams-forge", version = "2001.2.0" }
 ic2 = { group = "curse.maven", name = "ic2-classic-242942", version = "4441313" }
