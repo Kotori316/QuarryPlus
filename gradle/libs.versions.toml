@@ -69,7 +69,7 @@ rei_forge = { group = "me.shedaniel", name = "RoughlyEnoughItems-forge", version
 cloth_forge = { group = "me.shedaniel.cloth", name = "cloth-config-forge", version.ref = "cloth" }
 ftb_chunks_forge = { group = "dev.ftb.mods", name = "ftb-chunks-forge", version = "2004.1.2" }
 ftb_library_forge = { group = "dev.ftb.mods", name = "ftb-library-forge", version = "2004.2.1" }
-ftb_teams_forge = { group = "dev.ftb.mods", name = "ftb-teams-forge", version = "2001.2.0" }
+ftb_teams_forge = { group = "dev.ftb.mods", name = "ftb-teams-forge", version = "2004.1.2" }
 ic2 = { group = "curse.maven", name = "ic2-classic-242942", version = "4441313" }
 tu_forge = { group = "com.kotori316", name = "test-utility-forge", version.ref = "tu" }
 du_forge = { group = "com.kotori316", name = "debug-utility-forge", version.ref = "du" }
