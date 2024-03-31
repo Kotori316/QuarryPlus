@@ -1,6 +1,8 @@
 ## Version LATEST for 1.20.1
 
-* Fix a bug of item duplication
+* Disable fluid check after Chunk Destroyer finishes
+  * To enable, change `removeFluidAfterFinishedByCD` to `true`.
+  * Related to https://github.com/Kotori316/QuarryPlus/issues/371
 
 ## Version for 1.20.1
 
@@ -22,6 +24,7 @@
 * Fix a crash due to some mods' compatibility. #279
 * Add GUI for Adv Pump
 * Change internal logic of chaining break of dummy blocks
+* Fix a bug of item duplication
 
 ## Version 1192.2.3
 
