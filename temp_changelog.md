@@ -1,6 +1,6 @@
 ## Version LATEST for 1.19.2
 
-* Fix a bug of item duplication
+* Not to load JEI plugin when REI is installed. #426
 
 ## Version for 1.19.2
 
@@ -24,6 +24,8 @@
 * Limit the number of chaining of Dummy Block. #278
 * Improve logging of machine. #275
 * Fix a crash due to some mods' compatibility. #279
+* Fix a bug of item duplication
+* Not to load JEI plugin when REI is installed. #426
 
 ## Version 18.23
 
