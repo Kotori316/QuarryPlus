@@ -201,6 +201,7 @@ repositories {
             it.includeGroup("dev.architectury")
             it.includeVersion("me.shedaniel", "RoughlyEnoughItems-forge", project.reiVersion)
             it.includeModule("me.shedaniel.cloth", "cloth-config-forge")
+            it.includeModule("me.shedaniel", "REIPluginCompatibilities-forge-annotations")
         }
     }
 
@@ -240,10 +241,12 @@ dependencies {
     boolean useREI = Boolean.parseBoolean(System.getenv("USE_REI"))
     compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-common-api", version: project.jeiVersion))
     compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-forge-api", version: project.jeiVersion))
+    compileOnly(fg.deobf(group: "me.shedaniel", name: "REIPluginCompatibilities-forge-annotations", version: project.reiCompatibilityVersion))
     if (useREI) {
         implementation(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
         implementation(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
         implementation(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
+        implementation(fg.deobf(group: "me.shedaniel", name: "REIPluginCompatibilities-forge-annotations", version: project.reiCompatibilityVersion))
     } else {
         runtimeOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-forge", version: project.jeiVersion) {
             transitive(false)
