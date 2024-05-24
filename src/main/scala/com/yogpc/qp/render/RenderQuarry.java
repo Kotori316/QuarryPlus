@@ -44,7 +44,7 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
         if (quarry.getArea() != null) {
             switch (quarry.state) {
                 case WAITING, BREAK_INSIDE_FRAME, MAKE_FRAME -> renderFrame(quarry, matrices, vertexConsumers);
-                case BREAK_BLOCK, MOVE_HEAD, REMOVE_FLUID -> renderDrill(quarry, matrices, vertexConsumers);
+                case BREAK_BLOCK, MOVE_HEAD, REMOVE_FLUID -> renderDrill(quarry, matrices, tickDelta, vertexConsumers);
             }
         }
 
@@ -432,7 +432,7 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
         buffer.pos(MXm, MYP, MZP).colored().tex(B_maxU, B_minV).lightedAndEnd();
     }
 
-    private void renderDrill(TileQuarry quarry, PoseStack matrices, MultiBufferSource vertexConsumers) {
+    private void renderDrill(TileQuarry quarry, PoseStack matrices, float tickDelta, MultiBufferSource vertexConsumers) {
         assert quarry.getArea() != null; // Null check is done.
         var buffer = getBuffer(vertexConsumers, matrices);
         matrices.translate(0.5, 1.0, 0.5);
@@ -441,9 +441,10 @@ public class RenderQuarry implements BlockEntityRenderer<TileQuarry> {
         var maxX = quarry.getArea().maxX();
         var maxY = quarry.getArea().maxY() - 0.5d;
         var maxZ = quarry.getArea().maxZ();
-        var headPosX = quarry.headX;
-        var headPosY = quarry.headY;
-        var headPosZ = quarry.headZ;
+        var headPosX = Mth.lerp(tickDelta, quarry.headX, quarry.targetHeadX);
+        var headPosY = Mth.lerp(tickDelta, quarry.headY, quarry.targetHeadY);
+        var headPosZ = Mth.lerp(tickDelta, quarry.headZ, quarry.targetHeadZ);
+        // System.out.printf("%f,%f,%f,%f,%f,%f,%f%n", headPosX, headPosY, headPosZ, quarry.targetHeadX, quarry.targetHeadY, quarry.targetHeadZ, tickDelta);
 
         var drillStripe = Sprites.INSTANCE.getDrillStripe();
         var headSprite = Sprites.INSTANCE.getDrillHeadStripe();
