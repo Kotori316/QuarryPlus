@@ -18,44 +18,41 @@ on:
       - "1.19"
 
 jobs:
-  cross-check-JUnit:
+  check:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.19.4
-      credentials:
-        username: kotori316
-        password: ${{ secrets.GITHUB_TOKEN }}
-    strategy:
-      fail-fast: false
-      matrix:
-        forge: [ 1.19.4, default ]
     steps:
-      - uses: actions/checkout@v3
-      - name: Get latest version
-        if: ${{ matrix.forge != 'default' && github.event_name != 'pull_request' }}
-        run: |
-          version=$(java -jar $(find / -maxdepth 1 -name "fictional*.jar") ${{ matrix.forge }})
-          echo "CI_FORGE=${version}" >> $GITHUB_ENV
-          grep -q ${version} gradle.properties && echo "SAME_DEFAULT=true" >> $GITHUB_ENV || echo "SAME_DEFAULT=false" >> $GITHUB_ENV
-          echo ${version}
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Check Warning
+        run: chmod +x ./gradlew && ./gradlew javaToolchains --no-daemon --warning-mode all
       - name: Compile
-        if: ${{ env.SAME_DEFAULT != 'true' }}
         run: chmod +x ./gradlew && ./gradlew assemble --no-daemon
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Test with JUnit
-        if: ${{ env.SAME_DEFAULT != 'true' && (matrix.forge == 'default' || github.event_name != 'pull_request') }}
-        run: chmod +x ./gradlew && ./gradlew --no-daemon test runGameTestServer runData
+        run: chmod +x ./gradlew && ./gradlew test --no-daemon
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IGNORE_OTHER_MODS_IN_RUNTIME: true
+      - name: Prepare resources
+        run: |
+          (./gradlew downloadMCMeta downloadAssets) || \
+            (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || \
+            (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || true
+      - name: Test with runData
+        run: chmod +x ./gradlew && ./gradlew runData --no-daemon
+        env:
+          IGNORE_OTHER_MODS_IN_RUNTIME: true
+      - name: GameTest
+        run: chmod +x ./gradlew && ./gradlew runGameTestServer --no-daemon
+        env:
           TEST_UTILITY_LOG_ALL_TEST: true
           IGNORE_OTHER_MODS_IN_RUNTIME: true
-      - name: Check report
-        run: |
-          ! test -d "game-test/crash-reports"
-      - name: Upload failed test report
-        if: failure()
-        uses: actions/upload-artifact@v3
+      - name: Publish
+        uses: actions/upload-artifact@v4
         with:
-          path: build/reports/tests/*
-          name: Test-Report-${{ github.run_number }}-${{ matrix.forge }}
+          path: build/libs/*
+          name: ${{ github.event.repository.name }}-${{ github.run_number }}

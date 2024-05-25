@@ -1,4 +1,5 @@
 import com.kotori316.plugin.cf.CallVersionFunctionTask
+import com.kotori316.plugin.cf.CallVersionCheckFunctionTask
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -206,6 +207,7 @@ repositories {
             it.includeGroup("dev.architectury")
             it.includeVersion("me.shedaniel", "RoughlyEnoughItems-forge", project.reiVersion)
             it.includeModule("me.shedaniel.cloth", "cloth-config-forge")
+            it.includeModule("me.shedaniel", "REIPluginCompatibilities-forge-annotations")
         }
     }
 
@@ -245,10 +247,12 @@ dependencies {
     boolean useREI = true // Boolean.parseBoolean(System.getenv("USE_REI"))
     compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-common-api", version: project.jeiVersion))
     compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-forge-api", version: project.jeiVersion))
+    compileOnly(fg.deobf(group: "me.shedaniel", name: "REIPluginCompatibilities-forge-annotations", version: project.reiCompatibilityVersion))
     if (useREI) {
         implementation(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
         implementation(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
         implementation(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
+        implementation(fg.deobf(group: "me.shedaniel", name: "REIPluginCompatibilities-forge-annotations", version: project.reiCompatibilityVersion))
     } else {
         runtimeOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-forge", version: project.jeiVersion) {
             transitive(false)
@@ -523,12 +527,16 @@ publishing {
                 password = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN")
             }
         }
-        maven {
-            name = "AzureRepository"
-            url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
-            credentials {
-                username = project.findProperty("azureUserName") ?: System.getenv("AZURE_USER_NAME") ?: ""
-                password = project.findProperty("azureToken") ?: System.getenv("AZURE_TOKEN") ?: "TOKEN"
+        if (System.getenv("CLOUDFLARE_S3_ENDPOINT") != null) {
+            def r2AccessKey = (project.findProperty("r2_access_key") ?: System.getenv("R2_ACCESS_KEY") ?: "") as String
+            def r2SecretKey = (project.findProperty("r2_secret_key") ?: System.getenv("R2_SECRET_KEY") ?: "") as String
+            maven {
+                name = "kotori316-maven"
+                url = uri("s3://kotori316-maven")
+                credentials(AwsCredentials.class) {
+                    accessKey = r2AccessKey
+                    secretKey = r2SecretKey
+                }
             }
         }
     }
@@ -562,4 +570,12 @@ tasks.register("registerVersion", CallVersionFunctionTask.class) {
     modName = "quarryplus"
     changelog = getShortChangelog(false)
     homepage = "https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner"
+}
+
+tasks.register("checkReleaseVersion", CallVersionCheckFunctionTask.class) {
+    gameVersion = project.findProperty("minecraftVersion") as String
+    platform = "forge"
+    modName ="quarryplus"
+    version = project.version.toString()
+    failIfExists = true
 }
