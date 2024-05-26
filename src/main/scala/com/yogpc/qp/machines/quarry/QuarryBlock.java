@@ -148,10 +148,19 @@ public class QuarryBlock extends QPBlock implements EntityBlock {
         return Holder.QUARRY_TYPE.create(pos, state);
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : checkType(blockEntityType, Holder.QUARRY_TYPE,
+        if (level.isClientSide) {
+            if (blockEntityType == Holder.QUARRY_TYPE) {
+                BlockEntityTicker<TileQuarry> ticker = TileQuarry::clientTick;
+                return (BlockEntityTicker<T>) ticker;
+            } else {
+                return null;
+            }
+        }
+        return checkType(blockEntityType, Holder.QUARRY_TYPE,
             CombinedBlockEntityTicker.of(
                 this, level,
                 PowerTile.getGenerator(),

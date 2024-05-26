@@ -5,6 +5,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.workbench.RecipeFinder;
 import com.yogpc.qp.machines.workbench.ScreenWorkbench;
 import com.yogpc.qp.machines.workbench.WorkbenchRecipe;
+import me.shedaniel.rei.plugincompatibilities.api.REIPluginCompatIgnore;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
@@ -21,6 +22,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @JeiPlugin
+@REIPluginCompatIgnore
 public class QuarryJeiPlugin implements IModPlugin {
     static IJeiRuntime jeiRuntime;
     static WorkBenchRecipeCategory workBenchRecipeCategory;

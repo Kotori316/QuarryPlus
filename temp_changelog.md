@@ -75,12 +75,6 @@
 * Added IC2 Classic integration.
   * You can use EU to supply energy.
   * The conversion rate can be changed in config. The default is 1 EU = 4 FE.
-* Add Faster Work Module, which can fasten quarry work x2 or x3
-  * Be careful, this module can cause heavy lags
-  * Disabled by default, change `repeat_tick_module` to `true` to use this module
-* Limit the number of chaining of Dummy Block. #278
-* Improve logging of machine. #275
-* Fix a crash due to some mods' compatibility. #279
 
 ## Version 19.13
 

@@ -50,6 +50,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     private List<EnchantmentLevel> enchantments = new ArrayList<>();
     public final MachineStorage storage = new MachineStorage();
     public double headX, headY, headZ;
+    public double targetHeadX, targetHeadY, targetHeadZ;
     private boolean init = false;
     public int digMinY = 0;
     private ItemConverter itemConverter;
@@ -119,9 +120,9 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
             .toList());
         state = QuarryState.valueOf(tag.getString("state"));
-        headX = tag.getDouble("headX");
-        headY = tag.getDouble("headY");
-        headZ = tag.getDouble("headZ");
+        targetHeadX = tag.getDouble("headX");
+        targetHeadY = tag.getDouble("headY");
+        targetHeadZ = tag.getDouble("headZ");
         digMinY = tag.getInt("digMinY");
     }
 
@@ -192,6 +193,12 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                 quarry.state.tick(world, pos, state, quarry);
             }
         }
+    }
+
+    public static void clientTick(Level world, BlockPos pos, BlockState state, TileQuarry quarry) {
+        quarry.headX = quarry.targetHeadX;
+        quarry.headY = quarry.targetHeadY;
+        quarry.headZ = quarry.targetHeadZ;
     }
 
     public BreakResult breakBlock(BlockPos targetPos) {
