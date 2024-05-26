@@ -1,8 +1,7 @@
 ## Version LATEST for 1.20.1
 
-* Disable fluid check after Chunk Destroyer finishes
-  * To enable, change `removeFluidAfterFinishedByCD` to `true`.
-  * Related to https://github.com/Kotori316/QuarryPlus/issues/371
+* Change render of Quarry Plus
+* Improvement of REI integration
 
 ## Version for 1.20.1
 
@@ -25,6 +24,9 @@
 * Add GUI for Adv Pump
 * Change internal logic of chaining break of dummy blocks
 * Fix a bug of item duplication
+* Disable fluid check after Chunk Destroyer finishes
+  * To enable, change `removeFluidAfterFinishedByCD` to `true`.
+  * Related to https://github.com/Kotori316/QuarryPlus/issues/371
 
 ## Version 1192.2.3
 
