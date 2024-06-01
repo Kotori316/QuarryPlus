@@ -7,6 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.event.network.CustomPayloadEvent;
 
 import static com.yogpc.qp.utils.MapMulti.optCast;
@@ -42,6 +43,9 @@ public final class ClientSyncMessage implements IMessage {
 
     public static void onReceive(ClientSyncMessage message, CustomPayloadEvent.Context supplier) {
         var world = PacketHandler.getWorld(supplier, message.pos, message.dim);
+        if (supplier.get().getDirection().getReceptionSide() != LogicalSide.CLIENT) {
+            throw new IllegalStateException("Message was sent to unexpected side.");
+        }
         supplier.enqueueWork(() ->
             world.map(l -> l.getBlockEntity(message.pos))
                 .flatMap(optCast(ClientSync.class))

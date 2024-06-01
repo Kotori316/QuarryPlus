@@ -17,7 +17,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
@@ -301,8 +300,7 @@ public class TileAdvQuarry extends PowerTile implements
     public BreakResult breakOneBlock(BlockPos targetPos, boolean requireEnergy) {
         var targetWorld = getTargetWorld();
         var pickaxe = getPickaxe();
-        var fakePlayer = QuarryFakePlayer.get(targetWorld);
-        fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
+        var fakePlayer = QuarryFakePlayer.getAndSetPosition(targetWorld, targetPos, pickaxe);
         // Check breakable
         var state = targetWorld.getBlockState(targetPos);
         var breakEvent = new BlockEvent.BreakEvent(targetWorld, targetPos, state, fakePlayer);
@@ -344,8 +342,7 @@ public class TileAdvQuarry extends PowerTile implements
     BreakResult breakBlocks(int x, int z) {
         var targetWorld = getTargetWorld();
         var pickaxe = getPickaxe();
-        var fakePlayer = QuarryFakePlayer.get(targetWorld);
-        fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
+        var fakePlayer = QuarryFakePlayer.getAndSetPosition(targetWorld, getBlockPos(), pickaxe);
         var aabb = new AABB(x - 5, digMinY - 5, z - 5, x + 5, getBlockPos().getY() - 1, z + 5);
         targetWorld.getEntitiesOfClass(ItemEntity.class, aabb, Predicate.not(i -> i.getItem().isEmpty()))
             .forEach(i -> {
@@ -411,7 +408,10 @@ public class TileAdvQuarry extends PowerTile implements
             if (!state.isAir() && canBreak(targetWorld, pair.getLeft(), state)) {
                 breakOneBlock(pair.getLeft(), false);
             }
-            targetWorld.setBlock(pair.getLeft(), Holder.BLOCK_DUMMY.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+            if (QuarryPlus.config.common.removeFluidAfterFinishedByCD.get()) {
+                // Placing too much dummy block and remove it might cause problems
+                targetWorld.setBlock(pair.getLeft(), Holder.BLOCK_DUMMY.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+            }
         }
         // Get drops
         var drops = toBreak.stream().flatMap(p ->

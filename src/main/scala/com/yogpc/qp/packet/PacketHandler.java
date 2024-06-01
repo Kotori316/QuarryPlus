@@ -11,6 +11,7 @@ import com.yogpc.qp.machines.marker.FlexMarkerMessage;
 import com.yogpc.qp.machines.marker.Marker16Message;
 import com.yogpc.qp.machines.mini_quarry.MiniListSyncMessage;
 import com.yogpc.qp.machines.mini_quarry.MiniRequestListMessage;
+import com.yogpc.qp.machines.misc.CreativeGeneratorSyncMessage;
 import com.yogpc.qp.machines.mover.MoverMessage;
 import com.yogpc.qp.machines.placer.RemotePlacerMessage;
 import net.minecraft.client.Minecraft;

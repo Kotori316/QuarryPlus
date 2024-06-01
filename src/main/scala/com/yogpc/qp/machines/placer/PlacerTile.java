@@ -5,8 +5,9 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.InvUtils;
 import com.yogpc.qp.machines.QuarryFakePlayer;
+import com.yogpc.qp.packet.ClientSync;
+import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -53,6 +54,7 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 public class PlacerTile extends BlockEntity implements
     Container,
     CheckerLog,
+    ClientSync,
     MenuProvider {
     public static final String KEY_ITEM = "items";
     public static final String KEY_LAST_PLACED = "last_placed";
@@ -112,8 +114,7 @@ public class PlacerTile extends BlockEntity implements
         BlockPos pos = getTargetPos();
         BlockState state = level.getBlockState(pos);
         if (state.getDestroySpeed(level, pos) < 0) return; // Unbreakable.
-        Player fake = QuarryFakePlayer.get(((ServerLevel) level));
-        fake.setItemInHand(InteractionHand.MAIN_HAND, getSilkPickaxe());
+        Player fake = QuarryFakePlayer.getAndSetPosition(((ServerLevel) level), pos, getSilkPickaxe());
         List<ItemStack> drops = InvUtils.getBlockDrops(state, ((ServerLevel) level), pos, level.getBlockEntity(pos), fake, fake.getMainHandItem());
         level.removeBlock(pos, false);
         drops.stream().map(s -> ItemHandlerHelper.insertItem(this.itemHandler, s, false)) // Return not-inserted items.
@@ -129,7 +130,7 @@ public class PlacerTile extends BlockEntity implements
         BlockPos pos = getTargetPos();
         Vec3 hitPos = DIRECTION_VEC3D_MAP.get(facing.getOpposite()).add(pos.getX(), pos.getY(), pos.getZ());
         BlockHitResult rayTrace = new BlockHitResult(hitPos, facing.getOpposite(), pos, false);
-        Player fake = QuarryFakePlayer.get(((ServerLevel) level));
+        Player fake = QuarryFakePlayer.getAndSetPosition(((ServerLevel) level), pos, null);
 
         AtomicBoolean result = new AtomicBoolean(false);
         findEntry(inventory,
@@ -187,7 +188,7 @@ public class PlacerTile extends BlockEntity implements
 
     void sendPacket() {
         if (level != null && !level.isClientSide)
-            PacketHandler.sendToClient(new TileMessage(this), level);
+            PacketHandler.sendToClient(new ClientSyncMessage(this), level);
     }
 
     private static ItemStack getSilkPickaxe() {
@@ -201,8 +202,7 @@ public class PlacerTile extends BlockEntity implements
     @Override
     protected void saveAdditional(CompoundTag compound) {
         compound.put(KEY_ITEM, ContainerHelper.saveAllItems(new CompoundTag(), inventory));
-        compound.putInt(KEY_LAST_PLACED, lastPlacedIndex);
-        compound.putString(KEY_RS_MODE, redstoneMode.name());
+        toClientTag(compound);
         super.saveAdditional(compound);
     }
 
@@ -210,6 +210,16 @@ public class PlacerTile extends BlockEntity implements
     public void load(CompoundTag compound) {
         super.load(compound);
         ContainerHelper.loadAllItems(compound.getCompound(KEY_ITEM), inventory);
+        fromClientTag(compound);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        return this.serializeNBT();
+    }
+
+    @Override
+    public void fromClientTag(CompoundTag compound) {
         lastPlacedIndex = compound.getInt(KEY_LAST_PLACED);
         try {
             redstoneMode = RedstoneMode.valueOf(compound.getString(KEY_RS_MODE));
@@ -220,8 +230,10 @@ public class PlacerTile extends BlockEntity implements
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return this.serializeNBT();
+    public CompoundTag toClientTag(CompoundTag compound) {
+        compound.putInt(KEY_LAST_PLACED, lastPlacedIndex);
+        compound.putString(KEY_RS_MODE, redstoneMode.name());
+        return compound;
     }
 
     // -------------------- Capability --------------------

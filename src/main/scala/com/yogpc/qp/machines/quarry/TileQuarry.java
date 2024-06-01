@@ -16,7 +16,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -51,6 +50,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
     private List<EnchantmentLevel> enchantments = new ArrayList<>();
     public final MachineStorage storage = new MachineStorage();
     public double headX, headY, headZ;
+    public double targetHeadX, targetHeadY, targetHeadZ;
     private boolean init = false;
     public int digMinY = 0;
     private ItemConverter itemConverter;
@@ -77,19 +77,8 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             nbt.put("target", Target.toNbt(target));
         }
         nbt.putString("state", state.name());
-        if (area != null)
-            nbt.put("area", area.toNBT());
-        {
-            var enchantments = new CompoundTag();
-            this.enchantments.forEach(e ->
-                enchantments.putInt(Objects.requireNonNull(e.enchantmentID(), "Invalid enchantment. " + e.enchantment()).toString(), e.level()));
-            nbt.put("enchantments", enchantments);
-        }
-        nbt.putDouble("headX", headX);
-        nbt.putDouble("headY", headY);
-        nbt.putDouble("headZ", headZ);
         nbt.put("storage", storage.toNbt());
-        nbt.putInt("digMinY", digMinY);
+        toClientTag(nbt);
         nbt.put("moduleInventory", moduleInventory.serializeNBT());
     }
 
@@ -98,42 +87,43 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         super.load(nbt);
         target = nbt.contains("target") ? Target.fromNbt(nbt.getCompound("target")) : null;
         state = QuarryState.valueOf(nbt.getString("state"));
-        area = Area.fromNBT(nbt.getCompound("area")).orElse(null);
-        {
-            var enchantments = nbt.getCompound("enchantments");
-            setEnchantments(enchantments.getAllKeys().stream()
-                .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, enchantments::getInt))
-                .map(EnchantmentLevel::new)
-                .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
-                .toList());
-        }
-        headX = nbt.getDouble("headX");
-        headY = nbt.getDouble("headY");
-        headZ = nbt.getDouble("headZ");
         storage.readNbt(nbt.getCompound("storage"));
-        digMinY = nbt.getInt("digMinY");
+        fromClientTag(nbt);
         moduleInventory.deserializeNBT(nbt.getCompound("moduleInventory"));
         init = true;
     }
 
     @Override
     public CompoundTag toClientTag(CompoundTag tag) {
-        if (area != null)
+        if (area != null) {
             tag.put("area", area.toNBT());
+        }
+        var enchantments = new CompoundTag();
+        this.enchantments.forEach(e ->
+            enchantments.putInt(Objects.requireNonNull(e.enchantmentID(), "Invalid enchantment. " + e.enchantment()).toString(), e.level()));
+        tag.put("enchantments", enchantments);
         tag.putString("state", state.name());
         tag.putDouble("headX", headX);
         tag.putDouble("headY", headY);
         tag.putDouble("headZ", headZ);
+        tag.putInt("digMinY", digMinY);
         return tag;
     }
 
     @Override
     public void fromClientTag(CompoundTag tag) {
         area = Area.fromNBT(tag.getCompound("area")).orElse(null);
+        var enchantments = tag.getCompound("enchantments");
+        setEnchantments(enchantments.getAllKeys().stream()
+            .mapMulti(MapMulti.getEntry(ForgeRegistries.ENCHANTMENTS, enchantments::getInt))
+            .map(EnchantmentLevel::new)
+            .sorted(EnchantmentLevel.QUARRY_ENCHANTMENT_COMPARATOR)
+            .toList());
         state = QuarryState.valueOf(tag.getString("state"));
-        headX = tag.getDouble("headX");
-        headY = tag.getDouble("headY");
-        headZ = tag.getDouble("headZ");
+        targetHeadX = tag.getDouble("headX");
+        targetHeadY = tag.getDouble("headY");
+        targetHeadZ = tag.getDouble("headZ");
+        digMinY = tag.getInt("digMinY");
     }
 
     @Override
@@ -205,6 +195,12 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         }
     }
 
+    public static void clientTick(Level world, BlockPos pos, BlockState state, TileQuarry quarry) {
+        quarry.headX = quarry.targetHeadX;
+        quarry.headY = quarry.targetHeadY;
+        quarry.headZ = quarry.targetHeadZ;
+    }
+
     public BreakResult breakBlock(BlockPos targetPos) {
         return breakBlock(targetPos, true);
     }
@@ -227,8 +223,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
                     }));
         }
         var pickaxe = getPickaxe();
-        var fakePlayer = QuarryFakePlayer.get(targetWorld);
-        fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
+        var fakePlayer = QuarryFakePlayer.getAndSetPosition(targetWorld, targetPos, pickaxe);
         // Check breakable
         var state = targetWorld.getBlockState(targetPos);
         var breakEvent = new BlockEvent.BreakEvent(targetWorld, targetPos, state, fakePlayer);

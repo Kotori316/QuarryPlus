@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines.advquarry;
 
 import com.yogpc.qp.Holder;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.*;
 import com.yogpc.qp.machines.filler.FillerAction;
 import net.minecraft.core.BlockPos;
@@ -308,7 +309,14 @@ public abstract class AdvQuarryAction implements BlockEntityTicker<TileAdvQuarry
                     searchEnergyConsumed = false;
                     if (!iterator.hasNext()) {
                         // Go to the next work.
-                        quarry.setAction(new CheckFluid(quarry));
+                        if (QuarryPlus.config.common.removeFluidAfterFinishedByCD.get()) {
+                            quarry.setAction(new CheckFluid(quarry));
+                        } else {
+                            if (quarry.hasFillerModule())
+                                quarry.setAction(new FillerWork(quarry));
+                            else
+                                quarry.setAction(Finished.FINISHED);
+                        }
                         break;
                     }
                 }

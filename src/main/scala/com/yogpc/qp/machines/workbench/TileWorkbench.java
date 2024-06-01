@@ -5,8 +5,9 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.CheckerLog;
 import com.yogpc.qp.machines.InvUtils;
 import com.yogpc.qp.machines.PowerTile;
+import com.yogpc.qp.packet.ClientSync;
+import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -44,7 +45,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class TileWorkbench extends PowerTile implements Container, MenuProvider, CheckerLog {
+public class TileWorkbench extends PowerTile implements Container, MenuProvider, CheckerLog, ClientSync {
     final List<ItemStack> ingredientInventory = NonNullList.withSize(27, ItemStack.EMPTY);
     final List<ItemStack> selectionInventory = NonNullList.withSize(18, ItemStack.EMPTY);
     public List<RecipeHolder<WorkbenchRecipe>> recipesList = Collections.emptyList();
@@ -82,7 +83,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
             addEnergy(5 * ONE_FE, false);
         }
         if (!openPlayers.isEmpty()) {
-            PacketHandler.sendToClient(new TileMessage(this), level);
+            PacketHandler.sendToClient(new ClientSyncMessage(this), level);
         }
     }
 
@@ -118,6 +119,17 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
     }
 
     @Override
+    public void fromClientTag(CompoundTag nbt) {
+        setEnergy(nbt.getLong("energy"), false);
+        setMaxEnergy(nbt.getLong("maxEnergy"));
+        var recipeLocation = new ResourceLocation(nbt.getString("recipe"));
+        initRecipeTask = () -> {
+            updateRecipeOutputs();
+            setCurrentRecipe(recipeLocation);
+        };
+    }
+
+    @Override
     public void saveNbtData(CompoundTag nbt) {
         ListTag items = new ListTag();
         for (int i = 0; i < ingredientInventory.size(); i++) {
@@ -133,6 +145,14 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
         }
         nbt.put("Items", items);
         nbt.putString("recipe", currentRecipeId.toString());
+    }
+
+    @Override
+    public CompoundTag toClientTag(CompoundTag nbt) {
+        nbt.putLong("energy", getEnergy());
+        nbt.putLong("maxEnergy", getMaxEnergy());
+        nbt.putString("recipe", currentRecipe.getId().toString());
+        return nbt;
     }
 
     // Implementation of Inventory.
@@ -235,7 +255,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
                     logUsage();
                 }
             }
-            PacketHandler.sendToClient(new TileMessage(this), level);
+            PacketHandler.sendToClient(new ClientSyncMessage(this), level);
         }
     }
 

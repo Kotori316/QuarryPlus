@@ -63,6 +63,7 @@ public class Config {
         public final ForgeConfigSpec.BooleanValue convertDeepslateOres;
         public final ForgeConfigSpec.DoubleValue sfqEnergy;
         public final ForgeConfigSpec.BooleanValue removeCommonMaterialsByCD;
+        public final ForgeConfigSpec.BooleanValue removeFluidAfterFinishedByCD;
         public final ForgeConfigSpec.BooleanValue reduceMarkerGuideLineIfPlayerIsFar;
         public final ForgeConfigSpec.BooleanValue removeFrameAfterQuarryIsRemoved;
         public final ForgeConfigSpec.BooleanValue allowWorkInClaimedChunkByFBTChunks;
@@ -85,6 +86,8 @@ public class Config {
             spawnerBlackList = builder.comment("Spawner Controller Blacklist").defineListAllowEmpty(List.of("spawnerBlacklist"), () -> disabledEntities, s -> s instanceof String);
             sfqEnergy = builder.comment("The amount of energy[FE] that Solid Fuel Quarry generates in a tick.").defineInRange("sfqEnergy", 2d, 0d, 100d);
             removeCommonMaterialsByCD = builder.comment("Remove common materials(Stone, Dirt, Grass, Sand, etc.) obtained by Chunk Destroyer").define("removeCommonMaterialsByCD", true);
+            removeFluidAfterFinishedByCD = builder.comment("Remove fluids after Chunk Destroyer finishes working. Recommended to set `false` as some issues are reported in #371")
+                .define("removeFluidAfterFinishedByCD", false);
             reduceMarkerGuideLineIfPlayerIsFar = builder.comment("Remove MarkerPlus guide line if player is too far from the marker.").define("reduceMarkerGuideLineIfPlayerIsFar", false);
             removeFrameAfterQuarryIsRemoved = builder.comment("Remove adjacent frames when quarry is removed.").define("removeFrameAfterQuarryIsRemoved", false);
             allowWorkInClaimedChunkByFBTChunks = builder.comment("Allow quarries to work in claimed chunk(FTB Chunks).").define("allowWorkInClaimedChunkByFBTChunks", false);

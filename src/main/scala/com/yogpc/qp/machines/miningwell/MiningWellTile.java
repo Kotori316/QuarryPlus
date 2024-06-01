@@ -3,12 +3,12 @@ package com.yogpc.qp.machines.miningwell;
 import com.yogpc.qp.Holder;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.*;
+import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -26,7 +26,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class MiningWellTile extends PowerTile implements CheckerLog, MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments {
+public class MiningWellTile extends PowerTile implements CheckerLog, MachineStorage.HasStorage, EnchantmentLevel.HasEnchantments, ClientSync {
     private final MachineStorage storage = new MachineStorage();
     private final ItemConverter itemConverter = ItemConverter.defaultConverter();
     public int digMinY = 0;
@@ -59,8 +59,7 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
 
             if (state.isAir() || state.is(Holder.BLOCK_DUMMY)) continue;
             var pickaxe = EnchantmentLevel.HasEnchantments.super.getPickaxe();
-            var fakePlayer = QuarryFakePlayer.get((ServerLevel) level);
-            fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
+            var fakePlayer = QuarryFakePlayer.getAndSetPosition((ServerLevel) level, targetPos, pickaxe);
             var breakEvent = new BlockEvent.BreakEvent(level, targetPos, state, fakePlayer);
             MinecraftForge.EVENT_BUS.post(breakEvent);
             if (breakEvent.isCanceled()) continue;
@@ -96,20 +95,31 @@ public class MiningWellTile extends PowerTile implements CheckerLog, MachineStor
     @Override
     public void saveNbtData(CompoundTag nbt) {
         nbt.put("storage", storage.toNbt());
-        nbt.putInt("digMinY", digMinY);
-        nbt.putInt("waitingTick", interval);
-        nbt.putBoolean("finished", finished);
-        nbt.putInt("efficiencyLevel", efficiencyLevel);
+        toClientTag(nbt);
+    }
+
+    @Override
+    public CompoundTag toClientTag(CompoundTag tag) {
+        tag.putInt("digMinY", digMinY);
+        tag.putInt("waitingTick", interval);
+        tag.putBoolean("finished", finished);
+        tag.putInt("efficiencyLevel", efficiencyLevel);
+        return tag;
     }
 
     @Override
     public void load(CompoundTag nbt) {
         super.load(nbt);
         storage.readNbt(nbt.getCompound("storage"));
-        digMinY = nbt.getInt("digMinY");
-        interval = nbt.getInt("waitingTick");
-        finished = nbt.getBoolean("finished");
-        efficiencyLevel = nbt.getInt("efficiencyLevel");
+        fromClientTag(nbt);
+    }
+
+    @Override
+    public void fromClientTag(CompoundTag tag) {
+        digMinY = tag.getInt("digMinY");
+        interval = tag.getInt("waitingTick");
+        finished = tag.getBoolean("finished");
+        efficiencyLevel = tag.getInt("efficiencyLevel");
     }
 
     @Override

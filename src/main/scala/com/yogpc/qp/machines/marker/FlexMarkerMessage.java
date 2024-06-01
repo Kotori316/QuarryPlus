@@ -1,8 +1,8 @@
 package com.yogpc.qp.machines.marker;
 
+import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.IMessage;
 import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -50,7 +50,7 @@ public final class FlexMarkerMessage implements IMessage {
                 .flatMap(MapMulti.optCast(TileFlexMarker.class))
                 .ifPresent(m -> {
                     m.move(message.movable, message.amount);
-                    PacketHandler.sendToClient(new TileMessage(m), Objects.requireNonNull(m.getLevel()));
+                    PacketHandler.sendToClient(new ClientSyncMessage(m), Objects.requireNonNull(m.getLevel()));
                 }));
     }
 }

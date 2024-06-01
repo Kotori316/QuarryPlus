@@ -7,8 +7,6 @@ import com.yogpc.qp.integration.wrench.WrenchItems;
 import com.yogpc.qp.machines.MachineStorage;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.machines.QPBlock;
-import com.yogpc.qp.packet.PacketHandler;
-import com.yogpc.qp.packet.TileMessage;
 import com.yogpc.qp.utils.CombinedBlockEntityTicker;
 import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.minecraft.core.BlockPos;
@@ -85,7 +83,7 @@ public final class SFQuarryBlock extends QPBlock implements EntityBlock {
                 }
                 var preForced = QuarryChunkLoadUtil.makeChunkLoaded(level, pos, quarry.enabled);
                 quarry.setChunkPreLoaded(preForced);
-                PacketHandler.sendToClient(new TileMessage(quarry), level);
+                quarry.sync();
             }
         }
     }
@@ -121,10 +119,19 @@ public final class SFQuarryBlock extends QPBlock implements EntityBlock {
         return Holder.SOLID_FUEL_QUARRY_TYPE.create(pos, state);
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : checkType(blockEntityType, Holder.SOLID_FUEL_QUARRY_TYPE,
+        if (level.isClientSide) {
+            if (blockEntityType == Holder.SOLID_FUEL_QUARRY_TYPE) {
+                BlockEntityTicker<SFQuarryEntity> ticker = SFQuarryEntity::clientTick;
+                return (BlockEntityTicker<T>) ticker;
+            } else {
+                return null;
+            }
+        }
+        return checkType(blockEntityType, Holder.SOLID_FUEL_QUARRY_TYPE,
             CombinedBlockEntityTicker.of(
                 this, level,
                 SFQuarryEntity::tickFuel,
