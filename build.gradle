@@ -13,7 +13,7 @@ import java.util.stream.Stream
 plugins {
     id("maven-publish")
     id("scala")
-    id("net.minecraftforge.gradle") version("5.+")
+    id("net.minecraftforge.gradle") version("6.+")
     id("org.parchmentmc.librarian.forgegradle") version("1.+")
     id("com.github.breadmoirai.github-release") version("2.4.1")
     id("com.matthewprenger.cursegradle") version("1.4.0")
@@ -115,7 +115,6 @@ minecraft {
             property("mixin.debug.export", "true")
             property("forge.logging.console.level", "info")
             args("--nogui")
-            setForceExit(false)
 
             mods {
                 quarryplus {
@@ -131,7 +130,6 @@ minecraft {
             property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
             property("mixin.debug.export", "true")
             property("forge.logging.console.level", "info")
-            setForceExit(false)
             args("--mod", "quarryplus", "--all", "--output", file("src/generated/resources/"), "--existing", file("src/main/resources/"))
 
             mods {
@@ -150,7 +148,6 @@ minecraft {
             property("mixin.debug.export", "true")
             property("forge.logging.console.level", "debug")
             property("forge.enabledGameTestNamespaces", "QuarryPlus".toLowerCase())
-            setForceExit(false)
             jvmArgs("-EnableAssertions".toLowerCase())
 
             mods {
