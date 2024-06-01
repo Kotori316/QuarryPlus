@@ -1,6 +1,6 @@
 ## Version LATEST for 1.19.2
 
-* Improve quarry rendering #424
+* Fix #371
 
 ## Version for 1.19.2
 
@@ -27,6 +27,7 @@
 * Fix a bug of item duplication
 * Not to load JEI plugin when REI is installed. #426
 * Improve quarry rendering #424
+* Fix #371
 
 ## Version 18.23
 
