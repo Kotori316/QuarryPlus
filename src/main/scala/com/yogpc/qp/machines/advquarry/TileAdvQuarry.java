@@ -410,7 +410,8 @@ public class TileAdvQuarry extends PowerTile implements
             if (!state.isAir() && canBreak(targetWorld, pair.getLeft(), state)) {
                 breakOneBlock(pair.getLeft(), false);
             }
-            targetWorld.setBlock(pair.getLeft(), Holder.BLOCK_DUMMY.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+            // Placing too much dummy block and remove it might cause problems, so disable it
+            // targetWorld.setBlock(pair.getLeft(), Holder.BLOCK_DUMMY.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
         }
         // Get drops
         var drops = toBreak.stream().flatMap(p ->
