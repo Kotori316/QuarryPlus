@@ -151,7 +151,7 @@ public class TileWorkbench extends PowerTile implements Container, MenuProvider,
     public CompoundTag toClientTag(CompoundTag nbt) {
         nbt.putLong("energy", getEnergy());
         nbt.putLong("maxEnergy", getMaxEnergy());
-        nbt.putString("recipe", currentRecipe.getId().toString());
+        nbt.putString("recipe", currentRecipeId.toString());
         return nbt;
     }
 

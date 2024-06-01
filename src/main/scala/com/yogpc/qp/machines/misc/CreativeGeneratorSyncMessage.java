@@ -8,9 +8,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 /**
  * To server only
@@ -45,9 +43,9 @@ public final class CreativeGeneratorSyncMessage implements IMessage {
         buf.writeLong(sendEnergy);
     }
 
-    public static void onReceive(CreativeGeneratorSyncMessage message, Supplier<NetworkEvent.Context> supplier) {
-        var world = PacketHandler.getWorld(supplier.get(), message.pos, message.dim);
-        supplier.get().enqueueWork(() ->
+    public static void onReceive(CreativeGeneratorSyncMessage message, CustomPayloadEvent.Context supplier) {
+        var world = PacketHandler.getWorld(supplier, message.pos, message.dim);
+        supplier.enqueueWork(() ->
             world.flatMap(l -> l.getBlockEntity(message.pos, Holder.CREATIVE_GENERATOR_TYPE))
                 .ifPresent(t -> t.sendEnergy = message.sendEnergy)
         );

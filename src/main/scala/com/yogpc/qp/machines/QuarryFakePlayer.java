@@ -1,6 +1,7 @@
 package com.yogpc.qp.machines;
 
 import com.mojang.authlib.GameProfile;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.Connection;
 import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.chat.ChatType;
@@ -16,9 +17,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.stats.Stat;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -46,6 +50,18 @@ public class QuarryFakePlayer {
             // new InternalFakePlayer.NetHandler(key.getServer(), player, cookie);
             return player;
         });
+    }
+
+    public static ServerPlayer getAndSetPosition(ServerLevel serverLevel, BlockPos pos, ItemStack stack) {
+        ServerPlayer player = get(serverLevel);
+        player.setPos(Vec3.atCenterOf(pos.above(2)));
+        player.setXRot(90f);
+        player.setYRot(90f);
+        player.setYHeadRot(90f);
+        if (stack != null) {
+            player.setItemInHand(InteractionHand.MAIN_HAND, stack);
+        }
+        return player;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

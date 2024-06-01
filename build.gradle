@@ -251,7 +251,7 @@ dependencies {
         implementation(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
         implementation(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
         implementation(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
-        implementation(fg.deobf(group: "me.shedaniel", name: "REIPluginCompatibilities-forge-annotations", version: project.reiCompatibilityVersion))
+        compileOnly(fg.deobf(group: "me.shedaniel", name: "REIPluginCompatibilities-forge-annotations", version: project.reiCompatibilityVersion))
     } else {
         runtimeOnly(fg.deobf(group: "mezz.jei", name: "jei-1.20.2-forge", version: project.jeiVersion) {
             transitive(false)

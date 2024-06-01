@@ -7,13 +7,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @GameTestHolder(QuarryPlus.modID)
-@PrefixGameTestTemplate(value = false)
 public final class ChainBreakTest {
     @GameTest(template = GameTestUtil.EMPTY_STRUCTURE)
     void removeOne(GameTestHelper helper) {
