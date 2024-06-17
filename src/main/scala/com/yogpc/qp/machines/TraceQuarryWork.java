@@ -44,13 +44,20 @@ public final class TraceQuarryWork {
         CONTEXT = Configurator.initialize("quarryplus-config", new DummyLoader(),
             URI.create(Objects.requireNonNull(TraceQuarryWork.class.getResource("/quarry-log4j2.xml")).toString())
         );
-        // temporal variable to set level, as org.apache.logging.log4j.Logger doesn't provide setters.
-        var l = CONTEXT.getLogger("TQW");
-        LOGGER = l;
-        WARNING_MARKER = MarkerManager.getMarker("QUARRY_WARNING");
-        if (!enabled) {
-            l.setLevel(Level.WARN);
+        Logger t;
+        if (CONTEXT != null) {
+            // temporal variable to set level, as org.apache.logging.log4j.Logger doesn't provide setters.
+            var l = CONTEXT.getLogger("TQW");
+            if (!enabled) {
+                l.setLevel(Level.WARN);
+            }
+            t = l;
+        } else {
+            // I don't know what is happening, but I should care this case
+            t = QuarryPlus.LOGGER;
         }
+        LOGGER = t;
+        WARNING_MARKER = MarkerManager.getMarker("QUARRY_WARNING");
     }
 
     private static final Marker MARKER_START_WORK = MarkerManager.getMarker("startWork");
