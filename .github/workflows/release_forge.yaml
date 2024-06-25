@@ -46,6 +46,7 @@ jobs:
       id-token: write
       contents: write
       packages: write
+      attestations: write
     # See https://github.com/Kotori316/common-script/blob/main/.github/workflows/release-prod-gradle.yaml
     uses: 'Kotori316/common-script/.github/workflows/release-prod-gradle.yaml@main'
     with:
