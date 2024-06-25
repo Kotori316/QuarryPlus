@@ -99,7 +99,7 @@ public class Holder {
             throw new IllegalArgumentException("Blocks must not be empty.");
         }
         var type = BlockEntityType.Builder.of(supplier, block.toArray(Block[]::new)).build(DSL.emptyPartType());
-        ENTITY_TYPES.add(new NamedEntry<>(block.get(0).getRegistryName(), type, dummy.getClass().arrayType()));
+        ENTITY_TYPES.add(new NamedEntry<>(block.get(0).getRegistryName(), type, dummy.getClass().getComponentType()));
         CONDITION_HOLDERS.add(new EntryConditionHolder(block.get(0).getRegistryName(), condition));
         return type;
     }
