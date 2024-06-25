@@ -11,14 +11,17 @@ pluginManagement {
 
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version ("0.8.0")
-    id("com.gradle.enterprise") version ("3.+")
+    id("com.gradle.develocity") version ("3.+")
 }
 
-gradleEnterprise {
+develocity {
     buildScan {
         if (System.getenv("CI").toBoolean()) {
-            termsOfServiceUrl = "https://gradle.com/terms-of-service"
-            termsOfServiceAgree = "yes"
+            termsOfUseUrl = "https://gradle.com/help/legal-terms-of-use"
+            termsOfUseAgree = "yes"
+        }
+        publishing {
+            onlyIf { false }
         }
     }
 }
