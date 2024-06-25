@@ -16,16 +16,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: gradle/wrapper-validation-action@v3
+      - uses: gradle/actions/wrapper-validation@v3
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
       - run: chmod +x ./gradlew
-      - uses: gradle/gradle-build-action@v3
+      - uses: gradle/actions/setup-gradle@v3
         with:
-          cache-read-only: ${{ github.event_name != 'push' }}
-          gradle-home-cache-cleanup: true
+          cache-disabled: true
       - run: ./gradlew assemble --scan
       - run: ./gradlew checkJarSetting checkChangeLog checkReleaseVersion --no-parallel
 
@@ -41,12 +40,12 @@ jobs:
       DISABLE_NEOFORGE: ${{ matrix.platform != 'neoforge' }}
     steps:
       - uses: actions/checkout@v4
-      - uses: gradle/wrapper-validation-action@v3
+      - uses: gradle/actions/wrapper-validation@v3
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      - uses: gradle/gradle-build-action@v3
+      - uses: gradle/actions/setup-gradle@v3
         with:
           cache-read-only: ${{ github.event_name != 'push' }}
           gradle-home-cache-cleanup: true
