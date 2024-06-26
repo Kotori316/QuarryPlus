@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.List;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -22,11 +18,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(QuarryPlusTest.class)
 class EnchantmentIngredientTest {
@@ -342,6 +338,37 @@ class EnchantmentIngredientTest {
             var e1 = new EnchantmentIngredient(new ItemStack(Items.ENCHANTED_BOOK), List.of(new EnchantmentInstance(Enchantments.BLOCK_FORTUNE, 1)), false);
             var stack = EnchantedBookItem.createForEnchantment(new EnchantmentInstance(Enchantments.BLOCK_FORTUNE, i));
             assertTrue(e1.test(stack));
+        }
+
+        @Test
+        void match5() {
+            var stack = new ItemStack(Items.APPLE);
+            stack.enchant(Enchantments.SILK_TOUCH, 1);
+            stack.getOrCreateTag().putString("stringKey", "stringValue");
+            var i = new EnchantmentIngredient(stack, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false);
+
+            var s2 = new ItemStack(Items.APPLE);
+            stack.enchant(Enchantments.SILK_TOUCH, 1);
+            assertAll(
+                () -> assertTrue(i.test(stack)),
+                () -> assertFalse(i.test(new ItemStack(Items.APPLE))),
+                () -> assertFalse(i.test(s2))
+            );
+        }
+
+        @Test
+        void match6() {
+            var stack = new ItemStack(Items.APPLE);
+            stack.enchant(Enchantments.SILK_TOUCH, 1);
+            var i = new EnchantmentIngredient(stack, List.of(new EnchantmentInstance(Enchantments.SILK_TOUCH, 1)), false);
+
+            var s2 = stack.copy();
+            s2.getOrCreateTag().putString("stringKey", "stringValue");
+            assertAll(
+                () -> assertTrue(i.test(stack)),
+                () -> assertFalse(i.test(new ItemStack(Items.APPLE))),
+                () -> assertTrue(i.test(s2))
+            );
         }
 
         @Nested

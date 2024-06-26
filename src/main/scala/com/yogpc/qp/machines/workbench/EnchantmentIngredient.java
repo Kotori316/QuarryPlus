@@ -1,16 +1,5 @@
 package com.yogpc.qp.machines.workbench;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -33,10 +22,18 @@ import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 public class EnchantmentIngredient extends AbstractIngredient {
     public static final String NAME = "enchantment_ingredient";
     private final ItemStack stack;
     private final List<EnchantmentInstance> enchantments;
+    @Nullable
     private final CompoundTag withoutEnchantment;
     private final boolean checkDamage;
 
@@ -71,6 +68,10 @@ public class EnchantmentIngredient extends AbstractIngredient {
         Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
         if (!this.enchantments.stream().allMatch(d -> enchantments.getOrDefault(d.enchantment, 0) >= d.level)) {
             return false;
+        }
+        if (this.withoutEnchantment == null) {
+            // Not to check tags as we didn't expect other tags
+            return true;
         }
         CompoundTag nbt = getTagWithoutEnchantment(stack, checkDamage);
         return Objects.equals(this.withoutEnchantment, nbt);
