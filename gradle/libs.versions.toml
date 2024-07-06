@@ -41,7 +41,7 @@ tu = "20.4.11"
 du = "20.4.11"
 version_checker = "2.4.0"
 
-jupiter_api = "5.10.2"
+jupiter_api = "5.10.3"
 mockito_core = "5.12.0"
 mockito_inline = "5.2.0"
 
