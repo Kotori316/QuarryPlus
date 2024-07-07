@@ -10,7 +10,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 public final class SmallCheckBox extends Button {
-    private static final ResourceLocation TEXTURE = new ResourceLocation("textures/gui/checkbox.png");
+    private static final ResourceLocation CHECKBOX_SELECTED_HIGHLIGHTED_SPRITE = new ResourceLocation("widget/checkbox_selected_highlighted");
+    private static final ResourceLocation CHECKBOX_SELECTED_SPRITE = new ResourceLocation("widget/checkbox_selected");
+    private static final ResourceLocation CHECKBOX_HIGHLIGHTED_SPRITE = new ResourceLocation("widget/checkbox_highlighted");
+    private static final ResourceLocation CHECKBOX_SPRITE = new ResourceLocation("widget/checkbox");
     private final int checkBoxWidth;
     private final int checkBoxHeight;
     private boolean selected;
@@ -48,10 +51,14 @@ public final class SmallCheckBox extends Button {
         graphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         Font font = minecraft.font;
-        float uOffset = this.isHoveredOrFocused() ? 20.0F : 0.0F;
-        float vOffset = this.isSelected() ? 20.0F : 0.0F;
-        graphics.blit(TEXTURE, this.getX(), this.getY() + this.height / 2 - this.checkBoxHeight / 2,
-            this.checkBoxWidth, this.checkBoxHeight, uOffset, vOffset, 20, 20, 64, 64);
+        ResourceLocation resourcelocation;
+        if (isSelected()) {
+            resourcelocation = this.isMouseOver(pMouseX, pMouseY) ? CHECKBOX_SELECTED_HIGHLIGHTED_SPRITE : CHECKBOX_SELECTED_SPRITE;
+        } else {
+            resourcelocation = this.isMouseOver(pMouseX, pMouseY) ? CHECKBOX_HIGHLIGHTED_SPRITE : CHECKBOX_SPRITE;
+        }
+        graphics.blitSprite(resourcelocation, this.getX(), this.getY(), this.checkBoxWidth, this.checkBoxHeight);
+        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         // this.renderBg(pPoseStack, minecraft, pMouseX, pMouseY);
         int color = 0x404040;
         int labelOffset = this.checkBoxWidth / 5;
