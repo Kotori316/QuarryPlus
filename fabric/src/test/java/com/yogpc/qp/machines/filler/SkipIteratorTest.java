@@ -1,5 +1,11 @@
 package com.yogpc.qp.machines.filler;
 
+import com.yogpc.qp.QuarryPlusTest;
+import com.yogpc.qp.machines.Area;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import org.junit.jupiter.api.Test;
+
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Objects;
@@ -7,18 +13,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import com.yogpc.qp.QuarryPlusTest;
-import com.yogpc.qp.machines.Area;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SkipIteratorTest extends QuarryPlusTest {
     static final Area AREA = new Area(-3, 5, 10, 2, 8, 13, Direction.WEST);
@@ -161,6 +156,7 @@ class SkipIteratorTest extends QuarryPlusTest {
         var i1 = new SkipIterator(AREA, FillerTargetPosIterator.Box::new);
         var y6 = i1.peek(p -> p.getY() > 5);
         assertEquals(new BlockPos(-3, 6, 10), y6);
+        i1.checkSkipped = true;
         var y5 = i1.next(p -> p.getY() < 6);
         assertEquals(new BlockPos(-3, 5, 10), y5);
     }
@@ -176,6 +172,7 @@ class SkipIteratorTest extends QuarryPlusTest {
         }
         var p69 = iterator.peek(cond);
         assertEquals(new BlockPos(1, 3, 1), p69);
+        iterator.checkSkipped = true;
         var skipped1 = iterator.peek(TRUE_PREDICATE);
         assertEquals(new BlockPos(3, 1, 4), skipped1);
         iterator.commit(skipped1, false);
