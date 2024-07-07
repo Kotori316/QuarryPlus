@@ -40,8 +40,13 @@ public final class FillerAction {
         maybeStack.ifPresent(blockStack -> {
             var targetPos = this.iterator.peek(predicate(level, blockStack));
             if (targetPos == null) {
-                // Finished.
-                this.iterator = null;
+                if (this.iterator.checkSkipped) {
+                    // Finished
+                    this.iterator = null;
+                } else {
+                    // Check skipped poses
+                    this.iterator.checkSkipped = true;
+                }
             } else {
                 if (powerSource.useEnergy(energy, PowerTile.Reason.FILLER, false)) {
                     var context = new DirectionalPlaceContext(level, targetPos, Direction.DOWN, blockStack, Direction.UP);
@@ -74,7 +79,7 @@ public final class FillerAction {
         }
     }
 
-    public void setIterator(@Nullable SkipIterator iterator) {
+    void setIterator(@Nullable SkipIterator iterator) {
         this.iterator = iterator;
     }
 

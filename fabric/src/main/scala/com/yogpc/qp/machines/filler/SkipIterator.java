@@ -16,6 +16,7 @@ final class SkipIterator {
     FillerTargetPosIterator posIterator;
     List<BlockPos> skipped;
     private final Area area;
+    boolean checkSkipped = false;
 
     SkipIterator(Area area, Function<Area, FillerTargetPosIterator> constructor) {
         this.area = area;
@@ -25,9 +26,11 @@ final class SkipIterator {
 
     @Nullable
     BlockPos peek(Predicate<BlockPos> filter) {
-        var skipped = this.skipped.stream().filter(filter).findFirst();
-        if (skipped.isPresent()) {
-            return skipped.get();
+        if (checkSkipped) {
+            var skipped = this.skipped.stream().filter(filter).findFirst();
+            if (skipped.isPresent()) {
+                return skipped.get();
+            }
         }
         while (this.posIterator.hasNext()) {
             var pos = this.posIterator.peek();
@@ -63,6 +66,7 @@ final class SkipIterator {
         tag.putLong("current", posIterator.peek().asLong());
         var skips = this.skipped.stream().mapToLong(BlockPos::asLong).toArray();
         tag.putLongArray("skips", skips);
+        tag.putBoolean("checkSkipped", this.checkSkipped);
         return tag;
     }
 
@@ -70,12 +74,14 @@ final class SkipIterator {
         var area = Area.fromNBT(tag.getCompound("area")).orElseThrow(() ->
             new IllegalArgumentException("Invalid tag for SkipIterator. %s".formatted(tag)));
         var action = FillerEntity.Action.valueOf(tag.getString("type"));
+        var checkSkipped = tag.getBoolean("checkSkipped"); // default is false
         var skipIterator = new SkipIterator(area, action.iteratorProvider);
         var current = BlockPos.of(tag.getLong("current"));
         skipIterator.posIterator.setCurrent(current);
         Arrays.stream(tag.getLongArray("skips"))
             .mapToObj(BlockPos::of)
             .forEach(skipIterator.skipped::add);
+        skipIterator.checkSkipped = checkSkipped;
         return skipIterator;
     }
 }
