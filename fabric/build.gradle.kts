@@ -1,11 +1,63 @@
+import com.kotori316.plugin.cf.CallVersionCheckFunctionTask
+import com.kotori316.plugin.cf.CallVersionFunctionTask
+import com.matthewprenger.cursegradle.CurseArtifact
+import com.matthewprenger.cursegradle.CurseProject
+import com.matthewprenger.cursegradle.CurseRelation
+import com.matthewprenger.cursegradle.Options
+import groovy.util.Node
+import groovy.util.NodeList
+
 plugins {
     id("com.kotori316.common")
-    id("com.kotori316.jars")
-    id("com.kotori316.publishments")
     // id("scala")
     id("idea")
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom/
     id("fabric-loom") version ("1.7.2")
+
+    alias(libs.plugins.cursegradle)
+    alias(libs.plugins.minotaur)
+    alias(libs.plugins.cf)
+}
+
+java {
+    withSourcesJar()
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+tasks.processResources {
+    val mcVersion = project.property("minecraft").toString()
+    val modId = "quarryplus"
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    inputs.property("version", project.version)
+
+    listOf("fabric.mod.json", "META-INF/mods.toml").forEach { fileName ->
+        filesMatching(fileName) {
+            expand(
+                "version" to project.version,
+                "update_url" to "https://version.kotori316.com/get-version/${mcVersion}/${project.name}/${modId}",
+                "mc_version" to mcVersion,
+            )
+        }
+    }
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+signing {
+    sign(publishing.publications)
+}
+
+// sign task creation is in `com.kotori316.jars.gradle.kts`
+val hasGpgSignature = project.hasProperty("signing.keyId") &&
+        project.hasProperty("signing.password") &&
+        project.hasProperty("signing.secretKeyRingFile")
+
+tasks.withType(Sign::class) {
+    onlyIf("runs only with signing keys") { hasGpgSignature }
 }
 
 loom {
@@ -119,12 +171,147 @@ tasks.register("jksSignRemapJar", com.kotori316.common.JarSignTask::class) {
     jarTask = tasks.named("remapJar", org.gradle.jvm.tasks.Jar::class)
 }
 
-signing {
-    sign(tasks.remapJar.get())
+afterEvaluate {
+    rootProject.tasks.named("githubRelease") {
+        dependsOn(":${platformName}:assemble")
+        mustRunAfter(":${platformName}:signMavenJavaPublication")
+    }
 }
 
-afterEvaluate {
-    tasks.named("signJar") {
-        mustRunAfter("jksSignJar", "jksSignRemapJar")
+val minecraft: String by project
+val platformName: String = "fabric"
+tasks.register("registerVersion", CallVersionFunctionTask::class) {
+    functionEndpoint = CallVersionFunctionTask.readVersionFunctionEndpoint(project)
+    gameVersion = minecraft
+    platform = platformName
+    platformVersion = libs.fabric.api.get().version
+    modName = "QuarryPlus".lowercase()
+    changelog = "Fabric release"
+    homepage.set(
+        if (platformName == "forge") "https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner"
+        else "https://modrinth.com/mod/additional-enchanted-miner"
+    )
+    isDryRun = releaseDebug
+}
+
+tasks.register("checkReleaseVersion", CallVersionCheckFunctionTask::class) {
+    gameVersion = minecraft
+    platform = platformName
+    modName = "QuarryPlus".lowercase()
+    version = project.version.toString()
+    failIfExists = !releaseDebug
+}
+
+val releaseDebug: Boolean = (System.getenv("RELEASE_DEBUG") ?: "true").toBoolean()
+
+curseforge {
+    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: System.getenv("CURSE_TOKEN") ?: ""
+    project(closureOf<CurseProject> {
+        id = "282837"
+        changelogType = "markdown"
+        changelog = "Fabric release"
+        releaseType = "release"
+        addGameVersion(minecraft)
+        addGameVersion(
+            when (platformName) {
+                "forge" -> "Forge"
+                "fabric" -> "Fabric"
+                "neoforge" -> "NeoForge"
+                else -> throw IllegalArgumentException("Unknown platform $platformName")
+            }
+        )
+        // Using tasks.jar in fabric is OK, I don't know why
+        mainArtifact(tasks.jar.flatMap { it.archiveFile }.get(), closureOf<CurseArtifact> {
+            displayName = "v${project.version}-${platformName} [$minecraft]"
+        })
+        relations(closureOf<CurseRelation> {
+            requiredDependency("scalable-cats-force")
+            if (platformName == "fabric") {
+                requiredDependency("fabric-api")
+                requiredDependency("cloth-config")
+                requiredDependency("automatic-potato")
+            }
+        })
+    })
+    options(closureOf<Options> {
+        curseGradleOptions.debug = releaseDebug
+        curseGradleOptions.javaVersionAutoDetect = false
+        curseGradleOptions.forgeGradleIntegration = false
+    })
+}
+
+modrinth {
+    token = (project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String
+    projectId = "additional-enchanted-miner"
+    versionType = "release"
+    versionName = "${project.version}-${platformName}"
+    versionNumber = project.version.toString()
+    afterEvaluate {
+        uploadFile = if (platformName == "fabric") {
+            tasks.named("remapJar", org.gradle.jvm.tasks.Jar::class).flatMap { it.archiveFile }
+        } else {
+            tasks.jar.get()
+        }
+    }
+
+    gameVersions = listOf(minecraft)
+    loaders = listOf(platformName)
+    changelog = "Fabric release"
+    debugMode = releaseDebug
+    dependencies {
+        required.project("scalable-cats-force")
+        if (platformName == "fabric") {
+            required.project("fabric-api")
+            required.project("cloth-config")
+            required.project("automatic-potato")
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Kotori316/QuarryPlus")
+            credentials {
+                username = project.findProperty("gpr.user") as? String ?: System.getenv("GITHUB_ACTOR") ?: ""
+                password = project.findProperty("githubToken") as? String ?: System.getenv("REPO_TOKEN") ?: ""
+            }
+        }
+        val u = project.findProperty("maven_username") as? String ?: System.getenv("MAVEN_USERNAME") ?: ""
+        val p = project.findProperty("maven_password") as? String ?: System.getenv("MAVEN_PASSWORD") ?: ""
+        if (u != "" && p != "") {
+            maven {
+                name = "kotori316-maven"
+                // For users: Use https://maven.kotori316.com to get artifacts
+                url = uri("https://maven2.kotori316.com/production/maven")
+                credentials {
+                    username = u
+                    password = p
+                }
+            }
+        }
+    }
+    publications {
+        register("mavenJava", MavenPublication::class) {
+            val baseName: String = if (platformName == "forge")
+                "AdditionalEnchantedMiner"
+            else
+                "AdditionalEnchantedMiner-$platformName"
+            artifactId = baseName.lowercase()
+            from(components["java"])
+            pom {
+                description = "QuarryPlus for Minecraft $minecraft with $platformName"
+                url = "https://github.com/Kotori316/QuarryPlus"
+                packaging = "jar"
+                withXml {
+                    val dependencyNode = asNode()["dependencies"] as NodeList
+                    dependencyNode.filterIsInstance<Node>().forEach { node ->
+                        // remove all dependencies
+                        node.parent().remove(node)
+                    }
+                }
+            }
+        }
     }
 }
