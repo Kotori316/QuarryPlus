@@ -1,6 +1,8 @@
 ## LATEST 1.20.4
 
-* Improve publish logic
+* Fabric
+  * Fix checkbox texture in Quarry
+  * Change behavior of filler to check skipped blocks only once
 
 ---
 
