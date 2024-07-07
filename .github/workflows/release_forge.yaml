@@ -52,6 +52,5 @@ jobs:
     with:
       release_command: 'checkReleaseVersion assemble publishToMavenLocal curseforge modrinth githubRelease registerVersion publish --continue'
       enable_signature_check: true
-      use_gradle_cache: true
-      java_version: 21
+      docker_image: 'mcr.microsoft.com/devcontainers/java:1-21-bullseye'
     secrets: inherit
