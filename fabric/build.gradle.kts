@@ -26,6 +26,10 @@ java {
     }
 }
 
+tasks.named("sourcesJar", Jar::class) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 tasks.processResources {
     val mcVersion = project.property("minecraft").toString()
     val modId = "quarryplus"
