@@ -74,9 +74,11 @@ jobs:
       id-token: write
       contents: write
       packages: write
+      attestations: write
     if: ${{ contains(github.event.head_commit.message, '[release]') && github.event_name != 'pull_request'}}
     # See https://github.com/Kotori316/common-script/blob/main/.github/workflows/release-prod-gradle.yaml
     uses: 'Kotori316/common-script/.github/workflows/release-prod-gradle.yaml@main'
     with:
       release_command: 'checkReleaseVersion assemble publishToMavenLocal registerVersion curseforge modrinth publish'
+      java_version: '17'
     secrets: inherit

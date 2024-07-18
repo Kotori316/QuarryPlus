@@ -357,7 +357,7 @@ curseforge {
         addGameVersion 'Fabric'
         addGameVersion project.minecraft_version
         changelog = curseChangelog()
-        releaseType = isInCI() ? 'alpha' : 'beta'
+        releaseType = 'beta'
         mainArtifact(remapJar) {
             displayName = "v" + project.version + "-fabric" + " [${project.minecraft_version}]"
         }
@@ -390,7 +390,7 @@ githubRelease {
 modrinth {
     token.set((project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String)
     projectId.set("additional-enchanted-miner")
-    versionType.set(isInCI() ? "alpha" : "release")
+    versionType.set(isInCI() ? "beta" : "release")
     versionName.set("${project.version}-fabric")
     uploadFile.set(tasks.remapJar)
     additionalFiles.set([])
@@ -489,12 +489,17 @@ tasks.register('copyToDrive', Copy) {
 publishing {
     repositories {
         if (!inReleaseDebug) {
-            maven {
-                name = "AzureRepository"
-                url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
-                credentials {
-                    username = project.findProperty("azureUserName") ?: System.getenv("AZURE_USER_NAME") ?: ""
-                    password = project.findProperty("azureToken") ?: System.getenv("AZURE_TOKEN") ?: "TOKEN"
+            def u = project.findProperty("maven_username") as String ?: System.getenv("MAVEN_USERNAME") ?: ""
+            def p = project.findProperty("maven_password") as String ?: System.getenv("MAVEN_PASSWORD") ?: ""
+            if (u != "" && p != "") {
+                maven {
+                    name = "kotori316-maven"
+                    // For users: Use https://maven.kotori316.com to get artifacts
+                    url = uri("https://maven2.kotori316.com/production/maven")
+                    credentials {
+                        username = u
+                        password = p
+                    }
                 }
             }
         }
