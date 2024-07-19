@@ -1,3 +1,5 @@
+import com.kotori316.plugin.cf.CallVersionCheckFunctionTask
+import com.kotori316.plugin.cf.CallVersionFunctionTask
 import groovy.util.Node
 import groovy.util.NodeList
 import java.time.ZonedDateTime
@@ -7,6 +9,7 @@ plugins {
     id("java")
     id("maven-publish")
     id("signing")
+    id("com.kotori316.plugin.cf")
 }
 
 fun getPlatform(project: Project): String {
@@ -17,6 +20,7 @@ val catalog = project.versionCatalogs.named("libs")
 val platformName = getPlatform(project)
 val minecraft: String = catalog.findVersion("minecraft").map { it.requiredVersion }.get()
 val modId = "quarryplus"
+val releaseDebug: Boolean = (System.getenv("RELEASE_DEBUG") ?: "true").toBoolean()
 
 base {
     group = "com.kotori316"
@@ -197,6 +201,37 @@ publishing {
             }
         }
     }
+}
+
+fun getPlatformVersion(platform: String): String {
+    return when (platform) {
+        "forge" -> catalog.findVersion("forge").map { it.requiredVersion }.orElseThrow()
+        "neoforge" -> catalog.findVersion("neoforge").map { it.requiredVersion }.orElseThrow()
+        "fabric" -> catalog.findVersion("fabric_api").map { it.requiredVersion }.orElseThrow()
+        else -> throw IllegalArgumentException("Unsupported platform: $platform")
+    }
+}
+
+tasks.register("registerVersion", CallVersionFunctionTask::class) {
+    functionEndpoint = CallVersionFunctionTask.readVersionFunctionEndpoint(project)
+    gameVersion = minecraft
+    platform = platformName
+    platformVersion = getPlatformVersion(platformName)
+    modName = "QuarryPlus".lowercase()
+    changelog = ""
+    homepage.set(
+        if (platformName == "forge") "https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner"
+        else "https://modrinth.com/mod/additional-enchanted-miner"
+    )
+    isDryRun = releaseDebug
+}
+
+tasks.register("checkReleaseVersion", CallVersionCheckFunctionTask::class) {
+    gameVersion = minecraft
+    platform = platformName
+    modName = "QuarryPlus".lowercase()
+    version = project.version.toString()
+    failIfExists = !releaseDebug
 }
 
 tasks.test {
