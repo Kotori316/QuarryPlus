@@ -1,8 +1,0 @@
-{
-  "variants": {
-    "enabled=true,working=false": {"model": "quarryplus:block/pumpplus_enabled"},
-    "enabled=true,working=true": {"model": "quarryplus:block/pumpplus_enabled"},
-    "enabled=false,working=true": {"model": "quarryplus:block/pumpplus_working"},
-    "enabled=false,working=false": {"model": "quarryplus:block/pumpplus"}
-  }
-}

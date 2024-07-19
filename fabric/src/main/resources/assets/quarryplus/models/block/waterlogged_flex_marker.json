@@ -1,8 +1,0 @@
-{
-  "credit": "Made with Block bench",
-  "parent": "quarryplus:block/waterlogged_marker",
-  "textures": {
-    "0": "quarryplus:block/flex_marker",
-    "particle": "quarryplus:block/flex_marker"
-  }
-}

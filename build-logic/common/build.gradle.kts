@@ -10,9 +10,7 @@ repositories {
 
 dependencies {
     mapOf(
-        "com.matthewprenger.cursegradle" to libs.versions.gradle.curse.get(),
-        "com.modrinth.minotaur" to libs.versions.gradle.minotaur.get(),
-        "com.kotori316.plugin.cf" to libs.versions.gradle.cf.get(),
+        "com.kotori316.plugin.cf" to libs.versions.plugin.cf.get(),
     ).forEach { (name, version) ->
         implementation(group = name, name = "${name}.gradle.plugin", version = version)
     }
