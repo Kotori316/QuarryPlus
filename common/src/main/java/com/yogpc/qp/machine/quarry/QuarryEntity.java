@@ -2,10 +2,7 @@ package com.yogpc.qp.machine.quarry;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machine.Area;
-import com.yogpc.qp.machine.PickIterator;
-import com.yogpc.qp.machine.PowerEntity;
-import com.yogpc.qp.machine.QpBlockProperty;
+import com.yogpc.qp.machine.*;
 import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -44,6 +41,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         currentState = QuarryState.FINISHED;
     }
 
+    @SuppressWarnings("unused")
     static void serverTick(Level level, BlockPos pos, BlockState state, QuarryEntity quarryEntity) {
         if (level.getGameTime() % 40 == 0) {
             QuarryPlus.LOGGER.info(MARKER, "{}, {}, {}, {}, {}",
@@ -69,6 +67,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         a.run();
     }
 
+    @SuppressWarnings("unused")
     static void clientTick(Level level, BlockPos pos, BlockState state, QuarryEntity quarryEntity) {
         if (level.getGameTime() % 40 == 0) {
             QuarryPlus.LOGGER.info(MARKER, "CLIENT {}, {}",
@@ -202,6 +201,59 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     void breakBlock() {
+        if (level == null || level.isClientSide() || area == null) {
+            return;
+        }
+        if (targetIterator == null) {
+            targetIterator = createTargetIterator(currentState, getArea(), null);
+            assert targetIterator != null;
+        }
+        if (targetPos == null) {
+            throw new IllegalStateException("How to break block with targetPos is null?");
+        }
+
+        var fluid = level.getFluidState(targetPos);
+        if (!fluid.isEmpty()) {
+            if (shouldRemoveFluid()) {
+                setState(QuarryState.REMOVE_FLUID, getBlockState());
+                removeFluid();
+                return;
+            }
+            // Skip this pos
+            if (targetIterator.hasNext()) {
+                targetPos = targetIterator.next();
+            } else {
+                setNextDigTargetIterator();
+            }
+            setState(QuarryState.MOVE_HEAD, getBlockState());
+            return;
+        }
+
+        var result = breakBlock(targetPos);
+        if (result.isSuccess()) {
+            if (targetIterator.hasNext()) {
+                targetPos = targetIterator.next();
+            } else {
+                setNextDigTargetIterator();
+            }
+            setState(QuarryState.MOVE_HEAD, getBlockState());
+        }
+    }
+
+    private void setNextDigTargetIterator() {
+        var minY = digMinY();
+        if (targetPos == null) {
+            throw new IllegalStateException("Target pos is null");
+        }
+        assert area != null;
+        if (minY < targetPos.getY()) {
+            // Go next y
+            targetIterator = area.quarryDigPosIterator(targetPos.getY() - 1);
+            targetPos = null;
+        } else {
+            // Finish
+            setState(QuarryState.FINISHED, getBlockState());
+        }
     }
 
     void removeFluid() {
@@ -212,17 +264,34 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     @Nullable
-    static PickIterator<BlockPos> createTargetIterator(QuarryState state, @Nullable Area area, @Nullable BlockPos current) {
+    static PickIterator<BlockPos> createTargetIterator(QuarryState state, @Nullable Area area, @Nullable BlockPos lastReturned) {
         if (area == null) return null;
         var itr = switch (state) {
             case MAKE_FRAME -> area.quarryFramePosIterator();
             case MOVE_HEAD, BREAK_BLOCK ->
-                area.quarryDigPosIterator(current != null ? current.getY() : area.minY() - 1);
+                area.quarryDigPosIterator(lastReturned != null ? lastReturned.getY() : area.minY() - 1);
             default -> null;
         };
-        if (itr != null && current != null) {
-            itr.setLastReturned(current);
+        if (itr != null && lastReturned != null) {
+            itr.setLastReturned(lastReturned);
         }
         return itr;
+    }
+
+    @NotNull
+    WorkResult breakBlock(BlockPos target) {
+        assert level != null;
+        QuarryPlus.LOGGER.info(MARKER, "Breaking block {}", target.toShortString());
+        level.destroyBlock(target, false);
+        return WorkResult.SUCCESS;
+    }
+
+    boolean shouldRemoveFluid() {
+        return true;
+    }
+
+    int digMinY() {
+        if (level == null) return 0;
+        return level.getMinBuildHeight() + 1;
     }
 }
