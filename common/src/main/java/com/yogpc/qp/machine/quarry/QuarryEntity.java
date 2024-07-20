@@ -6,6 +6,7 @@ import com.yogpc.qp.machine.Area;
 import com.yogpc.qp.machine.PickIterator;
 import com.yogpc.qp.machine.PowerEntity;
 import com.yogpc.qp.machine.QpBlockProperty;
+import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -20,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-public abstract class QuarryEntity extends PowerEntity {
+public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     public static final Marker MARKER = MarkerFactory.getMarker("quarry");
     @NotNull
     public Vec3 head;
@@ -45,11 +46,12 @@ public abstract class QuarryEntity extends PowerEntity {
 
     static void serverTick(Level level, BlockPos pos, BlockState state, QuarryEntity quarryEntity) {
         if (level.getGameTime() % 40 == 0) {
-            QuarryPlus.LOGGER.info(MARKER, "{}, {}, {}, {}",
+            QuarryPlus.LOGGER.info(MARKER, "{}, {}, {}, {}, {}",
                 quarryEntity.getBlockPos().toShortString(),
                 quarryEntity.getEnergy() / ONE_FE,
                 quarryEntity.currentState,
-                quarryEntity.getArea()
+                quarryEntity.getArea(),
+                quarryEntity.head
             );
         }
         @NotNull
@@ -68,17 +70,19 @@ public abstract class QuarryEntity extends PowerEntity {
     }
 
     static void clientTick(Level level, BlockPos pos, BlockState state, QuarryEntity quarryEntity) {
+        if (level.getGameTime() % 40 == 0) {
+            QuarryPlus.LOGGER.info(MARKER, "CLIENT {}, {}",
+                quarryEntity.head,
+                quarryEntity.targetHead
+            );
+        }
         quarryEntity.head = quarryEntity.targetHead;
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
-        tag.put("head", Vec3.CODEC.encodeStart(NbtOps.INSTANCE, this.head).getOrThrow());
-        tag.putString("state", currentState.name());
-        if (area != null) {
-            tag.put("area", Area.CODEC.codec().encodeStart(NbtOps.INSTANCE, this.area).getOrThrow());
-        }
+        toClientTag(tag);
         if (targetIterator != null) {
             tag.put("targetPos", BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, targetIterator.getLastReturned()).getOrThrow());
         }
@@ -87,12 +91,27 @@ public abstract class QuarryEntity extends PowerEntity {
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        Vec3.CODEC.parse(NbtOps.INSTANCE, tag.get("head")).ifSuccess(v -> this.targetHead = v);
-        currentState = QuarryState.valueOf(tag.getString("state"));
-        area = Area.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("area")).result().orElse(null);
+        fromClientTag(tag);
         var current = BlockPos.CODEC.parse(NbtOps.INSTANCE, tag.get("targetPos")).result().orElse(null);
         targetIterator = createTargetIterator(currentState, area, current);
         targetPos = current;
+    }
+
+    @Override
+    public CompoundTag toClientTag(CompoundTag tag) {
+        tag.put("head", Vec3.CODEC.encodeStart(NbtOps.INSTANCE, this.head).getOrThrow());
+        tag.putString("state", currentState.name());
+        if (area != null) {
+            tag.put("area", Area.CODEC.codec().encodeStart(NbtOps.INSTANCE, this.area).getOrThrow());
+        }
+        return tag;
+    }
+
+    @Override
+    public void fromClientTag(CompoundTag tag) {
+        Vec3.CODEC.parse(NbtOps.INSTANCE, tag.get("head")).ifSuccess(v -> this.targetHead = v);
+        currentState = QuarryState.valueOf(tag.getString("state"));
+        area = Area.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("area")).result().orElse(null);
     }
 
     public void setArea(@Nullable Area area) {
@@ -165,11 +184,21 @@ public abstract class QuarryEntity extends PowerEntity {
             head = new Vec3(((double) area.minX() + area.maxX()) / 2, area.maxY(), ((double) area.minZ() + area.maxZ()) / 2);
             assert targetPos != null;
         }
-        var digMinY = level.getMinBuildHeight() + 1;
 
-        var availableEnergy = useEnergy(ONE_FE, true, false, "moveHead");
         var diff = new Vec3(targetPos.getX() - head.x, targetPos.getY() - head.y, targetPos.getZ() - head.z);
-        var moveDistance = Math.min(diff.length(), (double) availableEnergy / ONE_FE);
+        var difLength = diff.length();
+        if (difLength > 1e-7) {
+            var availableEnergy = useEnergy(ONE_FE, true, false, "moveHead");
+            var moveDistance = Math.min(difLength, (double) availableEnergy / ONE_FE);
+            useEnergy((long) (moveDistance * ONE_FE), false, true, "moveHead");
+            head = head.add(diff.scale(moveDistance / difLength));
+            this.syncToClient();
+        }
+
+        if (targetPos.distToLowCornerSqr(head.x, head.y, head.z) <= 1e-7) {
+            setState(QuarryState.BREAK_BLOCK, getBlockState());
+            breakBlock();
+        }
     }
 
     void breakBlock() {

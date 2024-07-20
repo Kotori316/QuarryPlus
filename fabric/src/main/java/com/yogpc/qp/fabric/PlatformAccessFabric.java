@@ -6,6 +6,7 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
+import com.yogpc.qp.fabric.packet.PacketHandler;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
@@ -25,6 +26,7 @@ import java.util.stream.Stream;
 
 public final class PlatformAccessFabric implements PlatformAccess {
     private final Lazy<RegisterObjects> itemsLazy = Lazy.lazy(RegisterObjectsFabric::new);
+    private final Lazy<PacketHandler> packetHandlerLazy = Lazy.lazy(PacketHandler::new);
 
     public static final class RegisterObjectsFabric implements RegisterObjects {
         public static final QuarryBlockFabric QUARRY_BLOCK = new QuarryBlockFabric();
@@ -78,5 +80,10 @@ public final class PlatformAccessFabric implements PlatformAccess {
     @Override
     public RegisterObjects registerObjects() {
         return itemsLazy.get();
+    }
+
+    @Override
+    public Packet packetHandler() {
+        return packetHandlerLazy.get();
     }
 }
