@@ -133,6 +133,14 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         }
     }
 
+    public String renderMode() {
+        return switch (this.currentState) {
+            case WAITING, BREAK_INSIDE_FRAME, MAKE_FRAME -> "frame";
+            case BREAK_BLOCK, MOVE_HEAD, REMOVE_FLUID -> "drill";
+            default -> "none";
+        };
+    }
+
     void waiting() {
         if (getEnergy() > getMaxEnergy() / 200 && this.area != null) {
             setState(QuarryState.BREAK_INSIDE_FRAME, getBlockState());
