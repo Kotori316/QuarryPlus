@@ -257,7 +257,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         if (minY < targetPos.getY()) {
             // Go next y
             targetIterator = area.quarryDigPosIterator(targetPos.getY() - 1);
-            targetPos = null;
+            targetPos = targetIterator.next();
         } else {
             // Finish
             setState(QuarryState.FINISHED, getBlockState());
