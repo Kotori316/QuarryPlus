@@ -61,6 +61,7 @@ public abstract class QuarryBlock extends QpEntityBlock {
             ));
         }
         return createTickerHelper(blockEntityType, this.<QuarryEntity>getBlockEntityType().orElse(null), CombinedBlockEntityTicker.of(this, level,
+            (level1, blockPos, blockState, blockEntity) -> blockEntity.addEnergy(10 * PowerEntity.ONE_FE, false),
             PowerEntity.logTicker(),
             QuarryEntity::serverTick
         ));
