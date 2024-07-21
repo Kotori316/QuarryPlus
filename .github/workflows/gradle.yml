@@ -24,7 +24,8 @@ jobs:
       - run: chmod +x ./gradlew
       - uses: gradle/actions/setup-gradle@v3
         with:
-          cache-disabled: true
+          cache-read-only: ${{ github.event_name != 'push' }}
+          add-job-summary: 'on-failure'
       - run: ./gradlew assemble --scan
       - run: ./gradlew checkReleaseVersion --no-parallel
 
@@ -49,6 +50,7 @@ jobs:
         with:
           cache-read-only: ${{ github.event_name != 'push' }}
           gradle-home-cache-cleanup: true
+          add-job-summary: 'on-failure'
       - name: Compile main ${{ matrix.platform }}
         run: ./gradlew :${{ matrix.platform }}:classes
       - name: Compile test ${{ matrix.platform }}
