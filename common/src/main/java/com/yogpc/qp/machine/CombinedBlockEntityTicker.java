@@ -16,7 +16,11 @@ public record CombinedBlockEntityTicker<T extends BlockEntity>(
     @SafeVarargs
     @Nullable
     public static <T extends BlockEntity> CombinedBlockEntityTicker<T> of(QpBlock block, Level level, BlockEntityTicker<? super T>... ts) {
-        return new CombinedBlockEntityTicker<>(Arrays.stream(ts).filter(Objects::nonNull).toList());
+        var list = Arrays.stream(ts).filter(Objects::nonNull).toList();
+        if (list.isEmpty()) {
+            return null;
+        }
+        return new CombinedBlockEntityTicker<>(list);
     }
 
     @Override
