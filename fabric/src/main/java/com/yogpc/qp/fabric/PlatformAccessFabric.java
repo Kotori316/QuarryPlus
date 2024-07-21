@@ -1,10 +1,7 @@
 package com.yogpc.qp.fabric;
 
 import com.mojang.datafixers.DSL;
-import com.yogpc.qp.InCreativeTabs;
-import com.yogpc.qp.PlatformAccess;
-import com.yogpc.qp.QuarryConfig;
-import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.*;
 import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
 import com.yogpc.qp.fabric.packet.PacketHandler;
@@ -12,10 +9,14 @@ import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.apache.logging.log4j.util.Lazy;
 
@@ -96,5 +97,18 @@ public final class PlatformAccessFabric implements PlatformAccess {
     @Override
     public QuarryConfig quarryConfig() {
         return new QuarryConfigFabric();
+    }
+
+    @Override
+    public FluidStackLike getFluidInItem(ItemStack stack) {
+        var storage = FluidStorage.ITEM.find(stack, ContainerItemContext.withConstant(stack));
+        if (storage == null) {
+            return FluidStackLike.EMPTY;
+        }
+        var extracted = StorageUtil.findExtractableContent(storage, null);
+        if (extracted == null) {
+            return FluidStackLike.EMPTY;
+        }
+        return new FluidStackLike(extracted.resource().getFluid(), extracted.amount(), extracted.resource().getComponents());
     }
 }

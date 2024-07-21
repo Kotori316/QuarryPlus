@@ -8,7 +8,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.function.Predicate;
 
 public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, Direction direction) {
     public static final MapCodec<Area> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
@@ -54,6 +58,31 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, D
             return true;
         }
         return xCondition && inAreaZ(pos.getZ()) || zCondition && inAreaX(pos.getX());
+    }
+
+    public Set<BlockPos> getChainBlocks(BlockPos start, Predicate<BlockPos> filter, int maxY) {
+        Set<BlockPos> counted = new HashSet<>((maxX - minX) * (maxZ - minZ));
+        Set<Direction> directions = EnumSet.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP);
+        Set<BlockPos> search = Set.of(start);
+        Set<BlockPos> checked = new HashSet<>((maxX - minX) * (maxZ - minZ));
+        while (!search.isEmpty()) {
+            Set<BlockPos> nextSearch = new HashSet<>();
+            for (BlockPos pos : search) {
+                checked.add(pos);
+                if (filter.test(pos)) {
+                    if (counted.add(pos)) {
+                        directions.stream()
+                            .map(pos::relative)
+                            .filter(this::inAreaXZ)
+                            .filter(p -> p.getY() <= maxY)
+                            .filter(Predicate.not(checked::contains))
+                            .forEach(nextSearch::add);
+                    }
+                }
+            }
+            search = nextSearch;
+        }
+        return counted;
     }
 
     public PickIterator<BlockPos> quarryFramePosIterator() {

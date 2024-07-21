@@ -3,6 +3,7 @@ package com.yogpc.qp.machine;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.yogpc.qp.PlatformAccess;
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
@@ -48,6 +49,14 @@ public final class MachineStorage {
         if (fluid.isSame(Fluids.EMPTY)) return;
         var key = new FluidKey(fluid, DataComponentPatch.EMPTY);
         fluids.addTo(key, amount);
+    }
+
+    public void addBucketFluid(ItemStack stack) {
+        if (stack.isEmpty()) return;
+        var content = PlatformAccess.getAccess().getFluidInItem(stack);
+        if (content.fluid().isSame(Fluids.EMPTY)) return;
+        var key = new FluidKey(content.fluid(), content.patch());
+        fluids.addTo(key, content.amount());
     }
 
     long getItemCount(ItemKey key) {

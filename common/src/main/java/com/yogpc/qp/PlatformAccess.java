@@ -4,6 +4,7 @@ import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.jetbrains.annotations.NotNull;
@@ -43,6 +44,8 @@ public interface PlatformAccess {
     }
 
     QuarryConfig quarryConfig();
+
+    FluidStackLike getFluidInItem(ItemStack stack);
 }
 
 class PlatformAccessHolder {

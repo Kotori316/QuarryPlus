@@ -18,6 +18,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BucketPickup;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -324,6 +326,37 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     void removeFluid() {
+        if (level == null || level.isClientSide() || area == null) {
+            return;
+        }
+        if (targetIterator == null || targetPos == null) {
+            throw new IllegalStateException("Target is null");
+        }
+        var fluidState = level.getFluidState(targetPos);
+        if (fluidState.isEmpty()) {
+            // No fluid anymore
+            setState(QuarryState.BREAK_BLOCK, getBlockState());
+            return;
+        }
+        var poses = area.getChainBlocks(targetPos, p -> !level.getFluidState(p).isEmpty(), level.getMaxBuildHeight());
+        useEnergy((long) (powerMap().breakBlockFluid() * poses.size() * ONE_FE), false, true, "removeFluid");
+        var player = getQuarryFakePlayer((ServerLevel) level, targetPos);
+        for (var fluidPos : poses) {
+            var state = level.getBlockState(fluidPos);
+            if (state.getBlock() instanceof LiquidBlock) {
+                var f = level.getFluidState(fluidPos);
+                if (!f.isEmpty() && f.isSource()) {
+                    storage.addFluid(f.getType(), MachineStorage.ONE_BUCKET);
+                }
+                level.setBlock(fluidPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+            } else if (state.getBlock() instanceof BucketPickup bucketPickup) {
+                var picked = bucketPickup.pickupBlock(player, level, fluidPos, state);
+                storage.addBucketFluid(picked);
+            } else {
+                level.setBlock(fluidPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+            }
+        }
+        setState(QuarryState.BREAK_BLOCK, getBlockState());
     }
 
     void filler() {

@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -152,6 +153,45 @@ class AreaTest {
     void parseNull() {
         var parsed = assertDoesNotThrow(() -> Area.CODEC.codec().parse(NbtOps.INSTANCE, null));
         assertTrue(parsed.isError());
+    }
+
+    @Nested
+    class GetChainTest {
+        Area area;
+
+        @BeforeEach
+        void setup() {
+            area = new Area(0, 0, 0, 4, 5, 6, Direction.NORTH);
+        }
+
+        @ParameterizedTest
+        @MethodSource("start")
+        void allTrue(BlockPos start) {
+            var chained = assertDoesNotThrow(() -> assertTimeoutPreemptively(Duration.ofSeconds(1), () -> area.getChainBlocks(start, p -> true, area.maxY())));
+            assertFalse(chained.isEmpty());
+        }
+
+        @ParameterizedTest
+        @MethodSource("start")
+        void allFalse(BlockPos start) {
+            var chained = assertDoesNotThrow(() -> assertTimeoutPreemptively(Duration.ofSeconds(1), () -> area.getChainBlocks(start, p -> false, area.maxY())));
+            assertTrue(chained.isEmpty());
+        }
+
+        static Stream<BlockPos> start() {
+            return BlockPos.betweenClosedStream(0, 0, 0, 4, 0, 6);
+        }
+
+        @Test
+        void x3() {
+            var chained = assertDoesNotThrow(() -> assertTimeout(Duration.ofSeconds(1), () ->
+                area.getChainBlocks(new BlockPos(3, 5, 1), p -> p.getX() == 3, area.maxY())
+            ));
+            var expected = BlockPos.betweenClosedStream(3, 5, 1, 3, 5, 5)
+                .map(BlockPos::immutable)
+                .collect(Collectors.toSet());
+            assertEquals(expected, chained);
+        }
     }
 
     @Nested
