@@ -8,8 +8,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -41,6 +45,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         currentState = QuarryState.FINISHED;
     }
 
+    static PowerMap.Quarry powerMap() {
+        return PlatformAccess.getConfig().getPowerMap().quarry();
+    }
+
     @SuppressWarnings("unused")
     static void serverTick(Level level, BlockPos pos, BlockState state, QuarryEntity quarryEntity) {
         if (level.getGameTime() % 40 == 0) {
@@ -51,6 +59,9 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 quarryEntity.getArea(),
                 quarryEntity.head
             );
+        }
+        if (quarryEntity.getEnergy() <= 0) {
+            return;
         }
         @NotNull
         Runnable a = switch (quarryEntity.currentState) {
@@ -167,7 +178,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             targetPos = targetIterator.next();
         }
 
-        var requiredEnergy = ONE_FE * 10;
+        var requiredEnergy = (long) (ONE_FE * powerMap().makeFrame());
         if (useEnergy(requiredEnergy, false, false, "makeFrame") == requiredEnergy) {
             if (level.getBlockState(targetPos).isAir()) {
                 level.setBlock(targetPos, PlatformAccess.getAccess().registerObjects().frameBlock().get().defaultBlockState(), Block.UPDATE_ALL);
@@ -199,7 +210,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         var diff = new Vec3(targetPos.getX() - head.x, targetPos.getY() - head.y, targetPos.getZ() - head.z);
         var difLength = diff.length();
         if (difLength > 1e-7) {
-            var availableEnergy = useEnergy(ONE_FE, true, false, "moveHead");
+            var defaultEnergy = (long) (ONE_FE * powerMap().moveHeadBase());
+            var availableEnergy = useEnergy(defaultEnergy, true, false, "moveHead");
             var moveDistance = Math.min(difLength, (double) availableEnergy / ONE_FE);
             useEnergy((long) (moveDistance * ONE_FE), false, true, "moveHead");
             head = head.add(diff.scale(moveDistance / difLength));
@@ -293,10 +305,49 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     @NotNull
     WorkResult breakBlock(BlockPos target) {
         assert level != null;
-        QuarryPlus.LOGGER.info(MARKER, "Breaking block {}", target.toShortString());
-        level.destroyBlock(target, false);
-        return WorkResult.SUCCESS;
+        var state = level.getBlockState(target);
+        var blockEntity = level.getBlockEntity(target);
+        var player = getQuarryFakePlayer((ServerLevel) level, target);
+        var hardness = state.getDestroySpeed(level, target);
+        // First check event
+        var eventCancelled = checkBreakEvent(level, player, state, target, blockEntity);
+        if (eventCancelled) {
+            return WorkResult.FAIL_EVENT;
+        }
+        // Second, check modules
+        var moduleResult = breakBlockModuleOverride(level, state, target, hardness);
+        if (moduleResult != WorkResult.SKIPPED) {
+            return moduleResult;
+        }
+
+        if (hardness < 0) {
+            // Unbreakable
+            return WorkResult.SKIPPED;
+        }
+        var requiredEnergy = powerMap().getBreakEnergy(hardness, 0, 0, 0, false);
+        if (useEnergy(requiredEnergy, true, false, "breakBlock") == requiredEnergy) {
+            useEnergy(requiredEnergy, false, false, "breakBlock");
+            QuarryPlus.LOGGER.info(MARKER, "Breaking block {}", target.toShortString());
+            level.setBlock(targetPos, stateAfterBreak(level, target, state), Block.UPDATE_ALL);
+            afterBreak(level, player, state, target, blockEntity);
+            return WorkResult.SUCCESS;
+        } else {
+            return WorkResult.NOT_ENOUGH_ENERGY;
+        }
     }
+
+    /**
+     * @return {@code true} if event is cancelled. {@code false} if event is successfully accepted.
+     */
+    protected abstract boolean checkBreakEvent(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity);
+
+    protected abstract void afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity);
+
+    WorkResult breakBlockModuleOverride(Level level, BlockState state, BlockPos target, float hardness) {
+        return WorkResult.SKIPPED;
+    }
+
+    protected abstract ServerPlayer getQuarryFakePlayer(ServerLevel level, BlockPos target);
 
     boolean shouldRemoveFluid() {
         return true;
@@ -305,5 +356,9 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     int digMinY() {
         if (level == null) return 0;
         return level.getMinBuildHeight() + 1;
+    }
+
+    BlockState stateAfterBreak(Level level, BlockPos pos, BlockState before) {
+        return Blocks.AIR.defaultBlockState();
     }
 }

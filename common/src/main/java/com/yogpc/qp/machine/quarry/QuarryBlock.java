@@ -72,8 +72,8 @@ public abstract class QuarryBlock extends QpEntityBlock {
         if (!level.isClientSide) {
             var entity = this.<QuarryEntity>getBlockEntityType().map(t -> t.getBlockEntity(level, pos)).orElse(null);
             if (entity != null) {
-                entity.addEnergy(40 * PowerEntity.ONE_FE, false);
-                player.displayClientMessage(Component.literal("Added energy"), false);
+                entity.addEnergy(100 * PowerEntity.ONE_FE, false);
+                player.displayClientMessage(Component.literal("%d".formatted(entity.getEnergy())), false);
                 return InteractionResult.SUCCESS;
             }
         }

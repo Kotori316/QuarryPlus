@@ -3,6 +3,7 @@ package com.yogpc.qp.fabric;
 import com.mojang.datafixers.DSL;
 import com.yogpc.qp.InCreativeTabs;
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.QuarryConfig;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
@@ -90,5 +91,10 @@ public final class PlatformAccessFabric implements PlatformAccess {
     @Override
     public Packet packetHandler() {
         return packetHandlerLazy.get();
+    }
+
+    @Override
+    public QuarryConfig quarryConfig() {
+        return new QuarryConfigFabric();
     }
 }

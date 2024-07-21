@@ -18,6 +18,10 @@ public interface PlatformAccess {
         return PlatformAccessHolder.instance;
     }
 
+    static QuarryConfig getConfig() {
+        return getAccess().quarryConfig();
+    }
+
     String platformName();
 
     RegisterObjects registerObjects();
@@ -37,6 +41,8 @@ public interface PlatformAccess {
     interface Packet {
         void sendToClientWorld(@NotNull CustomPacketPayload message, @NotNull Level level);
     }
+
+    QuarryConfig quarryConfig();
 }
 
 class PlatformAccessHolder {
