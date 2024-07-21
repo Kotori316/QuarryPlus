@@ -10,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -36,6 +37,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     private PickIterator<BlockPos> targetIterator;
     @Nullable
     BlockPos targetPos;
+    @NotNull
+    MachineStorage storage;
 
     protected QuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -43,6 +46,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         head = Vec3.atBottomCenterOf(pos);
         targetHead = head;
         currentState = QuarryState.FINISHED;
+        storage = new MachineStorage();
     }
 
     static PowerMap.Quarry powerMap() {
@@ -52,12 +56,13 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     @SuppressWarnings("unused")
     static void serverTick(Level level, BlockPos pos, BlockState state, QuarryEntity quarryEntity) {
         if (level.getGameTime() % 40 == 0) {
-            QuarryPlus.LOGGER.info(MARKER, "{}, {}, {}, {}, {}",
+            QuarryPlus.LOGGER.info(MARKER, "{}, {} uFE, {}, {}, {}, {}",
                 quarryEntity.getBlockPos().toShortString(),
                 quarryEntity.getEnergy() / ONE_FE,
                 quarryEntity.currentState,
                 quarryEntity.getArea(),
-                quarryEntity.head
+                quarryEntity.head,
+                quarryEntity.storage
             );
         }
         if (quarryEntity.getEnergy() <= 0) {
@@ -96,6 +101,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         if (targetIterator != null) {
             tag.put("targetPos", BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, targetIterator.getLastReturned()).getOrThrow());
         }
+        tag.put("storage", MachineStorage.CODEC.codec().encodeStart(NbtOps.INSTANCE, storage).getOrThrow());
     }
 
     @Override
@@ -107,6 +113,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         var current = BlockPos.CODEC.parse(NbtOps.INSTANCE, tag.get("targetPos")).result().orElse(null);
         targetIterator = createTargetIterator(currentState, area, current);
         targetPos = current;
+        storage = MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElse(new MachineStorage());
     }
 
     @Override
@@ -178,9 +185,18 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             targetPos = targetIterator.next();
         }
 
+        if (!targetPos.equals(getBlockPos()) && !level.getBlockState(targetPos).isAir()) {
+            var result = breakBlock(targetPos);
+            if (!result.isSuccess()) {
+                // Wait until quarry can remove the block
+                return;
+            }
+        }
+
         var requiredEnergy = (long) (ONE_FE * powerMap().makeFrame());
-        if (useEnergy(requiredEnergy, false, false, "makeFrame") == requiredEnergy) {
-            if (level.getBlockState(targetPos).isAir()) {
+        if (useEnergy(requiredEnergy, true, false, "makeFrame") == requiredEnergy) {
+            useEnergy(requiredEnergy, false, false, "makeFrame");
+            if (!targetPos.equals(getBlockPos())) {
                 level.setBlock(targetPos, PlatformAccess.getAccess().registerObjects().frameBlock().get().defaultBlockState(), Block.UPDATE_ALL);
             }
             if (targetIterator.hasNext()) {
@@ -305,17 +321,18 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     @NotNull
     WorkResult breakBlock(BlockPos target) {
         assert level != null;
-        var state = level.getBlockState(target);
-        var blockEntity = level.getBlockEntity(target);
-        var player = getQuarryFakePlayer((ServerLevel) level, target);
-        var hardness = state.getDestroySpeed(level, target);
+        var serverLevel = (ServerLevel) level;
+        var state = serverLevel.getBlockState(target);
+        var blockEntity = serverLevel.getBlockEntity(target);
+        var player = getQuarryFakePlayer(serverLevel, target);
+        var hardness = state.getDestroySpeed(serverLevel, target);
         // First check event
-        var eventCancelled = checkBreakEvent(level, player, state, target, blockEntity);
+        var eventCancelled = checkBreakEvent(serverLevel, player, state, target, blockEntity);
         if (eventCancelled) {
             return WorkResult.FAIL_EVENT;
         }
         // Second, check modules
-        var moduleResult = breakBlockModuleOverride(level, state, target, hardness);
+        var moduleResult = breakBlockModuleOverride(serverLevel, state, target, hardness);
         if (moduleResult != WorkResult.SKIPPED) {
             return moduleResult;
         }
@@ -325,11 +342,12 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             return WorkResult.SKIPPED;
         }
         var requiredEnergy = powerMap().getBreakEnergy(hardness, 0, 0, 0, false);
-        if (useEnergy(requiredEnergy, true, false, "breakBlock") == requiredEnergy) {
-            useEnergy(requiredEnergy, false, false, "breakBlock");
-            QuarryPlus.LOGGER.info(MARKER, "Breaking block {}", target.toShortString());
-            level.setBlock(targetPos, stateAfterBreak(level, target, state), Block.UPDATE_ALL);
-            afterBreak(level, player, state, target, blockEntity);
+        if (useEnergy(requiredEnergy, true, getMaxEnergy() < requiredEnergy, "breakBlock") == requiredEnergy) {
+            useEnergy(requiredEnergy, false, getMaxEnergy() < requiredEnergy, "breakBlock");
+            var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, ItemStack.EMPTY);
+            drops.forEach(storage::addItem);
+            serverLevel.setBlock(target, stateAfterBreak(serverLevel, target, state), Block.UPDATE_ALL);
+            afterBreak(serverLevel, player, state, target, blockEntity);
             return WorkResult.SUCCESS;
         } else {
             return WorkResult.NOT_ENOUGH_ENERGY;
