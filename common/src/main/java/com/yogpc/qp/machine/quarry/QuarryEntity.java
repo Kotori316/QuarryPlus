@@ -91,6 +91,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         fromClientTag(tag);
+        // In server, head must be loaded from nbt
+        Vec3.CODEC.parse(NbtOps.INSTANCE, tag.get("head")).ifSuccess(v -> this.head = v);
         var current = BlockPos.CODEC.parse(NbtOps.INSTANCE, tag.get("targetPos")).result().orElse(null);
         targetIterator = createTargetIterator(currentState, area, current);
         targetPos = current;
@@ -108,6 +110,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     @Override
     public void fromClientTag(CompoundTag tag) {
+        // Set head as targetHead to move drill smoothly
         Vec3.CODEC.parse(NbtOps.INSTANCE, tag.get("head")).ifSuccess(v -> this.targetHead = v);
         currentState = QuarryState.valueOf(tag.getString("state"));
         area = Area.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("area")).result().orElse(null);
