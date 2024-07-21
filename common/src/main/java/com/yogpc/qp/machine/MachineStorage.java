@@ -10,6 +10,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 
 import java.util.List;
 import java.util.Map;
@@ -38,11 +39,13 @@ public final class MachineStorage {
     }
 
     public void addItem(ItemStack stack) {
+        if (stack.isEmpty()) return;
         var key = ItemKey.of(stack);
         items.addTo(key, stack.getCount());
     }
 
     public void addFluid(Fluid fluid, int amount) {
+        if (fluid.isSame(Fluids.EMPTY)) return;
         var key = new FluidKey(fluid, DataComponentPatch.EMPTY);
         fluids.addTo(key, amount);
     }

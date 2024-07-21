@@ -10,6 +10,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -17,11 +21,14 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
+
+import java.util.function.Predicate;
 
 public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     public static final Marker MARKER = MarkerFactory.getMarker("quarry");
@@ -342,6 +349,17 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     WorkResult breakBlock(BlockPos target) {
         assert level != null;
         var serverLevel = (ServerLevel) level;
+        // Gather Drops
+        if (target.getX() % 3 == 0 && target.getZ() % 3 == 0) {
+            serverLevel.getEntitiesOfClass(ItemEntity.class, new AABB(target).inflate(5), Predicate.not(i -> i.getItem().isEmpty()))
+                .forEach(i -> {
+                    storage.addItem(i.getItem());
+                    i.kill();
+                });
+            serverLevel.getEntitiesOfClass(ExperienceOrb.class, new AABB(target).inflate(5), EntitySelector.ENTITY_STILL_ALIVE)
+                .forEach(Entity::kill);
+        }
+
         var state = serverLevel.getBlockState(target);
         var blockEntity = serverLevel.getBlockEntity(target);
         var player = getQuarryFakePlayer(serverLevel, target);
