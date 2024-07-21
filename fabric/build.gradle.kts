@@ -59,6 +59,12 @@ dependencies {
     modImplementation(libs.fabric.api)
     modImplementation(libs.fabric.version.checker)
     compileOnly(project(":common"))
+
+    testImplementation(libs.fabric.junit)
+    testImplementation(platform(libs.junit))
+    testImplementation(libs.jupiter)
+    testImplementation(project(":common"))
+    testImplementation(project.project(":common").sourceSets.test.get().output)
 }
 
 // Share with common

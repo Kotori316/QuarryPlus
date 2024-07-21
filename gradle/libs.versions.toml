@@ -10,7 +10,6 @@ fabric_version_checker = "2.4.0"
 
 tu = "21.0-SNAPSHOT"
 du = "21.0-SNAPSHOT"
-version_checker = "2.4.0"
 
 jupiter_api = "5.10.3"
 mockito_core = "5.12.0"
@@ -39,6 +38,7 @@ du_forge = { group = "com.kotori316", name = "debug-utility-forge", version.ref 
 # Fabric
 fabric_api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabric_api" }
 fabric_loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric_loader" }
+fabric_junit = { group = "net.fabricmc", name = "fabric-loader-junit", version.ref = "fabric_loader" }
 tu_fabric = { group = "com.kotori316", name = "test-utility-fabric", version.ref = "tu" }
 du_fabric = { group = "com.kotori316", name = "debug-utility-fabric", version.ref = "du" }
 fabric_version_checker = { group = "com.kotori316", name = "VersionCheckerMod", version.ref = "fabric_version_checker" }
