@@ -78,6 +78,11 @@ public final class PlatformAccessFabric implements PlatformAccess {
     }
 
     @Override
+    public String platformName() {
+        return "Fabric";
+    }
+
+    @Override
     public RegisterObjects registerObjects() {
         return itemsLazy.get();
     }

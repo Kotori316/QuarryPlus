@@ -18,6 +18,8 @@ public interface PlatformAccess {
         return PlatformAccessHolder.instance;
     }
 
+    String platformName();
+
     RegisterObjects registerObjects();
 
     interface RegisterObjects {
@@ -38,7 +40,11 @@ public interface PlatformAccess {
 }
 
 class PlatformAccessHolder {
-    static final PlatformAccess instance =
-        ServiceLoader.load(PlatformAccess.class).findFirst()
-            .orElseThrow();
+    static final PlatformAccess instance;
+
+    static {
+        QuarryPlus.LOGGER.info("[PlatformAccess] loading");
+        instance = ServiceLoader.load(PlatformAccess.class).findFirst().orElseThrow();
+        QuarryPlus.LOGGER.info("[PlatformAccess] loaded for {}, {}", instance.platformName(), instance.getClass().getSimpleName());
+    }
 }
