@@ -127,6 +127,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     void setState(QuarryState state, BlockState blockState) {
         if (this.currentState != state) {
             this.currentState = state;
+            syncToClient();
             if (level != null) {
                 level.setBlock(getBlockPos(), blockState.setValue(QpBlockProperty.WORKING, QuarryState.isWorking(state)), Block.UPDATE_ALL);
             }
