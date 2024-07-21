@@ -15,6 +15,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.time.Duration;
 import java.util.NoSuchElementException;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -62,6 +64,43 @@ class AreaTest {
         Stream<DynamicTest> allIn() {
             var poses = BlockPos.betweenClosedStream(1, 0, 1, 3, 0, 5);
             return poses.map(p -> DynamicTest.dynamicTest(p.toShortString(), () -> assertTrue(area.inAreaXZ(p), "Pos(%s) must be in the area".formatted(p.toShortString()))));
+        }
+
+        @ParameterizedTest
+        @MethodSource
+        void edge(BlockPos pos) {
+            assertTrue(area.isEdge(pos));
+        }
+
+        static Stream<BlockPos> edge() {
+            return Stream.of(
+                Stream.of(
+                    new BlockPos(0, 0, 0),
+                    new BlockPos(0, 0, 6),
+                    new BlockPos(4, 0, 6),
+                    new BlockPos(4, 0, 0)
+                ),
+                IntStream.rangeClosed(1, 3).mapToObj(x -> new BlockPos(x, 0, 0)),
+                IntStream.rangeClosed(1, 3).mapToObj(x -> new BlockPos(x, 0, 6)),
+                IntStream.rangeClosed(1, 5).mapToObj(z -> new BlockPos(0, 1, z)),
+                IntStream.rangeClosed(1, 5).mapToObj(z -> new BlockPos(4, 2, z))
+            ).flatMap(Function.identity());
+        }
+
+        @TestFactory
+        Stream<DynamicTest> allNotEdge() {
+            var poses = BlockPos.betweenClosedStream(1, 0, 1, 3, 0, 5);
+            var others = Stream.of(
+                new BlockPos(0, 1, 7),
+                new BlockPos(-1, 2, 6),
+                new BlockPos(4, 3, 7),
+                new BlockPos(5, 4, 6),
+                new BlockPos(5, 5, 0),
+                new BlockPos(4, 6, -1),
+                new BlockPos(5, 7, -1)
+            );
+            return Stream.concat(poses, others)
+                .map(p -> DynamicTest.dynamicTest(p.toShortString(), () -> assertFalse(area.isEdge(p), "Pos(%s) must not be an edge of the area".formatted(p.toShortString()))));
         }
     }
 

@@ -47,6 +47,15 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, D
         return inAreaX(pos.getX()) && inAreaZ(pos.getZ());
     }
 
+    public boolean isEdge(Vec3i pos) {
+        var xCondition = pos.getX() == minX || pos.getX() == maxX;
+        var zCondition = pos.getZ() == minZ || pos.getZ() == maxZ;
+        if (xCondition && zCondition) {
+            return true;
+        }
+        return xCondition && inAreaZ(pos.getZ()) || zCondition && inAreaX(pos.getX());
+    }
+
     public PickIterator<BlockPos> quarryFramePosIterator() {
         return new QuarryFramePosIterator(minX, minY, minZ, maxX, maxY, maxZ);
     }
