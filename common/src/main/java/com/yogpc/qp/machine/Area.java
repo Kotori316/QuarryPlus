@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, Direction direction) {
     public static final MapCodec<Area> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
@@ -83,6 +85,25 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, D
             search = nextSearch;
         }
         return counted;
+    }
+
+    public Set<BlockPos> getEdgeForPos(BlockPos pos) {
+        var xCondition = pos.getX() == minX + 1 || pos.getX() == maxX - 1;
+        var zCondition = pos.getZ() == minZ + 1 || pos.getZ() == maxZ - 1;
+        if (!xCondition && !zCondition) {
+            return Set.of();
+        }
+
+        return Stream.of(
+            pos.offset(1, 0, 0),
+            pos.offset(-1, 0, 0),
+            pos.offset(0, 0, 1),
+            pos.offset(0, 0, -1),
+            pos.offset(1, 0, 1),
+            pos.offset(-1, 0, 1),
+            pos.offset(-1, 0, -1),
+            pos.offset(1, 0, -1)
+        ).filter(this::isEdge).collect(Collectors.toSet());
     }
 
     public PickIterator<BlockPos> quarryFramePosIterator() {

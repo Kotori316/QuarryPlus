@@ -15,6 +15,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.time.Duration;
 import java.util.NoSuchElementException;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -102,6 +103,21 @@ class AreaTest {
             );
             return Stream.concat(poses, others)
                 .map(p -> DynamicTest.dynamicTest(p.toShortString(), () -> assertFalse(area.isEdge(p), "Pos(%s) must not be an edge of the area".formatted(p.toShortString()))));
+        }
+
+        @Test
+        void getEdge1() {
+            var edges = area.getEdgeForPos(new BlockPos(1, 0, 1));
+            assertEquals(
+                Set.of(new BlockPos(0, 0, 1), new BlockPos(1, 0, 0), new BlockPos(0, 0, 0), new BlockPos(2, 0, 0), new BlockPos(0, 0, 2)),
+                edges
+            );
+        }
+
+        @TestFactory
+        Stream<DynamicTest> noAdjacentEdges() {
+            var poses = IntStream.rangeClosed(2, 4).mapToObj(z -> new BlockPos(2, 0, z));
+            return poses.map(p -> DynamicTest.dynamicTest(p.toShortString(), () -> assertEquals(Set.of(), area.getEdgeForPos(p))));
         }
     }
 

@@ -342,18 +342,12 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         useEnergy((long) (powerMap().breakBlockFluid() * poses.size() * ONE_FE), false, true, "removeFluid");
         var player = getQuarryFakePlayer((ServerLevel) level, targetPos);
         for (var fluidPos : poses) {
-            var state = level.getBlockState(fluidPos);
-            if (state.getBlock() instanceof LiquidBlock) {
-                var f = level.getFluidState(fluidPos);
-                if (!f.isEmpty() && f.isSource()) {
-                    storage.addFluid(f.getType(), MachineStorage.ONE_BUCKET);
+            removeFluidAt(level, fluidPos, player, Blocks.AIR.defaultBlockState());
+            for (var edge : area.getEdgeForPos(fluidPos)) {
+                if (!level.getFluidState(edge).isEmpty()) {
+                    useEnergy((long) (powerMap().breakBlockFluid() * ONE_FE), false, true, "removeFluid");
+                    removeFluidAt(level, edge, player, PlatformAccess.getAccess().registerObjects().frameBlock().get().getDammingState());
                 }
-                level.setBlock(fluidPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
-            } else if (state.getBlock() instanceof BucketPickup bucketPickup) {
-                var picked = bucketPickup.pickupBlock(player, level, fluidPos, state);
-                storage.addBucketFluid(picked);
-            } else {
-                level.setBlock(fluidPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
             }
         }
         setState(QuarryState.BREAK_BLOCK, getBlockState());
@@ -449,6 +443,22 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     BlockState stateAfterBreak(Level level, BlockPos pos, BlockState before) {
         return Blocks.AIR.defaultBlockState();
+    }
+
+    void removeFluidAt(@NotNull Level level, BlockPos pos, ServerPlayer player, BlockState newState) {
+        var state = level.getBlockState(pos);
+        if (state.getBlock() instanceof LiquidBlock) {
+            var f = level.getFluidState(pos);
+            if (!f.isEmpty() && f.isSource()) {
+                storage.addFluid(f.getType(), MachineStorage.ONE_BUCKET);
+            }
+            level.setBlock(pos, newState, Block.UPDATE_CLIENTS);
+        } else if (state.getBlock() instanceof BucketPickup bucketPickup) {
+            var picked = bucketPickup.pickupBlock(player, level, pos, state);
+            storage.addBucketFluid(picked);
+        } else {
+            level.setBlock(pos, newState, Block.UPDATE_CLIENTS);
+        }
     }
 
     /**
