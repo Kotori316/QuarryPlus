@@ -431,6 +431,14 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             drops.forEach(storage::addItem);
             serverLevel.setBlock(target, stateAfterBreak(serverLevel, target, state), Block.UPDATE_ALL);
             afterBreak(serverLevel, player, state, target, blockEntity);
+
+            assert area != null;
+            for (var edge : area.getEdgeForPos(target)) {
+                if (!level.getFluidState(edge).isEmpty()) {
+                    useEnergy((long) (powerMap().breakBlockFluid() * ONE_FE), false, true, "removeFluid");
+                    removeFluidAt(level, edge, player, PlatformAccess.getAccess().registerObjects().frameBlock().get().getDammingState());
+                }
+            }
             return WorkResult.SUCCESS;
         } else {
             return WorkResult.NOT_ENOUGH_ENERGY;
