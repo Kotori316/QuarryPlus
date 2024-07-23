@@ -65,7 +65,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     @SuppressWarnings("unused")
     static void serverTick(Level level, BlockPos pos, BlockState state, QuarryEntity quarryEntity) {
         if (level.getGameTime() % 40 == 0) {
-            QuarryPlus.LOGGER.info(MARKER, "{}, {} uFE, {}, {}, {}, {}",
+            QuarryPlus.LOGGER.info(MARKER, "({}), {} FE, {}, {}, {}, {}",
                 quarryEntity.getBlockPos().toShortString(),
                 quarryEntity.getEnergy() / ONE_FE,
                 quarryEntity.currentState,
@@ -77,19 +77,17 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         if (quarryEntity.getEnergy() <= 0) {
             return;
         }
-        @NotNull
-        Runnable a = switch (quarryEntity.currentState) {
-            case FINISHED -> () -> {
-            };
-            case WAITING -> quarryEntity::waiting;
-            case BREAK_INSIDE_FRAME -> quarryEntity::breakInsideFrame;
-            case MAKE_FRAME -> quarryEntity::makeFrame;
-            case MOVE_HEAD -> quarryEntity::moveHead;
-            case BREAK_BLOCK -> quarryEntity::breakBlock;
-            case REMOVE_FLUID -> quarryEntity::removeFluid;
-            case FILLER -> quarryEntity::filler;
-        };
-        a.run();
+        switch (quarryEntity.currentState) {
+            case FINISHED -> {
+            }
+            case WAITING -> quarryEntity.waiting();
+            case BREAK_INSIDE_FRAME -> quarryEntity.breakInsideFrame();
+            case MAKE_FRAME -> quarryEntity.makeFrame();
+            case MOVE_HEAD -> quarryEntity.moveHead();
+            case BREAK_BLOCK -> quarryEntity.breakBlock();
+            case REMOVE_FLUID -> quarryEntity.removeFluid();
+            case FILLER -> quarryEntity.filler();
+        }
     }
 
     @SuppressWarnings("unused")
@@ -388,6 +386,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         }
 
         var state = serverLevel.getBlockState(target);
+        if (state.isAir() || state.equals(stateAfterBreak(serverLevel, target, state))) {
+            // Nothing to do
+            return WorkResult.SUCCESS;
+        }
         var blockEntity = serverLevel.getBlockEntity(target);
         var player = getQuarryFakePlayer(serverLevel, target);
         var hardness = state.getDestroySpeed(serverLevel, target);
