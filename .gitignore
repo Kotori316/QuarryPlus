@@ -3,7 +3,7 @@ build/
 run/
 runs/
 run-server/
-Minecraft/
+*/Minecraft/
 *.iws
 out/
 *.iml
