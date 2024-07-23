@@ -308,11 +308,27 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     private void setNextDigTargetIterator() {
-        var minY = digMinY();
         if (targetPos == null) {
             throw new IllegalStateException("Target pos is null");
         }
         assert area != null;
+        assert level != null;
+        if (shouldRemoveFluid()) {
+            // Check fluids in this y
+            var fluidPos = BlockPos.betweenClosedStream(
+                    area.minX() + 1, targetPos.getY(), area.minZ() + 1,
+                    area.maxX() - 1, targetPos.getY(), area.maxZ() - 1)
+                .filter(p -> !level.getFluidState(p).isEmpty())
+                .findAny()
+                .orElse(null);
+            if (fluidPos != null) {
+                targetIterator = new PickIterator.Single<>(fluidPos);
+                targetPos = targetIterator.next();
+                setState(QuarryState.REMOVE_FLUID, getBlockState());
+                return;
+            }
+        }
+        var minY = digMinY();
         if (minY < targetPos.getY()) {
             // Go next y
             targetIterator = area.quarryDigPosIterator(targetPos.getY() - 1);

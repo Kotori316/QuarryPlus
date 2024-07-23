@@ -1,5 +1,6 @@
 package com.yogpc.qp.machine;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -87,5 +88,26 @@ class PickIteratorTest {
         itr.setLastReturned(9);
         assertFalse(itr.hasNext());
         assertThrows(NoSuchElementException.class, itr::next);
+    }
+
+    @Nested
+    class SingleTest {
+        @Test
+        void instance() {
+            var itr = assertDoesNotThrow(() -> new PickIterator.Single<>("a"));
+            assertTrue(itr.hasNext());
+            assertEquals("a", itr.next());
+            assertFalse(itr.hasNext());
+            assertEquals("a", itr.getLastReturned());
+            assertThrows(NoSuchElementException.class, itr::next);
+        }
+
+        @Test
+        void setLastReturned() {
+            var itr = assertDoesNotThrow(() -> new PickIterator.Single<>("a"));
+            assertEquals("a", itr.next());
+            itr.setLastReturned(null);
+            assertTrue(itr.hasNext());
+        }
     }
 }
