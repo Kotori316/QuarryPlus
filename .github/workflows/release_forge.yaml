@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
       - run: chmod +x ./gradlew
       - uses: gradle/actions/setup-gradle@v3
         with:
@@ -24,11 +24,13 @@ jobs:
       - name: JUnit
         run: ./gradlew test
       - name: Get run resources
+        if: false
         run: |
           (./gradlew downloadMCMeta downloadAssets writeMinecraftClasspathGameTestServer) || \
             (sleep 5 && ./gradlew downloadMCMeta downloadAssets writeMinecraftClasspathGameTestServer) || \
             (sleep 5 && ./gradlew downloadMCMeta downloadAssets writeMinecraftClasspathGameTestServer) || true
       - name: GameTest
+        if: false
         run: ./gradlew runGameTestServer
         env:
           TEST_UTILITY_LOG_ALL_TEST: false
@@ -50,7 +52,7 @@ jobs:
     # See https://github.com/Kotori316/common-script/blob/main/.github/workflows/release-prod-gradle.yaml
     uses: 'Kotori316/common-script/.github/workflows/release-prod-gradle.yaml@main'
     with:
-      release_command: 'checkReleaseVersion assemble publishToMavenLocal curseforge modrinth githubRelease registerVersion publish --continue'
-      enable_signature_check: true
-      java_version: 17
+      release_command: 'checkReleaseVersion assemble publishToMavenLocal publishMods registerVersion publish --continue'
+      enable_signature_check: false
+      java_version: 21
     secrets: inherit

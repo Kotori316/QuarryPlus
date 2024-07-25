@@ -1,3 +1,5 @@
+import net.fabricmc.loom.task.AbstractRemapJarTask
+
 plugins {
     id("com.kotori316.common")
     alias(libs.plugins.fabric.loom)
@@ -8,7 +10,7 @@ loom {
     knownIndyBsms.add("java/lang/runtime/SwitchBootstraps/typeSwitch")
 }
 
-tasks.named("remapJar") {
+tasks.withType(AbstractRemapJarTask::class) {
     enabled = false
 }
 

@@ -12,6 +12,13 @@ plugins {
     id("com.kotori316.plugin.cf")
 }
 
+java {
+    withSourcesJar()
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 fun getPlatform(project: Project): String {
     return project.name
 }
@@ -139,6 +146,10 @@ tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
+tasks.named("sourcesJar", org.gradle.jvm.tasks.Jar::class) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 tasks.processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     val projectVersion = project.version.toString()
@@ -179,23 +190,25 @@ publishing {
             }
         }
     }
-    publications {
-        register("mavenJava", MavenPublication::class) {
-            val baseName: String = if (platformName == "forge")
-                "AdditionalEnchantedMiner"
-            else
-                "AdditionalEnchantedMiner-$platformName"
-            artifactId = baseName.lowercase()
-            from(components["java"])
-            pom {
-                description = "QuarryPlus for Minecraft $minecraft with $platformName"
-                url = "https://github.com/Kotori316/QuarryPlus"
-                packaging = "jar"
-                withXml {
-                    val dependencyNode = asNode()["dependencies"] as NodeList
-                    dependencyNode.filterIsInstance<Node>().forEach { node ->
-                        // remove all dependencies
-                        node.parent().remove(node)
+    if (platformName != "common") {
+        publications {
+            register("mavenJava", MavenPublication::class) {
+                val baseName: String = if (platformName == "forge")
+                    "AdditionalEnchantedMiner"
+                else
+                    "AdditionalEnchantedMiner-$platformName"
+                artifactId = baseName.lowercase()
+                from(components["java"])
+                pom {
+                    description = "QuarryPlus for Minecraft $minecraft with $platformName"
+                    url = "https://github.com/Kotori316/QuarryPlus"
+                    packaging = "jar"
+                    withXml {
+                        val dependencyNode = asNode()["dependencies"] as NodeList
+                        dependencyNode.filterIsInstance<Node>().forEach { node ->
+                            // remove all dependencies
+                            node.parent().remove(node)
+                        }
                     }
                 }
             }
