@@ -19,7 +19,7 @@ public final class QuarryPlus {
             .displayItems((itemDisplayParameters, output) -> {
                 PlatformAccess.getAccess().registerObjects().allItems()
                     .map(Supplier::get)
-                    .flatMap(t -> t.creativeTabItem().stream())
+                    .flatMap(InCreativeTabs::creativeTabItem)
                     .forEach(output::accept);
             });
     }
