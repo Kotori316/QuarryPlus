@@ -7,6 +7,8 @@ import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
 import com.yogpc.qp.fabric.packet.PacketHandler;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
+import com.yogpc.qp.machine.misc.GeneratorBlock;
+import com.yogpc.qp.machine.misc.GeneratorEntity;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
@@ -34,6 +36,8 @@ public final class PlatformAccessFabric implements PlatformAccess {
         public static final QuarryBlockFabric QUARRY_BLOCK = new QuarryBlockFabric();
         public static final BlockEntityType<QuarryEntityFabric> QUARRY_ENTITY_TYPE = BlockEntityType.Builder.of(QuarryEntityFabric::new, QUARRY_BLOCK).build(DSL.emptyPartType());
         public static final FrameBlock FRAME_BLOCK = new FrameBlock();
+        public static final GeneratorBlock GENERATOR_BLOCK = new GeneratorBlock();
+        public static final BlockEntityType<GeneratorEntity> GENERATOR_ENTITY_TYPE = BlockEntityType.Builder.of(GeneratorEntity::new, GENERATOR_BLOCK).build(DSL.emptyPartType());
 
         private static final List<InCreativeTabs> TAB_ITEMS = new ArrayList<>();
         public static final CreativeModeTab TAB = QuarryPlus.buildCreativeModeTab(FabricItemGroup.builder()).build();
@@ -41,10 +45,14 @@ public final class PlatformAccessFabric implements PlatformAccess {
         static void registerAll() {
             registerEntityBlock(QUARRY_BLOCK, QUARRY_ENTITY_TYPE);
             registerBlockItem(FRAME_BLOCK);
+            registerEntityBlock(GENERATOR_BLOCK, GENERATOR_ENTITY_TYPE);
             Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
         }
 
         private static void registerEntityBlock(QpBlock block, BlockEntityType<?> entityType) {
+            if (!entityType.isValid(block.defaultBlockState())) {
+                throw new IllegalArgumentException("Invalid block entity type (%s) for %s".formatted(entityType, block.getClass().getSimpleName()));
+            }
             registerBlockItem(block);
             Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, block.name, entityType);
         }
@@ -69,7 +77,11 @@ public final class PlatformAccessFabric implements PlatformAccess {
         public Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block) {
             return switch (block) {
                 case QuarryBlockFabric ignored -> Optional.of(QUARRY_ENTITY_TYPE);
-                case null, default -> Optional.empty();
+                case GeneratorBlock ignored -> Optional.of(GENERATOR_ENTITY_TYPE);
+                case null, default -> {
+                    QuarryPlus.LOGGER.warn("Unknown block type: {}", block != null ? block.name : "null");
+                    yield Optional.empty();
+                }
             };
         }
 
