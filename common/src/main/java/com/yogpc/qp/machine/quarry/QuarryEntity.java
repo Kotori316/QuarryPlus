@@ -286,7 +286,9 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             if (targetIterator.hasNext()) {
                 targetPos = targetIterator.next();
             } else {
-                setNextDigTargetIterator();
+                if (setNextDigTargetIterator()) {
+                    return;
+                }
             }
             setState(QuarryState.MOVE_HEAD, getBlockState());
             return;
@@ -301,13 +303,18 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                     return;
                 }
             } else {
-                setNextDigTargetIterator();
+                if (setNextDigTargetIterator()) {
+                    return;
+                }
             }
             setState(QuarryState.MOVE_HEAD, getBlockState());
         }
     }
 
-    private void setNextDigTargetIterator() {
+    /**
+     * @return {@code true} if finished
+     */
+    private boolean setNextDigTargetIterator() {
         if (targetPos == null) {
             throw new IllegalStateException("Target pos is null");
         }
@@ -325,7 +332,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 targetIterator = new PickIterator.Single<>(fluidPos);
                 targetPos = targetIterator.next();
                 setState(QuarryState.REMOVE_FLUID, getBlockState());
-                return;
+                return false;
             }
         }
         var minY = digMinY();
@@ -333,9 +340,11 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             // Go next y
             targetIterator = area.quarryDigPosIterator(targetPos.getY() - 1);
             targetPos = targetIterator.next();
+            return false;
         } else {
             // Finish
             setState(QuarryState.FINISHED, getBlockState());
+            return true;
         }
     }
 
@@ -505,8 +514,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             }
         }
         targetPos = targetIterator.getLastReturned();
-        setNextDigTargetIterator();
-        if (currentState == QuarryState.FINISHED) {
+        if (setNextDigTargetIterator()) {
             return null;
         }
         return getNextValidTarget();
