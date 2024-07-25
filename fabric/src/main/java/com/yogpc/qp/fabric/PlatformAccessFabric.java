@@ -2,6 +2,7 @@ package com.yogpc.qp.fabric;
 
 import com.mojang.datafixers.DSL;
 import com.yogpc.qp.*;
+import com.yogpc.qp.fabric.machine.misc.CheckerItemFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
 import com.yogpc.qp.fabric.packet.PacketHandler;
@@ -18,6 +19,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.apache.logging.log4j.util.Lazy;
@@ -38,6 +40,7 @@ public final class PlatformAccessFabric implements PlatformAccess {
         public static final FrameBlock FRAME_BLOCK = new FrameBlock();
         public static final GeneratorBlock GENERATOR_BLOCK = new GeneratorBlock();
         public static final BlockEntityType<GeneratorEntity> GENERATOR_ENTITY_TYPE = BlockEntityType.Builder.of(GeneratorEntity::new, GENERATOR_BLOCK).build(DSL.emptyPartType());
+        public static final CheckerItemFabric CHECKER_ITEM = new CheckerItemFabric();
 
         private static final List<InCreativeTabs> TAB_ITEMS = new ArrayList<>();
         public static final CreativeModeTab TAB = QuarryPlus.buildCreativeModeTab(FabricItemGroup.builder()).build();
@@ -46,6 +49,7 @@ public final class PlatformAccessFabric implements PlatformAccess {
             registerEntityBlock(QUARRY_BLOCK, QUARRY_ENTITY_TYPE);
             registerBlockItem(FRAME_BLOCK);
             registerEntityBlock(GENERATOR_BLOCK, GENERATOR_ENTITY_TYPE);
+            registerItem(CHECKER_ITEM, CHECKER_ITEM.name);
             Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
         }
 
@@ -59,8 +63,15 @@ public final class PlatformAccessFabric implements PlatformAccess {
 
         private static void registerBlockItem(QpBlock block) {
             Registry.register(BuiltInRegistries.BLOCK, block.name, block);
-            Registry.register(BuiltInRegistries.ITEM, block.name, block.blockItem);
+            registerItem(block.blockItem, block.name);
             TAB_ITEMS.add(block);
+        }
+
+        private static void registerItem(Item item, ResourceLocation name) {
+            Registry.register(BuiltInRegistries.ITEM, name, item);
+            if (item instanceof InCreativeTabs c) {
+                TAB_ITEMS.add(c);
+            }
         }
 
         @Override

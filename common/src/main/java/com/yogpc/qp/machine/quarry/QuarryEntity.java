@@ -1,13 +1,15 @@
 package com.yogpc.qp.machine.quarry;
 
 import com.yogpc.qp.PlatformAccess;
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.*;
 import com.yogpc.qp.packet.ClientSync;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -31,6 +33,7 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     public static final Marker MARKER = MarkerFactory.getMarker("quarry");
@@ -62,18 +65,33 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         return PlatformAccess.getConfig().getPowerMap().quarry();
     }
 
+    @Override
+    public Stream<MutableComponent> checkerLogs() {
+        return Stream.concat(
+            super.checkerLogs(),
+            Stream.of(
+                Component.empty()
+                    .append(Component.literal("State").withStyle(ChatFormatting.GREEN))
+                    .append(": ")
+                    .append(currentState.name()),
+                Component.empty()
+                    .append(Component.literal("Area").withStyle(ChatFormatting.GREEN))
+                    .append(": ")
+                    .append(String.valueOf(area)),
+                Component.empty()
+                    .append(Component.literal("Head").withStyle(ChatFormatting.GREEN))
+                    .append(": ")
+                    .append(String.valueOf(head)),
+                Component.empty()
+                    .append(Component.literal("Storage").withStyle(ChatFormatting.GREEN))
+                    .append(": ")
+                    .append(String.valueOf(storage))
+            )
+        );
+    }
+
     @SuppressWarnings("unused")
     static void serverTick(Level level, BlockPos pos, BlockState state, QuarryEntity quarryEntity) {
-        if (level.getGameTime() % 40 == 0) {
-            QuarryPlus.LOGGER.info(MARKER, "({}), {} FE, {}, {}, {}, {}",
-                quarryEntity.getBlockPos().toShortString(),
-                quarryEntity.getEnergy() / ONE_FE,
-                quarryEntity.currentState,
-                quarryEntity.getArea(),
-                quarryEntity.head,
-                quarryEntity.storage
-            );
-        }
         if (quarryEntity.getEnergy() <= 0) {
             return;
         }
@@ -92,12 +110,6 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     @SuppressWarnings("unused")
     static void clientTick(Level level, BlockPos pos, BlockState state, QuarryEntity quarryEntity) {
-        if (level.getGameTime() % 40 == 0) {
-            QuarryPlus.LOGGER.info(MARKER, "CLIENT {}, {}",
-                quarryEntity.head,
-                quarryEntity.targetHead
-            );
-        }
         quarryEntity.head = quarryEntity.targetHead;
     }
 

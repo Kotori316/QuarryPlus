@@ -1,8 +1,12 @@
 package com.yogpc.qp.machine;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -12,6 +16,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Objects;
 import java.util.function.LongSupplier;
+import java.util.stream.Stream;
 
 public abstract class PowerEntity extends BlockEntity {
     public static final long ONE_FE = 1_000_000_000L;
@@ -118,7 +123,24 @@ public abstract class PowerEntity extends BlockEntity {
         this.energy = energy;
     }
 
-    @Nullable
+    public Stream<MutableComponent> checkerLogs() {
+        return Stream.of(
+            Component.literal("-".repeat(32)),
+            Component.empty()
+                .append(Component.literal("BlockEntity").withStyle(ChatFormatting.AQUA))
+                .append(": %s".formatted(BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(getType())))
+                .append(" (%s)".formatted(getClass().getSimpleName())),
+            Component.empty()
+                .append(Component.literal("Pos").withStyle(ChatFormatting.AQUA))
+                .append(": ")
+                .append(getBlockPos().toShortString()),
+            Component.empty()
+                .append(Component.literal("Energy").withStyle(ChatFormatting.AQUA))
+                .append(": ")
+                .append("%d".formatted(getEnergy() / ONE_FE))
+        );
+    }
+
     public static BlockEntityTicker<PowerEntity> logTicker() {
         return (w, p, s, blockEntity) -> blockEntity.energyCounter.logOutput(blockEntity.timeProvider.getAsLong());
     }
