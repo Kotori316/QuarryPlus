@@ -1,17 +1,18 @@
 package com.yogpc.qp.fabric.integration;
 
-import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.QuarryConfig;
 import com.yogpc.qp.machine.PowerEntity;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
 import team.reborn.energy.api.EnergyStorage;
 
 final class RebornEnergyStorage extends SnapshotParticipant<Long> implements EnergyStorage {
-    public static final long CONVERSION_RATE = (long) (PowerEntity.ONE_FE * PlatformAccess.getConfig().rebornEnergyConversionCoefficient());
+    public final long conversionRate;
     private final PowerEntity powerEntity;
 
-    RebornEnergyStorage(PowerEntity powerEntity) {
+    RebornEnergyStorage(PowerEntity powerEntity, QuarryConfig config) {
         this.powerEntity = powerEntity;
+        this.conversionRate = (long) (PowerEntity.ONE_FE * config.rebornEnergyConversionCoefficient());
     }
 
     @Override
@@ -30,8 +31,8 @@ final class RebornEnergyStorage extends SnapshotParticipant<Long> implements Ene
         if (insertSimulate <= 0) return 0;
 
         updateSnapshots(transaction);
-        var accepted = powerEntity.addEnergy(maxAmount * CONVERSION_RATE, false);
-        return accepted / CONVERSION_RATE;
+        var accepted = powerEntity.addEnergy(maxAmount * conversionRate, false);
+        return accepted / conversionRate;
     }
 
     @Override
@@ -46,11 +47,11 @@ final class RebornEnergyStorage extends SnapshotParticipant<Long> implements Ene
 
     @Override
     public long getAmount() {
-        return powerEntity.getEnergy() / CONVERSION_RATE;
+        return powerEntity.getEnergy() / conversionRate;
     }
 
     @Override
     public long getCapacity() {
-        return powerEntity.getMaxEnergy() / CONVERSION_RATE;
+        return powerEntity.getMaxEnergy() / conversionRate;
     }
 }

@@ -75,7 +75,7 @@ public abstract class PowerEntity extends BlockEntity {
     }
 
     @VisibleForTesting
-    void setTimeProvider(LongSupplier timeProvider) {
+    public void setTimeProvider(LongSupplier timeProvider) {
         this.timeProvider = timeProvider;
     }
 

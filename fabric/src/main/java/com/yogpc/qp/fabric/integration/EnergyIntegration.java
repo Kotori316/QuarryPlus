@@ -1,5 +1,6 @@
 package com.yogpc.qp.fabric.integration;
 
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.fabric.PlatformAccessFabric;
 import com.yogpc.qp.machine.PowerEntity;
@@ -37,7 +38,7 @@ class RebornEnergyRegister {
     static boolean register() {
         EnergyStorage.SIDED.registerForBlockEntities((blockEntity, context) -> {
             if (blockEntity instanceof PowerEntity entity) {
-                return new RebornEnergyStorage(entity);
+                return new RebornEnergyStorage(entity, PlatformAccess.getConfig());
             }
             return null;
         }, types());
