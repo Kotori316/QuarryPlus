@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -70,22 +69,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         return Stream.concat(
             super.checkerLogs(),
             Stream.of(
-                Component.empty()
-                    .append(Component.literal("State").withStyle(ChatFormatting.GREEN))
-                    .append(": ")
-                    .append(currentState.name()),
-                Component.empty()
-                    .append(Component.literal("Area").withStyle(ChatFormatting.GREEN))
-                    .append(": ")
-                    .append(String.valueOf(area)),
-                Component.empty()
-                    .append(Component.literal("Head").withStyle(ChatFormatting.GREEN))
-                    .append(": ")
-                    .append(String.valueOf(head)),
-                Component.empty()
-                    .append(Component.literal("Storage").withStyle(ChatFormatting.GREEN))
-                    .append(": ")
-                    .append(String.valueOf(storage))
+                detail(ChatFormatting.GREEN, "State", currentState.name()),
+                detail(ChatFormatting.GREEN, "Area", String.valueOf(area)),
+                detail(ChatFormatting.GREEN, "Head", String.valueOf(head)),
+                detail(ChatFormatting.GREEN, "Storage", String.valueOf(storage))
             )
         );
     }

@@ -130,14 +130,8 @@ public abstract class PowerEntity extends BlockEntity {
                 .append(Component.literal("BlockEntity").withStyle(ChatFormatting.AQUA))
                 .append(": %s".formatted(BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(getType())))
                 .append(" (%s)".formatted(getClass().getSimpleName())),
-            Component.empty()
-                .append(Component.literal("Pos").withStyle(ChatFormatting.AQUA))
-                .append(": ")
-                .append(getBlockPos().toShortString()),
-            Component.empty()
-                .append(Component.literal("Energy").withStyle(ChatFormatting.AQUA))
-                .append(": ")
-                .append("%d".formatted(getEnergy() / ONE_FE))
+            detail(ChatFormatting.AQUA, "Pos", getBlockPos().toShortString()),
+            detail(ChatFormatting.AQUA, "Energy", "%d".formatted(getEnergy() / ONE_FE))
         );
     }
 
@@ -152,5 +146,12 @@ public abstract class PowerEntity extends BlockEntity {
         } else {
             return null;
         }
+    }
+
+    protected static MutableComponent detail(ChatFormatting color, String title, String content) {
+        return Component.empty()
+            .append(Component.literal(title).withStyle(color))
+            .append(": ")
+            .append(content);
     }
 }
