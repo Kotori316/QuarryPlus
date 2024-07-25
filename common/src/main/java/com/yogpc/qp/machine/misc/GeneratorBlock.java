@@ -4,7 +4,11 @@ import com.yogpc.qp.machine.CombinedBlockEntityTicker;
 import com.yogpc.qp.machine.PowerEntity;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpEntityBlock;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -20,6 +24,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -70,5 +75,16 @@ public class GeneratorBlock extends QpEntityBlock {
             this.<GeneratorEntity>getBlockEntityType().orElse(null),
             CombinedBlockEntityTicker.of(this, level, GeneratorEntity::serverTick)
         );
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (!level.isClientSide()) {
+            int pre = state.getValue(BlockStateProperties.LEVEL);
+            int newValue = (player.isShiftKeyDown() ? pre - 1 : pre + 1) & ((1 << 4) - 1);
+            level.setBlock(pos, state.setValue(BlockStateProperties.LEVEL, newValue), Block.UPDATE_ALL);
+            player.displayClientMessage(Component.literal("Change generator mode to %d(%d FE)".formatted(newValue, ENERGY[newValue] / PowerEntity.ONE_FE)), false);
+        }
+        return ItemInteractionResult.SUCCESS;
     }
 }
