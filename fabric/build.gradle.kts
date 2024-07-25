@@ -1,6 +1,7 @@
 plugins {
     id("com.kotori316.common")
     alias(libs.plugins.fabric.loom)
+    id("com.kotori316.publish")
 }
 
 loom {
@@ -75,4 +76,8 @@ tasks.compileJava {
 tasks.processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from(project(":common").sourceSets.main.get().resources)
+}
+
+ext {
+    set("publishJarTaskName", "remapJar")
 }
