@@ -3,7 +3,6 @@ package com.yogpc.qp.machine.quarry;
 import com.yogpc.qp.machine.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -61,7 +60,6 @@ public abstract class QuarryBlock extends QpEntityBlock {
             ));
         }
         return createTickerHelper(blockEntityType, this.<QuarryEntity>getBlockEntityType().orElse(null), CombinedBlockEntityTicker.of(this, level,
-            (level1, blockPos, blockState, blockEntity) -> blockEntity.addEnergy(10 * PowerEntity.ONE_FE, false),
             PowerEntity.logTicker(),
             QuarryEntity::serverTick
         ));
@@ -73,8 +71,6 @@ public abstract class QuarryBlock extends QpEntityBlock {
         if (!level.isClientSide) {
             var entity = this.<QuarryEntity>getBlockEntityType().map(t -> t.getBlockEntity(level, pos)).orElse(null);
             if (entity != null) {
-                entity.addEnergy(100 * PowerEntity.ONE_FE, false);
-                player.displayClientMessage(Component.literal("%d".formatted(entity.getEnergy())), false);
                 return InteractionResult.SUCCESS;
             }
         }
