@@ -55,4 +55,5 @@ jobs:
       release_command: 'checkReleaseVersion assemble publishToMavenLocal publishMods registerVersion publish --continue'
       enable_signature_check: false
       java_version: 21
+      use_gradle_cache: true
     secrets: inherit
