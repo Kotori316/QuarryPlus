@@ -61,6 +61,8 @@ dependencies {
     modImplementation(libs.fabric.version.checker)
     compileOnly(project(":common"))
 
+    modImplementation(libs.teamreborn.energy)
+
     testImplementation(libs.fabric.junit)
     testImplementation(platform(libs.junit))
     testImplementation(libs.jupiter)

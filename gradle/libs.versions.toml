@@ -11,6 +11,8 @@ fabric_version_checker = "2.4.0"
 tu = "21.0-SNAPSHOT"
 du = "21.0-SNAPSHOT"
 
+teamreborn_energy = "4.1.0"
+
 jupiter_api = "5.10.3"
 mockito_core = "5.12.0"
 mockito_inline = "5.2.0"
@@ -42,6 +44,7 @@ fabric_junit = { group = "net.fabricmc", name = "fabric-loader-junit", version.r
 tu_fabric = { group = "com.kotori316", name = "test-utility-fabric", version.ref = "tu" }
 du_fabric = { group = "com.kotori316", name = "debug-utility-fabric", version.ref = "du" }
 fabric_version_checker = { group = "com.kotori316", name = "VersionCheckerMod", version.ref = "fabric_version_checker" }
+teamreborn_energy = { group = "teamreborn", name = "energy", version.ref = "teamreborn_energy" }
 # NeoForge
 neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
 tu_neoforge = { group = "com.kotori316", name = "test-utility-neoforge", version.ref = "tu" }

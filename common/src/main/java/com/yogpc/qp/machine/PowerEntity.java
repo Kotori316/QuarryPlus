@@ -111,7 +111,7 @@ public abstract class PowerEntity extends BlockEntity {
         return used;
     }
 
-    protected final void setEnergy(long energy, boolean log) {
+    public final void setEnergy(long energy, boolean log) {
         if (this.energy > energy) {
             // Energy is consumed
             energyCounter.useEnergy(log ? this.timeProvider : () -> 1L, this.energy - energy, "FORCE_SET");
