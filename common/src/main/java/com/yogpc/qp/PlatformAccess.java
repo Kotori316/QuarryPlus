@@ -2,7 +2,10 @@ package com.yogpc.qp;
 
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
+import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -32,6 +35,8 @@ public interface PlatformAccess {
 
         Supplier<? extends FrameBlock> frameBlock();
 
+        Supplier<? extends GeneratorBlock> generatorBlock();
+
         Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block);
 
         Stream<Supplier<? extends InCreativeTabs>> allItems();
@@ -44,6 +49,15 @@ public interface PlatformAccess {
     }
 
     QuarryConfig quarryConfig();
+
+    interface Transfer {
+        /**
+         * @return items that is not moved. In other words, the rest of item.
+         */
+        ItemStack transferItem(Level level, BlockPos pos, ItemStack stack, Direction side, boolean simulate);
+    }
+
+    Transfer transfer();
 
     FluidStackLike getFluidInItem(ItemStack stack);
 }

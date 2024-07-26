@@ -3,6 +3,7 @@ package com.yogpc.qp.machine;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.yogpc.qp.BeforeMC;
+import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.NbtOps;
@@ -175,5 +176,25 @@ class MachineStorageTest extends BeforeMC {
 
     static Stream<DynamicOps<?>> ops() {
         return Stream.of(NbtOps.INSTANCE, JsonOps.INSTANCE, JsonOps.COMPRESSED);
+    }
+
+    @Nested
+    class PassTest {
+        @Test
+        void mapCheck() {
+            var map = new Object2LongLinkedOpenHashMap<String>();
+            map.put("a", 6);
+            map.put("b", 4);
+            map.put("c", 8);
+
+            for (var entry : map.object2LongEntrySet()) {
+                entry.setValue(entry.getLongValue() - 1);
+            }
+            assertEquals(Map.of(
+                "a", 5L,
+                "b", 3L,
+                "c", 7L
+            ), map);
+        }
     }
 }

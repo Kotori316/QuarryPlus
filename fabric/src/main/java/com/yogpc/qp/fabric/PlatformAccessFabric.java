@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 public final class PlatformAccessFabric implements PlatformAccess {
     private final Lazy<RegisterObjects> itemsLazy = Lazy.lazy(RegisterObjectsFabric::new);
     private final Lazy<PacketHandler> packetHandlerLazy = Lazy.lazy(PacketHandler::new);
+    private final Lazy<TransferFabric> transferLazy = Lazy.lazy(TransferFabric::new);
 
     public static final class RegisterObjectsFabric implements RegisterObjects {
         public static final QuarryBlockFabric QUARRY_BLOCK = new QuarryBlockFabric();
@@ -85,6 +86,11 @@ public final class PlatformAccessFabric implements PlatformAccess {
         }
 
         @Override
+        public Supplier<? extends GeneratorBlock> generatorBlock() {
+            return Lazy.value(GENERATOR_BLOCK);
+        }
+
+        @Override
         public Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block) {
             return switch (block) {
                 case QuarryBlockFabric ignored -> Optional.of(QUARRY_ENTITY_TYPE);
@@ -120,6 +126,11 @@ public final class PlatformAccessFabric implements PlatformAccess {
     @Override
     public QuarryConfig quarryConfig() {
         return new QuarryConfigFabric();
+    }
+
+    @Override
+    public Transfer transfer() {
+        return transferLazy.get();
     }
 
     @Override

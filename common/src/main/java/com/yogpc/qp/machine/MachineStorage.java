@@ -5,11 +5,15 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.yogpc.qp.PlatformAccess;
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
@@ -157,4 +161,42 @@ public final class MachineStorage {
         ItemKeyCount.list2Map(itemKeyCounts),
         FluidKeyCount.list2Map(fluidKeyCounts)
     )));
+
+    private static final int MAX_TRANSFER = 4;
+
+    public void passItems(Level level, BlockPos storagePos) {
+        var mutablePos = new BlockPos.MutableBlockPos();
+        int count = 0;
+        Direction[] directions = {Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST, Direction.DOWN, Direction.UP};
+        for (Direction direction : directions) {
+            var pos = mutablePos.setWithOffset(storagePos, direction);
+            var state = level.getBlockState(pos);
+            if (cantBeStorage(state)) {
+                continue;
+            }
+            var itr = items.object2LongEntrySet().fastIterator();
+            while (itr.hasNext()) {
+                var entry = itr.next();
+                var stack = entry.getKey().toStack(Math.clamp(entry.getLongValue(), 0, Integer.MAX_VALUE));
+                var rest = PlatformAccess.getAccess().transfer().transferItem(level, pos, stack, direction.getOpposite(), false);
+                if (rest.getCount() == stack.getCount()) {
+                    continue;
+                }
+                if (rest.isEmpty() && stack.getCount() == entry.getLongValue()) {
+                    itr.remove();
+                } else {
+                    entry.setValue((entry.getLongValue() - stack.getCount()) + rest.getCount());
+                }
+                if (count++ > MAX_TRANSFER) {
+                    return;
+                }
+            }
+        }
+    }
+
+    private static boolean cantBeStorage(BlockState state) {
+        return state.isAir()
+            || state.is(PlatformAccess.getAccess().registerObjects().frameBlock().get())
+            || state.is(PlatformAccess.getAccess().registerObjects().generatorBlock().get());
+    }
 }
