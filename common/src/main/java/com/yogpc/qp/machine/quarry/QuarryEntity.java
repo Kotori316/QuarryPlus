@@ -31,7 +31,11 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 public abstract class QuarryEntity extends PowerEntity implements ClientSync {
@@ -46,6 +50,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     private Area area;
     @Nullable
     private PickIterator<BlockPos> targetIterator;
+    @NotNull
+    private Set<BlockPos> skipped = new HashSet<>();
     @Nullable
     BlockPos targetPos;
     @NotNull
@@ -108,6 +114,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             tag.put("targetPos", BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, targetIterator.getLastReturned()).getOrThrow());
         }
         tag.put("storage", MachineStorage.CODEC.codec().encodeStart(NbtOps.INSTANCE, storage).getOrThrow());
+        tag.putLongArray("skipped", skipped.stream().mapToLong(BlockPos::asLong).toArray());
     }
 
     @Override
@@ -120,6 +127,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         targetIterator = createTargetIterator(currentState, area, current);
         targetPos = current;
         storage = MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElse(new MachineStorage());
+        skipped = LongStream.of(tag.getLongArray("skipped")).mapToObj(BlockPos::of).collect(Collectors.toCollection(HashSet::new));
     }
 
     @Override
@@ -211,6 +219,9 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 // Wait until quarry can remove the block
                 return;
             }
+            if (result != WorkResult.SUCCESS) {
+                skipped.add(targetPos.immutable());
+            }
         }
 
         var requiredEnergy = (long) (ONE_FE * powerMap().makeFrame());
@@ -295,6 +306,9 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
         var result = breakBlock(targetPos);
         if (result.isSuccess()) {
+            if (result != WorkResult.SUCCESS) {
+                skipped.add(targetPos.immutable());
+            }
             if (targetIterator.hasNext()) {
                 targetPos = getNextValidTarget();
                 if (targetPos == null) {
@@ -334,8 +348,25 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 return false;
             }
         }
+        {
+            // Check blocks in this y
+            var blockPos = BlockPos.betweenClosedStream(
+                    area.minX() + 1, targetPos.getY(), area.minZ() + 1,
+                    area.maxX() - 1, targetPos.getY(), area.maxZ() - 1)
+                .filter(p -> !skipped.contains(p))
+                .filter(p -> canBreak(level, p, level.getBlockState(p)))
+                .findAny()
+                .orElse(null);
+            if (blockPos != null) {
+                targetIterator = new PickIterator.Single<>(blockPos);
+                targetPos = targetIterator.next();
+                setState(QuarryState.MOVE_HEAD, getBlockState());
+                return false;
+            }
+        }
         var minY = digMinY();
         if (minY < targetPos.getY()) {
+            skipped.removeIf(p -> p.getY() > targetPos.getY());
             // Go next y
             targetIterator = area.quarryDigPosIterator(targetPos.getY() - 1);
             targetPos = targetIterator.next();
@@ -508,7 +539,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         while (targetIterator.hasNext()) {
             var pos = targetIterator.next();
             var state = level.getBlockState(pos);
-            if (!state.isAir() && !state.equals(stateAfterBreak(level, pos, state))) {
+            if (canBreak(level, pos, state)) {
                 return pos;
             }
         }
@@ -517,5 +548,9 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             return null;
         }
         return getNextValidTarget();
+    }
+
+    boolean canBreak(Level level, BlockPos pos, BlockState state) {
+        return !state.isAir() && !state.equals(stateAfterBreak(level, pos, state));
     }
 }
