@@ -155,7 +155,15 @@ public enum QuarryState implements BlockEntityTicker<TileQuarry> {
                 quarry.target = Target.newDigTarget(quarry.getArea(), quarry.getArea().minY());
                 logTargetChange(quarryPos, quarry);
             }
-            var targetPos = Objects.requireNonNull(quarry.target.get(false));
+            var targetPos = quarry.target.get(false);
+            if (targetPos == null) {
+                // https://github.com/Kotori316/QuarryPlus/issues/460
+                QuarryPlus.LOGGER.error("Target pos is null, it's abnormal. Current: {}", quarry.saveWithFullMetadata());
+                QuarryPlus.LOGGER.error("Stacktrace", new IllegalStateException("Quarry has invalid status"));
+                quarry.target = null;
+                tick(world, quarryPos, state, quarry);
+                return;
+            }
             if (TileQuarry.isFullFluidBlock(quarry.getTargetWorld().getBlockState(targetPos))) {
                 if (quarry.hasPumpModule())
                     quarry.setState(REMOVE_FLUID, state);
