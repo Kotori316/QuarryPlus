@@ -1,0 +1,27 @@
+modLoader = "kotori_scala"
+loaderVersion = "[2.13.10-build-0, ),[45,)"
+issueTrackerURL = "https://github.com/Kotori316/QuarryPlus/issues"
+license = "GNU Lesser General Public License v3.0"
+[[mods]]
+modId = "quarryplus"
+version = "${version}"
+displayName = "QuarryPlus"
+updateJSONURL = "${update_url}"
+displayURL = "https://github.com/Kotori316/QuarryPlus"
+credits = "Kotori316"
+authors = "Kotori316"
+logoFile = "assets/quarryplus/mod_quarryplus.png"
+description = '''
+Adds some machines to make a big hole in your world.'''
+[[dependencies.quarryplus]]
+modId = "forge"
+mandatory = true
+versionRange = "[51.0,)"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.quarryplus]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.21, )"
+ordering = "NONE"
+side = "BOTH"

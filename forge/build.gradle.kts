@@ -18,6 +18,9 @@ minecraft {
 dependencies {
     minecraft(libs.forge)
     compileOnly(project(":common"))
+    runtimeOnly(variantOf(libs.slp.forge) { classifier("with-library") }) {
+        isTransitive = false
+    }
 }
 
 // Share with common
