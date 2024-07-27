@@ -67,7 +67,7 @@ class PlatformAccessHolder {
 
     static {
         QuarryPlus.LOGGER.info("[PlatformAccess] loading");
-        instance = ServiceLoader.load(PlatformAccess.class).findFirst().orElseThrow();
+        instance = ServiceLoader.load(PlatformAccess.class, PlatformAccess.class.getClassLoader()).findFirst().orElseThrow();
         QuarryPlus.LOGGER.info("[PlatformAccess] loaded for {}, {}", instance.platformName(), instance.getClass().getSimpleName());
     }
 }

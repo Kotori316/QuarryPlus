@@ -1,5 +1,6 @@
 package com.yogpc.qp.machine;
 
+import com.yogpc.qp.PlatformAccess;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -28,7 +29,7 @@ public abstract class PowerEntity extends BlockEntity {
 
     protected PowerEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
-        this.energyCounter = EnergyCounter.createInstance(true, "%s(%d, %d, %d)".formatted(getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ()));
+        this.energyCounter = EnergyCounter.createInstance(PlatformAccess.getConfig().isDebug(), "%s(%d, %d, %d)".formatted(getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ()));
         this.enabled = true;
         setTimeProvider(() -> Objects.requireNonNull(this.level,
             """
