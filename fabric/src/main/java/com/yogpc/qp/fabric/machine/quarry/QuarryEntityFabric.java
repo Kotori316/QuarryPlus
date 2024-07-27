@@ -1,7 +1,7 @@
 package com.yogpc.qp.fabric.machine.quarry;
 
 import com.yogpc.qp.fabric.PlatformAccessFabric;
-import com.yogpc.qp.fabric.machine.QuarryFakePlayer;
+import com.yogpc.qp.machine.QuarryFakePlayerCommon;
 import com.yogpc.qp.machine.quarry.QuarryEntity;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
@@ -37,8 +37,8 @@ public final class QuarryEntityFabric extends QuarryEntity {
 
     @Override
     protected ServerPlayer getQuarryFakePlayer(ServerLevel level, BlockPos target) {
-        var fakePlayer = FakePlayer.get(level, QuarryFakePlayer.PROFILE);
-        QuarryFakePlayer.setDirection(fakePlayer, Direction.DOWN);
+        var fakePlayer = FakePlayer.get(level, QuarryFakePlayerCommon.PROFILE);
+        QuarryFakePlayerCommon.setDirection(fakePlayer, Direction.DOWN);
         return fakePlayer;
     }
 }
