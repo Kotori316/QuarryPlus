@@ -20,7 +20,6 @@ jobs:
       - uses: gradle/actions/setup-gradle@v3
         with:
           cache-read-only: true
-          dependency-graph: generate-and-submit
       - name: JUnit
         run: ./gradlew test
       - name: Get run resources

@@ -29,8 +29,8 @@ val modChangelog: Provider<String> = provider {
     val fromFile = rootProject.file(project.property("changelog_file")!!).readText()
     """
         QuarryPlus(v${project.version}) for Minecraft $minecraft
-        $fromFile
-    """.trimIndent()
+        ---
+    """.trimIndent() + System.lineSeparator() + fromFile
 }
 
 publishMods {
@@ -155,4 +155,10 @@ tasks.register("checkReleaseVersion", CallVersionCheckFunctionTask::class) {
     modName = "QuarryPlus".lowercase()
     version = project.version.toString()
     failIfExists = !releaseDebug
+}
+
+tasks.register("data") {
+    doLast {
+        println(modChangelog.get())
+    }
 }

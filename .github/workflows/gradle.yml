@@ -27,7 +27,7 @@ jobs:
           cache-read-only: ${{ github.event_name != 'push' }}
           add-job-summary: 'on-failure'
       - run: ./gradlew assemble --scan
-      - run: ./gradlew checkReleaseVersion --no-parallel
+      - run: ./gradlew data checkReleaseVersion --no-parallel
 
   platforms:
     runs-on: ubuntu-latest
