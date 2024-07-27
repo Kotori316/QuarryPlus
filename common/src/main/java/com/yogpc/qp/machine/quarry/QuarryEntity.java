@@ -294,12 +294,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 return;
             }
             // Skip this pos
-            if (targetIterator.hasNext()) {
-                targetPos = targetIterator.next();
-            } else {
-                if (setNextDigTargetIterator()) {
-                    return;
-                }
+            targetPos = getNextValidTarget();
+            if (targetPos == null) {
+                // Finished
+                return;
             }
             setState(QuarryState.MOVE_HEAD, getBlockState());
             return;
@@ -310,16 +308,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             if (result != WorkResult.SUCCESS) {
                 skipped.add(targetPos.immutable());
             }
-            if (targetIterator.hasNext()) {
-                targetPos = getNextValidTarget();
-                if (targetPos == null) {
-                    // Finished
-                    return;
-                }
-            } else {
-                if (setNextDigTargetIterator()) {
-                    return;
-                }
+            targetPos = getNextValidTarget();
+            if (targetPos == null) {
+                // Finished
+                return;
             }
             setState(QuarryState.MOVE_HEAD, getBlockState());
         }
@@ -345,7 +337,6 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 .orElse(null);
             if (fluidPos != null) {
                 targetIterator = new PickIterator.Single<>(fluidPos);
-                targetPos = targetIterator.next();
                 setState(QuarryState.REMOVE_FLUID, getBlockState());
                 return false;
             }
@@ -361,7 +352,6 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 .orElse(null);
             if (blockPos != null) {
                 targetIterator = new PickIterator.Single<>(blockPos);
-                targetPos = targetIterator.next();
                 setState(QuarryState.MOVE_HEAD, getBlockState());
                 return false;
             }
@@ -371,7 +361,6 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             skipped.removeIf(p -> p.getY() > targetPos.getY());
             // Go next y
             targetIterator = area.quarryDigPosIterator(targetPos.getY() - 1);
-            targetPos = targetIterator.next();
             return false;
         } else {
             // Finish
