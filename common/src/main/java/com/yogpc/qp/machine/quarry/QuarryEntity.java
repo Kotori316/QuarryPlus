@@ -1,6 +1,7 @@
 package com.yogpc.qp.machine.quarry;
 
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.*;
 import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
@@ -338,6 +339,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             var fluidPos = BlockPos.betweenClosedStream(
                     area.minX() + 1, targetPos.getY(), area.minZ() + 1,
                     area.maxX() - 1, targetPos.getY(), area.maxZ() - 1)
+                .filter(p -> !skipped.contains(p))
                 .filter(p -> !level.getFluidState(p).isEmpty())
                 .findAny()
                 .orElse(null);
@@ -536,18 +538,28 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         assert targetIterator != null;
         assert level != null;
         assert area != null;
-        while (targetIterator.hasNext()) {
-            var pos = targetIterator.next();
-            var state = level.getBlockState(pos);
-            if (canBreak(level, pos, state)) {
-                return pos;
+        int recursiveCount = 0;
+        // optimize tail recursive calls
+        while (recursiveCount++ < 350) {
+            while (targetIterator.hasNext()) {
+                var pos = targetIterator.next();
+                var state = level.getBlockState(pos);
+                if (canBreak(level, pos, state)) {
+                    return pos;
+                }
+            }
+            targetPos = targetIterator.getLastReturned();
+            if (setNextDigTargetIterator()) {
+                return null;
             }
         }
-        targetPos = targetIterator.getLastReturned();
-        if (setNextDigTargetIterator()) {
-            return null;
-        }
-        return getNextValidTarget();
+        // maybe bug
+        QuarryPlus.LOGGER.error("Quarry at {} can't find next target. Itr: {}, Pos: {}",
+            getBlockPos().toShortString(),
+            targetIterator,
+            targetPos
+        );
+        return targetIterator.getLastReturned();
     }
 
     boolean canBreak(Level level, BlockPos pos, BlockState state) {
