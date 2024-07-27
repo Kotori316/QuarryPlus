@@ -53,6 +53,14 @@ sourceSets {
 
 repositories {
     maven {
+        name = "Minecraft-Manually"
+        url = uri("https://libraries.minecraft.net/")
+        content {
+            includeGroup("org.lwjgl")
+            includeGroup("com.mojang")
+        }
+    }
+    maven {
         name = "Kotori316-main"
         url = uri("https://maven.kotori316.com/")
         content {
