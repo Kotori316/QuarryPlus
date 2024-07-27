@@ -25,6 +25,14 @@ val curseProjectId = "282837"
 val modrinthProjectId = "jhxX1zVW"
 val releaseDebug: Boolean = (System.getenv("RELEASE_DEBUG") ?: "true").toBoolean()
 
+val modChangelog: Provider<String> = provider {
+    val fromFile = rootProject.file(project.property("changelog_file")!!).readText()
+    """
+        QuarryPlus(v${project.version}) for Minecraft $minecraft
+        $fromFile
+    """.trimIndent()
+}
+
 publishMods {
     dryRun = releaseDebug
     type = ALPHA
@@ -34,9 +42,7 @@ publishMods {
         file = provider {
             project.tasks.named(ext["publishJarTaskName"].toString(), org.gradle.jvm.tasks.Jar::class)
         }.flatMap { it }.flatMap { it.archiveFile }
-        changelog = provider {
-            "FluidTank for Minecraft $minecraft with ${mapPlatformToCamel(platformName)}"
-        }
+        changelog = modChangelog
     }
 
     curseforge {
@@ -135,7 +141,7 @@ tasks.register("registerVersion", CallVersionFunctionTask::class) {
     platform = platformName
     platformVersion = getPlatformVersion(platformName)
     modName = "QuarryPlus".lowercase()
-    changelog = ""
+    changelog = modChangelog
     homepage.set(
         if (platformName == "forge") "https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner"
         else "https://modrinth.com/mod/additional-enchanted-miner"
