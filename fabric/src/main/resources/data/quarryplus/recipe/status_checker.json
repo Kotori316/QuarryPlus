@@ -6,7 +6,7 @@
       "tag": "c:glass_blocks"
     },
     "l": {
-      "tag": "c:iron_ingots"
+      "tag": "c:ingots/iron"
     },
     "r": {
       "item": "minecraft:book"
