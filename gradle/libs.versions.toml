@@ -9,7 +9,7 @@ parchment_mapping = "2024.07.07"
 fabric_version_checker = "2.4.0"
 
 tu = "21.0.5"
-du = "21.0-SNAPSHOT"
+du = "21.0.5"
 
 teamreborn_energy = "4.1.0"
 slp_forge = "3.3.3-build-15"
