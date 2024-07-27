@@ -9,6 +9,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class CheckerItem extends Item implements InCreativeTabs {
     public static final String NAME = "status_checker";
@@ -18,9 +20,9 @@ public abstract class CheckerItem extends Item implements InCreativeTabs {
         super(new Properties());
     }
 
-    protected final InteractionResult outputLog(Level level, BlockPos pos, Player player) {
+    protected final InteractionResult outputLog(@NotNull Level level, @NotNull BlockPos pos, @Nullable Player player) {
         if (level.getBlockEntity(pos) instanceof PowerEntity e) {
-            if (!level.isClientSide()) {
+            if (!level.isClientSide() && player != null) {
                 e.checkerLogs().forEach(c -> player.displayClientMessage(c, false));
             }
             return InteractionResult.SUCCESS;

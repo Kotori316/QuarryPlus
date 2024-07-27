@@ -5,6 +5,8 @@ plugins {
     id("com.kotori316.publish")
 }
 
+val modId = "QuarryPlus".lowercase()
+
 minecraft {
     mappings(
         mapOf(
@@ -13,6 +15,30 @@ minecraft {
         )
     )
     reobf = false
+
+    runs {
+        configureEach {
+            property("forge.logging.markers", "")
+            property("mixin.env.remapRefMap", "true")
+            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
+            property("mixin.debug.export", "true")
+            property("forge.logging.console.level", "debug")
+        }
+
+        create("client") {
+            workingDirectory(project.file("Minecraft"))
+            property("forge.enabledGameTestNamespaces", modId)
+            args("--accessToken", "0")
+            jvmArgs("-EnableAssertions".lowercase())
+
+            mods {
+                create(modId) {
+                    source(sourceSets["main"])
+                    // source(sourceSets.test)
+                }
+            }
+        }
+    }
 }
 
 dependencies {
@@ -21,6 +47,7 @@ dependencies {
     runtimeOnly(variantOf(libs.slp.forge) { classifier("with-library") }) {
         isTransitive = false
     }
+    implementation("net.sf.jopt-simple:jopt-simple:5.0.4") { version { strictly("5.0.4") } }
 }
 
 // Share with common

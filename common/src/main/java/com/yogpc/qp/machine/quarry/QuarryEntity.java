@@ -537,6 +537,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                     return pos;
                 }
             }
+            // temporary set pos to get current Y
             targetPos = targetIterator.getLastReturned();
             if (setNextDigTargetIterator()) {
                 return null;
