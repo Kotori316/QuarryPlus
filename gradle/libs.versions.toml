@@ -8,7 +8,7 @@ parchment_minecraft = "1.21"
 parchment_mapping = "2024.07.07"
 fabric_version_checker = "2.4.0"
 
-tu = "21.0-SNAPSHOT"
+tu = "21.0.5"
 du = "21.0-SNAPSHOT"
 
 teamreborn_energy = "4.1.0"
