@@ -37,7 +37,7 @@ publishMods {
     dryRun = releaseDebug
     type = ALPHA
     modLoaders = listOf(platformName)
-    displayName = "${project.version}-$platformName"
+    displayName = "v${project.version}-$platformName"
     afterEvaluate {
         file = provider {
             project.tasks.named(ext["publishJarTaskName"].toString(), org.gradle.jvm.tasks.Jar::class)
