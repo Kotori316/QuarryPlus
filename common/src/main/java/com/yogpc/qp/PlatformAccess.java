@@ -55,6 +55,8 @@ public interface PlatformAccess {
          * @return items that is not moved. In other words, the rest of item.
          */
         ItemStack transferItem(Level level, BlockPos pos, ItemStack stack, Direction side, boolean simulate);
+
+        FluidStackLike transferFluid(Level level, BlockPos pos, FluidStackLike stack, Direction side, boolean simulate);
     }
 
     Transfer transfer();

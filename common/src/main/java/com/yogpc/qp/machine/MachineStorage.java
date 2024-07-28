@@ -3,6 +3,7 @@ package com.yogpc.qp.machine;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.yogpc.qp.FluidStackLike;
 import com.yogpc.qp.PlatformAccess;
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import net.minecraft.core.BlockPos;
@@ -113,6 +114,9 @@ public final class MachineStorage {
     }
 
     record FluidKey(Fluid fluid, DataComponentPatch patch) {
+        public FluidStackLike toStack(int amount) {
+            return new FluidStackLike(fluid, amount, patch);
+        }
     }
 
     record ItemKeyCount(ItemKey key, long count) {
@@ -186,6 +190,36 @@ public final class MachineStorage {
                     itr.remove();
                 } else {
                     entry.setValue((entry.getLongValue() - stack.getCount()) + rest.getCount());
+                }
+                if (count++ > MAX_TRANSFER) {
+                    return;
+                }
+            }
+        }
+    }
+
+    public void passFluids(Level level, BlockPos storagePos) {
+        var mutablePos = new BlockPos.MutableBlockPos();
+        int count = 0;
+        Direction[] directions = {Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST, Direction.DOWN, Direction.UP};
+        for (Direction direction : directions) {
+            var pos = mutablePos.setWithOffset(storagePos, direction);
+            var state = level.getBlockState(pos);
+            if (cantBeStorage(state)) {
+                continue;
+            }
+            var itr = fluids.object2LongEntrySet().fastIterator();
+            while (itr.hasNext()) {
+                var entry = itr.next();
+                var stack = entry.getKey().toStack(Math.clamp(entry.getLongValue(), 0, Integer.MAX_VALUE));
+                var rest = PlatformAccess.getAccess().transfer().transferFluid(level, pos, stack, direction.getOpposite(), false);
+                if (rest.amount() == stack.amount()) {
+                    continue;
+                }
+                if (rest.isEmpty() && stack.amount() == entry.getLongValue()) {
+                    itr.remove();
+                } else {
+                    entry.setValue((entry.getLongValue() - stack.amount()) + rest.amount());
                 }
                 if (count++ > MAX_TRANSFER) {
                     return;
