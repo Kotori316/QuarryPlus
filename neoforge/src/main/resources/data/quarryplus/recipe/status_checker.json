@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "g": {
+      "tag": "c:glass_blocks"
+    },
+    "l": {
+      "tag": "c:ingots/iron"
+    },
+    "r": {
+      "item": "minecraft:book"
+    }
+  },
+  "pattern": [
+    "ggg",
+    "lrl"
+  ],
+  "result": {
+    "id": "quarryplus:status_checker"
+  }
+}
