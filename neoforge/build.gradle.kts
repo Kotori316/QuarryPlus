@@ -32,6 +32,7 @@ dependencies {
     runtimeOnly(variantOf(libs.slp.neoforge) { classifier("with-library") }) {
         isTransitive = false
     }
+    runtimeOnly(libs.du.neoforge)
 }
 
 // Share with common

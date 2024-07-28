@@ -117,12 +117,12 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
 
     @Override
     public RegisterObjects registerObjects() {
-        return null;
+        return itemsLazy.get();
     }
 
     @Override
     public Packet packetHandler() {
-        return null;
+        return packetHandlerLazy.get();
     }
 
     @Override
@@ -132,7 +132,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
 
     @Override
     public Transfer transfer() {
-        return null;
+        return transferLazy.get();
     }
 
     @Override
