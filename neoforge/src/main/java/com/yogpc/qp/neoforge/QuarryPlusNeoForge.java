@@ -1,6 +1,7 @@
 package com.yogpc.qp.neoforge;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.neoforge.integration.EnergyIntegration;
 import com.yogpc.qp.neoforge.packet.PacketHandler;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,6 +19,7 @@ public final class QuarryPlusNeoForge {
         if (FMLEnvironment.dist.isClient()) {
             modBus.register(QuarryPlusClientNeoForge.class);
         }
+        modBus.register(EnergyIntegration.class);
         QuarryPlus.LOGGER.info("Initialize finished {}", container.getModId());
     }
 
