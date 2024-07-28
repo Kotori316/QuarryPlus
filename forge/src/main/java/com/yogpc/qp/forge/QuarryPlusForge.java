@@ -2,7 +2,7 @@ package com.yogpc.qp.forge;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.forge.integration.EnergyIntegration;
-import com.yogpc.qp.forge.machine.packet.PacketHandler;
+import com.yogpc.qp.forge.packet.PacketHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;

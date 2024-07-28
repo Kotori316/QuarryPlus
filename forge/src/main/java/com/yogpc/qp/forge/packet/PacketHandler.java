@@ -1,4 +1,4 @@
-package com.yogpc.qp.forge.machine.packet;
+package com.yogpc.qp.forge.packet;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
