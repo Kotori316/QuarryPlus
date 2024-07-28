@@ -1,5 +1,6 @@
 package com.yogpc.qp.forge;
 
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.render.RenderQuarry;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -14,6 +15,8 @@ public final class QuarryPlusClientForge {
 
     @SubscribeEvent
     public static void clientInit(FMLClientSetupEvent event) {
+        QuarryPlus.LOGGER.info("Initialize Client");
         BlockEntityRenderers.register(PlatformAccessForge.RegisterObjectsForge.QUARRY_ENTITY_TYPE.get(), RenderQuarry::new);
+        QuarryPlus.LOGGER.info("Initialize Client finished");
     }
 }

@@ -555,4 +555,25 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     boolean canBreak(Level level, BlockPos pos, BlockState state) {
         return !state.isAir() && !state.equals(stateAfterBreak(level, pos, state));
     }
+
+    /**
+     * @return {@code null} if caller should use default implementation
+     */
+    @Nullable
+    public AABB getRenderAabb() {
+        var area = getArea();
+        if (area == null) {
+            return null;
+        }
+        int minY;
+        if (getLevel() == null) {
+            minY = 0;
+        } else {
+            minY = getLevel().getMinBuildHeight();
+        }
+        return switch (renderMode()) {
+            case "drill" -> new AABB(area.minX(), minY, area.minZ(), area.maxX(), area.maxY(), area.maxZ());
+            case null, default -> null;
+        };
+    }
 }

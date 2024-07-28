@@ -42,13 +42,11 @@ public final class QuarryEntityForge extends QuarryEntity {
 
     @Override
     public AABB getRenderBoundingBox() {
-        var area = getArea();
-        if (area == null) {
+        var aabb = getRenderAabb();
+        if (aabb == null) {
             return super.getRenderBoundingBox();
+        } else {
+            return aabb;
         }
-        return switch (renderMode()) {
-            case "drill" -> new AABB(area.minX(), area.minY(), area.minZ(), area.maxX(), area.maxY(), area.maxZ());
-            case null, default -> super.getRenderBoundingBox();
-        };
     }
 }
