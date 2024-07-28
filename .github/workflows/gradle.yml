@@ -34,7 +34,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ common, fabric, forge ]
+        platform: [ common, fabric, forge, neoforge ]
     env:
       DISABLE_FORGE: ${{ matrix.platform != 'forge' }}
       DISABLE_FABRIC: ${{ matrix.platform != 'fabric' }}
