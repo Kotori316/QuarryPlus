@@ -1,15 +1,15 @@
 [versions]
 minecraft = "1.21"
-forge = "1.21-51.0.24"
+forge = "1.21-51.0.29"
 fabric_api = "0.100.7+1.21"
 fabric_loader = "0.16.0"
-neoforge = "21.0.95-beta"
+neoforge = "21.0.140-beta"
 parchment_minecraft = "1.21"
 parchment_mapping = "2024.07.07"
 fabric_version_checker = "2.4.0"
 
 tu = "21.0.5"
-du = "21.0-SNAPSHOT"
+du = "21.0.5"
 
 teamreborn_energy = "4.1.0"
 slp_forge = "3.3.3-build-15"
