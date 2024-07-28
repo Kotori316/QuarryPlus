@@ -13,6 +13,7 @@ du = "21.0.5"
 
 teamreborn_energy = "4.1.0"
 slp_forge = "3.3.3-build-15"
+slp_neoforge = "3.3.3-build-15"
 
 jupiter_api = "5.10.3"
 mockito_core = "5.12.0"
@@ -51,6 +52,7 @@ teamreborn_energy = { group = "teamreborn", name = "energy", version.ref = "team
 neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
 tu_neoforge = { group = "com.kotori316", name = "test-utility-neoforge", version.ref = "tu" }
 du_neoforge = { group = "com.kotori316", name = "debug-utility-neoforge", version.ref = "du" }
+slp_neoforge = { group = "com.kotori316", name = "scalablecatsforce-neoforge", version.ref = "slp_neoforge" }
 
 [plugins]
 cf = { id = "com.kotori316.plugin.cf", version.ref = "plugin_cf" }
