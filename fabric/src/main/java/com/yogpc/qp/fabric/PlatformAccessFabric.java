@@ -7,6 +7,8 @@ import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
 import com.yogpc.qp.fabric.packet.PacketHandler;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.marker.NormalMarkerBlock;
+import com.yogpc.qp.machine.marker.NormalMarkerEntity;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
@@ -24,9 +26,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.apache.logging.log4j.util.Lazy;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -42,15 +42,19 @@ public final class PlatformAccessFabric implements PlatformAccess {
         public static final GeneratorBlock GENERATOR_BLOCK = new GeneratorBlock();
         public static final BlockEntityType<GeneratorEntity> GENERATOR_ENTITY_TYPE = BlockEntityType.Builder.of(GeneratorEntity::new, GENERATOR_BLOCK).build(DSL.emptyPartType());
         public static final CheckerItemFabric CHECKER_ITEM = new CheckerItemFabric();
+        public static final NormalMarkerBlock MARKER_BLOCK = new NormalMarkerBlock();
+        public static final BlockEntityType<NormalMarkerEntity> MARKER_ENTITY_TYPE = BlockEntityType.Builder.of(NormalMarkerEntity::new, MARKER_BLOCK).build(DSL.emptyPartType());
 
         private static final List<InCreativeTabs> TAB_ITEMS = new ArrayList<>();
         public static final CreativeModeTab TAB = QuarryPlus.buildCreativeModeTab(FabricItemGroup.builder()).build();
+        private static final Map<Class<? extends QpBlock>, BlockEntityType<?>> BLOCK_ENTITY_TYPES = new HashMap<>();
 
         static void registerAll() {
             registerEntityBlock(QUARRY_BLOCK, QUARRY_ENTITY_TYPE);
             registerBlockItem(FRAME_BLOCK);
             registerEntityBlock(GENERATOR_BLOCK, GENERATOR_ENTITY_TYPE);
             registerItem(CHECKER_ITEM, CHECKER_ITEM.name);
+            registerEntityBlock(MARKER_BLOCK, MARKER_ENTITY_TYPE);
             Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
         }
 
@@ -60,6 +64,7 @@ public final class PlatformAccessFabric implements PlatformAccess {
             }
             registerBlockItem(block);
             Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, block.name, entityType);
+            BLOCK_ENTITY_TYPES.put(block.getClass(), entityType);
         }
 
         private static void registerBlockItem(QpBlock block) {
@@ -92,14 +97,12 @@ public final class PlatformAccessFabric implements PlatformAccess {
 
         @Override
         public Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block) {
-            return switch (block) {
-                case QuarryBlockFabric ignored -> Optional.of(QUARRY_ENTITY_TYPE);
-                case GeneratorBlock ignored -> Optional.of(GENERATOR_ENTITY_TYPE);
-                case null, default -> {
-                    QuarryPlus.LOGGER.warn("Unknown block type: {}", block != null ? block.name : "null");
-                    yield Optional.empty();
-                }
-            };
+            var t = BLOCK_ENTITY_TYPES.get(block.getClass());
+            if (t == null) {
+                QuarryPlus.LOGGER.warn("Unknown block type: {}", block.name);
+                return Optional.empty();
+            }
+            return Optional.of(t);
         }
 
         @Override
