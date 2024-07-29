@@ -62,7 +62,7 @@ public final class PlatformAccessForge implements PlatformAccess {
 
         public static final RegistryObject<CheckerItemForge> ITEM_CHECKER = registerItem(CheckerItemForge.NAME, CheckerItemForge::new);
 
-        private static final Map<Class<? extends QpBlock>, RegistryObject<BlockEntityType<?>>> BLOCK_ENTITY_TYPES = new HashMap<>();
+        private static final Map<Class<? extends QpBlock>, Supplier<BlockEntityType<?>>> BLOCK_ENTITY_TYPES = new HashMap<>();
         public static final RegistryObject<BlockEntityType<QuarryEntityForge>> QUARRY_ENTITY_TYPE = registerBlockEntity(QuarryBlockForge.NAME, BLOCK_QUARRY, QuarryEntityForge::new);
         public static final RegistryObject<BlockEntityType<GeneratorEntity>> GENERATOR_ENTITY_TYPE = registerBlockEntity(GeneratorBlock.NAME, BLOCK_GENERATOR, GeneratorEntity::new);
         public static final RegistryObject<BlockEntityType<NormalMarkerEntity>> MARKER_ENTITY_TYPE = registerBlockEntity(NormalMarkerBlock.NAME, BLOCK_MARKER, NormalMarkerEntity::new);
@@ -86,7 +86,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         @SafeVarargs
         private static <T extends QpBlock, U extends BlockEntity> RegistryObject<BlockEntityType<U>> registerBlockEntity(String name, RegistryObject<T> block, BlockEntityType.BlockEntitySupplier<U> factory, T... dummy) {
             var entityType = BLOCK_ENTITY_REGISTER.register(name, () -> BlockEntityType.Builder.of(factory, block.get()).build(DSL.emptyPartType()));
-            BLOCK_ENTITY_TYPES.put((Class<? extends QpBlock>) dummy.getClass().componentType(), (RegistryObject<BlockEntityType<?>>) (Object) entityType);
+            BLOCK_ENTITY_TYPES.put((Class<? extends QpBlock>) dummy.getClass().componentType(), (Supplier<BlockEntityType<?>>) (Object) entityType);
             return entityType;
         }
 

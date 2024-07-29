@@ -4,6 +4,8 @@ import com.mojang.datafixers.DSL;
 import com.yogpc.qp.*;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.marker.NormalMarkerBlock;
+import com.yogpc.qp.machine.marker.NormalMarkerEntity;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
@@ -20,15 +22,14 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.registries.*;
 import org.apache.logging.log4j.util.Lazy;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -54,13 +55,14 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredBlock<QuarryBlockNeoForge> BLOCK_QUARRY = registerBlock(QuarryBlockNeoForge.NAME, QuarryBlockNeoForge::new);
         public static final DeferredBlock<FrameBlock> BLOCK_FRAME = registerBlock(FrameBlock.NAME, FrameBlock::new);
         public static final DeferredBlock<GeneratorBlock> BLOCK_GENERATOR = registerBlock(GeneratorBlock.NAME, GeneratorBlock::new);
+        public static final DeferredBlock<NormalMarkerBlock> BLOCK_MARKER = registerBlock(NormalMarkerBlock.NAME, NormalMarkerBlock::new);
 
         public static final DeferredItem<CheckerItemNeoForge> ITEM_CHECKER = registerItem(CheckerItemNeoForge.NAME, CheckerItemNeoForge::new);
 
-        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<QuarryEntityNeoForge>> QUARRY_ENTITY_TYPE = BLOCK_ENTITY_REGISTER.register(QuarryBlockNeoForge.NAME, () ->
-            BlockEntityType.Builder.of(QuarryEntityNeoForge::new, BLOCK_QUARRY.get()).build(DSL.emptyPartType()));
-        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GeneratorEntity>> GENERATOR_ENTITY_TYPE = BLOCK_ENTITY_REGISTER.register(GeneratorBlock.NAME, () ->
-            BlockEntityType.Builder.of(GeneratorEntity::new, BLOCK_GENERATOR.get()).build(DSL.emptyPartType()));
+        private static final Map<Class<? extends QpBlock>, Supplier<BlockEntityType<?>>> BLOCK_ENTITY_TYPES = new HashMap<>();
+        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<QuarryEntityNeoForge>> QUARRY_ENTITY_TYPE = registerBlockEntity(QuarryBlockNeoForge.NAME, BLOCK_QUARRY, QuarryEntityNeoForge::new);
+        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GeneratorEntity>> GENERATOR_ENTITY_TYPE = registerBlockEntity(GeneratorBlock.NAME, BLOCK_GENERATOR, GeneratorEntity::new);
+        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NormalMarkerEntity>> MARKER_ENTITY_TYPE = registerBlockEntity(NormalMarkerBlock.NAME, BLOCK_MARKER, NormalMarkerEntity::new);
 
         public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_MODE_TAB = CREATIVE_TAB_REGISTER.register(QuarryPlus.modID, () -> QuarryPlus.buildCreativeModeTab(CreativeModeTab.builder()).build());
 
@@ -75,6 +77,14 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
             var item = ITEM_REGISTER.register(name, supplier);
             TAB_ITEMS.add(item);
             return item;
+        }
+
+        @SuppressWarnings("unchecked")
+        @SafeVarargs
+        private static <T extends QpBlock, U extends BlockEntity> DeferredHolder<BlockEntityType<?>, BlockEntityType<U>> registerBlockEntity(String name, DeferredBlock<T> block, BlockEntityType.BlockEntitySupplier<U> factory, T... dummy) {
+            var entityType = BLOCK_ENTITY_REGISTER.register(name, () -> BlockEntityType.Builder.of(factory, block.get()).build(DSL.emptyPartType()));
+            BLOCK_ENTITY_TYPES.put((Class<? extends QpBlock>) dummy.getClass().componentType(), (Supplier<BlockEntityType<?>>) (Object) entityType);
+            return entityType;
         }
 
         @Override
@@ -94,14 +104,12 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
 
         @Override
         public Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block) {
-            return switch (block) {
-                case QuarryBlockNeoForge ignored -> Optional.of(QUARRY_ENTITY_TYPE.get());
-                case GeneratorBlock ignored -> Optional.of(GENERATOR_ENTITY_TYPE.get());
-                case null, default -> {
-                    QuarryPlus.LOGGER.warn("Unknown block entity type: {}", block != null ? block.name : "null");
-                    yield Optional.empty();
-                }
-            };
+            var t = BLOCK_ENTITY_TYPES.get(block.getClass());
+            if (t == null) {
+                QuarryPlus.LOGGER.warn("Unknown block type: {}", block.name);
+                return Optional.empty();
+            }
+            return Optional.of(t.get());
         }
 
         @Override
