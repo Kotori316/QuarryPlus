@@ -1,6 +1,7 @@
 package com.yogpc.qp.machine.quarry;
 
 import com.yogpc.qp.machine.*;
+import com.yogpc.qp.machine.marker.QuarryMarker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
@@ -24,6 +25,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public abstract class QuarryBlock extends QpEntityBlock {
     public static final String NAME = "quarry";
@@ -86,12 +88,24 @@ public abstract class QuarryBlock extends QpEntityBlock {
             if (level.getBlockEntity(pos) instanceof QuarryEntity quarry) {
                 var facing = state.getValue(BlockStateProperties.FACING);
                 {
-                    // set initial area
-                    var base = pos.relative(facing.getOpposite());
-                    var corner1 = base.relative(facing.getClockWise(), 5).above(4);
-                    var corner2 = base.relative(facing.getCounterClockWise(), 5).relative(facing.getOpposite(), 10);
-                    var area = new Area(corner1, corner2, facing.getOpposite());
-                    quarry.setArea(area);
+                    var markerLink = Stream.of(facing.getOpposite(), facing.getCounterClockWise(), facing.getClockWise())
+                        .map(pos::relative)
+                        .map(level::getBlockEntity)
+                        .filter(QuarryMarker.class::isInstance)
+                        .map(QuarryMarker.class::cast)
+                        .flatMap(m -> m.getLink().stream())
+                        .findAny()
+                        .orElseGet(() -> {
+                            // set initial area
+                            var base = pos.relative(facing.getOpposite());
+                            var corner1 = base.relative(facing.getClockWise(), 5).above(4);
+                            var corner2 = base.relative(facing.getCounterClockWise(), 5).relative(facing.getOpposite(), 10);
+                            var area = new Area(corner1, corner2, facing.getOpposite());
+                            return new QuarryMarker.StaticLink(area);
+                        });
+                    quarry.setArea(markerLink.area());
+                    markerLink.drops().forEach(quarry.storage::addItem);
+                    markerLink.remove(level);
                 }
                 quarry.setState(QuarryState.WAITING, state);
             }

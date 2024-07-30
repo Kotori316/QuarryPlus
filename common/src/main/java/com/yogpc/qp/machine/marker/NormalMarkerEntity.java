@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -61,8 +62,12 @@ public class NormalMarkerEntity extends BlockEntity implements QuarryMarker, Cli
             .findAny();
 
         var maybeLink = xMarker.flatMap(x -> zMarker.map(z -> {
-            var y = yMarker.map(m -> m.getBlockPos().getY()).orElse(getBlockPos().getY() + 4);
-            return new Link(getBlockPos(), x.getBlockPos(), z.getBlockPos().atY(y));
+            List<BlockPos> markers = new ArrayList<>();
+            markers.add(getBlockPos());
+            markers.add(x.getBlockPos());
+            markers.add(z.getBlockPos());
+            yMarker.map(BlockEntity::getBlockPos).ifPresent(markers::add);
+            return new Link(List.copyOf(markers));
         }));
         maybeLink.ifPresentOrElse(link -> {
             setLink(link, true);
@@ -135,7 +140,7 @@ public class NormalMarkerEntity extends BlockEntity implements QuarryMarker, Cli
     public void setRemoved() {
         super.setRemoved();
         if (this.link != null && this.level != null && !this.level.isClientSide()) {
-            Stream.of(link.master, link.s1, link.s2)
+            link.markerPos.stream()
                 .map(level::getBlockEntity)
                 .filter(NormalMarkerEntity.class::isInstance)
                 .map(NormalMarkerEntity.class::cast)
@@ -155,34 +160,35 @@ public class NormalMarkerEntity extends BlockEntity implements QuarryMarker, Cli
         }
     }
 
-    protected record Link(BlockPos master, BlockPos s1, BlockPos s2) implements QuarryMarker.Link {
+    protected record Link(List<BlockPos> markerPos) implements QuarryMarker.Link {
         static final MapCodec<Link> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-            RecordCodecBuilder.of(Link::master, "master", BlockPos.CODEC),
-            RecordCodecBuilder.of(Link::s1, "s1", BlockPos.CODEC),
-            RecordCodecBuilder.of(Link::s2, "s2", BlockPos.CODEC)
+            RecordCodecBuilder.of(Link::markerPos, "markerPos", BlockPos.CODEC.listOf())
         ).apply(i, Link::new));
 
         @Override
         public Area area() {
-            var minX = Math.min(master.getX(), Math.min(s1.getX(), s2.getX()));
-            var minY = Math.min(master.getY(), Math.min(s1.getY(), s2.getY()));
-            var minZ = Math.min(master.getZ(), Math.min(s1.getZ(), s2.getZ()));
-            var maxX = Math.max(master.getX(), Math.max(s1.getX(), s2.getX()));
-            var maxY = Math.max(master.getY(), Math.max(s1.getY(), s2.getY()));
-            var maxZ = Math.max(master.getZ(), Math.max(s1.getZ(), s2.getZ()));
+            var minX = markerPos.stream().mapToInt(BlockPos::getX).min().orElseThrow();
+            var minY = markerPos.stream().mapToInt(BlockPos::getY).min().orElseThrow();
+            var minZ = markerPos.stream().mapToInt(BlockPos::getZ).min().orElseThrow();
+            var maxX = markerPos.stream().mapToInt(BlockPos::getX).max().orElseThrow();
+            var maxY = markerPos.stream().mapToInt(BlockPos::getY).max().orElseThrow();
+            var maxZ = markerPos.stream().mapToInt(BlockPos::getZ).max().orElseThrow();
+            if (maxY == minY) {
+                return new Area(minX, minY, minZ, maxX, maxY + 4, maxZ, Direction.UP);
+            }
             return new Area(minX, minY, minZ, maxX, maxY, maxZ, Direction.UP);
         }
 
         @Override
         public void remove(Level level) {
-            for (BlockPos pos : List.of(master, s1, s2)) {
+            for (BlockPos pos : markerPos) {
                 level.removeBlock(pos, false);
             }
         }
 
         @Override
         public List<ItemStack> drops() {
-            var stack = new ItemStack(PlatformAccess.getAccess().registerObjects().markerBlock().get(), 3);
+            var stack = new ItemStack(PlatformAccess.getAccess().registerObjects().markerBlock().get(), markerPos.size());
             return List.of(stack);
         }
     }

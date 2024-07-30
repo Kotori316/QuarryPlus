@@ -17,4 +17,16 @@ public interface QuarryMarker {
 
         List<ItemStack> drops();
     }
+
+    record StaticLink(Area area) implements Link {
+
+        @Override
+        public void remove(Level level) {
+        }
+
+        @Override
+        public List<ItemStack> drops() {
+            return List.of();
+        }
+    }
 }
