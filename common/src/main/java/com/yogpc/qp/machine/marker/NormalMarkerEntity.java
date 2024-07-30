@@ -20,10 +20,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -47,12 +49,17 @@ public class NormalMarkerEntity extends BlockEntity implements QuarryMarker, Cli
         assert level != null;
         var xMarker = getMarker(level, getBlockPos(), this.getType(), Direction.Axis.X);
         var zMarker = getMarker(level, getBlockPos(), this.getType(), Direction.Axis.Z);
+        var xzMarker = xMarker.flatMap(e -> getMarker(level, e.getBlockPos(), e.getType(), Direction.Axis.Z));
+        var zxMarker = zMarker.flatMap(e -> getMarker(level, e.getBlockPos(), e.getType(), Direction.Axis.X));
         var yMarker = IntStream.range(1, MAX_SEARCH)
             .flatMap(i -> IntStream.of(i, -i))
             .filter(y -> !level.isOutsideBuildHeight(y))
             .boxed()
             .flatMap(d ->
-                Stream.concat(Stream.of(this.getBlockPos()), Stream.concat(xMarker.stream(), zMarker.stream()).map(BlockEntity::getBlockPos))
+                Stream.concat(Stream.of(this.getBlockPos()),
+                        Stream.of(xMarker.stream(), zMarker.stream())
+                            .flatMap(Function.identity())
+                            .map(BlockEntity::getBlockPos))
                     .map(p -> p.relative(Direction.Axis.Y, d))
                     .flatMap(p -> level.getBlockEntity(p, this.getType()).stream())
             )
@@ -61,18 +68,25 @@ public class NormalMarkerEntity extends BlockEntity implements QuarryMarker, Cli
             .filter(e -> !e.status.isConnected())
             .findAny();
 
-        var maybeLink = xMarker.flatMap(x -> zMarker.map(z -> {
-            List<BlockPos> markers = new ArrayList<>();
-            markers.add(getBlockPos());
-            markers.add(x.getBlockPos());
-            markers.add(z.getBlockPos());
-            yMarker.map(BlockEntity::getBlockPos).ifPresent(markers::add);
-            return new Link(List.copyOf(markers));
-        }));
+        BiFunction<BlockEntity, BlockEntity, Link> f = (x, z) ->
+            new Link(
+                Stream.concat(
+                    Stream.of(getBlockPos(), x.getBlockPos(), z.getBlockPos()),
+                    yMarker.map(BlockEntity::getBlockPos).stream()
+                ).toList()
+            );
+
+        var maybeLink = xMarker.flatMap(x -> zMarker.map(z -> f.apply(x, z)))
+            .or(() -> xMarker.flatMap(x -> xzMarker.map(z -> f.apply(x, z))))
+            .or(() -> zMarker.flatMap(z -> zxMarker.map(x -> f.apply(x, z))));
         maybeLink.ifPresentOrElse(link -> {
             setLink(link, true);
-            Stream.of(xMarker, yMarker, zMarker)
-                .flatMap(Optional::stream)
+            link.markerPos
+                .stream()
+                .filter(Predicate.isEqual(getBlockPos()).negate())
+                .map(level::getBlockEntity)
+                .filter(NormalMarkerEntity.class::isInstance)
+                .map(NormalMarkerEntity.class::cast)
                 .forEach(e -> e.setLink(link, false));
             messageSender.accept(Component.literal("Marker successfully established connection"));
         }, () -> messageSender.accept(Component.literal("Marker tried to establish connection, but failed")));
