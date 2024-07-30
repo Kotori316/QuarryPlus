@@ -17,6 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -118,6 +119,10 @@ public class NormalMarkerEntity extends BlockEntity implements QuarryMarker, Cli
         syncToClient();
     }
 
+    public @NotNull Status getStatus() {
+        return status;
+    }
+
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         tag.putString("status", status.name());
@@ -160,6 +165,18 @@ public class NormalMarkerEntity extends BlockEntity implements QuarryMarker, Cli
                 .map(NormalMarkerEntity.class::cast)
                 .forEach(m -> m.setLink(null, false));
         }
+    }
+
+    /**
+     * @return {@code null} if caller should use default implementation
+     */
+    @Nullable
+    public AABB getRenderAabb() {
+        if (this.link == null) {
+            return null;
+        }
+        var area = link.area();
+        return new AABB(area.minX(), area.minY(), area.minZ(), area.maxX(), area.maxY(), area.maxZ());
     }
 
     public enum Status {

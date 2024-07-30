@@ -2,6 +2,7 @@ package com.yogpc.qp.fabric;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.fabric.packet.PacketHandler;
+import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.RenderQuarry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -15,6 +16,7 @@ public final class QuarryPlusFabricClient implements ClientModInitializer {
         PacketHandler.Client.initClient();
         BlockRenderLayerMap.INSTANCE.putBlock(PlatformAccessFabric.RegisterObjectsFabric.FRAME_BLOCK, RenderType.cutoutMipped());
         BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.QUARRY_ENTITY_TYPE, RenderQuarry::new);
+        BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.MARKER_ENTITY_TYPE, RenderMarker::new);
         QuarryPlus.LOGGER.info("Initialize Client finished");
     }
 }

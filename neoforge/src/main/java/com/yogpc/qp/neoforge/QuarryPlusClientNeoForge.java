@@ -1,6 +1,7 @@
 package com.yogpc.qp.neoforge;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.neoforge.render.RenderMarkerNeoForge;
 import com.yogpc.qp.neoforge.render.RenderQuarryNeoForge;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -11,6 +12,7 @@ public final class QuarryPlusClientNeoForge {
     public static void clientInit(FMLClientSetupEvent event) {
         QuarryPlus.LOGGER.info("Initialize Client");
         BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.QUARRY_ENTITY_TYPE.get(), RenderQuarryNeoForge::new);
+        BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.MARKER_ENTITY_TYPE.get(), RenderMarkerNeoForge::new);
         QuarryPlus.LOGGER.info("Initialize Client finished");
     }
 }
