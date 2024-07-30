@@ -1,6 +1,7 @@
 package com.yogpc.qp;
 
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
@@ -36,6 +37,8 @@ public interface PlatformAccess {
         Supplier<? extends FrameBlock> frameBlock();
 
         Supplier<? extends GeneratorBlock> generatorBlock();
+
+        Supplier<? extends NormalMarkerBlock> markerBlock();
 
         Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block);
 

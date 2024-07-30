@@ -96,6 +96,11 @@ public final class PlatformAccessFabric implements PlatformAccess {
         }
 
         @Override
+        public Supplier<? extends NormalMarkerBlock> markerBlock() {
+            return Lazy.value(MARKER_BLOCK);
+        }
+
+        @Override
         public Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block) {
             var t = BLOCK_ENTITY_TYPES.get(block.getClass());
             if (t == null) {
