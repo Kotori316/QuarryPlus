@@ -22,8 +22,8 @@ dependencies {
     // Parchment
     implementation(
         group = "org.parchmentmc.data",
-        name = "parchment-${libs.versions.parchment.minecraft.get()}",
-        version = libs.versions.parchment.mapping.get(),
+        name = "parchment-${project.property("parchment.minecraft")}",
+        version = project.property("parchment.mapping").toString(),
         ext = "zip"
     )
 }

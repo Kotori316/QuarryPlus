@@ -11,7 +11,7 @@ minecraft {
     mappings(
         mapOf(
             "channel" to "parchment",
-            "version" to "${libs.versions.parchment.minecraft.get()}-${libs.versions.parchment.mapping.get()}-${libs.versions.minecraft.get()}",
+            "version" to "${project.property("parchment.minecraft")}-${project.property("parchment.mapping")}-${libs.versions.minecraft.get()}",
         )
     )
     reobf = false

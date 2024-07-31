@@ -8,8 +8,8 @@ val modId = "QuarryPlus".lowercase()
 
 subsystems {
     parchment {
-        minecraftVersion = libs.versions.parchment.minecraft.get()
-        mappingsVersion = libs.versions.parchment.mapping.get()
+        minecraftVersion = project.property("parchment.minecraft").toString()
+        mappingsVersion = project.property("parchment.mapping").toString()
     }
 }
 
