@@ -148,11 +148,14 @@ public class Box {
 
     public static Box apply(final double startX, final double startY, final double startZ, final double endX, final double endY, final double endZ,
                             final double sizeX, final double sizeY, final double sizeZ, final boolean firstSide, final boolean endSide) {
-        return startY == endY ? (startX == endX ? new BoxZ(startZ, endZ, endX, endY, sizeX, sizeY, sizeZ, firstSide, endSide)
-            : (startZ == endZ ? new BoxX(startX, endX, endY, endZ, sizeX, sizeY, sizeZ, firstSide, endSide)
-            : new BoxXZ(startX, startZ, endX, endY, endZ, sizeX, sizeY, sizeZ, firstSide, endSide)))
-            : (startZ == endZ && startX == endX ? new BoxY(startY, endY, endX, endZ, sizeX, sizeY, sizeZ, firstSide, endSide)
-            : new Box(startX, startY, startZ, endX, endY, endZ, sizeX, sizeY, sizeZ, firstSide, endSide));
+        if (startY == endY) {
+            if (startX == endX) return new BoxZ(startZ, endZ, endX, endY, sizeX, sizeY, sizeZ, firstSide, endSide);
+            if (startZ == endZ) return new BoxX(startX, endX, endY, endZ, sizeX, sizeY, sizeZ, firstSide, endSide);
+            return new BoxXZ(startX, startZ, endX, endY, endZ, sizeX, sizeY, sizeZ, firstSide, endSide);
+        }
+        if (startZ == endZ && startX == endX)
+            return new BoxY(startY, endY, endX, endZ, sizeX, sizeY, sizeZ, firstSide, endSide);
+        return new Box(startX, startY, startZ, endX, endY, endZ, sizeX, sizeY, sizeZ, firstSide, endSide);
     }
 
 }
