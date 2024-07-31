@@ -47,6 +47,7 @@ dependencies {
     runtimeOnly(variantOf(libs.slp.forge) { classifier("with-library") }) {
         isTransitive = false
     }
+    runtimeOnly(libs.jei.forge)
     implementation("net.sf.jopt-simple:jopt-simple:5.0.4") { version { strictly("5.0.4") } }
 }
 

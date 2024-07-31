@@ -62,6 +62,7 @@ dependencies {
     compileOnly(project(":common"))
 
     modImplementation(libs.teamreborn.energy)
+    modLocalRuntime(libs.jei.fabric)
 
     testImplementation(libs.fabric.junit)
     testImplementation(platform(libs.junit))

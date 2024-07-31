@@ -3,5 +3,16 @@
   "extends": [
     "github>Kotori316/common-script:renovate-default",
     ":rebaseStalePrs"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "matchPackagePatterns": [
+        "^mezz.jei:*"
+      ],
+      "automerge": true
+    }
   ]
 }

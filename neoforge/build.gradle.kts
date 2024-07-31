@@ -33,6 +33,7 @@ dependencies {
         isTransitive = false
     }
     runtimeOnly(libs.du.neoforge)
+    localRuntime(libs.jei.neoforge)
 }
 
 // Share with common
