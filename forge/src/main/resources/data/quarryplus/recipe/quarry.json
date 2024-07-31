@@ -16,12 +16,15 @@
     },
     "o": {
       "item": "minecraft:obsidian"
+    },
+    "m": {
+      "tag": "quarryplus:markers"
     }
   },
   "pattern": [
     "ioi",
     "gDg",
-    "iRi"
+    "iRm"
   ],
   "result": {
     "id": "quarryplus:quarry"

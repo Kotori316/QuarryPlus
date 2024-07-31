@@ -9,7 +9,7 @@
       "tag": "c:ingots/iron"
     },
     "r": {
-      "item": "quarryplus:marker"
+      "tag": "quarryplus:markers"
     }
   },
   "pattern": [
