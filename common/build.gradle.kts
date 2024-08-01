@@ -35,6 +35,8 @@ dependencies {
     // Do NOT use other classes from fabric loader
     modLocalRuntime(libs.fabric.loader)
 
+    compileOnly(libs.config.toml)
+
     testImplementation(platform(libs.junit))
     testImplementation(libs.jupiter)
 }
