@@ -75,12 +75,7 @@ public final class PlatformAccessDelegate implements PlatformAccess {
 
                 @Override
                 public PowerMap getPowerMap() {
-                    return new PowerMap() {
-                        @Override
-                        public Quarry quarry() {
-                            return Default.QUARRY;
-                        }
-                    };
+                    return new PowerMap(PowerMap.Default.QUARRY);
                 }
             };
         }

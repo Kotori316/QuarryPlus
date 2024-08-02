@@ -7,8 +7,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 /**
  * Unit is FE, not microFE, so I use double in this class
  */
-public interface PowerMap {
-    record Quarry(
+public record PowerMap(Quarry quarry) {
+    public record Quarry(
         double maxEnergy,
         double makeFrame,
         double breakBlockBase,
@@ -47,9 +47,7 @@ public interface PowerMap {
         }
     }
 
-    Quarry quarry();
-
-    interface Default {
+    public interface Default {
         Quarry QUARRY = new Quarry(
             10000.0,
             15.0,

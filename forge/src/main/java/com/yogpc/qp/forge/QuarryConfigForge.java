@@ -1,7 +1,6 @@
 package com.yogpc.qp.forge;
 
 import com.yogpc.qp.QuarryConfig;
-import com.yogpc.qp.forge.machine.PowerMapForge;
 import com.yogpc.qp.machine.PowerMap;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
@@ -13,6 +12,6 @@ public final class QuarryConfigForge implements QuarryConfig {
 
     @Override
     public PowerMap getPowerMap() {
-        return new PowerMapForge();
+        return new PowerMap(PowerMap.Default.QUARRY);
     }
 }
