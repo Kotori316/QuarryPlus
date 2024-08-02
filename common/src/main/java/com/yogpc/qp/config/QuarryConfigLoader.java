@@ -1,0 +1,85 @@
+package com.yogpc.qp.config;
+
+import com.electronwill.nightconfig.core.CommentedConfig;
+import com.electronwill.nightconfig.core.Config;
+import com.electronwill.nightconfig.core.ConfigSpec;
+import com.electronwill.nightconfig.core.InMemoryFormat;
+import com.mojang.serialization.JavaOps;
+import com.yogpc.qp.QuarryConfig;
+import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.PowerMap;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.lang.reflect.RecordComponent;
+import java.util.HashMap;
+import java.util.Map;
+
+final class QuarryConfigLoader {
+    static QuarryConfig load(Config config) {
+        var specPair = spec();
+        specPair.getKey().correct(config, (action, path, incorrectValue, correctedValue) ->
+            QuarryPlus.LOGGER.debug("Config corrected '{}': {} -> {}", path, incorrectValue, correctedValue)
+        );
+        if (config instanceof CommentedConfig c) {
+            c.putAllComments(specPair.getValue());
+        }
+
+        var debug = config.<Boolean>get("debug");
+        var quarry = PowerMap.Quarry.CODEC.codec().parse(JavaOps.INSTANCE, config.<Config>get("powerMap.quarry").valueMap()).getOrThrow();
+        var powerMap = new PowerMap(quarry);
+        var rebornEnergyConversionCoefficient = config.<Double>get("rebornEnergyConversionCoefficient");
+
+        return new QuarryConfigImpl(debug, powerMap, rebornEnergyConversionCoefficient);
+    }
+
+    record QuarryConfigImpl(
+        boolean isDebug,
+        PowerMap getPowerMap,
+        double rebornEnergyConversionCoefficient
+    ) implements QuarryConfig {
+    }
+
+    static Pair<ConfigSpec, CommentedConfig> spec() {
+        Map<String, Object> comments = new HashMap<>();
+        var specConfig = CommentedConfig.wrap(comments, InMemoryFormat.withUniversalSupport());
+        var config = new ConfigSpec(specConfig);
+
+        config.define("debug", false);
+        specConfig.setComment("debug", "In debug mode");
+
+        defineDouble(config, specConfig, "rebornEnergyConversionCoefficient", 1d / 16d, 0d, 1e10, "[Fabric ONLY] 1E = ?FE");
+
+        // powerMap.quarry.*
+        defineInCodec(config, specConfig, "powerMap.quarry", PowerMap.Default.QUARRY);
+
+        return Pair.of(config, specConfig);
+    }
+
+    static void defineDouble(ConfigSpec spec, CommentedConfig commentMap, String key, double defaultValue, double min, double max, String comment) {
+        spec.defineInRange(key, defaultValue, min, max);
+        commentMap.setComment(key, comment);
+    }
+
+    static <T extends Record> void defineInCodec(ConfigSpec spec, CommentedConfig commentMap, String prefix, T instance) {
+        var clazz = instance.getClass();
+        if (!clazz.isRecord()) {
+            throw new IllegalArgumentException("Instance must be a record, but is " + instance);
+        }
+        var fields = instance.getClass().getRecordComponents();
+        try {
+            for (RecordComponent field : fields) {
+                var accessor = field.getAccessor();
+                var defaultValue = accessor.invoke(instance);
+                var key = prefix + "." + field.getName();
+                if (field.getType().equals(Double.TYPE)) {
+                    defineDouble(spec, commentMap, key, (Double) defaultValue, 0d, 1e10, field.getName());
+                } else {
+                    spec.define(key, defaultValue);
+                    commentMap.setComment(key, field.getName());
+                }
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}

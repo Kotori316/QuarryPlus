@@ -20,7 +20,7 @@ public record PowerMap(Quarry quarry) {
         double breakFortuneCoefficient,
         double breakSilktouchCoefficient
     ) {
-        static final MapCodec<Quarry> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+        public static final MapCodec<Quarry> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             Codec.DOUBLE.fieldOf("maxEnergy").forGetter(Quarry::maxEnergy),
             Codec.DOUBLE.fieldOf("makeFrame").forGetter(Quarry::makeFrame),
             Codec.DOUBLE.fieldOf("breakBlockBase").forGetter(Quarry::breakBlockBase),
