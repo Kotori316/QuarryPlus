@@ -26,9 +26,8 @@ public interface PlatformAccess {
         return PlatformAccessHolder.instance;
     }
 
-    static QuarryConfig getConfig() {
-        var access = getAccess();
-        return QuarryConfig.load(access.configPath(), access::isInDevelopmentEnvironment);
+    static QuarryConfig config() {
+        return getAccess().getConfig().get();
     }
 
     default int priority() {
@@ -60,6 +59,8 @@ public interface PlatformAccess {
     }
 
     Path configPath();
+
+    Supplier<? extends QuarryConfig> getConfig();
 
     boolean isInDevelopmentEnvironment();
 

@@ -5,6 +5,7 @@ import com.yogpc.qp.FluidStackLike;
 import com.yogpc.qp.InCreativeTabs;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.forge.machine.marker.NormalMarkerEntityForge;
 import com.yogpc.qp.forge.machine.misc.CheckerItemForge;
 import com.yogpc.qp.forge.machine.quarry.QuarryBlockForge;
@@ -30,7 +31,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.crafting.ingredients.IIngredientSerializer;
-import net.minecraftforge.fml.loading.FMLConfig;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.DeferredRegister;
@@ -47,6 +47,9 @@ public final class PlatformAccessForge implements PlatformAccess {
     private final Lazy<RegisterObjects> itemsLazy = Lazy.lazy(RegisterObjectsForge::new);
     private final Lazy<PacketHandler> packetHandlerLazy = Lazy.lazy(PacketHandler::new);
     private final Lazy<TransferForge> transferLazy = Lazy.lazy(TransferForge::new);
+    private final Lazy<QuarryConfig> configLazy = Lazy.lazy(() ->
+        QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment)
+    );
 
     public static class RegisterObjectsForge implements PlatformAccess.RegisterObjects {
         private static final DeferredRegister<Block> BLOCK_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCKS, QuarryPlus.modID);
@@ -150,7 +153,12 @@ public final class PlatformAccessForge implements PlatformAccess {
 
     @Override
     public Path configPath() {
-        return FMLPaths.getOrCreateGameRelativePath(Path.of(FMLConfig.getConfigValue(FMLConfig.ConfigValue.DEFAULT_CONFIG_PATH), "%s.toml".formatted(QuarryPlus.modID)));
+        return FMLPaths.CONFIGDIR.get().resolve("%s.toml".formatted(QuarryPlus.modID));
+    }
+
+    @Override
+    public Supplier<? extends QuarryConfig> getConfig() {
+        return configLazy;
     }
 
     @Override

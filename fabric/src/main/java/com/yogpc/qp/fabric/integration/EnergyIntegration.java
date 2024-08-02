@@ -38,7 +38,7 @@ class RebornEnergyRegister {
     static boolean register() {
         EnergyStorage.SIDED.registerForBlockEntities((blockEntity, context) -> {
             if (blockEntity instanceof PowerEntity entity) {
-                return new RebornEnergyStorage(entity, PlatformAccess.getConfig());
+                return new RebornEnergyStorage(entity, PlatformAccess.config());
             }
             return null;
         }, types());

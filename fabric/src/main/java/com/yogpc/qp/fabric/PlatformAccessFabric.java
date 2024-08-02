@@ -5,6 +5,7 @@ import com.yogpc.qp.FluidStackLike;
 import com.yogpc.qp.InCreativeTabs;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.fabric.machine.misc.CheckerItemFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
@@ -39,6 +40,9 @@ public final class PlatformAccessFabric implements PlatformAccess {
     private final Lazy<RegisterObjects> itemsLazy = Lazy.lazy(RegisterObjectsFabric::new);
     private final Lazy<PacketHandler> packetHandlerLazy = Lazy.lazy(PacketHandler::new);
     private final Lazy<TransferFabric> transferLazy = Lazy.lazy(TransferFabric::new);
+    private final Lazy<QuarryConfig> configLazy = Lazy.lazy(() ->
+        QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment)
+    );
 
     public static final class RegisterObjectsFabric implements RegisterObjects {
         public static final QuarryBlockFabric QUARRY_BLOCK = new QuarryBlockFabric();
@@ -144,6 +148,11 @@ public final class PlatformAccessFabric implements PlatformAccess {
     @Override
     public boolean isInDevelopmentEnvironment() {
         return FabricLoader.getInstance().isDevelopmentEnvironment();
+    }
+
+    @Override
+    public Supplier<? extends QuarryConfig> getConfig() {
+        return configLazy;
     }
 
     @Override
