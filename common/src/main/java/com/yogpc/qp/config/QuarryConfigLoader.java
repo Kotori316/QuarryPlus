@@ -5,7 +5,6 @@ import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.ConfigSpec;
 import com.electronwill.nightconfig.core.InMemoryFormat;
 import com.mojang.serialization.JavaOps;
-import com.yogpc.qp.QuarryConfig;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.PowerMap;
 import org.apache.commons.lang3.tuple.Pair;
@@ -13,10 +12,15 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.lang.reflect.RecordComponent;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 
 final class QuarryConfigLoader {
     static QuarryConfig load(Config config) {
-        var specPair = spec();
+        return load(config, () -> false);
+    }
+
+    static QuarryConfig load(Config config, BooleanSupplier inDevelop) {
+        var specPair = spec(inDevelop);
         specPair.getKey().correct(config, (action, path, incorrectValue, correctedValue) ->
             QuarryPlus.LOGGER.debug("Config corrected '{}': {} -> {}", path, incorrectValue, correctedValue)
         );
@@ -39,12 +43,12 @@ final class QuarryConfigLoader {
     ) implements QuarryConfig {
     }
 
-    static Pair<ConfigSpec, CommentedConfig> spec() {
+    static Pair<ConfigSpec, CommentedConfig> spec(BooleanSupplier inDevelop) {
         Map<String, Object> comments = new HashMap<>();
         var specConfig = CommentedConfig.wrap(comments, InMemoryFormat.withUniversalSupport());
         var config = new ConfigSpec(specConfig);
 
-        config.define("debug", false);
+        config.define("debug", inDevelop.getAsBoolean());
         specConfig.setComment("debug", "In debug mode");
 
         defineDouble(config, specConfig, "rebornEnergyConversionCoefficient", 1d / 16d, 0d, 1e10, "[Fabric ONLY] 1E = ?FE");

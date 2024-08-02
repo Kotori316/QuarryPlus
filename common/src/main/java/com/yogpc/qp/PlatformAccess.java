@@ -1,5 +1,6 @@
 package com.yogpc.qp;
 
+import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
@@ -13,6 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
@@ -24,7 +26,8 @@ public interface PlatformAccess {
     }
 
     static QuarryConfig getConfig() {
-        return getAccess().quarryConfig();
+        var access = getAccess();
+        return QuarryConfig.load(access.configPath(), access::isInDevelopmentEnvironment);
     }
 
     String platformName();
@@ -51,7 +54,9 @@ public interface PlatformAccess {
         void sendToClientWorld(@NotNull CustomPacketPayload message, @NotNull Level level);
     }
 
-    QuarryConfig quarryConfig();
+    Path configPath();
+
+    boolean isInDevelopmentEnvironment();
 
     interface Transfer {
         /**

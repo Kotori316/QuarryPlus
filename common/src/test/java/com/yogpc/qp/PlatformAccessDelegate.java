@@ -1,5 +1,6 @@
 package com.yogpc.qp;
 
+import com.yogpc.qp.config.QuarryConfig;
 import net.minecraft.world.item.ItemStack;
 
 public final class PlatformAccessDelegate implements PlatformAccess {

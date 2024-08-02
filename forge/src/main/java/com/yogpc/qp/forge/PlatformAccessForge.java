@@ -1,7 +1,10 @@
 package com.yogpc.qp.forge;
 
 import com.mojang.datafixers.DSL;
-import com.yogpc.qp.*;
+import com.yogpc.qp.FluidStackLike;
+import com.yogpc.qp.InCreativeTabs;
+import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.forge.machine.marker.NormalMarkerEntityForge;
 import com.yogpc.qp.forge.machine.misc.CheckerItemForge;
 import com.yogpc.qp.forge.machine.quarry.QuarryBlockForge;
@@ -27,11 +30,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.crafting.ingredients.IIngredientSerializer;
+import net.minecraftforge.fml.loading.FMLConfig;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.util.Lazy;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -142,8 +149,13 @@ public final class PlatformAccessForge implements PlatformAccess {
     }
 
     @Override
-    public QuarryConfig quarryConfig() {
-        return new QuarryConfigForge();
+    public Path configPath() {
+        return FMLPaths.getOrCreateGameRelativePath(Path.of(FMLConfig.getConfigValue(FMLConfig.ConfigValue.DEFAULT_CONFIG_PATH), "%s.toml".formatted(QuarryPlus.modID)));
+    }
+
+    @Override
+    public boolean isInDevelopmentEnvironment() {
+        return !FMLEnvironment.production;
     }
 
     @Override

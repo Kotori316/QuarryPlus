@@ -63,6 +63,8 @@ dependencies {
 
     modImplementation(libs.teamreborn.energy)
     modLocalRuntime(libs.jei.fabric)
+
+    implementation(libs.config.toml)
     include(libs.config.core)
     include(libs.config.toml)
 

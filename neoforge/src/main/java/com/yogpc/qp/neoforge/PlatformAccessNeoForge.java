@@ -1,7 +1,10 @@
 package com.yogpc.qp.neoforge;
 
 import com.mojang.datafixers.DSL;
-import com.yogpc.qp.*;
+import com.yogpc.qp.FluidStackLike;
+import com.yogpc.qp.InCreativeTabs;
+import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
@@ -25,10 +28,14 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.neoforged.fml.loading.FMLConfig;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.registries.*;
 import org.apache.logging.log4j.util.Lazy;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -139,8 +146,13 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
     }
 
     @Override
-    public QuarryConfig quarryConfig() {
-        return new QuarryConfigNeoForge();
+    public Path configPath() {
+        return FMLPaths.getOrCreateGameRelativePath(Path.of(FMLConfig.getConfigValue(FMLConfig.ConfigValue.DEFAULT_CONFIG_PATH), "%s.toml".formatted(QuarryPlus.modID)));
+    }
+
+    @Override
+    public boolean isInDevelopmentEnvironment() {
+        return !FMLEnvironment.production;
     }
 
     @Override

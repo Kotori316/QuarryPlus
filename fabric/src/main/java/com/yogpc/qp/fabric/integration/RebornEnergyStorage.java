@@ -1,6 +1,6 @@
 package com.yogpc.qp.fabric.integration;
 
-import com.yogpc.qp.QuarryConfig;
+import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.PowerEntity;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;

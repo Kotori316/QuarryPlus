@@ -1,7 +1,10 @@
 package com.yogpc.qp.fabric;
 
 import com.mojang.datafixers.DSL;
-import com.yogpc.qp.*;
+import com.yogpc.qp.FluidStackLike;
+import com.yogpc.qp.InCreativeTabs;
+import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.fabric.machine.misc.CheckerItemFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
@@ -17,6 +20,7 @@ import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -26,6 +30,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.apache.logging.log4j.util.Lazy;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -132,8 +137,13 @@ public final class PlatformAccessFabric implements PlatformAccess {
     }
 
     @Override
-    public QuarryConfig quarryConfig() {
-        return new QuarryConfigFabric();
+    public Path configPath() {
+        return FabricLoader.getInstance().getConfigDir().resolve("%s.toml".formatted(QuarryPlus.modID));
+    }
+
+    @Override
+    public boolean isInDevelopmentEnvironment() {
+        return FabricLoader.getInstance().isDevelopmentEnvironment();
     }
 
     @Override
