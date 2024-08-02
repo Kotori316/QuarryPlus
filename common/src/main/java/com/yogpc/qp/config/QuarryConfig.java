@@ -32,6 +32,11 @@ public interface QuarryConfig {
 
     @VisibleForTesting
     static QuarryConfig defaultConfig(boolean debug) {
-        return QuarryConfigLoader.load(Config.inMemory(), () -> debug);
+        return fromConfig(Config.inMemory(), debug);
+    }
+
+    @VisibleForTesting
+    static QuarryConfig fromConfig(Config config, boolean debug) {
+        return QuarryConfigLoader.load(config, () -> debug);
     }
 }
