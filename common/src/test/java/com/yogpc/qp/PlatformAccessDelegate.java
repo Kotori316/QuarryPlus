@@ -1,7 +1,8 @@
 package com.yogpc.qp;
 
-import com.yogpc.qp.config.QuarryConfig;
 import net.minecraft.world.item.ItemStack;
+
+import java.nio.file.Path;
 
 public final class PlatformAccessDelegate implements PlatformAccess {
     private PlatformAccess access;
@@ -34,8 +35,13 @@ public final class PlatformAccessDelegate implements PlatformAccess {
     }
 
     @Override
-    public QuarryConfig quarryConfig() {
-        return access.quarryConfig();
+    public Path configPath() {
+        return access.configPath();
+    }
+
+    @Override
+    public boolean isInDevelopmentEnvironment() {
+        return access.isInDevelopmentEnvironment();
     }
 
     @Override
@@ -66,8 +72,13 @@ public final class PlatformAccessDelegate implements PlatformAccess {
         }
 
         @Override
-        public QuarryConfig quarryConfig() {
-            return null;
+        public Path configPath() {
+            return Path.of("logs", "config", "quarry_test.toml");
+        }
+
+        @Override
+        public boolean isInDevelopmentEnvironment() {
+            return false;
         }
 
         @Override

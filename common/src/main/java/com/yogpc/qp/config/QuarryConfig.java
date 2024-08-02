@@ -1,8 +1,10 @@
 package com.yogpc.qp.config;
 
+import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.PowerMap;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.nio.file.Path;
 import java.util.function.BooleanSupplier;
@@ -25,5 +27,10 @@ public interface QuarryConfig {
             config.load();
             return QuarryConfigLoader.load(config, inDevelop);
         }
+    }
+
+    @VisibleForTesting
+    static QuarryConfig defaultConfig(boolean debug) {
+        return QuarryConfigLoader.load(Config.inMemory(), () -> debug);
     }
 }

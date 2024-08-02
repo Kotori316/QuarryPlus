@@ -1,7 +1,7 @@
 package com.yogpc.qp.fabric.integration;
 
 import com.yogpc.qp.BeforeMC;
-import com.yogpc.qp.fabric.QuarryConfigFabric;
+import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
 import com.yogpc.qp.machine.PowerEntity;
 import net.minecraft.core.BlockPos;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RebornEnergyStorageTest extends BeforeMC {
     static RebornEnergyStorage createInstance() {
-        return new RebornEnergyStorage(new QuarryEntityFabric(BlockPos.ZERO, Blocks.AIR.defaultBlockState()), new QuarryConfigFabric());
+        return new RebornEnergyStorage(new QuarryEntityFabric(BlockPos.ZERO, Blocks.AIR.defaultBlockState()), QuarryConfig.defaultConfig(false));
     }
 
     @Test
@@ -25,7 +25,7 @@ class RebornEnergyStorageTest extends BeforeMC {
     void getEnergy() {
         var entity = new QuarryEntityFabric(BlockPos.ZERO, Blocks.AIR.defaultBlockState());
         entity.setTimeProvider(() -> 1L);
-        var instance = new RebornEnergyStorage(entity, new QuarryConfigFabric());
+        var instance = new RebornEnergyStorage(entity, QuarryConfig.defaultConfig(false));
         entity.addEnergy(PowerEntity.ONE_FE * 16, false);
 
         assertEquals(256, instance.getAmount());

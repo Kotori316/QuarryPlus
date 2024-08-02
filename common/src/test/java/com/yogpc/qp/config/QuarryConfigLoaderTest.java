@@ -3,6 +3,8 @@ package com.yogpc.qp.config;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.core.Config;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,5 +44,14 @@ class QuarryConfigLoaderTest {
         assertNotNull(loaded);
 
         assertFalse(config.commentMap().isEmpty());
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void getDefault(boolean debug) {
+        var loaded = QuarryConfig.defaultConfig(debug);
+        assertNotNull(loaded);
+
+        assertEquals(debug, loaded.debug());
     }
 }
