@@ -13,6 +13,15 @@
         "^mezz.jei:*"
       ],
       "automerge": true
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "matchPackagePatterns": [
+        "^com.electronwill.night-config:*"
+      ],
+      "enabled": false
     }
   ]
 }

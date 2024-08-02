@@ -16,6 +16,8 @@ jei_forge = "19.5.3.67"
 jei_fabric = "19.5.3.67"
 jei_neoforge = "19.5.3.67"
 
+night-config = "3.7.3"
+
 jupiter_api = "5.10.3"
 mockito_core = "5.12.0"
 mockito_inline = "5.2.0"
@@ -51,6 +53,8 @@ du_fabric = { group = "com.kotori316", name = "debug-utility-fabric", version.re
 fabric_version_checker = { group = "com.kotori316", name = "VersionCheckerMod", version.ref = "fabric_version_checker" }
 teamreborn_energy = { group = "teamreborn", name = "energy", version.ref = "teamreborn_energy" }
 jei_fabric = { group = "mezz.jei", name = "jei-1.21-fabric", version.ref = "jei_fabric" }
+config_core = { group = "com.electronwill.night-config", name = "core", version.ref = "night-config" }
+config_toml = { group = "com.electronwill.night-config", name = "toml", version.ref = "night-config" }
 # NeoForge
 neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
 tu_neoforge = { group = "com.kotori316", name = "test-utility-neoforge", version.ref = "tu" }
