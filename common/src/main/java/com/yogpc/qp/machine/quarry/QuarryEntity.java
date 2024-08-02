@@ -68,7 +68,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     static PowerMap.Quarry powerMap() {
-        return PlatformAccess.getConfig().getPowerMap().quarry();
+        return PlatformAccess.getConfig().powerMap().quarry();
     }
 
     @Override

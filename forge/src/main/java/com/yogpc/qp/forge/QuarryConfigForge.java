@@ -6,12 +6,17 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 
 public final class QuarryConfigForge implements QuarryConfig {
     @Override
-    public boolean isDebug() {
+    public boolean debug() {
         return !FMLEnvironment.production;
     }
 
     @Override
-    public PowerMap getPowerMap() {
+    public PowerMap powerMap() {
         return new PowerMap(PowerMap.Default.QUARRY);
+    }
+
+    @Override
+    public double rebornEnergyConversionCoefficient() {
+        return 0;
     }
 }

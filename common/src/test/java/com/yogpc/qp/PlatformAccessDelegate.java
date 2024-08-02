@@ -1,6 +1,5 @@
 package com.yogpc.qp;
 
-import com.yogpc.qp.machine.PowerMap;
 import net.minecraft.world.item.ItemStack;
 
 public final class PlatformAccessDelegate implements PlatformAccess {
@@ -67,17 +66,7 @@ public final class PlatformAccessDelegate implements PlatformAccess {
 
         @Override
         public QuarryConfig quarryConfig() {
-            return new QuarryConfig() {
-                @Override
-                public boolean isDebug() {
-                    return false;
-                }
-
-                @Override
-                public PowerMap getPowerMap() {
-                    return new PowerMap(PowerMap.Default.QUARRY);
-                }
-            };
+            return null;
         }
 
         @Override

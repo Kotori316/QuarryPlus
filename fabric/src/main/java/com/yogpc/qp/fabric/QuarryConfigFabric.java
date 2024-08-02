@@ -6,12 +6,12 @@ import net.fabricmc.loader.api.FabricLoader;
 
 public final class QuarryConfigFabric implements QuarryConfig {
     @Override
-    public boolean isDebug() {
+    public boolean debug() {
         return FabricLoader.getInstance().isDevelopmentEnvironment();
     }
 
     @Override
-    public PowerMap getPowerMap() {
+    public PowerMap powerMap() {
         return new PowerMap(PowerMap.Default.QUARRY);
     }
 }

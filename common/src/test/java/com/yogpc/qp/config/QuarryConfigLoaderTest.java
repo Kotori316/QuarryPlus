@@ -14,8 +14,8 @@ class QuarryConfigLoaderTest {
         assertNotNull(loaded);
 
         assertAll(
-            () -> assertFalse(loaded.isDebug()),
-            () -> assertNotNull(loaded.getPowerMap()),
+            () -> assertFalse(loaded.debug()),
+            () -> assertNotNull(loaded.powerMap()),
             () -> assertEquals(1d / 16d, loaded.rebornEnergyConversionCoefficient())
         );
     }
@@ -29,8 +29,8 @@ class QuarryConfigLoaderTest {
         assertNotNull(loaded);
 
         assertAll(
-            () -> assertTrue(loaded.isDebug()),
-            () -> assertNotNull(loaded.getPowerMap()),
+            () -> assertTrue(loaded.debug()),
+            () -> assertNotNull(loaded.powerMap()),
             () -> assertEquals(4d / 16d, loaded.rebornEnergyConversionCoefficient())
         );
     }

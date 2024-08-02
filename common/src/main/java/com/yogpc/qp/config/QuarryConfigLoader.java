@@ -33,8 +33,8 @@ final class QuarryConfigLoader {
     }
 
     record QuarryConfigImpl(
-        boolean isDebug,
-        PowerMap getPowerMap,
+        boolean debug,
+        PowerMap powerMap,
         double rebornEnergyConversionCoefficient
     ) implements QuarryConfig {
     }
