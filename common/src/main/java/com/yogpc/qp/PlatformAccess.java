@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
@@ -28,6 +29,10 @@ public interface PlatformAccess {
     static QuarryConfig getConfig() {
         var access = getAccess();
         return QuarryConfig.load(access.configPath(), access::isInDevelopmentEnvironment);
+    }
+
+    default int priority() {
+        return 0;
     }
 
     String platformName();
@@ -77,7 +82,10 @@ class PlatformAccessHolder {
 
     static {
         QuarryPlus.LOGGER.info("[PlatformAccess] loading");
-        instance = ServiceLoader.load(PlatformAccess.class, PlatformAccess.class.getClassLoader()).findFirst().orElseThrow(() -> new IllegalStateException("PlatformAccess not found. It's a bug."));
+        instance = ServiceLoader.load(PlatformAccess.class, PlatformAccess.class.getClassLoader()).stream()
+            .map(ServiceLoader.Provider::get)
+            .min(Comparator.comparingInt(PlatformAccess::priority))
+            .orElseThrow(() -> new IllegalStateException("PlatformAccess not found. It's a bug."));
         QuarryPlus.LOGGER.info("[PlatformAccess] loaded for {}, {}", instance.platformName(), instance.getClass().getSimpleName());
     }
 }

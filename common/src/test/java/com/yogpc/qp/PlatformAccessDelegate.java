@@ -4,8 +4,9 @@ import net.minecraft.world.item.ItemStack;
 
 import java.nio.file.Path;
 
-public final class PlatformAccessDelegate implements PlatformAccess {
+public class PlatformAccessDelegate implements PlatformAccess {
     private PlatformAccess access;
+    private Path configPath;
 
     public PlatformAccessDelegate() {
         this.access = new VanillaImpl();
@@ -17,6 +18,15 @@ public final class PlatformAccessDelegate implements PlatformAccess {
 
     public void setAccess(PlatformAccess access) {
         this.access = access;
+    }
+
+    public void setConfigPath(Path configPath) {
+        this.configPath = configPath;
+    }
+
+    @Override
+    public int priority() {
+        return -1;
     }
 
     @Override
@@ -36,7 +46,10 @@ public final class PlatformAccessDelegate implements PlatformAccess {
 
     @Override
     public Path configPath() {
-        return access.configPath();
+        if (configPath == null) {
+            return access.configPath();
+        }
+        return configPath;
     }
 
     @Override

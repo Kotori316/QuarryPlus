@@ -3,8 +3,11 @@ package com.yogpc.qp.config;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.core.Config;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,5 +56,12 @@ class QuarryConfigLoaderTest {
         assertNotNull(loaded);
 
         assertEquals(debug, loaded.debug());
+    }
+
+    @Test
+    void realEmptyFile(@TempDir Path parent) {
+        var configPath = parent.resolve("quarry-config.toml");
+        var loaded = assertDoesNotThrow(() -> QuarryConfig.load(configPath, () -> false));
+        assertNotNull(loaded);
     }
 }

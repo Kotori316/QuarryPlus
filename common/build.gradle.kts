@@ -36,6 +36,7 @@ dependencies {
     modLocalRuntime(libs.fabric.loader)
     compileOnly(libs.config.core)
     testImplementation(libs.config.core)
+    testRuntimeOnly(libs.config.toml)
 
     testImplementation(platform(libs.junit))
     testImplementation(libs.jupiter)
