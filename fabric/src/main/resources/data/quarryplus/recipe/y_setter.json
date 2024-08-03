@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "g": {
+      "tag": "c:glass_blocks"
+    },
+    "l": {
+      "tag": "c:gems/lapis"
+    },
+    "r": {
+      "tag": "quarryplus:markers"
+    }
+  },
+  "pattern": [
+    "ggg",
+    "lrl"
+  ],
+  "result": {
+    "id": "quarryplus:y_setter"
+  }
+}
