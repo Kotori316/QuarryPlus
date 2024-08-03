@@ -43,7 +43,7 @@ loom {
                 "fabric-api.gametest.report-file",
                 "${project.layout.buildDirectory.dir("test-results/test/game_test.xml").get()}"
             )
-            source(sourceSets["test"])
+            source(sourceSets["gameTest"])
         }
     }
 }
@@ -64,6 +64,8 @@ dependencies {
 
     modImplementation(libs.teamreborn.energy)
     modLocalRuntime(libs.jei.fabric)
+    modLocalRuntime(libs.du.fabric)
+    modLocalRuntime(libs.tu.fabric)
 
     implementation(libs.config.toml)
     include(libs.config.core)
