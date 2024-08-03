@@ -49,7 +49,7 @@ final class QuarryConfigLoader {
         var config = new ConfigSpec(specConfig);
 
         config.define("debug", inDevelop.getAsBoolean());
-        specConfig.setComment("debug", "In debug mode");
+        specConfig.setComment("debug", "In debug mode. Default: " + inDevelop.getAsBoolean());
 
         defineDouble(config, specConfig, "rebornEnergyConversionCoefficient", 1d / 16d, 0d, 1e10, "[Fabric ONLY] 1E = ?FE");
 
@@ -61,7 +61,7 @@ final class QuarryConfigLoader {
 
     static void defineDouble(ConfigSpec spec, CommentedConfig commentMap, String key, double defaultValue, double min, double max, String comment) {
         spec.defineInRange(key, defaultValue, min, max);
-        commentMap.setComment(key, comment);
+        commentMap.setComment(key, "%s. Default: %f, Min: %.1f, Max: %.1f".formatted(comment, defaultValue, min, max));
     }
 
     static <T extends Record> void defineInCodec(ConfigSpec spec, CommentedConfig commentMap, String prefix, T instance) {
@@ -79,7 +79,7 @@ final class QuarryConfigLoader {
                     defineDouble(spec, commentMap, key, (Double) defaultValue, 0d, 1e10, field.getName());
                 } else {
                     spec.define(key, defaultValue);
-                    commentMap.setComment(key, field.getName());
+                    commentMap.setComment(key, "%s. Default: %s".formatted(field.getName(), defaultValue));
                 }
             }
         } catch (ReflectiveOperationException e) {
