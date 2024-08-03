@@ -60,6 +60,8 @@ public interface PlatformAccess {
 
     interface Packet {
         void sendToClientWorld(@NotNull CustomPacketPayload message, @NotNull Level level);
+
+        void sendToServer(@NotNull CustomPacketPayload message);
     }
 
     Path configPath();

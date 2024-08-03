@@ -1,7 +1,9 @@
 package com.yogpc.qp.machine.misc;
 
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.quarry.QuarryEntity;
 import com.yogpc.qp.packet.ClientSync;
+import com.yogpc.qp.packet.YSetterMessage;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 public record YAccessor<T extends BlockEntity & ClientSync>(DigMinY digMinY, T entity) {
@@ -25,6 +27,7 @@ public record YAccessor<T extends BlockEntity & ClientSync>(DigMinY digMinY, T e
     }
 
     void syncToServer() {
-
+        var message = new YSetterMessage(entity, digMinY.getMinY(entity.getLevel()));
+        PlatformAccess.getAccess().packetHandler().sendToServer(message);
     }
 }

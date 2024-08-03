@@ -28,7 +28,7 @@ public class YSetterScreen extends AbstractContainerScreen<YSetterContainer> {
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         super.renderLabels(graphics, mouseX, mouseY);
         if (getMenu().yAccessor != null) {
-            var level = String.valueOf(getMenu().yAccessor.getDigMinY() + 1);
+            var level = String.valueOf(getMenu().yAccessor.getDigMinY());
             graphics.drawString(font, level, (this.imageWidth - font.width(level)) / 2, tp + 23, 0x404040, false);
         }
     }

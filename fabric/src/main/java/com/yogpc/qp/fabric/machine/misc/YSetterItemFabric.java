@@ -1,6 +1,5 @@
 package com.yogpc.qp.fabric.machine.misc;
 
-import com.yogpc.qp.machine.misc.YAccessor;
 import com.yogpc.qp.machine.misc.YSetterItem;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
@@ -22,15 +21,12 @@ public final class YSetterItemFabric extends YSetterItem implements UseBlockCall
     public InteractionResult interact(Player player, Level world, InteractionHand hand, BlockHitResult hitResult) {
         if (player.isSpectator() || player.getItemInHand(hand).getItem() != this) return InteractionResult.PASS;
 
-        var entity = world.getBlockEntity(hitResult.getBlockPos());
-        var accessor = YAccessor.get(entity);
-        if (entity == null || accessor == null) {
-            return InteractionResult.PASS;
-        }
-        if (!world.isClientSide) {
-            player.openMenu(new YSetterScreenHandlerFabric(entity.getBlockPos(), entity.getBlockState().getBlock().getName()));
-        }
-        return InteractionResult.sidedSuccess(world.isClientSide);
+        return interact(world, hitResult.getBlockPos(), player);
+    }
+
+    @Override
+    protected void openGui(Player player, BlockPos pos, Component text) {
+        player.openMenu(new YSetterScreenHandlerFabric(pos, text));
     }
 
     private static final class YSetterScreenHandlerFabric extends YSetterScreenHandler implements ExtendedScreenHandlerFactory<BlockPos> {
