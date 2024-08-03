@@ -5,10 +5,12 @@ import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
+import com.yogpc.qp.machine.misc.YSetterContainer;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -50,12 +52,16 @@ public interface PlatformAccess {
         Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block);
 
         Stream<Supplier<? extends InCreativeTabs>> allItems();
+
+        Supplier<MenuType<? extends YSetterContainer>> ySetterContainer();
     }
 
     Packet packetHandler();
 
     interface Packet {
         void sendToClientWorld(@NotNull CustomPacketPayload message, @NotNull Level level);
+
+        void sendToServer(@NotNull CustomPacketPayload message);
     }
 
     Path configPath();

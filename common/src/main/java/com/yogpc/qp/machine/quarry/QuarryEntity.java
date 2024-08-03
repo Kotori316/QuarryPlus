@@ -3,6 +3,7 @@ package com.yogpc.qp.machine.quarry;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.*;
+import com.yogpc.qp.machine.misc.DigMinY;
 import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -57,6 +58,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     BlockPos targetPos;
     @NotNull
     MachineStorage storage;
+    @NotNull
+    public DigMinY digMinY = new DigMinY();
 
     protected QuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -79,7 +82,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 detail(ChatFormatting.GREEN, "State", currentState.name()),
                 detail(ChatFormatting.GREEN, "Area", String.valueOf(area)),
                 detail(ChatFormatting.GREEN, "Head", String.valueOf(head)),
-                detail(ChatFormatting.GREEN, "Storage", String.valueOf(storage))
+                detail(ChatFormatting.GREEN, "Storage", String.valueOf(storage)),
+                detail(ChatFormatting.GREEN, "DigMinY", String.valueOf(digMinY.getMinY(level)))
             )
         );
     }
@@ -138,6 +142,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         if (area != null) {
             tag.put("area", Area.CODEC.codec().encodeStart(NbtOps.INSTANCE, this.area).getOrThrow());
         }
+        tag.put("digMinY", DigMinY.CODEC.codec().encodeStart(NbtOps.INSTANCE, digMinY).getOrThrow());
         return tag;
     }
 
@@ -147,6 +152,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         Vec3.CODEC.parse(NbtOps.INSTANCE, tag.get("head")).ifSuccess(v -> this.targetHead = v);
         currentState = QuarryState.valueOf(tag.getString("state"));
         area = Area.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("area")).result().orElse(null);
+        digMinY = DigMinY.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("digMinY")).result().orElseGet(DigMinY::new);
     }
 
     public void setArea(@Nullable Area area) {
@@ -356,7 +362,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 return false;
             }
         }
-        var minY = digMinY();
+        var minY = this.digMinY.getMinY(level);
         if (minY < targetPos.getY()) {
             skipped.removeIf(p -> p.getY() > targetPos.getY());
             // Go next y
@@ -490,11 +496,6 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     boolean shouldRemoveFluid() {
         return true;
-    }
-
-    int digMinY() {
-        if (level == null) return 0;
-        return level.getMinBuildHeight() + 1;
     }
 
     BlockState stateAfterBreak(Level level, BlockPos pos, BlockState before) {

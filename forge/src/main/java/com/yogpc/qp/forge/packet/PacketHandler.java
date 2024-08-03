@@ -3,6 +3,7 @@ package com.yogpc.qp.forge.packet;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.ClientSyncMessage;
+import com.yogpc.qp.packet.YSetterMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -33,6 +34,11 @@ public final class PacketHandler implements PlatformAccess.Packet {
             .messageBuilder(ClientSyncMessage.class)
             .codec(ClientSyncMessage.STREAM_CODEC)
             .consumerMainThread(PacketHandler::clientSyncOnReceive)
+            .add()
+            // YSetterMessage
+            .messageBuilder(YSetterMessage.class)
+            .codec(YSetterMessage.STREAM_CODEC)
+            .consumerMainThread(PacketHandler::ySetterMessageOnReceive)
             .add();
 
     private static final Proxy PROXY = ProxyProvider.getInstance();
@@ -41,6 +47,11 @@ public final class PacketHandler implements PlatformAccess.Packet {
     }
 
     private static void clientSyncOnReceive(ClientSyncMessage message, CustomPayloadEvent.Context context) {
+        PROXY.getPacketWorld(context)
+            .ifPresent(message::onReceive);
+    }
+
+    private static void ySetterMessageOnReceive(YSetterMessage message, CustomPayloadEvent.Context context) {
         PROXY.getPacketWorld(context)
             .ifPresent(message::onReceive);
     }
@@ -54,6 +65,10 @@ public final class PacketHandler implements PlatformAccess.Packet {
         CHANNEL.send(message, PacketDistributor.DIMENSION.with(level.dimension()));
     }
 
+    @Override
+    public void sendToServer(@NotNull CustomPacketPayload message) {
+        CHANNEL.send(message, PacketDistributor.SERVER.noArg());
+    }
 
     private static class ProxyProvider {
         @NotNull

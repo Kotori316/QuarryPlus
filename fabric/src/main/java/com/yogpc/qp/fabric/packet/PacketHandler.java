@@ -2,6 +2,7 @@ package com.yogpc.qp.fabric.packet;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.packet.ClientSyncMessage;
+import com.yogpc.qp.packet.YSetterMessage;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -17,7 +18,14 @@ import org.jetbrains.annotations.NotNull;
 public final class PacketHandler implements PlatformAccess.Packet {
     public static class Server {
         public static void initServer() {
-            // Use ServerPlayNetworking.registerGlobalReceiver
+            PayloadTypeRegistry.playC2S().register(YSetterMessage.TYPE, YSetterMessage.STREAM_CODEC);
+
+            ServerPlayNetworking.registerGlobalReceiver(YSetterMessage.TYPE, Server::ySetterOnReceive);
+        }
+
+        private static void ySetterOnReceive(YSetterMessage message, ServerPlayNetworking.Context context) {
+            var level = context.player().level();
+            context.server().execute(() -> message.onReceive(level));
         }
     }
 
@@ -39,5 +47,10 @@ public final class PacketHandler implements PlatformAccess.Packet {
         for (ServerPlayer player : PlayerLookup.world((ServerLevel) level)) {
             ServerPlayNetworking.send(player, message);
         }
+    }
+
+    @Override
+    public void sendToServer(@NotNull CustomPacketPayload message) {
+        ClientPlayNetworking.send(message);
     }
 }

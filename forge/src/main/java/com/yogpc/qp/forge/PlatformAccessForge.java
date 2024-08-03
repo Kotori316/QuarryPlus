@@ -9,6 +9,7 @@ import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.forge.machine.marker.NormalMarkerEntityForge;
 import com.yogpc.qp.forge.machine.misc.CheckerItemForge;
+import com.yogpc.qp.forge.machine.misc.YSetterItemForge;
 import com.yogpc.qp.forge.machine.quarry.QuarryBlockForge;
 import com.yogpc.qp.forge.machine.quarry.QuarryEntityForge;
 import com.yogpc.qp.forge.packet.PacketHandler;
@@ -18,10 +19,12 @@ import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
+import com.yogpc.qp.machine.misc.YSetterContainer;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -32,6 +35,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.crafting.ingredients.IIngredientSerializer;
+import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
@@ -63,8 +67,9 @@ public final class PlatformAccessForge implements PlatformAccess {
         private static final DeferredRegister<CreativeModeTab> CREATIVE_TAB_REGISTER = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, QuarryPlus.modID);
         private static final DeferredRegister<LootItemFunctionType<?>> LOOT_TYPE_REGISTER = DeferredRegister.create(Registries.LOOT_FUNCTION_TYPE, QuarryPlus.modID);
         private static final DeferredRegister<DataComponentType<?>> DATA_COMPONENT_TYPE_REGISTER = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, QuarryPlus.modID);
+        private static final DeferredRegister<MenuType<?>> MENU_TYPE_REGISTER = DeferredRegister.create(Registries.MENU, QuarryPlus.modID);
         static final List<DeferredRegister<?>> REGISTER_LIST = List.of(
-            BLOCK_REGISTER, ITEM_REGISTER, BLOCK_ENTITY_REGISTER, RECIPE_REGISTER, INGREDIENT_REGISTER, CREATIVE_TAB_REGISTER, LOOT_TYPE_REGISTER, DATA_COMPONENT_TYPE_REGISTER
+            BLOCK_REGISTER, ITEM_REGISTER, BLOCK_ENTITY_REGISTER, RECIPE_REGISTER, INGREDIENT_REGISTER, CREATIVE_TAB_REGISTER, LOOT_TYPE_REGISTER, DATA_COMPONENT_TYPE_REGISTER, MENU_TYPE_REGISTER
         );
         private static final List<Supplier<? extends InCreativeTabs>> TAB_ITEMS = new ArrayList<>();
 
@@ -74,11 +79,16 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<NormalMarkerBlock> BLOCK_MARKER = registerBlock(NormalMarkerBlock.NAME, NormalMarkerBlock::new);
 
         public static final RegistryObject<CheckerItemForge> ITEM_CHECKER = registerItem(CheckerItemForge.NAME, CheckerItemForge::new);
+        public static final RegistryObject<YSetterItemForge> ITEM_Y_SET = registerItem(YSetterItemForge.NAME, YSetterItemForge::new);
 
         private static final Map<Class<? extends QpBlock>, Supplier<BlockEntityType<?>>> BLOCK_ENTITY_TYPES = new HashMap<>();
         public static final RegistryObject<BlockEntityType<QuarryEntityForge>> QUARRY_ENTITY_TYPE = registerBlockEntity(QuarryBlockForge.NAME, BLOCK_QUARRY, QuarryEntityForge::new);
         public static final RegistryObject<BlockEntityType<GeneratorEntity>> GENERATOR_ENTITY_TYPE = registerBlockEntity(GeneratorBlock.NAME, BLOCK_GENERATOR, GeneratorEntity::new);
         public static final RegistryObject<BlockEntityType<NormalMarkerEntityForge>> MARKER_ENTITY_TYPE = registerBlockEntity(NormalMarkerBlock.NAME, BLOCK_MARKER, NormalMarkerEntityForge::new);
+
+        public static final RegistryObject<MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = MENU_TYPE_REGISTER.register("gui_y_setter", () ->
+            IForgeMenuType.create((i, inventory, friendlyByteBuf) -> new YSetterContainer(i, inventory, friendlyByteBuf.readBlockPos()))
+        );
 
         public static final RegistryObject<CreativeModeTab> CREATIVE_MODE_TAB = CREATIVE_TAB_REGISTER.register(QuarryPlus.modID, () -> QuarryPlus.buildCreativeModeTab(CreativeModeTab.builder()).build());
 
@@ -136,6 +146,11 @@ public final class PlatformAccessForge implements PlatformAccess {
         @Override
         public Stream<Supplier<? extends InCreativeTabs>> allItems() {
             return TAB_ITEMS.stream();
+        }
+
+        @Override
+        public Supplier<MenuType<? extends YSetterContainer>> ySetterContainer() {
+            return Y_SET_MENU_TYPE;
         }
     }
 

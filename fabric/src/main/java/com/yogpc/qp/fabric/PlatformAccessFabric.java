@@ -8,6 +8,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.fabric.machine.misc.CheckerItemFabric;
+import com.yogpc.qp.fabric.machine.misc.YSetterItemFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
 import com.yogpc.qp.fabric.packet.PacketHandler;
@@ -17,17 +18,21 @@ import com.yogpc.qp.machine.marker.NormalMarkerEntity;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
+import com.yogpc.qp.machine.misc.YSetterContainer;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -56,6 +61,8 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final CheckerItemFabric CHECKER_ITEM = new CheckerItemFabric();
         public static final NormalMarkerBlock MARKER_BLOCK = new NormalMarkerBlock();
         public static final BlockEntityType<NormalMarkerEntity> MARKER_ENTITY_TYPE = BlockEntityType.Builder.of(NormalMarkerEntity::new, MARKER_BLOCK).build(DSL.emptyPartType());
+        public static final YSetterItemFabric Y_SET_ITEM = new YSetterItemFabric();
+        public static final MenuType<YSetterContainer> Y_SET_MENU = new ExtendedScreenHandlerType<>(YSetterContainer::new, BlockPos.STREAM_CODEC);
 
         private static final List<InCreativeTabs> TAB_ITEMS = new ArrayList<>();
         public static final CreativeModeTab TAB = QuarryPlus.buildCreativeModeTab(FabricItemGroup.builder()).build();
@@ -67,6 +74,8 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerEntityBlock(GENERATOR_BLOCK, GENERATOR_ENTITY_TYPE);
             registerItem(CHECKER_ITEM, CHECKER_ITEM.name);
             registerEntityBlock(MARKER_BLOCK, MARKER_ENTITY_TYPE);
+            registerItem(Y_SET_ITEM, Y_SET_ITEM.name);
+            Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, Y_SET_MENU);
             Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
         }
 
@@ -125,6 +134,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         @Override
         public Stream<Supplier<? extends InCreativeTabs>> allItems() {
             return TAB_ITEMS.stream().map(t -> () -> t);
+        }
+
+        @Override
+        public Supplier<MenuType<? extends YSetterContainer>> ySetterContainer() {
+            return Lazy.value(Y_SET_MENU);
         }
     }
 

@@ -14,14 +14,17 @@ import com.yogpc.qp.machine.marker.NormalMarkerEntity;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
+import com.yogpc.qp.machine.misc.YSetterContainer;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
 import com.yogpc.qp.neoforge.machine.misc.CheckerItemNeoForge;
+import com.yogpc.qp.neoforge.machine.misc.YSetterItemNeoForge;
 import com.yogpc.qp.neoforge.machine.quarry.QuarryBlockNeoForge;
 import com.yogpc.qp.neoforge.machine.quarry.QuarryEntityNeoForge;
 import com.yogpc.qp.neoforge.packet.PacketHandler;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -34,6 +37,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.crafting.IngredientType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.registries.*;
 import org.apache.logging.log4j.util.Lazy;
@@ -60,8 +64,9 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         private static final DeferredRegister<CreativeModeTab> CREATIVE_TAB_REGISTER = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, QuarryPlus.modID);
         private static final DeferredRegister<LootItemFunctionType<?>> LOOT_TYPE_REGISTER = DeferredRegister.create(Registries.LOOT_FUNCTION_TYPE, QuarryPlus.modID);
         private static final DeferredRegister<DataComponentType<?>> DATA_COMPONENT_TYPE_REGISTER = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, QuarryPlus.modID);
+        private static final DeferredRegister<MenuType<?>> MENU_TYPE_REGISTER = DeferredRegister.create(Registries.MENU, QuarryPlus.modID);
         static final List<DeferredRegister<?>> REGISTER_LIST = List.of(
-            BLOCK_REGISTER, ITEM_REGISTER, BLOCK_ENTITY_REGISTER, RECIPE_REGISTER, INGREDIENT_REGISTER, CREATIVE_TAB_REGISTER, LOOT_TYPE_REGISTER, DATA_COMPONENT_TYPE_REGISTER
+            BLOCK_REGISTER, ITEM_REGISTER, BLOCK_ENTITY_REGISTER, RECIPE_REGISTER, INGREDIENT_REGISTER, CREATIVE_TAB_REGISTER, LOOT_TYPE_REGISTER, DATA_COMPONENT_TYPE_REGISTER, MENU_TYPE_REGISTER
         );
         private static final List<Supplier<? extends InCreativeTabs>> TAB_ITEMS = new ArrayList<>();
 
@@ -71,6 +76,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredBlock<NormalMarkerBlock> BLOCK_MARKER = registerBlock(NormalMarkerBlock.NAME, NormalMarkerBlock::new);
 
         public static final DeferredItem<CheckerItemNeoForge> ITEM_CHECKER = registerItem(CheckerItemNeoForge.NAME, CheckerItemNeoForge::new);
+        public static final DeferredItem<YSetterItemNeoForge> ITEM_Y_SET = registerItem(YSetterItemNeoForge.NAME, YSetterItemNeoForge::new);
 
         private static final Map<Class<? extends QpBlock>, Supplier<BlockEntityType<?>>> BLOCK_ENTITY_TYPES = new HashMap<>();
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<QuarryEntityNeoForge>> QUARRY_ENTITY_TYPE = registerBlockEntity(QuarryBlockNeoForge.NAME, BLOCK_QUARRY, QuarryEntityNeoForge::new);
@@ -78,6 +84,9 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NormalMarkerEntity>> MARKER_ENTITY_TYPE = registerBlockEntity(NormalMarkerBlock.NAME, BLOCK_MARKER, NormalMarkerEntity::new);
 
         public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_MODE_TAB = CREATIVE_TAB_REGISTER.register(QuarryPlus.modID, () -> QuarryPlus.buildCreativeModeTab(CreativeModeTab.builder()).build());
+        public static final DeferredHolder<MenuType<?>, MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = MENU_TYPE_REGISTER.register("gui_y_setter", () ->
+            IMenuTypeExtension.create((windowId, inv, data) -> new YSetterContainer(windowId, inv, data.readBlockPos()))
+        );
 
         private static <T extends QpBlock> DeferredBlock<T> registerBlock(String name, Supplier<T> supplier) {
             var block = BLOCK_REGISTER.register(name, supplier);
@@ -133,6 +142,11 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         @Override
         public Stream<Supplier<? extends InCreativeTabs>> allItems() {
             return TAB_ITEMS.stream();
+        }
+
+        @Override
+        public Supplier<MenuType<? extends YSetterContainer>> ySetterContainer() {
+            return Y_SET_MENU_TYPE;
         }
     }
 
