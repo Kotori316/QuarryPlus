@@ -25,7 +25,7 @@ public final class YSetterItemFabric extends YSetterItem implements UseBlockCall
     }
 
     @Override
-    protected void openGui(Player player, BlockPos pos, Component text) {
+    protected void openGui(ServerPlayer player, BlockPos pos, Component text) {
         player.openMenu(new YSetterScreenHandlerFabric(pos, text));
     }
 

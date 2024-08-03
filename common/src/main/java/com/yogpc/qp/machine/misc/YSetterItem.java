@@ -5,6 +5,7 @@ import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -31,18 +32,18 @@ public abstract class YSetterItem extends Item implements InCreativeTabs {
         }
         if (!level.isClientSide) {
             // accessor.entity().syncToClient();
-            openGui(player, entity.getBlockPos(), entity.getBlockState().getBlock().getName());
+            openGui((ServerPlayer) player, entity.getBlockPos(), entity.getBlockState().getBlock().getName());
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
-    protected abstract void openGui(Player player, BlockPos pos, Component text);
+    protected abstract void openGui(ServerPlayer player, BlockPos pos, Component text);
 
     protected static class YSetterScreenHandler implements MenuProvider {
         protected final BlockPos pos;
         protected final Component text;
 
-        protected YSetterScreenHandler(BlockPos pos, Component text) {
+        public YSetterScreenHandler(BlockPos pos, Component text) {
             this.pos = pos;
             this.text = text;
         }
