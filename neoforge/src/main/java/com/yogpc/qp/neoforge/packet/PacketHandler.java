@@ -3,6 +3,7 @@ package com.yogpc.qp.neoforge.packet;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.packet.ClientSyncMessage;
+import com.yogpc.qp.packet.YSetterMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -31,9 +32,18 @@ public final class PacketHandler implements PlatformAccess.Packet {
             ClientSyncMessage.STREAM_CODEC,
             PacketHandler::clientSyncOnReceive
         );
+        registrar.playToServer(
+            YSetterMessage.TYPE,
+            YSetterMessage.STREAM_CODEC,
+            PacketHandler::ySetterMessageOnReceive
+        );
     }
 
     private static void clientSyncOnReceive(ClientSyncMessage message, IPayloadContext context) {
+        context.enqueueWork(() -> PROXY.getPacketWorld(context).ifPresent(message::onReceive));
+    }
+
+    private static void ySetterMessageOnReceive(YSetterMessage message, IPayloadContext context) {
         context.enqueueWork(() -> PROXY.getPacketWorld(context).ifPresent(message::onReceive));
     }
 
@@ -49,6 +59,10 @@ public final class PacketHandler implements PlatformAccess.Packet {
         }
     }
 
+    @Override
+    public void sendToServer(@NotNull CustomPacketPayload message) {
+        PacketDistributor.sendToServer(message);
+    }
 
     private static class ProxyProvider {
         @NotNull
