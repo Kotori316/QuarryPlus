@@ -26,6 +26,9 @@ tasks.named("processGameTestResources", ProcessResources::class) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
+val catalog = project.versionCatalogs.named("libs")
 dependencies {
     "gameTestImplementation"(project.sourceSets.main.get().output)
+    "gameTestImplementation"(platform(catalog.findLibrary("junit").get().get()))
+    "gameTestImplementation"(catalog.findLibrary("jupiter").get().get())
 }
