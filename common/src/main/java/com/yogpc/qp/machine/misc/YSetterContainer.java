@@ -3,6 +3,7 @@ package com.yogpc.qp.machine.misc;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -14,8 +15,9 @@ public class YSetterContainer extends AbstractContainerMenu {
     @Nullable
     final YAccessor<?> yAccessor;
 
-    public YSetterContainer(int syncId, Player player, BlockPos pos) {
+    public YSetterContainer(int syncId, Inventory inventory, BlockPos pos) {
         super(PlatformAccess.getAccess().registerObjects().ySetterContainer().get(), syncId);
+        var player = inventory.player;
         this.yAccessor = YAccessor.get(player.level().getBlockEntity(pos));
 
         final int oneBox = 18;
