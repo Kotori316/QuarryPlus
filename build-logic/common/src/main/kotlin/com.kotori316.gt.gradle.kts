@@ -29,6 +29,7 @@ tasks.named("processGameTestResources", ProcessResources::class) {
 val catalog = project.versionCatalogs.named("libs")
 dependencies {
     "gameTestImplementation"(project.sourceSets.main.get().output)
+    "gameTestImplementation"(project.project(":common").sourceSets.test.get().output)
     "gameTestImplementation"(platform(catalog.findLibrary("junit").get().get()))
     "gameTestImplementation"(catalog.findLibrary("jupiter").get().get())
 }
