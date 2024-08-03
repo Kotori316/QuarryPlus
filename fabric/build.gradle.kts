@@ -35,7 +35,7 @@ loom {
         }
         create("gameTestServer") {
             configName = "GameTest"
-            runDir = "build/game_test"
+            runDir = "game-test"
             server()
             vmArg("-ea")
             property("fabric-api.gametest")

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "quarryplus_test",
+  "name": "QuarryPlus Test",
+  "version": "1.0",
+  "license": "All rights reserved",
+  "entrypoints": {
+    "fabric-gametest": [
+      "com.yogpc.qp.fabric.LoadTest"
+    ]
+  }
+}
