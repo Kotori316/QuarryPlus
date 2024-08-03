@@ -5,6 +5,7 @@ import com.yogpc.qp.FluidStackLike;
 import com.yogpc.qp.InCreativeTabs;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpBlock;
@@ -29,9 +30,11 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.crafting.IngredientType;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.registries.*;
 import org.apache.logging.log4j.util.Lazy;
 
@@ -44,7 +47,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
     private final Lazy<RegisterObjects> itemsLazy = Lazy.lazy(RegisterObjectsNeoForge::new);
     private final Lazy<PacketHandler> packetHandlerLazy = Lazy.lazy(PacketHandler::new);
     private final Lazy<TransferNeoForge> transferLazy = Lazy.lazy(TransferNeoForge::new);
-    private final Lazy<QuarryConfig> configLazy = Lazy.lazy(() ->
+    private final ConfigHolder configLazy = new ConfigHolder(() ->
         QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment)
     );
 
@@ -174,5 +177,10 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
             return new FluidStackLike(bucketItem.content, MachineStorage.ONE_BUCKET, DataComponentPatch.EMPTY);
         }
         return FluidStackLike.EMPTY;
+    }
+
+    @SubscribeEvent
+    public void onWorldUnload(ServerStoppedEvent event) {
+        configLazy.reset();
     }
 }

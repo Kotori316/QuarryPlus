@@ -1,5 +1,6 @@
 package com.yogpc.qp.forge;
 
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.forge.integration.EnergyIntegration;
 import com.yogpc.qp.forge.packet.PacketHandler;
@@ -18,6 +19,7 @@ public final class QuarryPlusForge {
         PacketHandler.init();
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> QuarryPlusClientForge::registerClientBus);
         MinecraftForge.EVENT_BUS.register(EnergyIntegration.class);
+        MinecraftForge.EVENT_BUS.register(PlatformAccess.getAccess());
         QuarryPlus.LOGGER.info("Initialize Common finished");
     }
 }

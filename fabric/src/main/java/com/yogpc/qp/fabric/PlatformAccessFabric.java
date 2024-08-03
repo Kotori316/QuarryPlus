@@ -5,6 +5,7 @@ import com.yogpc.qp.FluidStackLike;
 import com.yogpc.qp.InCreativeTabs;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.fabric.machine.misc.CheckerItemFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
@@ -17,6 +18,7 @@ import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
@@ -25,6 +27,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -36,11 +39,11 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public final class PlatformAccessFabric implements PlatformAccess {
+public final class PlatformAccessFabric implements PlatformAccess, ServerLifecycleEvents.ServerStopped {
     private final Lazy<RegisterObjects> itemsLazy = Lazy.lazy(RegisterObjectsFabric::new);
     private final Lazy<PacketHandler> packetHandlerLazy = Lazy.lazy(PacketHandler::new);
     private final Lazy<TransferFabric> transferLazy = Lazy.lazy(TransferFabric::new);
-    private final Lazy<QuarryConfig> configLazy = Lazy.lazy(() ->
+    private final ConfigHolder configLazy = new ConfigHolder(() ->
         QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment)
     );
 
@@ -171,5 +174,10 @@ public final class PlatformAccessFabric implements PlatformAccess {
             return FluidStackLike.EMPTY;
         }
         return new FluidStackLike(extracted.resource().getFluid(), extracted.amount(), extracted.resource().getComponents());
+    }
+
+    @Override
+    public void onServerStopped(MinecraftServer server) {
+        configLazy.reset();
     }
 }
