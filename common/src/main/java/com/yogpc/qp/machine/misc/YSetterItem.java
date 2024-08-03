@@ -53,7 +53,6 @@ public abstract class YSetterItem extends Item implements InCreativeTabs {
             return text;
         }
 
-        @Nullable
         @Override
         public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
             return new YSetterContainer(i, inventory, pos);

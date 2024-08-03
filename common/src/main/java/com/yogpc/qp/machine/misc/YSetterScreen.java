@@ -59,11 +59,9 @@ public class YSetterScreen extends AbstractContainerScreen<YSetterContainer> {
         if (accessor != null) {
             int n = Screen.hasShiftDown() ? 16 : Screen.hasControlDown() ? 4 : 1;
             var count = (plus ? 1 : -1) * n;
-            var topLimit = accessor.getLimitTop();
-            if (count + accessor.getDigMinY() < topLimit) {
-                accessor.setDigMinY(count + accessor.getDigMinY());
-                accessor.syncToServer();
-            }
+            var updated = Math.min(count + accessor.getDigMinY(), accessor.getLimitTop());
+            accessor.setDigMinY(updated);
+            accessor.syncToServer();
         }
     }
 }
