@@ -2,6 +2,7 @@ plugins {
     id("com.kotori316.common")
     alias(libs.plugins.neoforge.gradle)
     id("com.kotori316.publish")
+    id("com.kotori316.gt")
 }
 
 val modId = "QuarryPlus".lowercase()

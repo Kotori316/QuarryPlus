@@ -2,6 +2,7 @@ plugins {
     id("com.kotori316.common")
     alias(libs.plugins.fabric.loom)
     id("com.kotori316.publish")
+    id("com.kotori316.gt")
 }
 
 loom {

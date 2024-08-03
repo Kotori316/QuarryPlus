@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.forge.gradle)
     alias(libs.plugins.forge.parchment)
     id("com.kotori316.publish")
+    id("com.kotori316.gt")
 }
 
 val modId = "QuarryPlus".lowercase()
