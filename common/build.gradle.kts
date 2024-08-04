@@ -21,6 +21,23 @@ sourceSets {
             srcDir("src/generated/resources")
         }
     }
+    create("gameTest") {
+        val s = this
+        java {
+            srcDir("src/gameTest/java")
+        }
+        resources {
+            srcDir("src/gameTest/resources")
+        }
+        project.configurations {
+            named(s.compileClasspathConfigurationName) {
+                extendsFrom(project.configurations.compileClasspath.get())
+            }
+            named(s.runtimeClasspathConfigurationName) {
+                extendsFrom(project.configurations.runtimeClasspath.get())
+            }
+        }
+    }
 }
 
 dependencies {
@@ -40,4 +57,8 @@ dependencies {
 
     testImplementation(platform(libs.junit))
     testImplementation(libs.jupiter)
+
+    "gameTestImplementation"(project.sourceSets.main.get().output)
+    "gameTestImplementation"(platform(libs.junit))
+    "gameTestImplementation"(libs.jupiter)
 }
