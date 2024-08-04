@@ -82,7 +82,7 @@ dependencies {
         isTransitive = false
     }
     runtimeOnly(libs.jei.forge)
-    implementation("com.kotori316:test-utility-forge:21.0-SNAPSHOT") {
+    implementation("com.kotori316:test-utility-forge:21.0.5") {
         isTransitive = false
     }
     implementation("net.sf.jopt-simple:jopt-simple:5.0.4") { version { strictly("5.0.4") } }
