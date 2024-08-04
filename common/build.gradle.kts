@@ -62,3 +62,5 @@ dependencies {
     "gameTestImplementation"(platform(libs.junit))
     "gameTestImplementation"(libs.jupiter)
 }
+
+tasks.create("runGameTestServer")
