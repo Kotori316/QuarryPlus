@@ -29,7 +29,7 @@ runs {
     create("gameTestServer") {
         workingDirectory = project.file("game-test")
         systemProperties.put("neoforge.enabledGameTestNamespaces", "$modId,minecraft")
-        systemProperties.put("bsl.debug", "true")
+        // systemProperties.put("bsl.debug", "true")
         jvmArguments("-ea")
         modSources.add(modId, sourceSets["gameTest"])
         dependencies {
@@ -45,6 +45,7 @@ dependencies {
         isTransitive = false
     }
     runtimeOnly(libs.du.neoforge)
+    implementation(libs.tu.neoforge)
     localRuntime(libs.jei.neoforge)
 
     gameTestRuntime(platform(libs.junit))
