@@ -34,6 +34,7 @@ public final class LoadTest {
 
     @GameTestGenerator
     public List<TestFunction> commonTests() {
-        return GameTestFunctions.createTestFunctions("%s.%s".formatted(QuarryPlus.modID, "defaultBatch"), STRUCTURE_MOD_ID);
+        // Use modId as batch name
+        return GameTestFunctions.createTestFunctions(QuarryPlus.modID, STRUCTURE_MOD_ID);
     }
 }
