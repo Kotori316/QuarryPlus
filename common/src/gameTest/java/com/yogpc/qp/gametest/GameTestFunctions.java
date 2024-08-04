@@ -6,6 +6,7 @@ import net.minecraft.gametest.framework.TestFunction;
 
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public final class GameTestFunctions {
@@ -13,7 +14,7 @@ public final class GameTestFunctions {
         var classes = List.of(
             LoadRecipeTest.class
         );
-        return classes.stream()
+        var fromClass = classes.stream()
             .flatMap(c -> Stream.of(c.getDeclaredMethods()))
             .filter(m -> (m.getModifiers() & Modifier.STATIC) == Modifier.STATIC)
             .filter(m -> m.getParameterCount() == 1)
@@ -28,6 +29,10 @@ public final class GameTestFunctions {
                         throw new AssertionError(e);
                     }
                 })
-            ).toList();
+            );
+        return Stream.of(
+            fromClass,
+            AccessItemTest.accessItems(batchName, structureName)
+        ).flatMap(Function.identity()).toList();
     }
 }

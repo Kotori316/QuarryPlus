@@ -1,5 +1,6 @@
 package com.yogpc.qp.fabric;
 
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.gametest.GameTestFunctions;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public final class LoadTest implements FabricGameTest {
     @GameTest(template = EMPTY_STRUCTURE)
@@ -19,6 +21,7 @@ public final class LoadTest implements FabricGameTest {
         helper.assertValueEqual("QuarryPlus".toLowerCase(Locale.ROOT), QuarryPlus.modID, "ModId");
 
         assertEquals("Fabric", new PlatformAccessFabric().platformName(), "PlatformName");
+        assertInstanceOf(PlatformAccessFabric.class, PlatformAccess.getAccess());
 
         helper.succeed();
     }

@@ -43,6 +43,10 @@ loom {
                 "fabric-api.gametest.report-file",
                 "${project.layout.buildDirectory.dir("test-results/test/game_test.xml").get()}"
             )
+            property(
+                "fabric-tag-conventions-v2.missingTagTranslationWarning",
+                "SILENCED",
+            )
             source(sourceSets["gameTest"])
         }
     }

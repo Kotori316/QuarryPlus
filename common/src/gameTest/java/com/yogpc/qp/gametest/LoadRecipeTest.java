@@ -1,18 +1,21 @@
 package com.yogpc.qp.gametest;
 
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings({"unused", "DuplicatedCode"})
 public final class LoadRecipeTest {
     public static void getRecipes(GameTestHelper helper) {
         var manager = helper.getLevel().getRecipeManager();
@@ -40,6 +43,83 @@ public final class LoadRecipeTest {
         ));
         var result = recipe.matches(input, helper.getLevel());
         assertTrue(result);
+        helper.succeed();
+    }
+
+    public static void createQuarry(GameTestHelper helper) {
+        var manager = helper.getLevel().getRecipeManager();
+        var recipe = manager.byKey(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "quarry"))
+            .map(RecipeHolder::value)
+            .filter(CraftingRecipe.class::isInstance)
+            .map(CraftingRecipe.class::cast)
+            .orElseThrow(AssertionError::new);
+
+        var D = Items.DROPPER.getDefaultInstance();
+        var R = Items.REDSTONE_BLOCK.getDefaultInstance();
+        var g = Items.GOLDEN_PICKAXE.getDefaultInstance();
+        var i = Items.IRON_INGOT.getDefaultInstance();
+        var o = Items.OBSIDIAN.getDefaultInstance();
+        var m = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
+
+        var input = CraftingInput.of(3, 3, List.of(
+            i, o, i,
+            g, D, g,
+            i, R, m
+        ));
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        assertEquals(
+            PlatformAccess.getAccess().registerObjects().quarryBlock().get().blockItem,
+            result.getItem()
+        );
+
+        helper.succeed();
+    }
+
+    public static void createStatusChecker(GameTestHelper helper) {
+        var manager = helper.getLevel().getRecipeManager();
+        var recipe = manager.byKey(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "status_checker"))
+            .map(RecipeHolder::value)
+            .filter(CraftingRecipe.class::isInstance)
+            .map(CraftingRecipe.class::cast)
+            .orElseThrow(AssertionError::new);
+
+        var g = Items.GLASS.getDefaultInstance();
+        var l = Items.IRON_INGOT.getDefaultInstance();
+        var r = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
+
+        var input = CraftingInput.of(3, 2, List.of(
+            g, g, g,
+            l, r, l
+        ));
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        assertEquals("status_checker", BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
+
+        helper.succeed();
+    }
+
+
+    public static void createYSetter(GameTestHelper helper) {
+        var manager = helper.getLevel().getRecipeManager();
+        var recipe = manager.byKey(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "y_setter"))
+            .map(RecipeHolder::value)
+            .filter(CraftingRecipe.class::isInstance)
+            .map(CraftingRecipe.class::cast)
+            .orElseThrow(AssertionError::new);
+
+        var g = Items.GLASS.getDefaultInstance();
+        var l = Items.LAPIS_LAZULI.getDefaultInstance();
+        var r = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
+
+        var input = CraftingInput.of(3, 2, List.of(
+            g, g, g,
+            l, r, l
+        ));
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        assertEquals("y_setter", BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
+
         helper.succeed();
     }
 }
