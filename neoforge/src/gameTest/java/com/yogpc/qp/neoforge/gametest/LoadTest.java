@@ -21,7 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 @PrefixGameTestTemplate(value = false)
 public final class LoadTest {
-    private static final String STRUCTURE = "trail_ruins/tower/one_room_1";
+    private static final String STRUCTURE = "no_place";
+    private static final String STRUCTURE_MOD_ID = QuarryPlus.modID + ":" + STRUCTURE;
 
     @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = QuarryPlus.modID)
     public static final class Register {
@@ -31,7 +32,7 @@ public final class LoadTest {
         }
     }
 
-    @GameTest(template = STRUCTURE, templateNamespace = "minecraft")
+    @GameTest(template = STRUCTURE)
     public void load(GameTestHelper helper) {
         helper.assertValueEqual("QuarryPlus".toLowerCase(Locale.ROOT), QuarryPlus.modID, "ModId");
 
@@ -43,6 +44,6 @@ public final class LoadTest {
 
     @GameTestGenerator
     public List<TestFunction> commonTests() {
-        return GameTestFunctions.createTestFunctions("defaultBatch", "minecraft:" + STRUCTURE);
+        return GameTestFunctions.createTestFunctions("defaultBatch", STRUCTURE_MOD_ID);
     }
 }

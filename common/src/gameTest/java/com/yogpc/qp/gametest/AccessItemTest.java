@@ -15,7 +15,7 @@ public final class AccessItemTest {
         var items = PlatformAccess.getAccess().registerObjects().allItems();
 
         return items.map(Supplier::get).map(i -> {
-            var name = "AccessItemTest_%s".formatted(i.getClass().getSimpleName());
+            var name = "AccessItemTest%s".formatted(i.getClass().getSimpleName());
             return new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, 100, 0, true, g -> {
                 assertAll(i.creativeTabItem().map(t -> () -> assertFalse(t.isEmpty())));
                 g.succeed();
