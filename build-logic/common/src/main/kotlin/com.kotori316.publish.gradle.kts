@@ -1,10 +1,10 @@
 import com.kotori316.plugin.cf.CallVersionCheckFunctionTask
 import com.kotori316.plugin.cf.CallVersionFunctionTask
-import gradle.kotlin.dsl.accessors._d127c8cf8be369f13d50127c4af720c5.publishing
 import groovy.util.Node
 import groovy.util.NodeList
 
 plugins {
+    id("maven-publish")
     id("me.modmuss50.mod-publish-plugin")
 }
 

@@ -22,6 +22,10 @@ sourceSets {
     }
 }
 
+configurations {
+    create("gameTestRuntime")
+}
+
 tasks.named("processGameTestResources", ProcessResources::class) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

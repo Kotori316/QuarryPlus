@@ -6,6 +6,7 @@ plugins {
     id("maven-publish")
     id("signing")
     id("com.kotori316.plugin.cf")
+    id("idea")
 }
 
 java {
@@ -184,4 +185,11 @@ val hasGpgSignature = project.hasProperty("signing.keyId") &&
 
 tasks.withType(Sign::class) {
     onlyIf("runs only with signing keys") { hasGpgSignature }
+}
+
+idea {
+    module {
+        isDownloadSources = true
+        isDownloadJavadoc = true
+    }
 }
