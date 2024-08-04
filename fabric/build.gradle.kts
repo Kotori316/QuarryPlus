@@ -2,6 +2,7 @@ plugins {
     id("com.kotori316.common")
     alias(libs.plugins.fabric.loom)
     id("com.kotori316.publish")
+    id("com.kotori316.gt")
 }
 
 loom {
@@ -34,7 +35,7 @@ loom {
         }
         create("gameTestServer") {
             configName = "GameTest"
-            runDir = "build/game_test"
+            runDir = "game-test"
             server()
             vmArg("-ea")
             property("fabric-api.gametest")
@@ -42,7 +43,11 @@ loom {
                 "fabric-api.gametest.report-file",
                 "${project.layout.buildDirectory.dir("test-results/test/game_test.xml").get()}"
             )
-            source(sourceSets["test"])
+            property(
+                "fabric-tag-conventions-v2.missingTagTranslationWarning",
+                "SILENCED",
+            )
+            source(sourceSets["gameTest"])
         }
     }
 }
@@ -63,6 +68,8 @@ dependencies {
 
     modImplementation(libs.teamreborn.energy)
     modLocalRuntime(libs.jei.fabric)
+    modLocalRuntime(libs.du.fabric)
+    modLocalRuntime(libs.tu.fabric)
 
     implementation(libs.config.toml)
     include(libs.config.core)

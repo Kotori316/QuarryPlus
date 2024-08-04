@@ -75,7 +75,7 @@ jobs:
       - name: Check updated files
         run: git diff --exit-code
       - name: GameTest ${{ matrix.platform }}
-        if: false
+        if: matrix.platform != 'common'
         run: ./gradlew :${{ matrix.platform }}:runGameTestServer
         env:
           TEST_UTILITY_LOG_ALL_TEST: true

@@ -2,6 +2,7 @@ plugins {
     id("com.kotori316.common")
     alias(libs.plugins.neoforge.gradle)
     id("com.kotori316.publish")
+    id("com.kotori316.gt")
 }
 
 val modId = "QuarryPlus".lowercase()
@@ -24,6 +25,17 @@ runs {
         workingDirectory = project.file("run")
         programArguments("--username", "Kotori")
     }
+
+    create("gameTestServer") {
+        workingDirectory = project.file("game-test")
+        systemProperties.put("neoforge.enabledGameTestNamespaces", "$modId,minecraft")
+        // systemProperties.put("bsl.debug", "true")
+        jvmArguments("-ea")
+        modSources.add(modId, sourceSets["gameTest"])
+        dependencies {
+            runtime(project.configurations.gameTestRuntime.get())
+        }
+    }
 }
 
 dependencies {
@@ -33,7 +45,11 @@ dependencies {
         isTransitive = false
     }
     runtimeOnly(libs.du.neoforge)
+    implementation(libs.tu.neoforge)
     localRuntime(libs.jei.neoforge)
+
+    gameTestRuntime(platform(libs.junit))
+    gameTestRuntime(libs.jupiter)
 }
 
 // Share with common
@@ -44,6 +60,10 @@ tasks.compileJava {
 tasks.processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from(project(":common").sourceSets.main.get().resources)
+}
+
+tasks.compileGameTestJava {
+    source(project(":common").sourceSets["gameTest"].allSource)
 }
 
 tasks.named("jar", Jar::class) {
