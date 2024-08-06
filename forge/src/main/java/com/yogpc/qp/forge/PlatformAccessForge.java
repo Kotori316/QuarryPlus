@@ -13,6 +13,7 @@ import com.yogpc.qp.forge.machine.misc.YSetterItemForge;
 import com.yogpc.qp.forge.machine.quarry.QuarryBlockForge;
 import com.yogpc.qp.forge.machine.quarry.QuarryEntityForge;
 import com.yogpc.qp.forge.packet.PacketHandler;
+import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
@@ -20,10 +21,15 @@ import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
 import com.yogpc.qp.machine.misc.YSetterContainer;
+import com.yogpc.qp.machine.mover.MoverBlock;
+import com.yogpc.qp.machine.mover.MoverContainer;
+import com.yogpc.qp.machine.mover.MoverEntity;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -77,6 +83,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<FrameBlock> BLOCK_FRAME = registerBlock(FrameBlock.NAME, FrameBlock::new);
         public static final RegistryObject<GeneratorBlock> BLOCK_GENERATOR = registerBlock(GeneratorBlock.NAME, GeneratorBlock::new);
         public static final RegistryObject<NormalMarkerBlock> BLOCK_MARKER = registerBlock(NormalMarkerBlock.NAME, NormalMarkerBlock::new);
+        public static final RegistryObject<MoverBlock> BLOCK_MOVER = registerBlock(MoverBlock.NAME, MoverBlock::new);
 
         public static final RegistryObject<CheckerItemForge> ITEM_CHECKER = registerItem(CheckerItemForge.NAME, CheckerItemForge::new);
         public static final RegistryObject<YSetterItemForge> ITEM_Y_SET = registerItem(YSetterItemForge.NAME, YSetterItemForge::new);
@@ -85,10 +92,10 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<BlockEntityType<QuarryEntityForge>> QUARRY_ENTITY_TYPE = registerBlockEntity(QuarryBlockForge.NAME, BLOCK_QUARRY, QuarryEntityForge::new);
         public static final RegistryObject<BlockEntityType<GeneratorEntity>> GENERATOR_ENTITY_TYPE = registerBlockEntity(GeneratorBlock.NAME, BLOCK_GENERATOR, GeneratorEntity::new);
         public static final RegistryObject<BlockEntityType<NormalMarkerEntityForge>> MARKER_ENTITY_TYPE = registerBlockEntity(NormalMarkerBlock.NAME, BLOCK_MARKER, NormalMarkerEntityForge::new);
+        public static final RegistryObject<BlockEntityType<MoverEntity>> MOVER_ENTITY_TYPE = registerBlockEntity(MoverBlock.NAME, BLOCK_MOVER, MoverEntity::new);
 
-        public static final RegistryObject<MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = MENU_TYPE_REGISTER.register("gui_y_setter", () ->
-            IForgeMenuType.create((i, inventory, friendlyByteBuf) -> new YSetterContainer(i, inventory, friendlyByteBuf.readBlockPos()))
-        );
+        public static final RegistryObject<MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = registerMenu("gui_y_setter", YSetterContainer::new);
+        public static final RegistryObject<MenuType<? extends MoverContainer>> MOVER_MENU_TYPE = registerMenu("gui_mover", MoverContainer::new);
 
         public static final RegistryObject<CreativeModeTab> CREATIVE_MODE_TAB = CREATIVE_TAB_REGISTER.register(QuarryPlus.modID, () -> QuarryPlus.buildCreativeModeTab(CreativeModeTab.builder()).build());
 
@@ -111,6 +118,12 @@ public final class PlatformAccessForge implements PlatformAccess {
             var entityType = BLOCK_ENTITY_REGISTER.register(name, () -> BlockEntityType.Builder.of(factory, block.get()).build(DSL.emptyPartType()));
             BLOCK_ENTITY_TYPES.put((Class<? extends QpBlock>) dummy.getClass().componentType(), (Supplier<BlockEntityType<?>>) (Object) entityType);
             return entityType;
+        }
+
+        private static <T extends AbstractContainerMenu> RegistryObject<MenuType<? extends T>> registerMenu(String name, GeneralScreenHandler.ContainerFactory<T> factory) {
+            return MENU_TYPE_REGISTER.register(name, () ->
+                IForgeMenuType.create((i, inventory, friendlyByteBuf) -> factory.create(i, inventory, friendlyByteBuf.readBlockPos()))
+            );
         }
 
         @Override
@@ -151,6 +164,11 @@ public final class PlatformAccessForge implements PlatformAccess {
         @Override
         public Supplier<MenuType<? extends YSetterContainer>> ySetterContainer() {
             return Y_SET_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<MenuType<? extends MoverContainer>> moverContainer() {
+            return MOVER_MENU_TYPE;
         }
     }
 
@@ -195,6 +213,11 @@ public final class PlatformAccessForge implements PlatformAccess {
             return new FluidStackLike(bucketItem.getFluid(), MachineStorage.ONE_BUCKET, DataComponentPatch.EMPTY);
         }
         return FluidStackLike.EMPTY;
+    }
+
+    @Override
+    public <T extends AbstractContainerMenu> void openGui(ServerPlayer player, GeneralScreenHandler<T> handler) {
+        player.openMenu(handler, handler.pos());
     }
 
     @SubscribeEvent
