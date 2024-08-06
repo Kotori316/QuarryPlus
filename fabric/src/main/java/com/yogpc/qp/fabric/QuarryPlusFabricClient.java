@@ -3,6 +3,7 @@ package com.yogpc.qp.fabric;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.fabric.packet.PacketHandler;
 import com.yogpc.qp.machine.misc.YSetterScreen;
+import com.yogpc.qp.machine.mover.MoverScreen;
 import com.yogpc.qp.render.RenderMarker;
 import com.yogpc.qp.render.RenderQuarry;
 import net.fabricmc.api.ClientModInitializer;
@@ -20,6 +21,7 @@ public final class QuarryPlusFabricClient implements ClientModInitializer {
         BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.QUARRY_ENTITY_TYPE, RenderQuarry::new);
         BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.MARKER_ENTITY_TYPE, RenderMarker::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.Y_SET_MENU, YSetterScreen::new);
+        MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.MOVER_MENU, MoverScreen::new);
         QuarryPlus.LOGGER.info("Initialize Client finished");
     }
 }
