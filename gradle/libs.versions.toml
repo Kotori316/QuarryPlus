@@ -6,7 +6,7 @@ fabric_loader = "0.16.0"
 neoforge = "21.0.151"
 fabric_version_checker = "2.4.0"
 
-tu = "21.0.5"
+tu = "21.0.7"
 du = "21.0.7"
 
 teamreborn_energy = "4.1.0"
