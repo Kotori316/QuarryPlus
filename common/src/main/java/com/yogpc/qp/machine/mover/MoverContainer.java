@@ -39,7 +39,36 @@ public final class MoverContainer extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
-        return ItemStack.EMPTY;
+        int allSlots = entity.inventory.getContainerSize();
+
+        Slot slot = this.getSlot(index);
+        if (slot.hasItem()) {
+            ItemStack remain = slot.getItem();
+            ItemStack slotContent = remain.copy();
+            if (index < allSlots) {
+                if (!this.moveItemStackTo(remain, allSlots, 36 + allSlots, true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (!this.moveItemStackTo(remain, 0, allSlots, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            if (remain.isEmpty()) {
+                slot.set(ItemStack.EMPTY);
+            } else {
+                slot.setChanged();
+            }
+
+            if (remain.getCount() == slotContent.getCount()) {
+                // Nothing moved
+                return ItemStack.EMPTY;
+            }
+
+            slot.onTake(player, remain);
+            return slotContent;
+        } else {
+            return ItemStack.EMPTY;
+        }
     }
 
     @Override

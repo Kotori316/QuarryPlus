@@ -1,6 +1,7 @@
 package com.yogpc.qp.fabric.packet;
 
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.machine.mover.MoverMessage;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.YSetterMessage;
 import net.fabricmc.api.EnvType;
@@ -19,11 +20,18 @@ public final class PacketHandler implements PlatformAccess.Packet {
     public static class Server {
         public static void initServer() {
             PayloadTypeRegistry.playC2S().register(YSetterMessage.TYPE, YSetterMessage.STREAM_CODEC);
+            PayloadTypeRegistry.playC2S().register(MoverMessage.TYPE, MoverMessage.STREAM_CODEC);
 
             ServerPlayNetworking.registerGlobalReceiver(YSetterMessage.TYPE, Server::ySetterOnReceive);
+            ServerPlayNetworking.registerGlobalReceiver(MoverMessage.TYPE, Server::moverOnReceive);
         }
 
         private static void ySetterOnReceive(YSetterMessage message, ServerPlayNetworking.Context context) {
+            var level = context.player().level();
+            context.server().execute(() -> message.onReceive(level));
+        }
+
+        private static void moverOnReceive(MoverMessage message, ServerPlayNetworking.Context context) {
             var level = context.player().level();
             context.server().execute(() -> message.onReceive(level));
         }

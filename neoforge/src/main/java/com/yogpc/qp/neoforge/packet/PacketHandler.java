@@ -2,6 +2,7 @@ package com.yogpc.qp.neoforge.packet;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.mover.MoverMessage;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.YSetterMessage;
 import net.minecraft.client.Minecraft;
@@ -37,6 +38,11 @@ public final class PacketHandler implements PlatformAccess.Packet {
             YSetterMessage.STREAM_CODEC,
             PacketHandler::ySetterMessageOnReceive
         );
+        registrar.playToServer(
+            MoverMessage.TYPE,
+            MoverMessage.STREAM_CODEC,
+            PacketHandler::moverMessageOnReceive
+        );
     }
 
     private static void clientSyncOnReceive(ClientSyncMessage message, IPayloadContext context) {
@@ -44,6 +50,10 @@ public final class PacketHandler implements PlatformAccess.Packet {
     }
 
     private static void ySetterMessageOnReceive(YSetterMessage message, IPayloadContext context) {
+        context.enqueueWork(() -> PROXY.getPacketWorld(context).ifPresent(message::onReceive));
+    }
+
+    private static void moverMessageOnReceive(MoverMessage message, IPayloadContext context) {
         context.enqueueWork(() -> PROXY.getPacketWorld(context).ifPresent(message::onReceive));
     }
 

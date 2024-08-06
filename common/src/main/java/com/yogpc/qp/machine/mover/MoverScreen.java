@@ -1,14 +1,19 @@
 package com.yogpc.qp.machine.mover;
 
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.misc.IndexedButton;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-public final class MoverScreen extends AbstractContainerScreen<MoverContainer> {
+public final class MoverScreen extends AbstractContainerScreen<MoverContainer> implements Button.OnPress {
     private static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/mover.png");
+    private IndexedButton enchantmentMoveButton;
+    private int currentIndex = 0;
 
     public MoverScreen(MoverContainer menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -40,5 +45,23 @@ public final class MoverScreen extends AbstractContainerScreen<MoverContainer> {
     @Override
     protected void init() {
         super.init();
+        final var width = 120;
+        enchantmentMoveButton = new IndexedButton(1, leftPos + (imageWidth - width) / 2, topPos + 40, width, 20, Component.literal(""), this);
+        this.addRenderableWidget(enchantmentMoveButton);
+    }
+
+    @Override
+    public void onPress(Button button) {
+        var list = getMenu().entity.movableEnchantments;
+        if (!button.active || list.isEmpty()) {
+            return;
+        }
+        if (button == enchantmentMoveButton) {
+            var enchantment = list.get(currentIndex % list.size());
+            enchantment.unwrapKey().ifPresentOrElse(
+                key -> PlatformAccess.getAccess().packetHandler().sendToServer(new MoverMessage(getMenu().entity, key)),
+                () -> QuarryPlus.LOGGER.warn("No enchantment key found for {}", enchantment)
+            );
+        }
     }
 }
