@@ -4,6 +4,7 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.mover.MoverMessage;
 import com.yogpc.qp.packet.ClientSyncMessage;
+import com.yogpc.qp.packet.OnReceiveWithLevel;
 import com.yogpc.qp.packet.YSetterMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.gametest.framework.GameTestServer;
@@ -31,29 +32,21 @@ public final class PacketHandler implements PlatformAccess.Packet {
         registrar.playToClient(
             ClientSyncMessage.TYPE,
             ClientSyncMessage.STREAM_CODEC,
-            PacketHandler::clientSyncOnReceive
+            PacketHandler::onReceive
         );
         registrar.playToServer(
             YSetterMessage.TYPE,
             YSetterMessage.STREAM_CODEC,
-            PacketHandler::ySetterMessageOnReceive
+            PacketHandler::onReceive
         );
         registrar.playToServer(
             MoverMessage.TYPE,
             MoverMessage.STREAM_CODEC,
-            PacketHandler::moverMessageOnReceive
+            PacketHandler::onReceive
         );
     }
 
-    private static void clientSyncOnReceive(ClientSyncMessage message, IPayloadContext context) {
-        context.enqueueWork(() -> PROXY.getPacketWorld(context).ifPresent(message::onReceive));
-    }
-
-    private static void ySetterMessageOnReceive(YSetterMessage message, IPayloadContext context) {
-        context.enqueueWork(() -> PROXY.getPacketWorld(context).ifPresent(message::onReceive));
-    }
-
-    private static void moverMessageOnReceive(MoverMessage message, IPayloadContext context) {
+    private static void onReceive(OnReceiveWithLevel message, IPayloadContext context) {
         context.enqueueWork(() -> PROXY.getPacketWorld(context).ifPresent(message::onReceive));
     }
 

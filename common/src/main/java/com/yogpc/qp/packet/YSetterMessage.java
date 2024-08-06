@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * To server only
  */
-public final class YSetterMessage implements CustomPacketPayload {
+public final class YSetterMessage implements CustomPacketPayload, OnReceiveWithLevel {
     public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "y_set_message");
     public static final CustomPacketPayload.Type<YSetterMessage> TYPE = new Type<>(NAME);
     public static final StreamCodec<FriendlyByteBuf, YSetterMessage> STREAM_CODEC = CustomPacketPayload.codec(
@@ -54,6 +54,7 @@ public final class YSetterMessage implements CustomPacketPayload {
         buffer.writeVarInt(digMinY);
     }
 
+    @Override
     public void onReceive(Level level) {
         if (!level.dimension().equals(dim)) {
             return;

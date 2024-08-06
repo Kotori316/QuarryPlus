@@ -4,6 +4,7 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.mover.MoverMessage;
 import com.yogpc.qp.packet.ClientSyncMessage;
+import com.yogpc.qp.packet.OnReceiveWithLevel;
 import com.yogpc.qp.packet.YSetterMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.gametest.framework.GameTestServer;
@@ -34,17 +35,17 @@ public final class PacketHandler implements PlatformAccess.Packet {
             // ClientSyncMessage
             .messageBuilder(ClientSyncMessage.class)
             .codec(ClientSyncMessage.STREAM_CODEC)
-            .consumerMainThread(PacketHandler::clientSyncOnReceive)
+            .consumerMainThread(PacketHandler::onReceive)
             .add()
             // YSetterMessage
             .messageBuilder(YSetterMessage.class)
             .codec(YSetterMessage.STREAM_CODEC)
-            .consumerMainThread(PacketHandler::ySetterMessageOnReceive)
+            .consumerMainThread(PacketHandler::onReceive)
             .add()
             // MoverMessage
             .messageBuilder(MoverMessage.class)
             .codec(MoverMessage.STREAM_CODEC)
-            .consumerMainThread(PacketHandler::moverMessageOnReceive)
+            .consumerMainThread(PacketHandler::onReceive)
             .add();
 
     private static final Proxy PROXY = ProxyProvider.getInstance();
@@ -52,17 +53,7 @@ public final class PacketHandler implements PlatformAccess.Packet {
     public static void init() {
     }
 
-    private static void clientSyncOnReceive(ClientSyncMessage message, CustomPayloadEvent.Context context) {
-        PROXY.getPacketWorld(context)
-            .ifPresent(message::onReceive);
-    }
-
-    private static void ySetterMessageOnReceive(YSetterMessage message, CustomPayloadEvent.Context context) {
-        PROXY.getPacketWorld(context)
-            .ifPresent(message::onReceive);
-    }
-
-    private static void moverMessageOnReceive(MoverMessage message, CustomPayloadEvent.Context context) {
+    private static void onReceive(OnReceiveWithLevel message, CustomPayloadEvent.Context context) {
         PROXY.getPacketWorld(context)
             .ifPresent(message::onReceive);
     }

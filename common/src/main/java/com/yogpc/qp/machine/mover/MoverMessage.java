@@ -1,6 +1,7 @@
 package com.yogpc.qp.machine.mover;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.packet.OnReceiveWithLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
@@ -17,7 +18,7 @@ import java.util.Objects;
 /**
  * To server only
  */
-public final class MoverMessage implements CustomPacketPayload {
+public final class MoverMessage implements CustomPacketPayload, OnReceiveWithLevel {
     public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "mover_message");
     public static final CustomPacketPayload.Type<MoverMessage> TYPE = new Type<>(NAME);
     public static final StreamCodec<FriendlyByteBuf, MoverMessage> STREAM_CODEC = CustomPacketPayload.codec(
@@ -54,6 +55,7 @@ public final class MoverMessage implements CustomPacketPayload {
         buffer.writeResourceKey(key);
     }
 
+    @Override
     public void onReceive(Level level) {
         if (!level.dimension().equals(dim)) {
             return;
