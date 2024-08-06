@@ -32,8 +32,7 @@ public final class MoverBlock extends QpEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (level.getBlockEntity(pos) instanceof MoverEntity entity) {
             if (!level.isClientSide) {
-                PlatformAccess.getAccess().openGui((ServerPlayer) player,
-                    new GeneralScreenHandler<>(entity.getBlockPos(), entity.getBlockState().getBlock().getName(), MoverContainer::new));
+                PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, MoverContainer::new));
             }
             return InteractionResult.sidedSuccess(level.isClientSide());
         }

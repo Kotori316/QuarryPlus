@@ -1,16 +1,14 @@
 package com.yogpc.qp.machine.misc;
 
 import com.yogpc.qp.InCreativeTabs;
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.GeneralScreenHandler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -32,30 +30,8 @@ public abstract class YSetterItem extends Item implements InCreativeTabs {
         }
         if (!level.isClientSide) {
             // accessor.entity().syncToClient();
-            openGui((ServerPlayer) player, entity.getBlockPos(), entity.getBlockState().getBlock().getName());
+            PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, YSetterContainer::new));
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
-    }
-
-    protected abstract void openGui(ServerPlayer player, BlockPos pos, Component text);
-
-    protected static class YSetterScreenHandler implements MenuProvider {
-        protected final BlockPos pos;
-        protected final Component text;
-
-        public YSetterScreenHandler(BlockPos pos, Component text) {
-            this.pos = pos;
-            this.text = text;
-        }
-
-        @Override
-        public Component getDisplayName() {
-            return text;
-        }
-
-        @Override
-        public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-            return new YSetterContainer(i, inventory, pos);
-        }
     }
 }
