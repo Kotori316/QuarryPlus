@@ -25,8 +25,8 @@ public final class GameTestFunctions {
                 new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, m.getName()), structureName, 100, 0, true, g -> {
                     try {
                         m.invoke(null, g);
-                    } catch (ReflectiveOperationException e) {
-                        throw new AssertionError(e);
+                    } catch (ReflectiveOperationException | AssertionError e) {
+                        throw new RuntimeException(e);
                     }
                 })
             );
