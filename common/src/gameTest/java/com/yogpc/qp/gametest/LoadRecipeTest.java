@@ -122,4 +122,30 @@ public final class LoadRecipeTest {
 
         helper.succeed();
     }
+
+    public static void createMover(GameTestHelper helper) {
+        var manager = helper.getLevel().getRecipeManager();
+        var recipe = manager.byKey(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "mover"))
+            .map(RecipeHolder::value)
+            .filter(CraftingRecipe.class::isInstance)
+            .map(CraftingRecipe.class::cast)
+            .orElseThrow(AssertionError::new);
+
+        var d = Items.DIAMOND.getDefaultInstance();
+        var a = Items.ANVIL.getDefaultInstance();
+        var g = Items.GOLD_INGOT.getDefaultInstance();
+        var i = Items.IRON_INGOT.getDefaultInstance();
+        var o = Items.OBSIDIAN.getDefaultInstance();
+        var m = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
+        var input = CraftingInput.of(3, 3, List.of(
+            m, d, ItemStack.EMPTY,
+            i, g, i,
+            a, o, a
+        ));
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        assertEquals("mover", BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
+
+        helper.succeed();
+    }
 }

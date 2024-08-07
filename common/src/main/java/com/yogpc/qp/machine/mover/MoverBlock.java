@@ -7,6 +7,7 @@ import com.yogpc.qp.machine.QpEntityBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
@@ -37,6 +38,18 @@ public final class MoverBlock extends QpEntityBlock {
             return InteractionResult.sidedSuccess(level.isClientSide());
         }
         return super.useWithoutItem(state, level, pos, player, hitResult);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            // Logic from Containers.dropContentsOnDestroy()
+            if (level.getBlockEntity(pos) instanceof MoverEntity entity) {
+                Containers.dropContents(level, pos, entity.inventory);
+                level.updateNeighbourForOutputSignal(pos, state.getBlock());
+            }
+        }
+        super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Override
