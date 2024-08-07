@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -93,6 +94,7 @@ public final class MoverEntity extends BlockEntity {
         var given = EnchantmentHelper.getEnchantmentsForCrafting(to);
         return EnchantmentHelper.getEnchantmentsForCrafting(from).keySet().stream()
             .filter(e -> canMoveEnchantment(predicate, given, e))
+            .sorted(Comparator.comparing(Holder::getRegisteredName))
             .toList();
     }
 

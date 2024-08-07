@@ -46,7 +46,7 @@ public final class MoverScreen extends AbstractContainerScreen<MoverContainer> i
     protected void init() {
         super.init();
         final var width = 120;
-        enchantmentMoveButton = new IndexedButton(1, leftPos + (imageWidth - width) / 2, topPos + 40, width, 20, Component.literal(""), this);
+        enchantmentMoveButton = new IndexedButton(1, leftPos + (imageWidth - width) / 2, topPos + 38, width, 20, Component.empty(), this);
         this.addRenderableWidget(enchantmentMoveButton);
     }
 
@@ -57,11 +57,22 @@ public final class MoverScreen extends AbstractContainerScreen<MoverContainer> i
             return;
         }
         if (button == enchantmentMoveButton) {
-            var enchantment = list.get(currentIndex % list.size());
+            var enchantment = list.get(Math.floorMod(currentIndex, list.size()));
             enchantment.unwrapKey().ifPresentOrElse(
                 key -> PlatformAccess.getAccess().packetHandler().sendToServer(new MoverMessage(getMenu().entity, key)),
                 () -> QuarryPlus.LOGGER.warn("No enchantment key found for {}", enchantment)
             );
+        }
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        var list = getMenu().entity.movableEnchantments;
+        if (!list.isEmpty()) {
+            enchantmentMoveButton.setMessage(list.get(Math.floorMod(currentIndex, list.size())).value().description());
+        } else {
+            enchantmentMoveButton.setMessage(Component.empty());
         }
     }
 }
