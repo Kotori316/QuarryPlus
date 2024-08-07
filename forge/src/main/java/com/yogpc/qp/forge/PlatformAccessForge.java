@@ -14,6 +14,7 @@ import com.yogpc.qp.forge.machine.quarry.QuarryBlockForge;
 import com.yogpc.qp.forge.machine.quarry.QuarryEntityForge;
 import com.yogpc.qp.forge.packet.PacketHandler;
 import com.yogpc.qp.machine.GeneralScreenHandler;
+import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
@@ -97,6 +98,8 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = registerMenu("gui_y_setter", YSetterContainer::new);
         public static final RegistryObject<MenuType<? extends MoverContainer>> MOVER_MENU_TYPE = registerMenu("gui_mover", MoverContainer::new);
 
+        public static final RegistryObject<LootItemFunctionType<? extends MachineLootFunction>> MACHINE_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(MachineLootFunction.NAME, () -> new LootItemFunctionType<>(MachineLootFunction.SERIALIZER));
+
         public static final RegistryObject<CreativeModeTab> CREATIVE_MODE_TAB = CREATIVE_TAB_REGISTER.register(QuarryPlus.modID, () -> QuarryPlus.buildCreativeModeTab(CreativeModeTab.builder()).build());
 
         private static <T extends QpBlock> RegistryObject<T> registerBlock(String name, Supplier<T> supplier) {
@@ -169,6 +172,11 @@ public final class PlatformAccessForge implements PlatformAccess {
         @Override
         public Supplier<MenuType<? extends MoverContainer>> moverContainer() {
             return MOVER_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<LootItemFunctionType<? extends MachineLootFunction>> machineLootFunction() {
+            return MACHINE_LOOT_FUNCTION;
         }
     }
 

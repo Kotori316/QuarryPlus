@@ -13,6 +13,7 @@ import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
 import com.yogpc.qp.fabric.packet.PacketHandler;
 import com.yogpc.qp.machine.GeneralScreenHandler;
+import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.marker.NormalMarkerEntity;
@@ -43,6 +44,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import org.apache.logging.log4j.util.Lazy;
 
 import java.nio.file.Path;
@@ -72,6 +74,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final MoverBlock MOVER_BLOCK = new MoverBlock();
         public static final BlockEntityType<MoverEntity> MOVER_ENTITY_TYPE = BlockEntityType.Builder.of(MoverEntity::new, MOVER_BLOCK).build(DSL.emptyPartType());
         public static final MenuType<MoverContainer> MOVER_MENU = new ExtendedScreenHandlerType<>(MoverContainer::new, BlockPos.STREAM_CODEC);
+        public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
 
         private static final List<InCreativeTabs> TAB_ITEMS = new ArrayList<>();
         public static final CreativeModeTab TAB = QuarryPlus.buildCreativeModeTab(FabricItemGroup.builder()).build();
@@ -87,6 +90,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerEntityBlock(MOVER_BLOCK, MOVER_ENTITY_TYPE);
             Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, Y_SET_MENU);
             Registry.register(BuiltInRegistries.MENU, MoverContainer.GUI_ID, MOVER_MENU);
+            Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MachineLootFunction.NAME), MACHINE_LOOT_FUNCTION);
             Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
         }
 
@@ -155,6 +159,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         @Override
         public Supplier<MenuType<? extends MoverContainer>> moverContainer() {
             return Lazy.value(MOVER_MENU);
+        }
+
+        @Override
+        public Supplier<LootItemFunctionType<? extends MachineLootFunction>> machineLootFunction() {
+            return Lazy.value(MACHINE_LOOT_FUNCTION);
         }
     }
 
