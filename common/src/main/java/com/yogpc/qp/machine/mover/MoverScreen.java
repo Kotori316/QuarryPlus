@@ -4,15 +4,29 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.misc.IndexedButton;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.StateSwitchingButton;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import org.jetbrains.annotations.Nullable;
 
-public final class MoverScreen extends AbstractContainerScreen<MoverContainer> implements Button.OnPress {
+import java.util.function.Consumer;
+
+public final class MoverScreen extends AbstractContainerScreen<MoverContainer> {
     private static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/mover.png");
+    private static final WidgetSprites PAGE_FORWARD_SPRITES = new WidgetSprites(
+        ResourceLocation.withDefaultNamespace("recipe_book/page_forward"), ResourceLocation.withDefaultNamespace("recipe_book/page_forward_highlighted")
+    );
+    private static final WidgetSprites PAGE_BACKWARD_SPRITES = new WidgetSprites(
+        ResourceLocation.withDefaultNamespace("recipe_book/page_backward"), ResourceLocation.withDefaultNamespace("recipe_book/page_backward_highlighted")
+    );
     private IndexedButton enchantmentMoveButton;
+    private StateSwitchingButton forwardButton;
+    private StateSwitchingButton backwardButton;
     private int currentIndex = 0;
 
     public MoverScreen(MoverContainer menu, Inventory playerInventory, Component title) {
@@ -46,12 +60,16 @@ public final class MoverScreen extends AbstractContainerScreen<MoverContainer> i
     protected void init() {
         super.init();
         final var width = 120;
-        enchantmentMoveButton = new IndexedButton(1, leftPos + (imageWidth - width) / 2, topPos + 38, width, 20, Component.empty(), this);
-        this.addRenderableWidget(enchantmentMoveButton);
+        this.addRenderableWidget(enchantmentMoveButton = new IndexedButton(1, leftPos + (imageWidth - width) / 2, topPos + 38, width, 20, Component.empty(), this::onPress));
+        this.addRenderableWidget(backwardButton = new ArrowButton(leftPos + (imageWidth - 12) / 2 - 20, enchantmentMoveButton.getY() + enchantmentMoveButton.getHeight() + 8, 12, 17, false, PAGE_BACKWARD_SPRITES, this::onPress));
+        this.addRenderableWidget(forwardButton = new ArrowButton(leftPos + (imageWidth - 12) / 2 + 20, enchantmentMoveButton.getY() + enchantmentMoveButton.getHeight() + 8, 12, 17, false, PAGE_FORWARD_SPRITES, this::onPress));
+
+        enchantmentMoveButton.setTooltip(Tooltip.create(Component.literal("Move this enchantment")));
+        backwardButton.setTooltip(Tooltip.create(Component.literal("Previous")));
+        forwardButton.setTooltip(Tooltip.create(Component.literal("Next")));
     }
 
-    @Override
-    public void onPress(Button button) {
+    public void onPress(AbstractWidget button) {
         var list = getMenu().entity.movableEnchantments;
         if (!button.active || list.isEmpty()) {
             return;
@@ -62,6 +80,10 @@ public final class MoverScreen extends AbstractContainerScreen<MoverContainer> i
                 key -> PlatformAccess.getAccess().packetHandler().sendToServer(new MoverMessage(getMenu().entity, key)),
                 () -> QuarryPlus.LOGGER.warn("No enchantment key found for {}", enchantment)
             );
+        } else if (button == forwardButton) {
+            currentIndex = Math.floorMod(currentIndex + 1, list.size());
+        } else if (button == backwardButton) {
+            currentIndex = Math.floorMod(currentIndex - 1, list.size());
         }
     }
 
@@ -73,6 +95,27 @@ public final class MoverScreen extends AbstractContainerScreen<MoverContainer> i
             enchantmentMoveButton.setMessage(list.get(Math.floorMod(currentIndex, list.size())).value().description());
         } else {
             enchantmentMoveButton.setMessage(Component.empty());
+        }
+    }
+
+    private static final class ArrowButton extends StateSwitchingButton {
+        private final Consumer<ArrowButton> onPress;
+
+        public ArrowButton(int x, int y, int width, int height, boolean initialState, @Nullable WidgetSprites sprites, Consumer<ArrowButton> onPress) {
+            super(x, y, width, height, initialState);
+            this.onPress = onPress;
+            this.initTextureValues(sprites);
+        }
+
+        @Override
+        public void onClick(double mouseX, double mouseY) {
+            super.onClick(mouseX, mouseY);
+            onPress.accept(this);
+        }
+
+        @Override
+        public boolean isHoveredOrFocused() {
+            return isHovered();
         }
     }
 }
