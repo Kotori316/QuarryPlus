@@ -8,16 +8,22 @@ import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -30,6 +36,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
@@ -60,6 +67,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     MachineStorage storage;
     @NotNull
     public DigMinY digMinY = new DigMinY();
+    @NotNull
+    ItemEnchantments enchantments = ItemEnchantments.EMPTY;
 
     protected QuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -153,6 +162,24 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         currentState = QuarryState.valueOf(tag.getString("state"));
         area = Area.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("area")).result().orElse(null);
         digMinY = DigMinY.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("digMinY")).result().orElseGet(DigMinY::new);
+    }
+
+    @Override
+    protected void applyImplicitComponents(DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
+        enchantments = componentInput.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+    }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        components.set(DataComponents.ENCHANTMENTS, enchantments);
+    }
+
+    @Override
+    public void saveToItem(ItemStack stack, HolderLookup.Provider registries) {
+        // Not to save NBT, as it causes crash
+        stack.applyComponents(this.collectComponents());
     }
 
     public void setArea(@Nullable Area area) {
@@ -444,6 +471,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         }
         var blockEntity = serverLevel.getBlockEntity(target);
         var player = getQuarryFakePlayer(serverLevel, target);
+        var pickaxe = Items.NETHERITE_PICKAXE.getDefaultInstance();
+        EnchantmentHelper.setEnchantments(pickaxe, getEnchantments());
+        player.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
+
         var hardness = state.getDestroySpeed(serverLevel, target);
         // First check event
         var eventCancelled = checkBreakEvent(serverLevel, player, state, target, blockEntity);
@@ -463,7 +494,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         var requiredEnergy = powerMap().getBreakEnergy(hardness, 0, 0, 0, false);
         if (useEnergy(requiredEnergy, true, getMaxEnergy() < requiredEnergy, "breakBlock") == requiredEnergy) {
             useEnergy(requiredEnergy, false, getMaxEnergy() < requiredEnergy, "breakBlock");
-            var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, ItemStack.EMPTY);
+            var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe);
             drops.forEach(storage::addItem);
             serverLevel.setBlock(target, stateAfterBreak(serverLevel, target, state), Block.UPDATE_ALL);
             afterBreak(serverLevel, player, state, target, blockEntity);
@@ -576,5 +607,15 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             case "drill" -> new AABB(area.minX(), minY, area.minZ(), area.maxX(), area.maxY(), area.maxZ());
             case null, default -> null;
         };
+    }
+
+    @VisibleForTesting
+    public @NotNull ItemEnchantments getEnchantments() {
+        return enchantments;
+    }
+
+    @VisibleForTesting
+    public void setEnchantments(@NotNull ItemEnchantments enchantments) {
+        this.enchantments = enchantments;
     }
 }

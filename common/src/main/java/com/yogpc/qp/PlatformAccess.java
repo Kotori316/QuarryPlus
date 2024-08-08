@@ -1,19 +1,25 @@
 package com.yogpc.qp;
 
 import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.machine.GeneralScreenHandler;
+import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.YSetterContainer;
+import com.yogpc.qp.machine.mover.MoverContainer;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
@@ -54,6 +60,10 @@ public interface PlatformAccess {
         Stream<Supplier<? extends InCreativeTabs>> allItems();
 
         Supplier<MenuType<? extends YSetterContainer>> ySetterContainer();
+
+        Supplier<MenuType<? extends MoverContainer>> moverContainer();
+
+        Supplier<LootItemFunctionType<? extends MachineLootFunction>> machineLootFunction();
     }
 
     Packet packetHandler();
@@ -82,6 +92,8 @@ public interface PlatformAccess {
     Transfer transfer();
 
     FluidStackLike getFluidInItem(ItemStack stack);
+
+    <T extends AbstractContainerMenu> void openGui(ServerPlayer player, GeneralScreenHandler<T> handler);
 }
 
 class PlatformAccessHolder {

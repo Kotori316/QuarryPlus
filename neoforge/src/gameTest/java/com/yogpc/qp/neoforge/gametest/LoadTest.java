@@ -44,6 +44,11 @@ public final class LoadTest {
 
     @GameTestGenerator
     public List<TestFunction> commonTests() {
-        return GameTestFunctions.createTestFunctions("defaultBatch", STRUCTURE_MOD_ID);
+        return GameTestFunctions.createTestFunctionsNoPlace("defaultBatch", STRUCTURE_MOD_ID);
+    }
+
+    @GameTestGenerator
+    public List<TestFunction> placeTests() {
+        return GameTestFunctions.createTestFunctionsPlace("defaultBatch", QuarryPlus.modID + ":" + "empty");
     }
 }

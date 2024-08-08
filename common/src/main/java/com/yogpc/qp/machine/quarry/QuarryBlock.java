@@ -2,15 +2,21 @@ package com.yogpc.qp.machine.quarry;
 
 import com.yogpc.qp.machine.*;
 import com.yogpc.qp.machine.marker.QuarryMarker;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -24,6 +30,7 @@ import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -109,6 +116,24 @@ public abstract class QuarryBlock extends QpEntityBlock {
                 }
                 quarry.setState(QuarryState.WAITING, state);
             }
+        }
+    }
+
+    @Override
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+        var stack = super.getCloneItemStack(level, pos, state);
+        this.<QuarryEntity>getBlockEntityType().map(t -> t.getBlockEntity(level, pos))
+            .ifPresent(e -> e.saveToItem(stack, level.registryAccess()));
+        return stack;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        var tag = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+        if (tag != null && tag.contains("storage")) {
+            tooltipComponents.add(Component.literal("DON'T PLACE THIS INTO WORLD.").withStyle(ChatFormatting.RED));
+            tooltipComponents.add(Component.literal("This block might cause crash.").withStyle(ChatFormatting.RED));
         }
     }
 }

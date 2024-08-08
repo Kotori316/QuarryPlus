@@ -35,6 +35,11 @@ public final class LoadTest {
     @GameTestGenerator
     public List<TestFunction> commonTests() {
         // Use modId as batch name
-        return GameTestFunctions.createTestFunctions(QuarryPlus.modID, STRUCTURE_MOD_ID);
+        return GameTestFunctions.createTestFunctionsNoPlace(QuarryPlus.modID, STRUCTURE_MOD_ID);
+    }
+
+    @GameTestGenerator
+    public List<TestFunction> placeTests() {
+        return GameTestFunctions.createTestFunctionsPlace(QuarryPlus.modID, QuarryPlus.modID + ":" + QuarryPlus.modID + "." + "empty");
     }
 }

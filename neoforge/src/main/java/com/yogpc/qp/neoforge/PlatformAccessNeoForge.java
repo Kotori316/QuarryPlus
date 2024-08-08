@@ -7,6 +7,8 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.machine.GeneralScreenHandler;
+import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
@@ -15,6 +17,9 @@ import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
 import com.yogpc.qp.machine.misc.YSetterContainer;
+import com.yogpc.qp.machine.mover.MoverBlock;
+import com.yogpc.qp.machine.mover.MoverContainer;
+import com.yogpc.qp.machine.mover.MoverEntity;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
 import com.yogpc.qp.neoforge.machine.misc.CheckerItemNeoForge;
 import com.yogpc.qp.neoforge.machine.misc.YSetterItemNeoForge;
@@ -24,6 +29,8 @@ import com.yogpc.qp.neoforge.packet.PacketHandler;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -74,6 +81,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredBlock<FrameBlock> BLOCK_FRAME = registerBlock(FrameBlock.NAME, FrameBlock::new);
         public static final DeferredBlock<GeneratorBlock> BLOCK_GENERATOR = registerBlock(GeneratorBlock.NAME, GeneratorBlock::new);
         public static final DeferredBlock<NormalMarkerBlock> BLOCK_MARKER = registerBlock(NormalMarkerBlock.NAME, NormalMarkerBlock::new);
+        public static final DeferredBlock<MoverBlock> BLOCK_MOVER = registerBlock(MoverBlock.NAME, MoverBlock::new);
 
         public static final DeferredItem<CheckerItemNeoForge> ITEM_CHECKER = registerItem(CheckerItemNeoForge.NAME, CheckerItemNeoForge::new);
         public static final DeferredItem<YSetterItemNeoForge> ITEM_Y_SET = registerItem(YSetterItemNeoForge.NAME, YSetterItemNeoForge::new);
@@ -82,11 +90,13 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<QuarryEntityNeoForge>> QUARRY_ENTITY_TYPE = registerBlockEntity(QuarryBlockNeoForge.NAME, BLOCK_QUARRY, QuarryEntityNeoForge::new);
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GeneratorEntity>> GENERATOR_ENTITY_TYPE = registerBlockEntity(GeneratorBlock.NAME, BLOCK_GENERATOR, GeneratorEntity::new);
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NormalMarkerEntity>> MARKER_ENTITY_TYPE = registerBlockEntity(NormalMarkerBlock.NAME, BLOCK_MARKER, NormalMarkerEntity::new);
+        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MoverEntity>> MOVER_ENTITY_TYPE = registerBlockEntity(MoverBlock.NAME, BLOCK_MOVER, MoverEntity::new);
 
         public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_MODE_TAB = CREATIVE_TAB_REGISTER.register(QuarryPlus.modID, () -> QuarryPlus.buildCreativeModeTab(CreativeModeTab.builder()).build());
-        public static final DeferredHolder<MenuType<?>, MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = MENU_TYPE_REGISTER.register("gui_y_setter", () ->
-            IMenuTypeExtension.create((windowId, inv, data) -> new YSetterContainer(windowId, inv, data.readBlockPos()))
-        );
+        public static final DeferredHolder<MenuType<?>, MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = registerMenu("gui_y_setter", YSetterContainer::new);
+        public static final DeferredHolder<MenuType<?>, MenuType<? extends MoverContainer>> MOVER_MENU_TYPE = registerMenu("gui_mover", MoverContainer::new);
+        public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<? extends MachineLootFunction>> MACHINE_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(MachineLootFunction.NAME, () -> new LootItemFunctionType<>(MachineLootFunction.SERIALIZER));
+
 
         private static <T extends QpBlock> DeferredBlock<T> registerBlock(String name, Supplier<T> supplier) {
             var block = BLOCK_REGISTER.register(name, supplier);
@@ -107,6 +117,12 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
             var entityType = BLOCK_ENTITY_REGISTER.register(name, () -> BlockEntityType.Builder.of(factory, block.get()).build(DSL.emptyPartType()));
             BLOCK_ENTITY_TYPES.put((Class<? extends QpBlock>) dummy.getClass().componentType(), (Supplier<BlockEntityType<?>>) (Object) entityType);
             return entityType;
+        }
+
+        private static <T extends AbstractContainerMenu> DeferredHolder<MenuType<?>, MenuType<? extends T>> registerMenu(String name, GeneralScreenHandler.ContainerFactory<T> factory) {
+            return MENU_TYPE_REGISTER.register(name, () ->
+                IMenuTypeExtension.create((i, inventory, friendlyByteBuf) -> factory.create(i, inventory, friendlyByteBuf.readBlockPos()))
+            );
         }
 
         @Override
@@ -147,6 +163,16 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         @Override
         public Supplier<MenuType<? extends YSetterContainer>> ySetterContainer() {
             return Y_SET_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<MenuType<? extends MoverContainer>> moverContainer() {
+            return MOVER_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<LootItemFunctionType<? extends MachineLootFunction>> machineLootFunction() {
+            return MACHINE_LOOT_FUNCTION;
         }
     }
 
@@ -191,6 +217,11 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
             return new FluidStackLike(bucketItem.content, MachineStorage.ONE_BUCKET, DataComponentPatch.EMPTY);
         }
         return FluidStackLike.EMPTY;
+    }
+
+    @Override
+    public <T extends AbstractContainerMenu> void openGui(ServerPlayer player, GeneralScreenHandler<T> handler) {
+        player.openMenu(handler, handler.pos());
     }
 
     @SubscribeEvent

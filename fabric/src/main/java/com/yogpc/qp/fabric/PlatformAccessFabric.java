@@ -12,6 +12,8 @@ import com.yogpc.qp.fabric.machine.misc.YSetterItemFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
 import com.yogpc.qp.fabric.packet.PacketHandler;
+import com.yogpc.qp.machine.GeneralScreenHandler;
+import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.marker.NormalMarkerEntity;
@@ -19,6 +21,9 @@ import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
 import com.yogpc.qp.machine.misc.YSetterContainer;
+import com.yogpc.qp.machine.mover.MoverBlock;
+import com.yogpc.qp.machine.mover.MoverContainer;
+import com.yogpc.qp.machine.mover.MoverEntity;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -32,11 +37,14 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import org.apache.logging.log4j.util.Lazy;
 
 import java.nio.file.Path;
@@ -63,6 +71,10 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final BlockEntityType<NormalMarkerEntity> MARKER_ENTITY_TYPE = BlockEntityType.Builder.of(NormalMarkerEntity::new, MARKER_BLOCK).build(DSL.emptyPartType());
         public static final YSetterItemFabric Y_SET_ITEM = new YSetterItemFabric();
         public static final MenuType<YSetterContainer> Y_SET_MENU = new ExtendedScreenHandlerType<>(YSetterContainer::new, BlockPos.STREAM_CODEC);
+        public static final MoverBlock MOVER_BLOCK = new MoverBlock();
+        public static final BlockEntityType<MoverEntity> MOVER_ENTITY_TYPE = BlockEntityType.Builder.of(MoverEntity::new, MOVER_BLOCK).build(DSL.emptyPartType());
+        public static final MenuType<MoverContainer> MOVER_MENU = new ExtendedScreenHandlerType<>(MoverContainer::new, BlockPos.STREAM_CODEC);
+        public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
 
         private static final List<InCreativeTabs> TAB_ITEMS = new ArrayList<>();
         public static final CreativeModeTab TAB = QuarryPlus.buildCreativeModeTab(FabricItemGroup.builder()).build();
@@ -75,7 +87,10 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerItem(CHECKER_ITEM, CHECKER_ITEM.name);
             registerEntityBlock(MARKER_BLOCK, MARKER_ENTITY_TYPE);
             registerItem(Y_SET_ITEM, Y_SET_ITEM.name);
+            registerEntityBlock(MOVER_BLOCK, MOVER_ENTITY_TYPE);
             Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, Y_SET_MENU);
+            Registry.register(BuiltInRegistries.MENU, MoverContainer.GUI_ID, MOVER_MENU);
+            Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MachineLootFunction.NAME), MACHINE_LOOT_FUNCTION);
             Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
         }
 
@@ -140,6 +155,16 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public Supplier<MenuType<? extends YSetterContainer>> ySetterContainer() {
             return Lazy.value(Y_SET_MENU);
         }
+
+        @Override
+        public Supplier<MenuType<? extends MoverContainer>> moverContainer() {
+            return Lazy.value(MOVER_MENU);
+        }
+
+        @Override
+        public Supplier<LootItemFunctionType<? extends MachineLootFunction>> machineLootFunction() {
+            return Lazy.value(MACHINE_LOOT_FUNCTION);
+        }
     }
 
     @Override
@@ -188,6 +213,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             return FluidStackLike.EMPTY;
         }
         return new FluidStackLike(extracted.resource().getFluid(), extracted.amount(), extracted.resource().getComponents());
+    }
+
+    @Override
+    public <T extends AbstractContainerMenu> void openGui(ServerPlayer player, GeneralScreenHandler<T> handler) {
+        player.openMenu(new ExtendedGeneralScreenHandler<>(handler));
     }
 
     @Override

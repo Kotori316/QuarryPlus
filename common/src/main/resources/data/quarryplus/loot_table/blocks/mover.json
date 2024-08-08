@@ -1,10 +1,5 @@
 {
   "type": "minecraft:block",
-  "functions": [
-    {
-      "function": "quarryplus:machine_loot_function"
-    }
-  ],
   "pools": [
     {
       "bonus_rolls": 0.0,
@@ -12,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "quarryplus:quarry"
+          "name": "quarryplus:mover"
         }
       ],
       "conditions": [
@@ -22,5 +17,5 @@
       ]
     }
   ],
-  "random_sequence": "minecraft:blocks/quarry"
+  "random_sequence": "minecraft:blocks/mover"
 }

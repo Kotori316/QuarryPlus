@@ -1,7 +1,9 @@
 package com.yogpc.qp.fabric.packet;
 
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.machine.mover.MoverMessage;
 import com.yogpc.qp.packet.ClientSyncMessage;
+import com.yogpc.qp.packet.OnReceiveWithLevel;
 import com.yogpc.qp.packet.YSetterMessage;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,14 +21,17 @@ public final class PacketHandler implements PlatformAccess.Packet {
     public static class Server {
         public static void initServer() {
             PayloadTypeRegistry.playC2S().register(YSetterMessage.TYPE, YSetterMessage.STREAM_CODEC);
+            PayloadTypeRegistry.playC2S().register(MoverMessage.TYPE, MoverMessage.STREAM_CODEC);
 
-            ServerPlayNetworking.registerGlobalReceiver(YSetterMessage.TYPE, Server::ySetterOnReceive);
+            ServerPlayNetworking.registerGlobalReceiver(YSetterMessage.TYPE, Server::onReceive);
+            ServerPlayNetworking.registerGlobalReceiver(MoverMessage.TYPE, Server::onReceive);
         }
 
-        private static void ySetterOnReceive(YSetterMessage message, ServerPlayNetworking.Context context) {
+        private static void onReceive(OnReceiveWithLevel message, ServerPlayNetworking.Context context) {
             var level = context.player().level();
             context.server().execute(() -> message.onReceive(level));
         }
+
     }
 
     @Environment(EnvType.CLIENT)
@@ -34,10 +39,10 @@ public final class PacketHandler implements PlatformAccess.Packet {
         public static void initClient() {
             PayloadTypeRegistry.playS2C().register(ClientSyncMessage.TYPE, ClientSyncMessage.STREAM_CODEC);
 
-            ClientPlayNetworking.registerGlobalReceiver(ClientSyncMessage.TYPE, Client::clientSyncOnReceive);
+            ClientPlayNetworking.registerGlobalReceiver(ClientSyncMessage.TYPE, Client::onReceive);
         }
 
-        private static void clientSyncOnReceive(ClientSyncMessage message, ClientPlayNetworking.Context context) {
+        private static void onReceive(OnReceiveWithLevel message, ClientPlayNetworking.Context context) {
             var level = context.client().level;
             context.client().execute(() -> message.onReceive(level));
         }

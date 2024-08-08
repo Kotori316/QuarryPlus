@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * To client only
  */
-public final class ClientSyncMessage implements CustomPacketPayload {
+public final class ClientSyncMessage implements CustomPacketPayload, OnReceiveWithLevel {
     public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "client_sync_message");
     public static final CustomPacketPayload.Type<ClientSyncMessage> TYPE = new Type<>(NAME);
     public static final StreamCodec<FriendlyByteBuf, ClientSyncMessage> STREAM_CODEC = CustomPacketPayload.codec(
@@ -51,6 +51,7 @@ public final class ClientSyncMessage implements CustomPacketPayload {
         buffer.writeNbt(tag);
     }
 
+    @Override
     public void onReceive(Level level) {
         if (!level.dimension().equals(dim)) {
             return;

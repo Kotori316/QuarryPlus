@@ -1,6 +1,9 @@
 package com.yogpc.qp;
 
 import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.machine.GeneralScreenHandler;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 
 import java.nio.file.Path;
@@ -74,6 +77,11 @@ public class PlatformAccessDelegate implements PlatformAccess {
         return access.getFluidInItem(stack);
     }
 
+    @Override
+    public <T extends AbstractContainerMenu> void openGui(ServerPlayer player, GeneralScreenHandler<T> handler) {
+        access.openGui(player, handler);
+    }
+
     static final class VanillaImpl implements PlatformAccess {
 
         @Override
@@ -114,6 +122,10 @@ public class PlatformAccessDelegate implements PlatformAccess {
         @Override
         public FluidStackLike getFluidInItem(ItemStack stack) {
             return null;
+        }
+
+        @Override
+        public <T extends AbstractContainerMenu> void openGui(ServerPlayer player, GeneralScreenHandler<T> handler) {
         }
     }
 }

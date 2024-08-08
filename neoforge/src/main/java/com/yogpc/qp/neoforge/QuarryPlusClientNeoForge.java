@@ -2,6 +2,7 @@ package com.yogpc.qp.neoforge;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.misc.YSetterScreen;
+import com.yogpc.qp.machine.mover.MoverScreen;
 import com.yogpc.qp.neoforge.render.RenderMarkerNeoForge;
 import com.yogpc.qp.neoforge.render.RenderQuarryNeoForge;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -21,5 +22,6 @@ public final class QuarryPlusClientNeoForge {
     @SubscribeEvent
     public static void registerMenu(RegisterMenuScreensEvent event) {
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.Y_SET_MENU_TYPE.get(), YSetterScreen::new);
+        event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.MOVER_MENU_TYPE.get(), MoverScreen::new);
     }
 }

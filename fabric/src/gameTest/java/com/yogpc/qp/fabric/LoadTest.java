@@ -28,6 +28,11 @@ public final class LoadTest implements FabricGameTest {
 
     @GameTestGenerator
     public List<TestFunction> commonTests() {
-        return GameTestFunctions.createTestFunctions("defaultBatch", EMPTY_STRUCTURE);
+        return GameTestFunctions.createTestFunctionsNoPlace("defaultBatch", EMPTY_STRUCTURE);
+    }
+
+    @GameTestGenerator
+    public List<TestFunction> placeTests() {
+        return GameTestFunctions.createTestFunctionsPlace("defaultBatch", EMPTY_STRUCTURE);
     }
 }
