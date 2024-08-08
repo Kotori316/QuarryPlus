@@ -17,11 +17,11 @@ public final class AccessItemTest {
 
         return items.map(Supplier::get).map(i -> {
             var name = "AccessItemTest%s".formatted(i.getClass().getSimpleName());
-            return new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, 100, 0, true, g -> {
+            return new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, 100, 0, true, GameTestFunctions.wrapper(g -> {
                 var parameter = new CreativeModeTab.ItemDisplayParameters(g.getLevel().enabledFeatures(), false, g.getLevel().registryAccess());
                 assertAll(i.creativeTabItem(parameter).map(t -> () -> assertFalse(t.isEmpty())));
                 g.succeed();
-            });
+            }));
         });
     }
 }

@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -31,7 +32,8 @@ public final class GameTestFunctions {
         );
         var fromClass = getTestFunctionStream(batchName, structureName, classes);
         return Stream.of(
-            fromClass
+            fromClass,
+            CheckBlockDropTest.checkDrops(batchName, structureName)
         ).flatMap(Function.identity()).toList();
     }
 
@@ -54,5 +56,15 @@ public final class GameTestFunctions {
                     }
                 })
             );
+    }
+
+    public static Consumer<GameTestHelper> wrapper(Consumer<GameTestHelper> test) {
+        return g -> {
+            try {
+                test.accept(g);
+            } catch (AssertionError e) {
+                throw new RuntimeException(e);
+            }
+        };
     }
 }
