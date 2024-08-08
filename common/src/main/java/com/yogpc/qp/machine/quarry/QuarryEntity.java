@@ -20,6 +20,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -172,6 +173,12 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     protected void collectImplicitComponents(DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
         components.set(DataComponents.ENCHANTMENTS, enchantments);
+    }
+
+    @Override
+    public void saveToItem(ItemStack stack, HolderLookup.Provider registries) {
+        // Not to save NBT, as it causes crash
+        stack.applyComponents(this.collectComponents());
     }
 
     public void setArea(@Nullable Area area) {
