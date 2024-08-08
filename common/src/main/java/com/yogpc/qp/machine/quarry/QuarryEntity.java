@@ -36,6 +36,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
@@ -471,7 +472,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         var blockEntity = serverLevel.getBlockEntity(target);
         var player = getQuarryFakePlayer(serverLevel, target);
         var pickaxe = Items.NETHERITE_PICKAXE.getDefaultInstance();
-        EnchantmentHelper.setEnchantments(pickaxe, enchantments);
+        EnchantmentHelper.setEnchantments(pickaxe, getEnchantments());
         player.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
 
         var hardness = state.getDestroySpeed(serverLevel, target);
@@ -606,5 +607,15 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             case "drill" -> new AABB(area.minX(), minY, area.minZ(), area.maxX(), area.maxY(), area.maxZ());
             case null, default -> null;
         };
+    }
+
+    @VisibleForTesting
+    public @NotNull ItemEnchantments getEnchantments() {
+        return enchantments;
+    }
+
+    @VisibleForTesting
+    public void setEnchantments(@NotNull ItemEnchantments enchantments) {
+        this.enchantments = enchantments;
     }
 }
