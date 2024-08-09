@@ -10,7 +10,6 @@ import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
 import com.yogpc.qp.machine.PowerEntity;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.Blocks;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -20,9 +19,14 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RebornEnergyStorageTest extends BeforeMC {
-    static RebornEnergyStorage createInstance() {
-        var entity = new QuarryEntityFabric(BlockPos.ZERO, Blocks.AIR.defaultBlockState());
+    static QuarryEntityFabric createEntity() {
+        var entity = new QuarryEntityFabric(BlockPos.ZERO, PlatformAccess.getAccess().registerObjects().quarryBlock().get().defaultBlockState());
         entity.setTimeProvider(() -> 1L);
+        return entity;
+    }
+
+    static RebornEnergyStorage createInstance() {
+        var entity = createEntity();
         return new RebornEnergyStorage(entity, QuarryConfig.defaultConfig(false));
     }
 
@@ -43,8 +47,7 @@ class RebornEnergyStorageTest extends BeforeMC {
 
     @Test
     void getEnergy() {
-        var entity = new QuarryEntityFabric(BlockPos.ZERO, Blocks.AIR.defaultBlockState());
-        entity.setTimeProvider(() -> 1L);
+        var entity = createEntity();
         var instance = new RebornEnergyStorage(entity, QuarryConfig.defaultConfig(false));
         entity.addEnergy(PowerEntity.ONE_FE * 16, false);
 
@@ -53,8 +56,7 @@ class RebornEnergyStorageTest extends BeforeMC {
 
     @Test
     void getEnergy2() {
-        var entity = new QuarryEntityFabric(BlockPos.ZERO, Blocks.AIR.defaultBlockState());
-        entity.setTimeProvider(() -> 1L);
+        var entity = createEntity();
         var config = Config.inMemory();
         config.set("rebornEnergyConversionCoefficient", 1d / 4d);
 
@@ -74,8 +76,7 @@ class RebornEnergyStorageTest extends BeforeMC {
 
     @Test
     void getMaxEnergy2() {
-        var entity = new QuarryEntityFabric(BlockPos.ZERO, Blocks.AIR.defaultBlockState());
-        entity.setTimeProvider(() -> 1L);
+        var entity = createEntity();
         var c = Config.inMemory();
         c.set("rebornEnergyConversionCoefficient", 1d / 4d);
         var config = QuarryConfig.fromConfig(c, false);
