@@ -27,10 +27,11 @@ val releaseDebug: Boolean = (System.getenv("RELEASE_DEBUG") ?: "true").toBoolean
 
 val modChangelog: Provider<String> = provider {
     val fromFile = rootProject.file(project.property("changelog_file")!!).readText()
+    val shortFormat = fromFile.split(Regex("^# ", RegexOption.MULTILINE), limit = 3)[1]
     """
         QuarryPlus(v${project.version}) for Minecraft $minecraft
         ---
-    """.trimIndent() + System.lineSeparator() + fromFile
+    """.trimIndent() + System.lineSeparator() + shortFormat
 }
 
 publishMods {
