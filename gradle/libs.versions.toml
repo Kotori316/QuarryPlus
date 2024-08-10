@@ -37,6 +37,9 @@ minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft
 # JUnit
 junit = { group = "org.junit", name = "junit-bom", version.ref = "jupiter_api" }
 jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
+# mockito
+mockito_core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito_core" }
+mockito_inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito_inline" }
 
 # Forge
 forge = { group = "net.minecraftforge", name = "forge", version.ref = "forge" }
@@ -61,6 +64,9 @@ tu_neoforge = { group = "com.kotori316", name = "test-utility-neoforge", version
 du_neoforge = { group = "com.kotori316", name = "debug-utility-neoforge", version.ref = "du" }
 slp_neoforge = { group = "com.kotori316", name = "scalablecatsforce-neoforge", version.ref = "slp_neoforge" }
 jei_neoforge = { group = "mezz.jei", name = "jei-1.21-neoforge", version.ref = "jei_neoforge" }
+
+[bundles]
+mockito = ["mockito_core", "mockito_inline"]
 
 [plugins]
 cf = { id = "com.kotori316.plugin.cf", version.ref = "plugin_cf" }

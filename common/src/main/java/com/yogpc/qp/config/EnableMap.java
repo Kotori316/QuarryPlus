@@ -1,8 +1,6 @@
 package com.yogpc.qp.config;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -28,15 +26,6 @@ public final class EnableMap {
             return false;
         }
         return supplier.getAsBoolean();
-    }
-
-    public boolean enabled(BlockEntityType<?> type) {
-        var key = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type);
-        if (key == null) {
-            // This block is not registered
-            return false;
-        }
-        return enabled(key.getPath());
     }
 
     public void set(String name, boolean value) {
