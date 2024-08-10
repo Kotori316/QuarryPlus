@@ -24,7 +24,7 @@ class EnableMapTest {
     @Test
     void getFromMap() {
         var map = new EnableMap(Map.of(
-            "quarry", () -> true
+            "quarry", true
         ));
         assertTrue(map.enabled("quarry"));
         assertFalse(map.enabled("pump"));

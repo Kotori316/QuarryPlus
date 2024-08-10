@@ -6,13 +6,12 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 public final class EnableMap {
-    private final Map<String, BooleanSupplier> machinesMap;
+    private final Map<String, Boolean> machinesMap;
 
-    public EnableMap(Map<String, BooleanSupplier> machinesMap) {
+    public EnableMap(Map<String, Boolean> machinesMap) {
         this.machinesMap = machinesMap;
     }
 
@@ -21,18 +20,18 @@ public final class EnableMap {
     }
 
     public boolean enabled(String name) {
-        var supplier = machinesMap.get(name);
-        if (supplier == null) {
+        var value = machinesMap.get(name);
+        if (value == null) {
             return false;
         }
-        return supplier.getAsBoolean();
+        return value;
     }
 
     public void set(String name, boolean value) {
-        machinesMap.put(name, () -> value);
+        machinesMap.put(name, value);
     }
 
-    Map<String, BooleanSupplier> getMachinesMap() {
+    Map<String, Boolean> getMachinesMap() {
         return machinesMap;
     }
 
@@ -42,14 +41,13 @@ public final class EnableMap {
         ));
         var map = defaultConfig.entrySet().stream()
             .map(e -> Map.entry(e.getKey(), e.getValue().getAsBoolean()))
-            .map(e -> Map.<String, BooleanSupplier>entry(e.getKey(), e::getValue))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         return new EnableMap(map);
     }
 
     static EnableMap from(Map<String, Object> config) {
         return new EnableMap(config.entrySet().stream()
-            .map(e -> Map.<String, BooleanSupplier>entry(e.getKey(), () -> (Boolean) e.getValue()))
+            .map(e -> Map.entry(e.getKey(), (Boolean) e.getValue()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 }
