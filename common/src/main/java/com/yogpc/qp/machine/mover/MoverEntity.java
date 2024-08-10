@@ -2,6 +2,7 @@ package com.yogpc.qp.machine.mover;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.QpEntity;
 import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -21,7 +22,6 @@ import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public final class MoverEntity extends BlockEntity implements ClientSync {
+public final class MoverEntity extends QpEntity implements ClientSync {
     final SimpleContainer inventory = new Inventory(2);
 
     public MoverEntity(BlockPos pos, BlockState blockState) {
@@ -113,7 +113,7 @@ public final class MoverEntity extends BlockEntity implements ClientSync {
     }
 
     void updateMovableEnchantments() {
-        if (level != null && !level.isClientSide()) {
+        if (level != null && !level.isClientSide() && enabled) {
             var pre = movableEnchantments;
             // Update in server only.
             this.movableEnchantments = getMovable(inventory.getItem(0), inventory.getItem(1), e -> true);

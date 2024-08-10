@@ -61,7 +61,7 @@ public final class MoverMessage implements CustomPacketPayload, OnReceiveWithLev
             return;
         }
         var entity = level.getBlockEntity(pos);
-        if (entity instanceof MoverEntity mover) {
+        if (entity instanceof MoverEntity mover && mover.enabled) {
             var enchantment = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(key);
             mover.moveEnchant(enchantment);
         }

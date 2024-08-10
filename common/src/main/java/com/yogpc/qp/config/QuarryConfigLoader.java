@@ -31,14 +31,16 @@ final class QuarryConfigLoader {
         var debug = config.<Boolean>get("debug");
         var quarry = PowerMap.Quarry.CODEC.codec().parse(JavaOps.INSTANCE, config.<Config>get("powerMap.quarry").valueMap()).getOrThrow();
         var powerMap = new PowerMap(quarry);
+        var enableMap = EnableMap.from(config.<Config>get("enableMap").valueMap());
         var rebornEnergyConversionCoefficient = config.<Double>get("rebornEnergyConversionCoefficient");
 
-        return new QuarryConfigImpl(debug, powerMap, rebornEnergyConversionCoefficient);
+        return new QuarryConfigImpl(debug, powerMap, enableMap, rebornEnergyConversionCoefficient);
     }
 
     record QuarryConfigImpl(
         boolean debug,
         PowerMap powerMap,
+        EnableMap enableMap,
         double rebornEnergyConversionCoefficient
     ) implements QuarryConfig {
     }
@@ -55,6 +57,9 @@ final class QuarryConfigLoader {
 
         // powerMap.quarry.*
         defineInCodec(config, specConfig, "powerMap.quarry", PowerMap.Default.QUARRY);
+
+        // enableMap.*
+        defineEnableMap(config, specConfig, "enableMap", EnableMap.getDefault());
 
         return Pair.of(config, specConfig);
     }
@@ -84,6 +89,15 @@ final class QuarryConfigLoader {
             }
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    static void defineEnableMap(ConfigSpec spec, CommentedConfig commentMap, String prefix, EnableMap enableMap) {
+        var map = enableMap.getMachinesMap();
+        for (var e : map.entrySet()) {
+            var key = prefix + "." + e.getKey();
+            spec.define(key, e.getValue().getAsBoolean());
+            commentMap.setComment(key, "%s Default: %b".formatted(e.getKey(), e.getValue().getAsBoolean()));
         }
     }
 }

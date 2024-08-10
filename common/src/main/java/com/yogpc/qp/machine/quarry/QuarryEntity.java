@@ -99,7 +99,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     @SuppressWarnings("unused")
     static void serverTick(Level level, BlockPos pos, BlockState state, QuarryEntity quarryEntity) {
-        if (quarryEntity.getEnergy() <= 0) {
+        if (!quarryEntity.hasEnoughEnergy()) {
             return;
         }
         switch (quarryEntity.currentState) {

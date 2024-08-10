@@ -6,6 +6,7 @@ import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpEntityBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
@@ -32,8 +33,12 @@ public final class MoverBlock extends QpEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (level.getBlockEntity(pos) instanceof MoverEntity entity) {
-            if (!level.isClientSide) {
-                PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, MoverContainer::new));
+            if (!level.isClientSide()) {
+                if (entity.enabled) {
+                    PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, MoverContainer::new));
+                } else {
+                    player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
+                }
             }
             return InteractionResult.sidedSuccess(level.isClientSide());
         }
