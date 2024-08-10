@@ -141,13 +141,13 @@ public class NormalMarkerEntity extends BlockEntity implements QuarryMarker, Cli
     }
 
     @Override
-    public void fromClientTag(CompoundTag tag) {
+    public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
         status = Status.valueOf(tag.getString("status"));
         link = Link.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("link")).result().orElse(null);
     }
 
     @Override
-    public CompoundTag toClientTag(CompoundTag tag) {
+    public CompoundTag toClientTag(CompoundTag tag, HolderLookup.Provider registries) {
         tag.putString("status", status.name());
         if (link != null) {
             tag.put("link", Link.CODEC.codec().encodeStart(NbtOps.INSTANCE, link).getOrThrow());

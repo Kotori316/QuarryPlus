@@ -37,7 +37,7 @@ public final class ClientSyncMessage implements CustomPacketPayload, OnReceiveWi
     public <T extends BlockEntity & ClientSync> ClientSyncMessage(T t) {
         this.pos = t.getBlockPos();
         this.dim = Objects.requireNonNull(t.getLevel()).dimension();
-        this.tag = t.toClientTag(new CompoundTag());
+        this.tag = t.toClientTag(new CompoundTag(), Objects.requireNonNull(t.getLevel()).registryAccess());
     }
 
     ClientSyncMessage(FriendlyByteBuf buffer) {
@@ -58,7 +58,7 @@ public final class ClientSyncMessage implements CustomPacketPayload, OnReceiveWi
         }
         var entity = level.getBlockEntity(pos);
         if (entity instanceof ClientSync clientSync) {
-            clientSync.fromClientTag(tag);
+            clientSync.fromClientTag(tag, level.registryAccess());
         }
     }
 
