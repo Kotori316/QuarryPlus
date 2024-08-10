@@ -35,6 +35,7 @@ public final class MoverContainer extends AbstractContainerMenu {
         for (col = 0; col < 9; ++col) {
             addSlot(new Slot(inventory, col, 8 + col * 18, 162));
         }
+        entity.syncToClient();
     }
 
     @Override
