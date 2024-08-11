@@ -504,7 +504,13 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             // Unbreakable
             return WorkResult.SKIPPED;
         }
-        var requiredEnergy = powerMap().getBreakEnergy(hardness, 0, 0, 0, false);
+        var lookup = serverLevel.registryAccess().asGetterLookup();
+        var requiredEnergy = powerMap().getBreakEnergy(hardness,
+            enchantmentCache.getLevel(enchantments, Enchantments.EFFICIENCY, lookup),
+            enchantmentCache.getLevel(enchantments, Enchantments.UNBREAKING, lookup),
+            enchantmentCache.getLevel(enchantments, Enchantments.FORTUNE, lookup),
+            enchantmentCache.getLevel(enchantments, Enchantments.SILK_TOUCH, lookup) > 0
+        );
         if (useEnergy(requiredEnergy, true, getMaxEnergy() < requiredEnergy, "breakBlock") == requiredEnergy) {
             useEnergy(requiredEnergy, false, getMaxEnergy() < requiredEnergy, "breakBlock");
             var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe);
