@@ -23,6 +23,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -69,6 +70,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     public DigMinY digMinY = new DigMinY();
     @NotNull
     ItemEnchantments enchantments = ItemEnchantments.EMPTY;
+    @NotNull
+    final EnchantmentCache enchantmentCache = new EnchantmentCache();
 
     protected QuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -293,7 +296,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         var diff = new Vec3(targetPos.getX() - head.x, targetPos.getY() - head.y, targetPos.getZ() - head.z);
         var difLength = diff.length();
         if (difLength > 1e-7) {
-            var defaultEnergy = (long) (ONE_FE * powerMap().moveHeadBase());
+            var defaultEnergy = (long) (ONE_FE * powerMap().moveHeadBase() * moveHeadFactor());
             var availableEnergy = useEnergy(defaultEnergy, true, false, "moveHead");
             var moveDistance = Math.min(difLength, (double) availableEnergy / ONE_FE);
             useEnergy((long) (moveDistance * ONE_FE), false, true, "moveHead");
@@ -304,6 +307,16 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         if (targetPos.distToLowCornerSqr(head.x, head.y, head.z) <= 1e-7) {
             setState(QuarryState.BREAK_BLOCK, getBlockState());
             breakBlock();
+        }
+    }
+
+    double moveHeadFactor() {
+        assert level != null;
+        var efficiency = enchantmentCache.getLevel(enchantments, Enchantments.EFFICIENCY, level.registryAccess().asGetterLookup());
+        if (efficiency >= 4) {
+            return efficiency - 3;
+        } else {
+            return Math.pow(4, efficiency / 4d - 1d);
         }
     }
 
