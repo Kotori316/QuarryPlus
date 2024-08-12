@@ -89,6 +89,9 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         state = QuarryState.valueOf(nbt.getString("state"));
         storage.readNbt(nbt.getCompound("storage"));
         fromClientTag(nbt);
+        headX = nbt.getDouble("headX");
+        headY = nbt.getDouble("headY");
+        headZ = nbt.getDouble("headZ");
         moduleInventory.deserializeNBT(nbt.getCompound("moduleInventory"));
         init = true;
     }
