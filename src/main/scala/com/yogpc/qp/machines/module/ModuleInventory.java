@@ -1,5 +1,6 @@
 package com.yogpc.qp.machines.module;
 
+import com.yogpc.qp.Holder;
 import com.yogpc.qp.machines.PowerTile;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.nbt.CompoundTag;
@@ -41,7 +42,9 @@ public class ModuleInventory extends SimpleContainer implements INBTSerializable
     public boolean canPlaceItem(int index, ItemStack stack) {
         if (stack.getItem() instanceof QuarryModuleProvider.Item provider) {
             if (ItemStack.isSameItem(getItem(index), stack)) return true;
-            var given = holder.getLoadedModules().stream().map(QuarryModule::moduleId).collect(Collectors.toSet());
+            var given = holder.getLoadedModules().stream().map(QuarryModule::moduleId)
+                .filter(Predicate.isEqual(Holder.ITEM_FILTER_MODULE.getRegistryName()).negate())
+                .collect(Collectors.toSet());
             var toAdd = provider.getModule(stack);
             return filter.test(toAdd) && !given.contains(toAdd.moduleId());
         } else {
