@@ -1,7 +1,10 @@
 ## Version LATEST for 1.20.1
 
-* Change render of Quarry Plus
-* Improvement of REI integration
+* Create custom player mode
+* Load head in server
+* Allow multi void modules. Close #470
+* Fix #460
+* Fix #441
 
 ## Version for 1.20.1
 
@@ -27,6 +30,8 @@
 * Disable fluid check after Chunk Destroyer finishes
   * To enable, change `removeFluidAfterFinishedByCD` to `true`.
   * Related to https://github.com/Kotori316/QuarryPlus/issues/371
+* Change render of Quarry Plus
+* Improvement of REI integration
 
 ## Version 1192.2.3
 
