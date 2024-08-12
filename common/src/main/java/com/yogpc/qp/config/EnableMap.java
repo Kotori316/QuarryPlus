@@ -6,9 +6,13 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class EnableMap {
+    private static final Set<String> ALWAYS_ON = Set.of(
+        "marker"
+    );
     private final Map<String, Boolean> machinesMap;
 
     public EnableMap(Map<String, Boolean> machinesMap) {
@@ -22,7 +26,7 @@ public final class EnableMap {
     public boolean enabled(String name) {
         var value = machinesMap.get(name);
         if (value == null) {
-            return false;
+            return ALWAYS_ON.contains(name);
         }
         return value;
     }
