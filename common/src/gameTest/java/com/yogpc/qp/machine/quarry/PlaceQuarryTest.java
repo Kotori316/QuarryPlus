@@ -1,9 +1,6 @@
-package com.yogpc.qp.gametest.quarry;
+package com.yogpc.qp.machine.quarry;
 
 import com.yogpc.qp.PlatformAccess;
-import com.yogpc.qp.machine.quarry.QuarryBlock;
-import com.yogpc.qp.machine.quarry.QuarryEntity;
-import com.yogpc.qp.machine.quarry.QuarryItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;

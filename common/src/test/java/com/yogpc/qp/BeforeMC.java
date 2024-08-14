@@ -6,6 +6,7 @@ import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.Bootstrap;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 
 import java.util.IdentityHashMap;
@@ -18,6 +19,12 @@ public abstract class BeforeMC {
         SharedConstants.tryDetectVersion();
         Bootstrap.bootStrap();
         unfreezeRegistry();
+    }
+
+    @AfterEach
+    void tearDown() {
+        PlatformAccessDelegate delegate = (PlatformAccessDelegate) PlatformAccess.getAccess();
+        delegate.reset();
     }
 
     private static void unfreezeRegistry() {

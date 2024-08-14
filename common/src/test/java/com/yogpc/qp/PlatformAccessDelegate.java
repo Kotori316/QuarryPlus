@@ -5,6 +5,7 @@ import com.yogpc.qp.machine.GeneralScreenHandler;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,7 +13,9 @@ import java.util.function.Supplier;
 
 public class PlatformAccessDelegate implements PlatformAccess {
     private PlatformAccess access;
+    @Nullable
     private Path configPath;
+    @Nullable
     private QuarryConfig config;
 
     public PlatformAccessDelegate() {
@@ -25,6 +28,8 @@ public class PlatformAccessDelegate implements PlatformAccess {
 
     public void reset() {
         this.access = new VanillaImpl();
+        this.configPath = null;
+        this.config = null;
     }
 
     public void setAccess(PlatformAccess access) {
@@ -67,7 +72,11 @@ public class PlatformAccessDelegate implements PlatformAccess {
     @Override
     public Supplier<? extends QuarryConfig> getConfig() {
         if (config == null) {
-            config = QuarryConfig.load(configPath, this::isInDevelopmentEnvironment);
+            if (configPath == null) {
+                config = QuarryConfig.defaultConfig(this.isInDevelopmentEnvironment());
+            } else {
+                config = QuarryConfig.load(configPath, this::isInDevelopmentEnvironment);
+            }
         }
         return () -> config;
     }
@@ -90,6 +99,10 @@ public class PlatformAccessDelegate implements PlatformAccess {
     @Override
     public <T extends AbstractContainerMenu> void openGui(ServerPlayer player, GeneralScreenHandler<T> handler) {
         access.openGui(player, handler);
+    }
+
+    public static PlatformAccess createVanilla() {
+        return new VanillaImpl();
     }
 
     static final class VanillaImpl implements PlatformAccess {

@@ -1,7 +1,8 @@
 package com.yogpc.qp.gametest;
 
 import com.google.common.base.CaseFormat;
-import com.yogpc.qp.gametest.quarry.PlaceQuarryTest;
+import com.yogpc.qp.machine.mover.PlaceMoverTest;
+import com.yogpc.qp.machine.quarry.PlaceQuarryTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +30,8 @@ public final class GameTestFunctions {
 
     public static List<TestFunction> createTestFunctionsPlace(String batchName, String structureName) {
         List<Class<?>> classes = List.of(
-            PlaceQuarryTest.class
+            PlaceQuarryTest.class,
+            PlaceMoverTest.class
         );
         var fromClass = getTestFunctionStream(batchName, structureName, classes);
         return Stream.of(
@@ -49,7 +51,7 @@ public final class GameTestFunctions {
             .filter(m -> m.getReturnType() == void.class)
             .peek(m -> m.setAccessible(true))
             .map(m ->
-                new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, m.getName()), structureName, 100, 0, true, g -> {
+                new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, "%s_%s".formatted(m.getDeclaringClass().getSimpleName(), m.getName())), structureName, 100, 0, true, g -> {
                     try {
                         m.invoke(null, g);
                     } catch (ReflectiveOperationException | AssertionError e) {

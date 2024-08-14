@@ -150,6 +150,11 @@ public final class PlatformAccessForge implements PlatformAccess {
         }
 
         @Override
+        public Supplier<? extends MoverBlock> moverBlock() {
+            return BLOCK_MOVER;
+        }
+
+        @Override
         public Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block) {
             var t = BLOCK_ENTITY_TYPES.get(block.getClass());
             if (t == null) {
