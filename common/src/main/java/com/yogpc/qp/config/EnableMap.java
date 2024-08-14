@@ -1,5 +1,7 @@
 package com.yogpc.qp.config;
 
+import com.yogpc.qp.machine.marker.NormalMarkerBlock;
+import com.yogpc.qp.machine.misc.GeneratorBlock;
 import net.minecraft.util.GsonHelper;
 
 import java.io.InputStreamReader;
@@ -10,8 +12,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class EnableMap {
-    private static final Set<String> ALWAYS_ON = Set.of(
-        "marker"
+    public static final Set<String> ALWAYS_ON = Set.of(
+        NormalMarkerBlock.NAME,
+        GeneratorBlock.NAME
     );
     private final Map<String, Boolean> machinesMap;
 
@@ -24,9 +27,12 @@ public final class EnableMap {
     }
 
     public boolean enabled(String name) {
+        if (ALWAYS_ON.contains(name)) {
+            return true;
+        }
         var value = machinesMap.get(name);
         if (value == null) {
-            return ALWAYS_ON.contains(name);
+            return false;
         }
         return value;
     }
@@ -44,8 +50,7 @@ public final class EnableMap {
             Objects.requireNonNull(EnableMap.class.getResourceAsStream("/machine_default.json"), "Content in Jar must not be absent.")
         ));
         var map = defaultConfig.entrySet().stream()
-            .map(e -> Map.entry(e.getKey(), e.getValue().getAsBoolean()))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getAsBoolean()));
         return new EnableMap(map);
     }
 
