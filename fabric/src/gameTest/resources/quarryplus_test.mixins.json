@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "com.yogpc.qp.fabric.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "MixinFabricGameTestHelper"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

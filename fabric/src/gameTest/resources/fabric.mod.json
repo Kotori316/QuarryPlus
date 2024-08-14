@@ -6,7 +6,9 @@
   "license": "All rights reserved",
   "entrypoints": {
     "fabric-gametest": [
-      "com.yogpc.qp.fabric.LoadTest"
     ]
-  }
+  },
+  "mixins": [
+    "quarryplus_test.mixins.json"
+  ]
 }
