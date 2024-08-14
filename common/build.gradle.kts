@@ -57,6 +57,7 @@ dependencies {
 
     testImplementation(platform(libs.junit))
     testImplementation(libs.jupiter)
+    testImplementation(libs.bundles.mockito)
 
     "gameTestImplementation"(project.sourceSets.main.get().output)
     "gameTestImplementation"(platform(libs.junit))

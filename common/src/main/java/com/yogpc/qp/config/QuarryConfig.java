@@ -14,6 +14,8 @@ public interface QuarryConfig {
 
     PowerMap powerMap();
 
+    EnableMap enableMap();
+
     double rebornEnergyConversionCoefficient();
 
     static QuarryConfig load(Path path, BooleanSupplier inDevelop) {

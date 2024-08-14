@@ -6,15 +6,21 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Supplier;
 
 public class PlatformAccessDelegate implements PlatformAccess {
     private PlatformAccess access;
     private Path configPath;
+    private QuarryConfig config;
 
     public PlatformAccessDelegate() {
         this.access = new VanillaImpl();
+
+        if (Files.exists(configPath())) {
+            config = QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment);
+        }
     }
 
     public void reset() {
@@ -27,6 +33,7 @@ public class PlatformAccessDelegate implements PlatformAccess {
 
     public void setConfigPath(Path configPath) {
         this.configPath = configPath;
+        this.config = QuarryConfig.load(configPath, this::isInDevelopmentEnvironment);
     }
 
     @Override
@@ -59,7 +66,10 @@ public class PlatformAccessDelegate implements PlatformAccess {
 
     @Override
     public Supplier<? extends QuarryConfig> getConfig() {
-        return () -> QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment);
+        if (config == null) {
+            config = QuarryConfig.load(configPath, this::isInDevelopmentEnvironment);
+        }
+        return () -> config;
     }
 
     @Override

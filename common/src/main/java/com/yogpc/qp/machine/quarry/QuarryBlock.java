@@ -6,15 +6,14 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -135,5 +134,40 @@ public abstract class QuarryBlock extends QpEntityBlock {
             tooltipComponents.add(Component.literal("DON'T PLACE THIS INTO WORLD.").withStyle(ChatFormatting.RED));
             tooltipComponents.add(Component.literal("This block might cause crash.").withStyle(ChatFormatting.RED));
         }
+    }
+
+    @Override
+    public Stream<ItemStack> creativeTabItem(CreativeModeTab.ItemDisplayParameters parameters) {
+        Stream.Builder<ItemStack> builder = Stream.builder();
+        var stack = new ItemStack(this);
+        builder.add(stack);
+
+        var efficiency = parameters.holders().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.EFFICIENCY);
+        var unbreaking = parameters.holders().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.UNBREAKING);
+        var fortune = parameters.holders().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE);
+        var silkTouch = parameters.holders().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH);
+        {
+            // Efficiency
+            var e = stack.copy();
+            e.enchant(efficiency, 5);
+            builder.add(e);
+        }
+        {
+            // E, U, F
+            var e = stack.copy();
+            e.enchant(efficiency, 5);
+            e.enchant(unbreaking, 3);
+            e.enchant(fortune, 3);
+            builder.add(e);
+        }
+        {
+            // E, U, S
+            var e = stack.copy();
+            e.enchant(efficiency, 5);
+            e.enchant(unbreaking, 3);
+            e.enchant(silkTouch, 1);
+            builder.add(e);
+        }
+        return builder.build();
     }
 }

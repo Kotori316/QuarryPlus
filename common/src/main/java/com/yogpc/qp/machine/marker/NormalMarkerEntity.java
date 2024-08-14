@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.Area;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.QpEntity;
 import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -30,7 +31,7 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class NormalMarkerEntity extends BlockEntity implements QuarryMarker, ClientSync {
+public class NormalMarkerEntity extends QpEntity implements QuarryMarker, ClientSync {
     public static final int MAX_SEARCH = 256;
     @NotNull
     private Status status = Status.NOT_CONNECTED;
@@ -43,6 +44,10 @@ public class NormalMarkerEntity extends BlockEntity implements QuarryMarker, Cli
     }
 
     void tryConnect(Consumer<Component> messageSender) {
+        if (!enabled) {
+            messageSender.accept(Component.translatable("quarryplus.chat.disable_message", getBlockState().getBlock().getName()));
+            return;
+        }
         if (this.status.isConnected()) {
             messageSender.accept(Component.literal("This marker already has connection"));
             return;
@@ -141,13 +146,13 @@ public class NormalMarkerEntity extends BlockEntity implements QuarryMarker, Cli
     }
 
     @Override
-    public void fromClientTag(CompoundTag tag) {
+    public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
         status = Status.valueOf(tag.getString("status"));
         link = Link.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("link")).result().orElse(null);
     }
 
     @Override
-    public CompoundTag toClientTag(CompoundTag tag) {
+    public CompoundTag toClientTag(CompoundTag tag, HolderLookup.Provider registries) {
         tag.putString("status", status.name());
         if (link != null) {
             tag.put("link", Link.CODEC.codec().encodeStart(NbtOps.INSTANCE, link).getOrThrow());

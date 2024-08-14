@@ -8,7 +8,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,18 +18,16 @@ import java.util.Objects;
 import java.util.function.LongSupplier;
 import java.util.stream.Stream;
 
-public abstract class PowerEntity extends BlockEntity {
+public abstract class PowerEntity extends QpEntity {
     public static final long ONE_FE = 1_000_000_000L;
     private final EnergyCounter energyCounter;
     private LongSupplier timeProvider;
     private long energy;
     private long maxEnergy;
-    public final boolean enabled;
 
     protected PowerEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
         this.energyCounter = EnergyCounter.createInstance(PlatformAccess.config().debug(), "%s(%d, %d, %d)".formatted(getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ()));
-        this.enabled = true;
         setTimeProvider(() -> Objects.requireNonNull(this.level,
             """
                 Level in block entity is null. Are you in test?
@@ -131,6 +128,7 @@ public abstract class PowerEntity extends BlockEntity {
                 .append(Component.literal("BlockEntity").withStyle(ChatFormatting.AQUA))
                 .append(": %s".formatted(BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(getType())))
                 .append(" (%s)".formatted(getClass().getSimpleName())),
+            detail(ChatFormatting.AQUA, "Enabled", String.valueOf(enabled)),
             detail(ChatFormatting.AQUA, "Pos", getBlockPos().toShortString()),
             detail(ChatFormatting.AQUA, "Energy", "%d".formatted(getEnergy() / ONE_FE))
         );

@@ -22,7 +22,8 @@ public final class GameTestFunctions {
         var fromClass = getTestFunctionStream(batchName, structureName, classes);
         return Stream.of(
             fromClass,
-            AccessItemTest.accessItems(batchName, structureName)
+            AccessItemTest.accessItems(batchName, structureName),
+            EnableMapTest.test(batchName, structureName)
         ).flatMap(Function.identity()).toList();
     }
 

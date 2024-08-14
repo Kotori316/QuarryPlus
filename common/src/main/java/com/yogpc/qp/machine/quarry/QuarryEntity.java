@@ -23,6 +23,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -69,6 +70,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     public DigMinY digMinY = new DigMinY();
     @NotNull
     ItemEnchantments enchantments = ItemEnchantments.EMPTY;
+    @NotNull
+    final EnchantmentCache enchantmentCache = new EnchantmentCache();
 
     protected QuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -99,7 +102,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     @SuppressWarnings("unused")
     static void serverTick(Level level, BlockPos pos, BlockState state, QuarryEntity quarryEntity) {
-        if (quarryEntity.getEnergy() <= 0) {
+        if (!quarryEntity.hasEnoughEnergy()) {
             return;
         }
         switch (quarryEntity.currentState) {
@@ -123,7 +126,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
-        toClientTag(tag);
+        toClientTag(tag, registries);
         if (targetIterator != null) {
             tag.put("targetPos", BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, targetIterator.getLastReturned()).getOrThrow());
         }
@@ -134,7 +137,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        fromClientTag(tag);
+        fromClientTag(tag, registries);
         // In server, head must be loaded from nbt
         Vec3.CODEC.parse(NbtOps.INSTANCE, tag.get("head")).ifSuccess(v -> this.head = v);
         var current = BlockPos.CODEC.parse(NbtOps.INSTANCE, tag.get("targetPos")).result().orElse(null);
@@ -145,7 +148,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     @Override
-    public CompoundTag toClientTag(CompoundTag tag) {
+    public CompoundTag toClientTag(CompoundTag tag, HolderLookup.Provider registries) {
         tag.put("head", Vec3.CODEC.encodeStart(NbtOps.INSTANCE, this.head).getOrThrow());
         tag.putString("state", currentState.name());
         if (area != null) {
@@ -156,7 +159,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     @Override
-    public void fromClientTag(CompoundTag tag) {
+    public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
         // Set head as targetHead to move drill smoothly
         Vec3.CODEC.parse(NbtOps.INSTANCE, tag.get("head")).ifSuccess(v -> this.targetHead = v);
         currentState = QuarryState.valueOf(tag.getString("state"));
@@ -293,7 +296,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         var diff = new Vec3(targetPos.getX() - head.x, targetPos.getY() - head.y, targetPos.getZ() - head.z);
         var difLength = diff.length();
         if (difLength > 1e-7) {
-            var defaultEnergy = (long) (ONE_FE * powerMap().moveHeadBase());
+            var defaultEnergy = (long) (ONE_FE * powerMap().moveHeadBase() * moveHeadFactor());
             var availableEnergy = useEnergy(defaultEnergy, true, false, "moveHead");
             var moveDistance = Math.min(difLength, (double) availableEnergy / ONE_FE);
             useEnergy((long) (moveDistance * ONE_FE), false, true, "moveHead");
@@ -304,6 +307,16 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         if (targetPos.distToLowCornerSqr(head.x, head.y, head.z) <= 1e-7) {
             setState(QuarryState.BREAK_BLOCK, getBlockState());
             breakBlock();
+        }
+    }
+
+    double moveHeadFactor() {
+        assert level != null;
+        var efficiency = enchantmentCache.getLevel(enchantments, Enchantments.EFFICIENCY, level.registryAccess().asGetterLookup());
+        if (efficiency >= 4) {
+            return efficiency - 3;
+        } else {
+            return Math.pow(4, efficiency / 4d - 1d);
         }
     }
 
@@ -491,7 +504,13 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             // Unbreakable
             return WorkResult.SKIPPED;
         }
-        var requiredEnergy = powerMap().getBreakEnergy(hardness, 0, 0, 0, false);
+        var lookup = serverLevel.registryAccess().asGetterLookup();
+        var requiredEnergy = powerMap().getBreakEnergy(hardness,
+            enchantmentCache.getLevel(enchantments, Enchantments.EFFICIENCY, lookup),
+            enchantmentCache.getLevel(enchantments, Enchantments.UNBREAKING, lookup),
+            enchantmentCache.getLevel(enchantments, Enchantments.FORTUNE, lookup),
+            enchantmentCache.getLevel(enchantments, Enchantments.SILK_TOUCH, lookup) > 0
+        );
         if (useEnergy(requiredEnergy, true, getMaxEnergy() < requiredEnergy, "breakBlock") == requiredEnergy) {
             useEnergy(requiredEnergy, false, getMaxEnergy() < requiredEnergy, "breakBlock");
             var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe);
