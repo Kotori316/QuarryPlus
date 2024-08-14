@@ -23,13 +23,11 @@ jobs:
       - name: JUnit
         run: ./gradlew test
       - name: Get run resources
-        if: false
         run: |
           (./gradlew downloadMCMeta downloadAssets writeMinecraftClasspathGameTestServer) || \
             (sleep 5 && ./gradlew downloadMCMeta downloadAssets writeMinecraftClasspathGameTestServer) || \
             (sleep 5 && ./gradlew downloadMCMeta downloadAssets writeMinecraftClasspathGameTestServer) || true
       - name: GameTest
-        if: false
         run: ./gradlew runGameTestServer
         env:
           TEST_UTILITY_LOG_ALL_TEST: false
