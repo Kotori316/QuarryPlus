@@ -23,7 +23,8 @@ runs {
 
     create("client") {
         workingDirectory = project.file("run")
-        programArguments("--username", "Kotori")
+        arguments("--username", "Kotori")
+        isClient = true
     }
 
     create("gameTestServer") {
@@ -35,6 +36,7 @@ runs {
         dependencies {
             runtime(project.configurations.gameTestRuntime.get())
         }
+        isGameTest = true
     }
 }
 
