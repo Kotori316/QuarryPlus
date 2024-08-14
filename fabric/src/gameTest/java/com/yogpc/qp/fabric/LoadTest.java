@@ -16,6 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public final class LoadTest implements FabricGameTest {
+    static {
+        QuarryPlus.LOGGER.info("Loading GameTest for Fabric");
+    }
+
     @GameTest(template = EMPTY_STRUCTURE)
     public void load(GameTestHelper helper) {
         helper.assertValueEqual("QuarryPlus".toLowerCase(Locale.ROOT), QuarryPlus.modID, "ModId");
