@@ -97,6 +97,7 @@
   "quarryplus.chat.change_mode": "Le mode de travail a été changé en %s",
   "quarryplus.chat.chat.pump_not_contain": "---- Cette PompePump contient AUCUN liquides",
   "quarryplus.chat.current_mode": "Actuellement, travaillant dans %s",
+  "quarryplus.chat.disable_item_message": "This item is disabled",
   "quarryplus.chat.disable_message": "%s est désactivé.",
   "quarryplus.chat.editor_enchantment": "Ajouter le même enchantement que la machine.",
   "quarryplus.chat.filler_mode": "Mode Cadre",

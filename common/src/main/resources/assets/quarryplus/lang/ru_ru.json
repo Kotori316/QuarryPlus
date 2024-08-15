@@ -97,6 +97,7 @@
   "quarryplus.chat.change_mode": "Режим работы был изменен на %s",
   "quarryplus.chat.chat.pump_not_contain": "---- Данная улучшенная помпа НЕ содержит жидкостей",
   "quarryplus.chat.current_mode": "Сейчас, работая в %s",
+  "quarryplus.chat.disable_item_message": "This item is disabled",
   "quarryplus.chat.disable_message": "%s is disabled.",
   "quarryplus.chat.editor_enchantment": "Add the same enchantment as the machine.",
   "quarryplus.chat.filler_mode": "Режим заполнения",

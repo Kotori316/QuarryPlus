@@ -97,6 +97,7 @@
   "quarryplus.chat.change_mode": "工作模式被修改为 %s",
   "quarryplus.chat.chat.pump_not_contain": "---- 这个泵内没有液体",
   "quarryplus.chat.current_mode": "当前工作模式为 %s",
+  "quarryplus.chat.disable_item_message": "This item is disabled",
   "quarryplus.chat.disable_message": "%s被禁用",
   "quarryplus.chat.editor_enchantment": "添加和该机器一样的附魔",
   "quarryplus.chat.filler_mode": "框架模式",

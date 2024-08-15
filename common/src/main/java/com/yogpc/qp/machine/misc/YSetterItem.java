@@ -4,6 +4,7 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.QpItem;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -19,15 +20,22 @@ public abstract class YSetterItem extends QpItem {
     }
 
     protected final InteractionResult interact(@NotNull Level level, @NotNull BlockPos pos, @Nullable Player player) {
+        if (!isEnabled()) {
+            if (player != null) {
+                player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getDescription()), true);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide());
+        }
+
         var entity = level.getBlockEntity(pos);
         var accessor = YAccessor.get(entity);
         if (entity == null || accessor == null) {
             return InteractionResult.PASS;
         }
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             // accessor.entity().syncToClient();
             PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, YSetterContainer::new));
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return InteractionResult.sidedSuccess(level.isClientSide());
     }
 }

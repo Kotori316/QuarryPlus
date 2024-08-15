@@ -1,7 +1,9 @@
 package com.yogpc.qp.config;
 
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
+import com.yogpc.qp.machine.misc.CheckerItem;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
+import com.yogpc.qp.machine.misc.YSetterItem;
 import net.minecraft.util.GsonHelper;
 
 import java.io.InputStreamReader;
@@ -14,7 +16,10 @@ import java.util.stream.Collectors;
 public final class EnableMap {
     public static final Set<String> ALWAYS_ON = Set.of(
         NormalMarkerBlock.NAME,
-        GeneratorBlock.NAME
+        GeneratorBlock.NAME,
+        CheckerItem.NAME,
+        YSetterItem.NAME,
+        "ALWAYS_ON_LAST"
     );
     private final Map<String, Boolean> machinesMap;
 

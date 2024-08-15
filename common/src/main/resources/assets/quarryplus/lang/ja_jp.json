@@ -97,6 +97,7 @@
   "quarryplus.chat.change_mode": "動作モードを%sに切り替えました",
   "quarryplus.chat.chat.pump_not_contain": "---- この改良型ポンプは液体を保有していません",
   "quarryplus.chat.current_mode": "現在%sで動作しています",
+  "quarryplus.chat.disable_item_message": "このアイテムは無効です",
   "quarryplus.chat.disable_message": "%sは無効になっています。コンフィグで有効化してください。",
   "quarryplus.chat.editor_enchantment": "マシンと同じエンチャントをしてください",
   "quarryplus.chat.filler_mode": "フレームモード",
