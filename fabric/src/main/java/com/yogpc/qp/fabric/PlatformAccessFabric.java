@@ -22,6 +22,7 @@ import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
 import com.yogpc.qp.machine.misc.YSetterContainer;
+import com.yogpc.qp.machine.module.ModuleContainer;
 import com.yogpc.qp.machine.module.PumpModuleItem;
 import com.yogpc.qp.machine.mover.MoverBlock;
 import com.yogpc.qp.machine.mover.MoverContainer;
@@ -75,6 +76,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final BlockEntityType<MoverEntity> MOVER_ENTITY_TYPE = BlockEntityType.Builder.of(MoverEntity::new, MOVER_BLOCK).build(DSL.emptyPartType());
         public static final MenuType<MoverContainer> MOVER_MENU = new ExtendedScreenHandlerType<>(MoverContainer::new, BlockPos.STREAM_CODEC);
         public static final PumpModuleItem PUMP_MODULE_ITEM = new PumpModuleItem();
+        public static final MenuType<ModuleContainer> MODULE_MENU = new ExtendedScreenHandlerType<>(ModuleContainer::new, BlockPos.STREAM_CODEC);
 
         public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
 
@@ -93,6 +95,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerItem(PUMP_MODULE_ITEM);
             Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, Y_SET_MENU);
             Registry.register(BuiltInRegistries.MENU, MoverContainer.GUI_ID, MOVER_MENU);
+            Registry.register(BuiltInRegistries.MENU, ModuleContainer.GUI_ID, MODULE_MENU);
             Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MachineLootFunction.NAME), MACHINE_LOOT_FUNCTION);
             Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
         }
@@ -171,6 +174,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         @Override
         public Supplier<MenuType<? extends MoverContainer>> moverContainer() {
             return Lazy.value(MOVER_MENU);
+        }
+
+        @Override
+        public Supplier<MenuType<? extends ModuleContainer>> moduleContainer() {
+            return Lazy.value(MODULE_MENU);
         }
 
         @Override

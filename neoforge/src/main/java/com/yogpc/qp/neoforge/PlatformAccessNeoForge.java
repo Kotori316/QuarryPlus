@@ -17,6 +17,7 @@ import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
 import com.yogpc.qp.machine.misc.YSetterContainer;
+import com.yogpc.qp.machine.module.ModuleContainer;
 import com.yogpc.qp.machine.module.PumpModuleItem;
 import com.yogpc.qp.machine.mover.MoverBlock;
 import com.yogpc.qp.machine.mover.MoverContainer;
@@ -97,6 +98,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_MODE_TAB = CREATIVE_TAB_REGISTER.register(QuarryPlus.modID, () -> QuarryPlus.buildCreativeModeTab(CreativeModeTab.builder()).build());
         public static final DeferredHolder<MenuType<?>, MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = registerMenu("gui_y_setter", YSetterContainer::new);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends MoverContainer>> MOVER_MENU_TYPE = registerMenu("gui_mover", MoverContainer::new);
+        public static final DeferredHolder<MenuType<?>, MenuType<? extends ModuleContainer>> MODULE_MENU_TYPE = registerMenu("gui_quarry_module", ModuleContainer::new);
         public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<? extends MachineLootFunction>> MACHINE_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(MachineLootFunction.NAME, () -> new LootItemFunctionType<>(MachineLootFunction.SERIALIZER));
 
 
@@ -175,6 +177,11 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         @Override
         public Supplier<MenuType<? extends MoverContainer>> moverContainer() {
             return MOVER_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<MenuType<? extends ModuleContainer>> moduleContainer() {
+            return MODULE_MENU_TYPE;
         }
 
         @Override
