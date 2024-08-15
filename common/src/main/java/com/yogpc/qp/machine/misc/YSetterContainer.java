@@ -29,6 +29,10 @@ public class YSetterContainer extends AbstractContainerMenu {
         for (int vertical = 0; vertical < 9; vertical++) {
             addSlot(new Slot(player.getInventory(), vertical, 8 + vertical * oneBox, 142));
         }
+
+        if (this.yAccessor != null) {
+            this.yAccessor.entity().syncToClient();
+        }
     }
 
     @Override
