@@ -80,4 +80,14 @@ class ModuleInventoryTest extends BeforeMC {
         var item2 = new Module1(QuarryModule.Constant.DUMMY);
         assertFalse(inv.canPlaceItem(1, new ItemStack(item2)));
     }
+
+    @ParameterizedTest
+    @EnumSource(QuarryModule.Constant.class)
+    void getModule(QuarryModule.Constant module) {
+        var inv = new ModuleInventory(5);
+        var item = new Module1(module);
+        inv.setItem(0, new ItemStack(item));
+
+        assertEquals(Set.of(module), inv.getModules());
+    }
 }
