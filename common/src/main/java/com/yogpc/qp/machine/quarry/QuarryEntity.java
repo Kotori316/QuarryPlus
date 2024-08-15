@@ -132,6 +132,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         }
         tag.put("storage", MachineStorage.CODEC.codec().encodeStart(NbtOps.INSTANCE, storage).getOrThrow());
         tag.putLongArray("skipped", skipped.stream().mapToLong(BlockPos::asLong).toArray());
+        tag.put("digMinY", DigMinY.CODEC.codec().encodeStart(NbtOps.INSTANCE, digMinY).getOrThrow());
     }
 
     @Override
@@ -145,6 +146,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         targetPos = current;
         storage = MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElse(new MachineStorage());
         skipped = LongStream.of(tag.getLongArray("skipped")).mapToObj(BlockPos::of).collect(Collectors.toCollection(HashSet::new));
+        digMinY = DigMinY.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("digMinY")).result().orElseGet(DigMinY::new);
     }
 
     @Override
