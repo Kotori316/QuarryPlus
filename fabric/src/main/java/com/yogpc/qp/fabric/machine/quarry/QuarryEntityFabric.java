@@ -7,16 +7,33 @@ import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public final class QuarryEntityFabric extends QuarryEntity {
+    boolean shouldRemoveFluid = true;
+
     public QuarryEntityFabric(BlockPos pos, BlockState blockState) {
         super(PlatformAccessFabric.RegisterObjectsFabric.QUARRY_ENTITY_TYPE, pos, blockState);
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.putBoolean("shouldRemoveFluid", shouldRemoveFluid);
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        shouldRemoveFluid = tag.getBoolean("shouldRemoveFluid");
     }
 
     @Override
@@ -40,5 +57,15 @@ public final class QuarryEntityFabric extends QuarryEntity {
         var fakePlayer = FakePlayer.get(level, QuarryFakePlayerCommon.PROFILE);
         QuarryFakePlayerCommon.setDirection(fakePlayer, Direction.DOWN);
         return fakePlayer;
+    }
+
+    @Override
+    protected boolean shouldRemoveFluid() {
+        return shouldRemoveFluid;
+    }
+
+    @Override
+    protected BlockState stateAfterBreak(Level level, BlockPos pos, BlockState before) {
+        return Blocks.AIR.defaultBlockState();
     }
 }
