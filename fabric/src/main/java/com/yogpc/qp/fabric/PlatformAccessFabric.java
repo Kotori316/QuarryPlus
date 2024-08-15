@@ -15,12 +15,14 @@ import com.yogpc.qp.fabric.packet.PacketHandler;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.QpItem;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.marker.NormalMarkerEntity;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
 import com.yogpc.qp.machine.misc.YSetterContainer;
+import com.yogpc.qp.machine.module.PumpModuleItem;
 import com.yogpc.qp.machine.mover.MoverBlock;
 import com.yogpc.qp.machine.mover.MoverContainer;
 import com.yogpc.qp.machine.mover.MoverEntity;
@@ -56,9 +58,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
     private final Lazy<RegisterObjects> itemsLazy = Lazy.lazy(RegisterObjectsFabric::new);
     private final Lazy<PacketHandler> packetHandlerLazy = Lazy.lazy(PacketHandler::new);
     private final Lazy<TransferFabric> transferLazy = Lazy.lazy(TransferFabric::new);
-    private final ConfigHolder configLazy = new ConfigHolder(() ->
-        QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment)
-    );
+    private final ConfigHolder configLazy = new ConfigHolder(this::modified);
 
     public static final class RegisterObjectsFabric implements RegisterObjects {
         public static final QuarryBlockFabric QUARRY_BLOCK = new QuarryBlockFabric();
@@ -74,6 +74,8 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final MoverBlock MOVER_BLOCK = new MoverBlock();
         public static final BlockEntityType<MoverEntity> MOVER_ENTITY_TYPE = BlockEntityType.Builder.of(MoverEntity::new, MOVER_BLOCK).build(DSL.emptyPartType());
         public static final MenuType<MoverContainer> MOVER_MENU = new ExtendedScreenHandlerType<>(MoverContainer::new, BlockPos.STREAM_CODEC);
+        public static final PumpModuleItem PUMP_MODULE_ITEM = new PumpModuleItem();
+
         public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
 
         private static final List<InCreativeTabs> TAB_ITEMS = new ArrayList<>();
@@ -84,10 +86,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerEntityBlock(QUARRY_BLOCK, QUARRY_ENTITY_TYPE);
             registerBlockItem(FRAME_BLOCK);
             registerEntityBlock(GENERATOR_BLOCK, GENERATOR_ENTITY_TYPE);
-            registerItem(CHECKER_ITEM, CHECKER_ITEM.name);
+            registerItem(CHECKER_ITEM);
             registerEntityBlock(MARKER_BLOCK, MARKER_ENTITY_TYPE);
-            registerItem(Y_SET_ITEM, Y_SET_ITEM.name);
+            registerItem(Y_SET_ITEM);
             registerEntityBlock(MOVER_BLOCK, MOVER_ENTITY_TYPE);
+            registerItem(PUMP_MODULE_ITEM);
             Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, Y_SET_MENU);
             Registry.register(BuiltInRegistries.MENU, MoverContainer.GUI_ID, MOVER_MENU);
             Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MachineLootFunction.NAME), MACHINE_LOOT_FUNCTION);
@@ -107,6 +110,10 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             Registry.register(BuiltInRegistries.BLOCK, block.name, block);
             registerItem(block.blockItem, block.name);
             TAB_ITEMS.add(block);
+        }
+
+        private static void registerItem(QpItem item) {
+            registerItem(item, item.name);
         }
 
         private static void registerItem(Item item, ResourceLocation name) {
@@ -228,5 +235,12 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
     @Override
     public void onServerStopped(MinecraftServer server) {
         configLazy.reset();
+    }
+
+    private QuarryConfig modified() {
+        var config = QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment);
+        var enableMap = config.enableMap();
+        enableMap.set(PumpModuleItem.NAME, false);
+        return config;
     }
 }
