@@ -226,11 +226,15 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     void updateModules() {
-        assert level != null;
-        this.modules = Sets.union(
-            moduleInventory.getModules(),
-            QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
-        );
+        if (level == null) {
+            // In test?
+            this.modules = moduleInventory.getModules();
+        } else {
+            this.modules = Sets.union(
+                moduleInventory.getModules(),
+                QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
+            );
+        }
     }
 
     public String renderMode() {
