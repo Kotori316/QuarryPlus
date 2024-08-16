@@ -1,12 +1,14 @@
 package com.yogpc.qp.machine.module;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.QpItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -57,8 +59,14 @@ public final class ModuleInventory extends SimpleContainer {
     static Set<QuarryModule> getModules(Stream<ItemStack> stream) {
         return stream
             .filter(s -> s.getItem() instanceof QuarryModuleProvider.Item)
+            .mapMulti(ModuleInventory::itemValidation)
             .map(s -> ((QuarryModuleProvider.Item) s.getItem()).getModule(s))
             .collect(Collectors.toUnmodifiableSet());
     }
 
+    static void itemValidation(ItemStack stack, Consumer<ItemStack> consumer) {
+        if (!(stack.getItem() instanceof QpItem item) || item.isEnabled()) {
+            consumer.accept(stack);
+        }
+    }
 }

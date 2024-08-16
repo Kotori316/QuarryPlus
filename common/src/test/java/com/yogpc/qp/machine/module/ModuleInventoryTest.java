@@ -1,6 +1,7 @@
 package com.yogpc.qp.machine.module;
 
 import com.yogpc.qp.BeforeMC;
+import com.yogpc.qp.machine.QpItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -89,5 +90,35 @@ class ModuleInventoryTest extends BeforeMC {
         inv.setItem(0, new ItemStack(item));
 
         assertEquals(Set.of(module), inv.getModules());
+    }
+
+    private static final class Module2 extends QpItem implements QuarryModuleProvider.Item {
+        private final QuarryModule module;
+        private final boolean isEnabled;
+
+        Module2(QuarryModule module, boolean isEnabled) {
+            super(new Properties(), "module2");
+            this.module = module;
+            this.isEnabled = isEnabled;
+        }
+
+        @Override
+        public QuarryModule getModule(@NotNull ItemStack stack) {
+            return module;
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return isEnabled;
+        }
+    }
+
+    @Test
+    void disabledItem() {
+        var inv = new ModuleInventory(5);
+        var item = new Module2(QuarryModule.Constant.DUMMY, false);
+        inv.setItem(0, new ItemStack(item));
+
+        assertTrue(inv.getModules().isEmpty());
     }
 }
