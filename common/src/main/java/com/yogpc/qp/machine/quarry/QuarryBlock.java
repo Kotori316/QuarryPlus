@@ -8,6 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -81,11 +82,20 @@ public abstract class QuarryBlock extends QpEntityBlock {
         if (!level.isClientSide) {
             var entity = this.<QuarryEntity>getBlockEntityType().map(t -> t.getBlockEntity(level, pos)).orElse(null);
             if (entity != null) {
-                return InteractionResult.SUCCESS;
+                if (!level.isClientSide()) {
+                    if (entity.enabled) {
+                        openGui((ServerPlayer) player, level, pos, entity);
+                    } else {
+                        player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
+                    }
+                }
+                return InteractionResult.sidedSuccess(level.isClientSide());
             }
         }
         return super.useWithoutItem(state, level, pos, player, hitResult);
     }
+
+    protected abstract void openGui(ServerPlayer player, Level level, BlockPos pos, QuarryEntity quarry);
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
