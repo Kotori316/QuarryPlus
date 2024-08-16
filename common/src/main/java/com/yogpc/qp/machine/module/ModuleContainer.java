@@ -18,9 +18,12 @@ public final class ModuleContainer extends AbstractContainerMenu {
     final ModuleInventory moduleInventory;
     @Nullable
     final YAccessor<?> yAccessor;
+    private final BlockPos pos;
 
     public ModuleContainer(int id, Inventory inventory, BlockPos pos) {
         super(PlatformAccess.getAccess().registerObjects().moduleContainer().get(), id);
+        this.pos = pos;
+
         var entity = inventory.player.level().getBlockEntity(pos);
         moduleInventory = ModuleInventoryHolder.getFromObject(entity).orElse(null);
         yAccessor = YAccessor.get(entity);
@@ -41,6 +44,10 @@ public final class ModuleContainer extends AbstractContainerMenu {
         }
         for (int vertical = 0; vertical < 9; vertical++) {
             this.addSlot(new Slot(inventory, vertical, 8 + vertical * oneBox, 142));
+        }
+
+        if (yAccessor != null) {
+            yAccessor.entity().syncToClient();
         }
     }
 
@@ -80,6 +87,6 @@ public final class ModuleContainer extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return true;
+        return pos.closerToCenterThan(player.position(), 8);
     }
 }
