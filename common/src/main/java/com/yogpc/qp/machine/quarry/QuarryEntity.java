@@ -75,7 +75,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     protected QuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
-        setMaxEnergy(10000 * ONE_FE);
+        setMaxEnergy((long) (powerMap().maxEnergy() * ONE_FE));
         head = Vec3.atBottomCenterOf(pos);
         targetHead = head;
         currentState = QuarryState.FINISHED;
