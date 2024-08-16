@@ -11,6 +11,7 @@ import com.yogpc.qp.fabric.machine.misc.CheckerItemFabric;
 import com.yogpc.qp.fabric.machine.misc.YSetterItemFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
+import com.yogpc.qp.fabric.machine.quarry.QuarryMenuFabric;
 import com.yogpc.qp.fabric.packet.PacketHandler;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
@@ -64,6 +65,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
     public static final class RegisterObjectsFabric implements RegisterObjects {
         public static final QuarryBlockFabric QUARRY_BLOCK = new QuarryBlockFabric();
         public static final BlockEntityType<QuarryEntityFabric> QUARRY_ENTITY_TYPE = BlockEntityType.Builder.of(QuarryEntityFabric::new, QUARRY_BLOCK).build(DSL.emptyPartType());
+        public static final MenuType<QuarryMenuFabric> QUARRY_MENU = new ExtendedScreenHandlerType<>(QuarryMenuFabric::new, BlockPos.STREAM_CODEC);
         public static final FrameBlock FRAME_BLOCK = new FrameBlock();
         public static final GeneratorBlock GENERATOR_BLOCK = new GeneratorBlock();
         public static final BlockEntityType<GeneratorEntity> GENERATOR_ENTITY_TYPE = BlockEntityType.Builder.of(GeneratorEntity::new, GENERATOR_BLOCK).build(DSL.emptyPartType());
@@ -93,6 +95,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerItem(Y_SET_ITEM);
             registerEntityBlock(MOVER_BLOCK, MOVER_ENTITY_TYPE);
             registerItem(PUMP_MODULE_ITEM);
+            Registry.register(BuiltInRegistries.MENU, QuarryMenuFabric.GUI_ID, QUARRY_MENU);
             Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, Y_SET_MENU);
             Registry.register(BuiltInRegistries.MENU, MoverContainer.GUI_ID, MOVER_MENU);
             Registry.register(BuiltInRegistries.MENU, ModuleContainer.GUI_ID, MODULE_MENU);

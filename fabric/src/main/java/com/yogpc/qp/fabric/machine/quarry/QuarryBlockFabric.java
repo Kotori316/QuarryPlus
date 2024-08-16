@@ -1,5 +1,7 @@
 package com.yogpc.qp.fabric.machine.quarry;
 
+import com.yogpc.qp.fabric.ExtendedGeneralScreenHandler;
+import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
 import com.yogpc.qp.machine.quarry.QuarryEntity;
 import net.minecraft.core.BlockPos;
@@ -18,6 +20,6 @@ public final class QuarryBlockFabric extends QuarryBlock {
 
     @Override
     protected void openGui(ServerPlayer player, Level level, BlockPos pos, QuarryEntity quarry) {
-
+        player.openMenu(new ExtendedGeneralScreenHandler<>(new GeneralScreenHandler<>(quarry, QuarryMenuFabric::new)));
     }
 }
