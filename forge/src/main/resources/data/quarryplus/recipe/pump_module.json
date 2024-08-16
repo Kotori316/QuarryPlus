@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "g": {
+      "tag": "forge:glass"
+    },
+    "d": {
+      "item": "minecraft:green_dye"
+    },
+    "b": {
+      "item": "minecraft:lava_bucket"
+    },
+    "r": {
+      "tag": "forge:dusts/redstone"
+    },
+    "G": {
+      "tag": "forge:storage_blocks/gold"
+    },
+    "m": {
+      "tag": "quarryplus:markers"
+    }
+  },
+  "pattern": [
+    "dgd",
+    "gbg",
+    "rGm"
+  ],
+  "result": {
+    "id": "quarryplus:pump_module"
+  }
+}

@@ -148,4 +148,39 @@ public final class LoadRecipeTest {
 
         helper.succeed();
     }
+
+    public static void createPumpModule(GameTestHelper helper) {
+        var manager = helper.getLevel().getRecipeManager();
+
+        var recipe = manager.byKey(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "pump_module"))
+            .map(RecipeHolder::value)
+            .filter(CraftingRecipe.class::isInstance)
+            .map(CraftingRecipe.class::cast)
+            .orElse(null);
+        if (recipe == null) {
+            if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+                helper.succeed();
+                return;
+            }
+            helper.fail("Recipe not found");
+            return;
+        }
+
+        var d = Items.GREEN_DYE.getDefaultInstance();
+        var g = Items.GLASS.getDefaultInstance();
+        var b = Items.LAVA_BUCKET.getDefaultInstance();
+        var r = Items.REDSTONE.getDefaultInstance();
+        var G = Items.GOLD_BLOCK.getDefaultInstance();
+        var m = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
+        var input = CraftingInput.of(3, 3, List.of(
+            d, g, d,
+            g, b, g,
+            r, G, m
+        ));
+
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        assertEquals("pump_module", BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
+        helper.succeed();
+    }
 }
