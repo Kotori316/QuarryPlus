@@ -2,7 +2,7 @@
 minecraft = "1.21.1"
 forge = "1.21.1-52.0.3"
 fabric_api = "0.102.1+1.21.1"
-fabric_loader = "0.16.1"
+fabric_loader = "0.16.2"
 neoforge = "21.1.6"
 fabric_version_checker = "2.4.0"
 
@@ -30,7 +30,7 @@ plugin_idea_ext = "1.1.8"
 plugin_fabric_loom = "1.7.3"
 plugin_forge_gradle = "[6.0,6.2)"
 plugin_forge_parchment = "1.+"
-plugin_neoforge_gradle = "7.0.160"
+plugin_neoforge_gradle = "7.0.161"
 
 [libraries]
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }

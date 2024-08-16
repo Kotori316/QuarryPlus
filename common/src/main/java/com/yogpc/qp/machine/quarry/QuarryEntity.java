@@ -75,8 +75,6 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     @NotNull
     public DigMinY digMinY = new DigMinY();
     @NotNull
-    ItemEnchantments enchantments = ItemEnchantments.EMPTY;
-    @NotNull
     final EnchantmentCache enchantmentCache = new EnchantmentCache();
     @NotNull
     Set<QuarryModule> modules = Collections.emptySet();
@@ -85,7 +83,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     protected QuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
-        setMaxEnergy(10000 * ONE_FE);
+        setMaxEnergy((long) (powerMap().maxEnergy() * ONE_FE));
         head = Vec3.atBottomCenterOf(pos);
         targetHead = head;
         currentState = QuarryState.FINISHED;
@@ -184,13 +182,11 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     @Override
     protected void applyImplicitComponents(DataComponentInput componentInput) {
         super.applyImplicitComponents(componentInput);
-        enchantments = componentInput.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
     }
 
     @Override
     protected void collectImplicitComponents(DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
-        components.set(DataComponents.ENCHANTMENTS, enchantments);
     }
 
     @Override
@@ -344,7 +340,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     double moveHeadFactor() {
         assert level != null;
-        var efficiency = enchantmentCache.getLevel(enchantments, Enchantments.EFFICIENCY, level.registryAccess().asGetterLookup());
+        var efficiency = enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, level.registryAccess().asGetterLookup());
         if (efficiency >= 4) {
             return efficiency - 3;
         } else {
@@ -538,10 +534,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         }
         var lookup = serverLevel.registryAccess().asGetterLookup();
         var requiredEnergy = powerMap().getBreakEnergy(hardness,
-            enchantmentCache.getLevel(enchantments, Enchantments.EFFICIENCY, lookup),
-            enchantmentCache.getLevel(enchantments, Enchantments.UNBREAKING, lookup),
-            enchantmentCache.getLevel(enchantments, Enchantments.FORTUNE, lookup),
-            enchantmentCache.getLevel(enchantments, Enchantments.SILK_TOUCH, lookup) > 0
+            enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, lookup),
+            enchantmentCache.getLevel(getEnchantments(), Enchantments.UNBREAKING, lookup),
+            enchantmentCache.getLevel(getEnchantments(), Enchantments.FORTUNE, lookup),
+            enchantmentCache.getLevel(getEnchantments(), Enchantments.SILK_TOUCH, lookup) > 0
         );
         if (useEnergy(requiredEnergy, true, getMaxEnergy() < requiredEnergy, "breakBlock") == requiredEnergy) {
             useEnergy(requiredEnergy, false, getMaxEnergy() < requiredEnergy, "breakBlock");
@@ -669,11 +665,15 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     @VisibleForTesting
     public @NotNull ItemEnchantments getEnchantments() {
-        return enchantments;
+        return components().getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
     }
 
     @VisibleForTesting
     public void setEnchantments(@NotNull ItemEnchantments enchantments) {
-        this.enchantments = enchantments;
+        setComponents(
+            DataComponentMap.builder().addAll(components())
+                .set(DataComponents.ENCHANTMENTS, enchantments)
+                .build()
+        );
     }
 }
