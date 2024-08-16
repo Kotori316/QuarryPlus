@@ -106,7 +106,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 detail(ChatFormatting.GREEN, "Area", String.valueOf(area)),
                 detail(ChatFormatting.GREEN, "Head", String.valueOf(head)),
                 detail(ChatFormatting.GREEN, "Storage", String.valueOf(storage)),
-                detail(ChatFormatting.GREEN, "DigMinY", String.valueOf(digMinY.getMinY(level)))
+                detail(ChatFormatting.GREEN, "DigMinY", String.valueOf(digMinY.getMinY(level))),
+                detail(ChatFormatting.GREEN, "Modules", String.valueOf(modules))
             )
         );
     }
