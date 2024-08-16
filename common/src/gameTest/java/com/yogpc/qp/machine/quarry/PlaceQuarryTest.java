@@ -86,4 +86,24 @@ public final class PlaceQuarryTest {
             })
             .thenSucceed();
     }
+
+    public static void saveEnchantment(GameTestHelper helper) {
+        helper.setBlock(base, PlatformAccess.getAccess().registerObjects().quarryBlock().get());
+        QuarryEntity quarry = helper.getBlockEntity(base);
+
+        var mutable = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        mutable.set(getEnchantment(helper, Enchantments.EFFICIENCY), 5);
+        mutable.set(getEnchantment(helper, Enchantments.UNBREAKING), 3);
+        quarry.setEnchantments(mutable.toImmutable());
+
+        var saved = quarry.saveWithFullMetadata(helper.getLevel().registryAccess());
+        quarry.loadWithComponents(saved, helper.getLevel().registryAccess());
+
+        var enchantments = quarry.getEnchantments();
+        assertEquals(5, enchantments.getLevel(getEnchantment(helper, Enchantments.EFFICIENCY)));
+        assertEquals(3, enchantments.getLevel(getEnchantment(helper, Enchantments.UNBREAKING)));
+        assertEquals(0, enchantments.getLevel(getEnchantment(helper, Enchantments.FORTUNE)));
+
+        helper.succeed();
+    }
 }
