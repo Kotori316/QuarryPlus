@@ -568,7 +568,29 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     protected abstract void afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity);
 
-    WorkResult breakBlockModuleOverride(Level level, BlockState state, BlockPos target, float hardness) {
+    WorkResult breakBlockModuleOverride(ServerLevel level, BlockState state, BlockPos target, float hardness) {
+        if (hardness < 0 && state.is(Blocks.BEDROCK) && shouldRemoveBedrock()) {
+            var worldBottom = level.getMinBuildHeight();
+            var targetY = target.getY();
+            if (level.dimension().equals(Level.NETHER)) {
+                if ((worldBottom >= targetY || targetY >= worldBottom + 5) && (122 >= targetY || targetY >= 128)) {
+                    return WorkResult.SKIPPED;
+                }
+            } else {
+                if (worldBottom >= targetY || targetY >= worldBottom + 5) {
+                    return WorkResult.SKIPPED;
+                }
+            }
+
+            var lookup = level.registryAccess().asGetterLookup();
+            var requiredEnergy = powerMap().getBreakEnergy(hardness,
+                enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, lookup),
+                0, 0, true
+            );
+            useEnergy(requiredEnergy, false, true, "breakBlock");
+            level.setBlock(target, stateAfterBreak(level, target, state), Block.UPDATE_ALL);
+            return WorkResult.SUCCESS;
+        }
         return WorkResult.SKIPPED;
     }
 
@@ -580,6 +602,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     protected BlockState stateAfterBreak(Level level, BlockPos pos, BlockState before) {
         return Blocks.AIR.defaultBlockState();
+    }
+
+    protected boolean shouldRemoveBedrock() {
+        return modules.contains(QuarryModule.Constant.BEDROCK);
     }
 
     void removeFluidAt(@NotNull Level level, BlockPos pos, ServerPlayer player, BlockState newState) {

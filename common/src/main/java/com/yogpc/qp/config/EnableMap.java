@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 public final class EnableMap {
@@ -50,12 +51,12 @@ public final class EnableMap {
         return machinesMap;
     }
 
-    static EnableMap getDefault() {
+    static EnableMap getDefault(BooleanSupplier inDevelop) {
         var defaultConfig = GsonHelper.parse(new InputStreamReader(
             Objects.requireNonNull(EnableMap.class.getResourceAsStream("/machine_default.json"), "Content in Jar must not be absent.")
         ));
         var map = defaultConfig.entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getAsBoolean()));
+            .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getAsBoolean() || inDevelop.getAsBoolean()));
         return new EnableMap(map);
     }
 

@@ -23,6 +23,7 @@ import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
 import com.yogpc.qp.machine.misc.YSetterContainer;
+import com.yogpc.qp.machine.module.BedrockModuleItem;
 import com.yogpc.qp.machine.module.ModuleContainer;
 import com.yogpc.qp.machine.module.PumpModuleItem;
 import com.yogpc.qp.machine.mover.MoverBlock;
@@ -79,6 +80,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final MenuType<MoverContainer> MOVER_MENU = new ExtendedScreenHandlerType<>(MoverContainer::new, BlockPos.STREAM_CODEC);
         public static final PumpModuleItem PUMP_MODULE_ITEM = new PumpModuleItem();
         public static final MenuType<ModuleContainer> MODULE_MENU = new ExtendedScreenHandlerType<>(ModuleContainer::new, BlockPos.STREAM_CODEC);
+        public static final BedrockModuleItem BEDROCK_MODULE_ITEM = new BedrockModuleItem();
 
         public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
 
@@ -95,6 +97,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerItem(Y_SET_ITEM);
             registerEntityBlock(MOVER_BLOCK, MOVER_ENTITY_TYPE);
             registerItem(PUMP_MODULE_ITEM);
+            registerItem(BEDROCK_MODULE_ITEM);
             Registry.register(BuiltInRegistries.MENU, QuarryMenuFabric.GUI_ID, QUARRY_MENU);
             Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, Y_SET_MENU);
             Registry.register(BuiltInRegistries.MENU, MoverContainer.GUI_ID, MOVER_MENU);
@@ -252,6 +255,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         var config = QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment);
         var enableMap = config.enableMap();
         enableMap.set(PumpModuleItem.NAME, false);
+        enableMap.set(BedrockModuleItem.NAME, false);
         return config;
     }
 }

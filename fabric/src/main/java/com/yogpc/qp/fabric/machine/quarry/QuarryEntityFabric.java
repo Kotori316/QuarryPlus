@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 public final class QuarryEntityFabric extends QuarryEntity {
     boolean shouldRemoveFluid = true;
+    boolean shouldRemoveBedrock = false;
 
     public QuarryEntityFabric(BlockPos pos, BlockState blockState) {
         super(PlatformAccessFabric.RegisterObjectsFabric.QUARRY_ENTITY_TYPE, pos, blockState);
@@ -28,12 +29,14 @@ public final class QuarryEntityFabric extends QuarryEntity {
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.putBoolean("shouldRemoveFluid", shouldRemoveFluid);
+        tag.putBoolean("shouldRemoveBedrock", shouldRemoveBedrock);
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         shouldRemoveFluid = tag.getBoolean("shouldRemoveFluid");
+        shouldRemoveBedrock = tag.getBoolean("shouldRemoveBedrock");
     }
 
     @Override
@@ -62,6 +65,11 @@ public final class QuarryEntityFabric extends QuarryEntity {
     @Override
     protected boolean shouldRemoveFluid() {
         return shouldRemoveFluid;
+    }
+
+    @Override
+    protected boolean shouldRemoveBedrock() {
+        return shouldRemoveBedrock;
     }
 
     @Override

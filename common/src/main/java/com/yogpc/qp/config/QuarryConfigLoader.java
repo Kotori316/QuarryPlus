@@ -59,7 +59,7 @@ final class QuarryConfigLoader {
         defineInCodec(config, specConfig, "powerMap.quarry", PowerMap.Default.QUARRY);
 
         // enableMap.*
-        defineEnableMap(config, specConfig, "enableMap", EnableMap.getDefault());
+        defineEnableMap(config, specConfig, "enableMap", EnableMap.getDefault(inDevelop));
 
         return Pair.of(config, specConfig);
     }
