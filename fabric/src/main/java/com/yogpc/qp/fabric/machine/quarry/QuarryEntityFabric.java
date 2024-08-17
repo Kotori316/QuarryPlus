@@ -1,5 +1,6 @@
 package com.yogpc.qp.fabric.machine.quarry;
 
+import com.yogpc.qp.QuarryDataComponents;
 import com.yogpc.qp.fabric.PlatformAccessFabric;
 import com.yogpc.qp.machine.QuarryFakePlayerCommon;
 import com.yogpc.qp.machine.quarry.QuarryEntity;
@@ -43,14 +44,14 @@ public final class QuarryEntityFabric extends QuarryEntity {
     @Override
     protected void applyImplicitComponents(DataComponentInput componentInput) {
         super.applyImplicitComponents(componentInput);
-        shouldRemoveBedrock = componentInput.getOrDefault(PlatformAccessFabric.RegisterObjectsFabric.QUARRY_REMOVE_BEDROCK_COMPONENT, Boolean.FALSE);
+        shouldRemoveBedrock = componentInput.getOrDefault(QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT, Boolean.FALSE);
     }
 
     @Override
     protected void collectImplicitComponents(DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
         if (shouldRemoveBedrock) {
-            components.set(PlatformAccessFabric.RegisterObjectsFabric.QUARRY_REMOVE_BEDROCK_COMPONENT, true);
+            components.set(QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT, true);
         }
     }
 

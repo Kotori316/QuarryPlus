@@ -171,6 +171,11 @@ public final class PlatformAccessForge implements PlatformAccess {
         }
 
         @Override
+        public Supplier<? extends BedrockModuleItem> bedrockModuleItem() {
+            return ITEM_BEDROCK_MODULE;
+        }
+
+        @Override
         public Stream<Supplier<? extends InCreativeTabs>> allItems() {
             return TAB_ITEMS.stream();
         }

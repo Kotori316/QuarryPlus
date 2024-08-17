@@ -1,6 +1,7 @@
 package com.yogpc.qp.gametest;
 
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.QuarryDataComponents;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -202,6 +203,47 @@ public final class LoadRecipeTest {
         assertTrue(recipe.matches(input, helper.getLevel()));
         var result = recipe.assemble(input, helper.getLevel().registryAccess());
         assertEquals(name, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
+        helper.succeed();
+    }
+
+    public static void installBedrockModuleQuarry(GameTestHelper helper) {
+        var name = "install_bedrock_module_quarry";
+        var recipe = findRecipeNullable(helper, name);
+        if (!PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+            assertNull(recipe, "This recipe(%s) must be loaded only in fabric".formatted(name));
+            helper.succeed();
+            return;
+        }
+        assertNotNull(recipe, "Recipe not found");
+        var q = PlatformAccess.getAccess().registerObjects().quarryBlock().get().blockItem.getDefaultInstance();
+        var m = PlatformAccess.getAccess().registerObjects().bedrockModuleItem().get().getDefaultInstance();
+        var input = CraftingInput.of(2, 1, List.of(
+            q, m
+        ));
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var condition = result.get(QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT);
+        assertNotNull(condition);
+        assertTrue(condition);
+        helper.succeed();
+    }
+
+    public static void installBedrockModuleQuarry2(GameTestHelper helper) {
+        var name = "install_bedrock_module_quarry";
+        var recipe = findRecipeNullable(helper, name);
+        if (!PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+            assertNull(recipe, "This recipe(%s) must be loaded only in fabric".formatted(name));
+            helper.succeed();
+            return;
+        }
+        assertNotNull(recipe, "Recipe not found");
+        var q = PlatformAccess.getAccess().registerObjects().quarryBlock().get().blockItem.getDefaultInstance();
+        var m = PlatformAccess.getAccess().registerObjects().bedrockModuleItem().get().getDefaultInstance();
+        q.set(QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT, true);
+        var input = CraftingInput.of(2, 1, List.of(
+            q, m
+        ));
+        assertFalse(recipe.matches(input, helper.getLevel()), "Not to install module twice");
         helper.succeed();
     }
 }

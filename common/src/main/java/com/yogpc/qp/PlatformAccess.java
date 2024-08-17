@@ -8,6 +8,7 @@ import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.YSetterContainer;
+import com.yogpc.qp.machine.module.BedrockModuleItem;
 import com.yogpc.qp.machine.module.ModuleContainer;
 import com.yogpc.qp.machine.mover.MoverBlock;
 import com.yogpc.qp.machine.mover.MoverContainer;
@@ -60,6 +61,8 @@ public interface PlatformAccess {
         Supplier<? extends MoverBlock> moverBlock();
 
         Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block);
+
+        Supplier<? extends BedrockModuleItem> bedrockModuleItem();
 
         Stream<Supplier<? extends InCreativeTabs>> allItems();
 
