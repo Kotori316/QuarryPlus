@@ -183,15 +183,14 @@ public final class LoadRecipeTest {
 
     public static void createBedrockModule(GameTestHelper helper) {
         var name = "remove_bedrock_module";
-        var recipe = findRecipeNullable(helper, name);
-        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
-            assertNull(recipe, "This recipe(%s) must not be loaded in fabric".formatted(name));
-            helper.succeed();
-            return;
-        }
-        assertNotNull(recipe, "Recipe not found");
+        var recipe = findRecipe(helper, name);
 
-        var d = Items.DIAMOND_BLOCK.getDefaultInstance();
+        ItemStack d;
+        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+            d = ItemStack.EMPTY;
+        } else {
+            d = Items.DIAMOND_BLOCK.getDefaultInstance();
+        }
         var o = Items.OBSIDIAN.getDefaultInstance();
         var m = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
         var input = CraftingInput.of(3, 3, List.of(

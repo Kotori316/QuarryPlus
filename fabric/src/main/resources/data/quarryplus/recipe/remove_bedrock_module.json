@@ -7,15 +7,12 @@
     },
     "o": {
       "item": "minecraft:obsidian"
-    },
-    "d": {
-      "tag": "c:storage_blocks/diamond"
     }
   },
   "pattern": [
     "ooo",
-    "dmd",
-    "dmd"
+    " m ",
+    " m "
   ],
   "result": {
     "id": "quarryplus:remove_bedrock_module"
