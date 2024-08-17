@@ -27,11 +27,34 @@ public final class LoadRecipeTest {
         helper.succeed();
     }
 
-    public static void createMarker(GameTestHelper helper) {
+    private static CraftingRecipe findRecipe(GameTestHelper helper, String id) {
         var manager = helper.getLevel().getRecipeManager();
-        var recipeOptional = manager.byKey(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "marker"));
-        assertTrue(recipeOptional.isPresent());
-        var recipe = (CraftingRecipe) recipeOptional.get().value();
+        var holder = manager.byKey(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, id));
+        if (holder.isEmpty()) {
+            throw new AssertionError("Recipe %s is not found".formatted(id));
+        }
+        var recipe = holder
+            .map(RecipeHolder::value)
+            .filter(CraftingRecipe.class::isInstance)
+            .map(CraftingRecipe.class::cast)
+            .orElse(null);
+
+        if (recipe == null) {
+            throw new AssertionError("Recipe %s is not found".formatted(id));
+        }
+        return recipe;
+    }
+
+    private static CraftingRecipe findRecipeNullable(GameTestHelper helper, String id) {
+        try {
+            return findRecipe(helper, id);
+        } catch (AssertionError e) {
+            return null;
+        }
+    }
+
+    public static void createMarker(GameTestHelper helper) {
+        var recipe = findRecipe(helper, "marker");
 
         var g = Items.GLOWSTONE_DUST.getDefaultInstance();
         var l = Items.LAPIS_LAZULI.getDefaultInstance();
@@ -47,12 +70,7 @@ public final class LoadRecipeTest {
     }
 
     public static void createQuarry(GameTestHelper helper) {
-        var manager = helper.getLevel().getRecipeManager();
-        var recipe = manager.byKey(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "quarry"))
-            .map(RecipeHolder::value)
-            .filter(CraftingRecipe.class::isInstance)
-            .map(CraftingRecipe.class::cast)
-            .orElseThrow(AssertionError::new);
+        var recipe = findRecipe(helper, "quarry");
 
         var D = Items.DROPPER.getDefaultInstance();
         var R = Items.REDSTONE_BLOCK.getDefaultInstance();
@@ -77,12 +95,7 @@ public final class LoadRecipeTest {
     }
 
     public static void createStatusChecker(GameTestHelper helper) {
-        var manager = helper.getLevel().getRecipeManager();
-        var recipe = manager.byKey(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "status_checker"))
-            .map(RecipeHolder::value)
-            .filter(CraftingRecipe.class::isInstance)
-            .map(CraftingRecipe.class::cast)
-            .orElseThrow(AssertionError::new);
+        var recipe = findRecipe(helper, "status_checker");
 
         var g = Items.GLASS.getDefaultInstance();
         var l = Items.IRON_INGOT.getDefaultInstance();
@@ -101,12 +114,7 @@ public final class LoadRecipeTest {
 
 
     public static void createYSetter(GameTestHelper helper) {
-        var manager = helper.getLevel().getRecipeManager();
-        var recipe = manager.byKey(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "y_setter"))
-            .map(RecipeHolder::value)
-            .filter(CraftingRecipe.class::isInstance)
-            .map(CraftingRecipe.class::cast)
-            .orElseThrow(AssertionError::new);
+        var recipe = findRecipe(helper, "y_setter");
 
         var g = Items.GLASS.getDefaultInstance();
         var l = Items.LAPIS_LAZULI.getDefaultInstance();
@@ -124,12 +132,7 @@ public final class LoadRecipeTest {
     }
 
     public static void createMover(GameTestHelper helper) {
-        var manager = helper.getLevel().getRecipeManager();
-        var recipe = manager.byKey(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "mover"))
-            .map(RecipeHolder::value)
-            .filter(CraftingRecipe.class::isInstance)
-            .map(CraftingRecipe.class::cast)
-            .orElseThrow(AssertionError::new);
+        var recipe = findRecipe(helper, "mover");
 
         var d = Items.DIAMOND.getDefaultInstance();
         var a = Items.ANVIL.getDefaultInstance();
@@ -150,13 +153,8 @@ public final class LoadRecipeTest {
     }
 
     public static void createPumpModule(GameTestHelper helper) {
-        var manager = helper.getLevel().getRecipeManager();
-
-        var recipe = manager.byKey(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "pump_module"))
-            .map(RecipeHolder::value)
-            .filter(CraftingRecipe.class::isInstance)
-            .map(CraftingRecipe.class::cast)
-            .orElse(null);
+        var name = "pump_module";
+        var recipe = findRecipeNullable(helper, name);
         if (recipe == null) {
             if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
                 helper.succeed();
@@ -180,7 +178,7 @@ public final class LoadRecipeTest {
 
         assertTrue(recipe.matches(input, helper.getLevel()));
         var result = recipe.assemble(input, helper.getLevel().registryAccess());
-        assertEquals("pump_module", BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
+        assertEquals(name, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
         helper.succeed();
     }
 }
