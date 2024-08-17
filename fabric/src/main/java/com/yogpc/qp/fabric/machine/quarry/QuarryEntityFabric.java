@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -37,6 +38,20 @@ public final class QuarryEntityFabric extends QuarryEntity {
         super.loadAdditional(tag, registries);
         shouldRemoveFluid = tag.getBoolean("shouldRemoveFluid");
         shouldRemoveBedrock = tag.getBoolean("shouldRemoveBedrock");
+    }
+
+    @Override
+    protected void applyImplicitComponents(DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
+        shouldRemoveBedrock = componentInput.getOrDefault(PlatformAccessFabric.RegisterObjectsFabric.QUARRY_REMOVE_BEDROCK_COMPONENT, Boolean.FALSE);
+    }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        if (shouldRemoveBedrock) {
+            components.set(PlatformAccessFabric.RegisterObjectsFabric.QUARRY_REMOVE_BEDROCK_COMPONENT, true);
+        }
     }
 
     @Override

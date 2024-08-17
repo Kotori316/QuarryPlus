@@ -3,8 +3,10 @@ package com.yogpc.qp.fabric.machine.quarry;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.misc.SmallCheckBox;
+import com.yogpc.qp.machine.misc.StringWidgetNoShadow;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -33,9 +35,19 @@ public final class QuarryScreenFabric extends AbstractContainerScreen<QuarryMenu
     @Override
     protected void init() {
         super.init();
-        removeFluids = new SmallCheckBox(leftPos + 8, topPos + 20, 80, 10, 10, 10,
-            Component.nullToEmpty("Remove fluids"), this.menu.quarry.shouldRemoveFluid, this::onPressFluidButton);
-        addRenderableWidget(removeFluids);
+        {
+            removeFluids = new SmallCheckBox(leftPos + 8, topPos + 20, 80, 10, 10, 10,
+                Component.nullToEmpty("Remove fluids"), this.menu.quarry.shouldRemoveFluid, this::onPressFluidButton);
+            removeFluids.setTooltip(Tooltip.create(Component.literal("Check to remove fluids in area")));
+            addRenderableWidget(removeFluids);
+        }
+        {
+            var message = bedrockMessage(this.menu.quarry.shouldRemoveBedrock);
+            var widget = new StringWidgetNoShadow(leftPos + 8, topPos + 35, font.width(message), 10, message, font);
+            widget.setColor(0x404040);
+            widget.setTooltip(bedrockMessageTooltip(this.menu.quarry.shouldRemoveBedrock));
+            addRenderableWidget(widget);
+        }
     }
 
     private void onPressFluidButton(Button button) {
@@ -46,5 +58,18 @@ public final class QuarryScreenFabric extends AbstractContainerScreen<QuarryMenu
                 removeFluids.isSelected()
             ));
         }
+    }
+
+    static Component bedrockMessage(boolean shouldRemoveBedrock) {
+        if (shouldRemoveBedrock) {
+            return Component.literal("Remove Bedrock: ON");
+        }
+        return Component.literal("Remove Bedrock: OFF");
+    }
+
+    static Tooltip bedrockMessageTooltip(boolean shouldRemoveBedrock) {
+        var message = shouldRemoveBedrock ? Component.literal("Remove Bedrock ON") :
+            Component.literal("Craft quarry with Bedrock Module to enable to remove Bedrock");
+        return Tooltip.create(message);
     }
 }

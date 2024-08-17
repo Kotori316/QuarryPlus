@@ -1,6 +1,7 @@
 package com.yogpc.qp.fabric;
 
 import com.mojang.datafixers.DSL;
+import com.mojang.serialization.Codec;
 import com.yogpc.qp.FluidStackLike;
 import com.yogpc.qp.InCreativeTabs;
 import com.yogpc.qp.PlatformAccess;
@@ -39,7 +40,9 @@ import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -83,6 +86,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final BedrockModuleItem BEDROCK_MODULE_ITEM = new BedrockModuleItem();
 
         public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
+        public static final DataComponentType<Boolean> QUARRY_REMOVE_BEDROCK_COMPONENT = DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build();
 
         private static final List<InCreativeTabs> TAB_ITEMS = new ArrayList<>();
         public static final CreativeModeTab TAB = QuarryPlus.buildCreativeModeTab(FabricItemGroup.builder()).build();
@@ -104,6 +108,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             Registry.register(BuiltInRegistries.MENU, ModuleContainer.GUI_ID, MODULE_MENU);
             Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MachineLootFunction.NAME), MACHINE_LOOT_FUNCTION);
             Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
+            Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "quarry_remove_bedrock_component"), QUARRY_REMOVE_BEDROCK_COMPONENT);
         }
 
         private static void registerEntityBlock(QpBlock block, BlockEntityType<?> entityType) {
