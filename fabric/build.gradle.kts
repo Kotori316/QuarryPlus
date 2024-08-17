@@ -33,7 +33,7 @@ loom {
             property("fabric-api.datagen.strict-validation")
 
             isIdeConfigGenerated = true
-            source(sourceSets["test"])
+            source(sourceSets["dataGen"])
         }
         create("gameTestServer") {
             configName = "GameTest"

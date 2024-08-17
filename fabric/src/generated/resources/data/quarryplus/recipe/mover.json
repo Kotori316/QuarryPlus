@@ -2,11 +2,11 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "d": {
-      "tag": "c:gems/diamond"
-    },
     "a": {
       "item": "minecraft:anvil"
+    },
+    "d": {
+      "tag": "c:gems/diamond"
     },
     "g": {
       "tag": "c:ingots/gold"
@@ -14,11 +14,11 @@
     "i": {
       "tag": "c:ingots/iron"
     },
-    "o": {
-      "item": "minecraft:obsidian"
-    },
     "m": {
       "tag": "quarryplus:markers"
+    },
+    "o": {
+      "item": "minecraft:obsidian"
     }
   },
   "pattern": [
@@ -27,6 +27,7 @@
     "aoa"
   ],
   "result": {
+    "count": 1,
     "id": "quarryplus:mover"
   }
 }

@@ -5,18 +5,19 @@
     "g": {
       "tag": "c:glass_blocks"
     },
-    "l": {
+    "i": {
       "tag": "c:ingots/iron"
     },
-    "r": {
+    "m": {
       "tag": "quarryplus:markers"
     }
   },
   "pattern": [
     "ggg",
-    "lrl"
+    "imi"
   ],
   "result": {
+    "count": 1,
     "id": "quarryplus:status_checker"
   }
 }

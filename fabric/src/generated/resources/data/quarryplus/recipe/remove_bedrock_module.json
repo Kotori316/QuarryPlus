@@ -15,6 +15,7 @@
     " m "
   ],
   "result": {
+    "count": 1,
     "id": "quarryplus:remove_bedrock_module"
   }
 }
