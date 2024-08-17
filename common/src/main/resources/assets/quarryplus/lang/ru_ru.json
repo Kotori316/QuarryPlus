@@ -145,6 +145,7 @@
   "quarryplus.tooltip.placer_plus": "Right click with Redstone Torch to change mode.",
   "quarryplus.tooltip.repeat_tick_module": "Make the machine work faster",
   "quarryplus.tooltip.replacer": "This block is an attachment for %1$s and %2$s.%3$sPlace this next to machines.",
+  "tag.item.quarryplus.markers": "Quarry Markers",
   "text.autoconfig.quarryplus.option.adv_pump": "Advanced Pump",
   "text.autoconfig.quarryplus.option.adv_pump.advPumpEnergyCapacity": "AdvPumpEnergyCapacity",
   "text.autoconfig.quarryplus.option.adv_pump.advPumpEnergyRemoveFluid": "AdvPumpEnergyRemoveFluid",

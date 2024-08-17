@@ -145,6 +145,7 @@
   "quarryplus.tooltip.placer_plus": "用红石火把右键单击以更改模式。",
   "quarryplus.tooltip.repeat_tick_module": "Make the machine work faster",
   "quarryplus.tooltip.replacer": "这个是%1$s和%2$s的附件。%3$s请将这个方块放在机器旁边。",
+  "tag.item.quarryplus.markers": "Quarry Markers",
   "text.autoconfig.quarryplus.option.adv_pump": "Advanced Pump",
   "text.autoconfig.quarryplus.option.adv_pump.advPumpEnergyCapacity": "AdvPumpEnergyCapacity",
   "text.autoconfig.quarryplus.option.adv_pump.advPumpEnergyRemoveFluid": "AdvPumpEnergyRemoveFluid",
