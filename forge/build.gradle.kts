@@ -82,6 +82,9 @@ dependencies {
         isTransitive = false
     }
     runtimeOnly(libs.jei.forge)
+    implementation(libs.du.forge) {
+        isTransitive = false
+    }
     implementation(libs.tu.forge) {
         isTransitive = false
     }

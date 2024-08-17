@@ -9,6 +9,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -132,6 +133,18 @@ public abstract class QuarryBlock extends QpEntityBlock {
         this.<QuarryEntity>getBlockEntityType().map(t -> t.getBlockEntity(level, pos))
             .ifPresent(e -> e.saveToItem(stack, level.registryAccess()));
         return stack;
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            // Logic from Containers.dropContentsOnDestroy()
+            if (level.getBlockEntity(pos) instanceof QuarryEntity entity) {
+                Containers.dropContents(level, pos, entity.moduleInventory);
+                level.updateNeighbourForOutputSignal(pos, state.getBlock());
+            }
+        }
+        super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Override
