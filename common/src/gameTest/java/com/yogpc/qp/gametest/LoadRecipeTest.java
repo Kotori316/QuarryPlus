@@ -155,14 +155,12 @@ public final class LoadRecipeTest {
     public static void createPumpModule(GameTestHelper helper) {
         var name = "pump_module";
         var recipe = findRecipeNullable(helper, name);
-        if (recipe == null) {
-            if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
-                helper.succeed();
-                return;
-            }
-            helper.fail("Recipe not found");
+        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+            assertNull(recipe, "This recipe(%s) must not be loaded in fabric".formatted(name));
+            helper.succeed();
             return;
         }
+        assertNotNull(recipe, "Recipe not found");
 
         var d = Items.GREEN_DYE.getDefaultInstance();
         var g = Items.GLASS.getDefaultInstance();
@@ -174,6 +172,31 @@ public final class LoadRecipeTest {
             d, g, d,
             g, b, g,
             r, G, m
+        ));
+
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        assertEquals(name, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
+        helper.succeed();
+    }
+
+    public static void createBedrockModule(GameTestHelper helper) {
+        var name = "remove_bedrock_module";
+        var recipe = findRecipeNullable(helper, name);
+        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+            assertNull(recipe, "This recipe(%s) must not be loaded in fabric".formatted(name));
+            helper.succeed();
+            return;
+        }
+        assertNotNull(recipe, "Recipe not found");
+
+        var d = Items.DIAMOND_BLOCK.getDefaultInstance();
+        var o = Items.OBSIDIAN.getDefaultInstance();
+        var m = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
+        var input = CraftingInput.of(3, 3, List.of(
+            o, o, o,
+            d, m, d,
+            d, m, d
         ));
 
         assertTrue(recipe.matches(input, helper.getLevel()));
