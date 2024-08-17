@@ -2,31 +2,32 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "D": {
-      "item": "minecraft:dropper"
+    "a": {
+      "item": "minecraft:anvil"
     },
-    "R": {
-      "item": "minecraft:redstone_block"
+    "d": {
+      "tag": "forge:gems/diamond"
     },
     "g": {
-      "item": "minecraft:golden_pickaxe"
+      "tag": "forge:ingots/gold"
     },
     "i": {
       "tag": "forge:ingots/iron"
     },
-    "o": {
-      "tag": "forge:obsidian"
-    },
     "m": {
       "tag": "quarryplus:markers"
+    },
+    "o": {
+      "tag": "forge:obsidian"
     }
   },
   "pattern": [
-    "ioi",
-    "gDg",
-    "iRm"
+    "md ",
+    "igi",
+    "aoa"
   ],
   "result": {
-    "id": "quarryplus:quarry"
+    "count": 1,
+    "id": "quarryplus:mover"
   }
 }

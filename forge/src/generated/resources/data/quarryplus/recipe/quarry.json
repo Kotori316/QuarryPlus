@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "minecraft:dropper"
+    },
+    "R": {
+      "tag": "forge:storage_blocks/redstone"
+    },
+    "g": {
+      "item": "minecraft:golden_pickaxe"
+    },
+    "i": {
+      "tag": "forge:ingots/iron"
+    },
+    "m": {
+      "tag": "quarryplus:markers"
+    },
+    "o": {
+      "tag": "forge:obsidian"
+    }
+  },
+  "pattern": [
+    "ioi",
+    "gDg",
+    "iRm"
+  ],
+  "result": {
+    "count": 1,
+    "id": "quarryplus:quarry"
+  }
+}

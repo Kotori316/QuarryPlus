@@ -3,21 +3,21 @@
   "category": "misc",
   "key": {
     "g": {
-      "item": "minecraft:glowstone_dust"
+      "tag": "forge:glass"
     },
-    "l": {
+    "i": {
       "tag": "forge:gems/lapis"
     },
-    "r": {
-      "item": "minecraft:redstone_torch"
+    "m": {
+      "tag": "quarryplus:markers"
     }
   },
   "pattern": [
-    "glg",
-    "lrl",
-    "gl "
+    "ggg",
+    "imi"
   ],
   "result": {
-    "id": "quarryplus:marker"
+    "count": 1,
+    "id": "quarryplus:y_setter"
   }
 }
