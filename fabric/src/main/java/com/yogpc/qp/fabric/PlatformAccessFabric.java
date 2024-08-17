@@ -1,30 +1,33 @@
 package com.yogpc.qp.fabric;
 
 import com.mojang.datafixers.DSL;
-import com.yogpc.qp.FluidStackLike;
-import com.yogpc.qp.InCreativeTabs;
-import com.yogpc.qp.PlatformAccess;
-import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.*;
 import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.fabric.machine.misc.CheckerItemFabric;
 import com.yogpc.qp.fabric.machine.misc.YSetterItemFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
+import com.yogpc.qp.fabric.machine.quarry.QuarryMenuFabric;
 import com.yogpc.qp.fabric.packet.PacketHandler;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.QpItem;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.marker.NormalMarkerEntity;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
 import com.yogpc.qp.machine.misc.YSetterContainer;
+import com.yogpc.qp.machine.module.BedrockModuleItem;
+import com.yogpc.qp.machine.module.ModuleContainer;
+import com.yogpc.qp.machine.module.PumpModuleItem;
 import com.yogpc.qp.machine.mover.MoverBlock;
 import com.yogpc.qp.machine.mover.MoverContainer;
 import com.yogpc.qp.machine.mover.MoverEntity;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
+import com.yogpc.qp.recipe.InstallBedrockModuleRecipe;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
@@ -56,13 +59,12 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
     private final Lazy<RegisterObjects> itemsLazy = Lazy.lazy(RegisterObjectsFabric::new);
     private final Lazy<PacketHandler> packetHandlerLazy = Lazy.lazy(PacketHandler::new);
     private final Lazy<TransferFabric> transferLazy = Lazy.lazy(TransferFabric::new);
-    private final ConfigHolder configLazy = new ConfigHolder(() ->
-        QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment)
-    );
+    private final ConfigHolder configLazy = new ConfigHolder(this::modified);
 
     public static final class RegisterObjectsFabric implements RegisterObjects {
         public static final QuarryBlockFabric QUARRY_BLOCK = new QuarryBlockFabric();
         public static final BlockEntityType<QuarryEntityFabric> QUARRY_ENTITY_TYPE = BlockEntityType.Builder.of(QuarryEntityFabric::new, QUARRY_BLOCK).build(DSL.emptyPartType());
+        public static final MenuType<QuarryMenuFabric> QUARRY_MENU = new ExtendedScreenHandlerType<>(QuarryMenuFabric::new, BlockPos.STREAM_CODEC);
         public static final FrameBlock FRAME_BLOCK = new FrameBlock();
         public static final GeneratorBlock GENERATOR_BLOCK = new GeneratorBlock();
         public static final BlockEntityType<GeneratorEntity> GENERATOR_ENTITY_TYPE = BlockEntityType.Builder.of(GeneratorEntity::new, GENERATOR_BLOCK).build(DSL.emptyPartType());
@@ -74,6 +76,10 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final MoverBlock MOVER_BLOCK = new MoverBlock();
         public static final BlockEntityType<MoverEntity> MOVER_ENTITY_TYPE = BlockEntityType.Builder.of(MoverEntity::new, MOVER_BLOCK).build(DSL.emptyPartType());
         public static final MenuType<MoverContainer> MOVER_MENU = new ExtendedScreenHandlerType<>(MoverContainer::new, BlockPos.STREAM_CODEC);
+        public static final PumpModuleItem PUMP_MODULE_ITEM = new PumpModuleItem();
+        public static final MenuType<ModuleContainer> MODULE_MENU = new ExtendedScreenHandlerType<>(ModuleContainer::new, BlockPos.STREAM_CODEC);
+        public static final BedrockModuleItem BEDROCK_MODULE_ITEM = new BedrockModuleItem();
+
         public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
 
         private static final List<InCreativeTabs> TAB_ITEMS = new ArrayList<>();
@@ -84,14 +90,20 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerEntityBlock(QUARRY_BLOCK, QUARRY_ENTITY_TYPE);
             registerBlockItem(FRAME_BLOCK);
             registerEntityBlock(GENERATOR_BLOCK, GENERATOR_ENTITY_TYPE);
-            registerItem(CHECKER_ITEM, CHECKER_ITEM.name);
+            registerItem(CHECKER_ITEM);
             registerEntityBlock(MARKER_BLOCK, MARKER_ENTITY_TYPE);
-            registerItem(Y_SET_ITEM, Y_SET_ITEM.name);
+            registerItem(Y_SET_ITEM);
             registerEntityBlock(MOVER_BLOCK, MOVER_ENTITY_TYPE);
+            registerItem(PUMP_MODULE_ITEM);
+            registerItem(BEDROCK_MODULE_ITEM);
+            Registry.register(BuiltInRegistries.MENU, QuarryMenuFabric.GUI_ID, QUARRY_MENU);
             Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, Y_SET_MENU);
             Registry.register(BuiltInRegistries.MENU, MoverContainer.GUI_ID, MOVER_MENU);
+            Registry.register(BuiltInRegistries.MENU, ModuleContainer.GUI_ID, MODULE_MENU);
             Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MachineLootFunction.NAME), MACHINE_LOOT_FUNCTION);
             Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
+            Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "quarry_remove_bedrock_component"), QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT);
+            Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, InstallBedrockModuleRecipe.NAME), InstallBedrockModuleRecipe.SERIALIZER);
         }
 
         private static void registerEntityBlock(QpBlock block, BlockEntityType<?> entityType) {
@@ -107,6 +119,10 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             Registry.register(BuiltInRegistries.BLOCK, block.name, block);
             registerItem(block.blockItem, block.name);
             TAB_ITEMS.add(block);
+        }
+
+        private static void registerItem(QpItem item) {
+            registerItem(item, item.name);
         }
 
         private static void registerItem(Item item, ResourceLocation name) {
@@ -152,6 +168,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         }
 
         @Override
+        public Supplier<? extends BedrockModuleItem> bedrockModuleItem() {
+            return Lazy.value(BEDROCK_MODULE_ITEM);
+        }
+
+        @Override
         public Stream<Supplier<? extends InCreativeTabs>> allItems() {
             return TAB_ITEMS.stream().map(t -> () -> t);
         }
@@ -164,6 +185,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         @Override
         public Supplier<MenuType<? extends MoverContainer>> moverContainer() {
             return Lazy.value(MOVER_MENU);
+        }
+
+        @Override
+        public Supplier<MenuType<? extends ModuleContainer>> moduleContainer() {
+            return Lazy.value(MODULE_MENU);
         }
 
         @Override
@@ -228,5 +254,12 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
     @Override
     public void onServerStopped(MinecraftServer server) {
         configLazy.reset();
+    }
+
+    private QuarryConfig modified() {
+        var config = QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment);
+        var enableMap = config.enableMap();
+        enableMap.set(PumpModuleItem.NAME, false);
+        return config;
     }
 }

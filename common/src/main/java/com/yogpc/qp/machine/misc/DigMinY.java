@@ -37,4 +37,12 @@ public final class DigMinY {
         RecordCodecBuilder.of(t -> t.isSet, "isSet", Codec.BOOL),
         RecordCodecBuilder.of(t -> t.minY, "minY", Codec.INT)
     ).apply(i, DigMinY::new));
+
+    @Override
+    public String toString() {
+        return "DigMinY{" +
+            "isSet=" + isSet +
+            ", minY=" + minY +
+            '}';
+    }
 }

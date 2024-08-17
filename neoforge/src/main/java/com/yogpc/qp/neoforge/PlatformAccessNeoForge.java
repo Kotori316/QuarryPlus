@@ -17,6 +17,9 @@ import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
 import com.yogpc.qp.machine.misc.YSetterContainer;
+import com.yogpc.qp.machine.module.BedrockModuleItem;
+import com.yogpc.qp.machine.module.ModuleContainer;
+import com.yogpc.qp.machine.module.PumpModuleItem;
 import com.yogpc.qp.machine.mover.MoverBlock;
 import com.yogpc.qp.machine.mover.MoverContainer;
 import com.yogpc.qp.machine.mover.MoverEntity;
@@ -85,6 +88,8 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
 
         public static final DeferredItem<CheckerItemNeoForge> ITEM_CHECKER = registerItem(CheckerItemNeoForge.NAME, CheckerItemNeoForge::new);
         public static final DeferredItem<YSetterItemNeoForge> ITEM_Y_SET = registerItem(YSetterItemNeoForge.NAME, YSetterItemNeoForge::new);
+        public static final DeferredItem<PumpModuleItem> ITEM_PUMP_MODULE = registerItem(PumpModuleItem.NAME, PumpModuleItem::new);
+        public static final DeferredItem<BedrockModuleItem> ITEM_BEDROCK_MODULE = registerItem(BedrockModuleItem.NAME, BedrockModuleItem::new);
 
         private static final Map<Class<? extends QpBlock>, Supplier<BlockEntityType<?>>> BLOCK_ENTITY_TYPES = new HashMap<>();
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<QuarryEntityNeoForge>> QUARRY_ENTITY_TYPE = registerBlockEntity(QuarryBlockNeoForge.NAME, BLOCK_QUARRY, QuarryEntityNeoForge::new);
@@ -95,6 +100,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_MODE_TAB = CREATIVE_TAB_REGISTER.register(QuarryPlus.modID, () -> QuarryPlus.buildCreativeModeTab(CreativeModeTab.builder()).build());
         public static final DeferredHolder<MenuType<?>, MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = registerMenu("gui_y_setter", YSetterContainer::new);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends MoverContainer>> MOVER_MENU_TYPE = registerMenu("gui_mover", MoverContainer::new);
+        public static final DeferredHolder<MenuType<?>, MenuType<? extends ModuleContainer>> MODULE_MENU_TYPE = registerMenu("gui_quarry_module", ModuleContainer::new);
         public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<? extends MachineLootFunction>> MACHINE_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(MachineLootFunction.NAME, () -> new LootItemFunctionType<>(MachineLootFunction.SERIALIZER));
 
 
@@ -161,6 +167,11 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         }
 
         @Override
+        public Supplier<? extends BedrockModuleItem> bedrockModuleItem() {
+            return ITEM_BEDROCK_MODULE;
+        }
+
+        @Override
         public Stream<Supplier<? extends InCreativeTabs>> allItems() {
             return TAB_ITEMS.stream();
         }
@@ -173,6 +184,11 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         @Override
         public Supplier<MenuType<? extends MoverContainer>> moverContainer() {
             return MOVER_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<MenuType<? extends ModuleContainer>> moduleContainer() {
+            return MODULE_MENU_TYPE;
         }
 
         @Override

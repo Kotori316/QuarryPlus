@@ -1,6 +1,7 @@
 package com.yogpc.qp.machine.quarry;
 
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.machine.module.ModuleInventoryHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -103,6 +104,16 @@ public final class PlaceQuarryTest {
         assertEquals(5, enchantments.getLevel(getEnchantment(helper, Enchantments.EFFICIENCY)));
         assertEquals(3, enchantments.getLevel(getEnchantment(helper, Enchantments.UNBREAKING)));
         assertEquals(0, enchantments.getLevel(getEnchantment(helper, Enchantments.FORTUNE)));
+
+        helper.succeed();
+    }
+
+    public static void accessModuleInventory(GameTestHelper helper) {
+        helper.setBlock(base, PlatformAccess.getAccess().registerObjects().quarryBlock().get());
+        QuarryEntity quarry = helper.getBlockEntity(base);
+        var moduleInv = ModuleInventoryHolder.getFromObject(quarry);
+        assertTrue(moduleInv.isPresent());
+        assertTrue(moduleInv.get().getModules().isEmpty());
 
         helper.succeed();
     }

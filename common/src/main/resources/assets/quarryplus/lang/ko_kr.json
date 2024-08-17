@@ -97,6 +97,7 @@
   "quarryplus.chat.change_mode": "작업 모드가 %s(으)로 변경되었습니다.",
   "quarryplus.chat.chat.pump_not_contain": "---- 이 펌프 플러스는 액체를 보유하고 있지 않습니다.",
   "quarryplus.chat.current_mode": "현재, %s로 작업 중",
+  "quarryplus.chat.disable_item_message": "This item is disabled",
   "quarryplus.chat.disable_message": "%s이(가) 비활성화되어있습니다. 구성에서 활성화해주세요.",
   "quarryplus.chat.editor_enchantment": "기계와 동일한 마법부여를 추가합니다.",
   "quarryplus.chat.filler_mode": "프레임 모드",

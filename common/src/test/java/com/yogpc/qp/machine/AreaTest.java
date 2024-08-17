@@ -224,7 +224,7 @@ class AreaTest {
             var list = assertTimeoutPreemptively(Duration.ofSeconds(5), () -> assertDoesNotThrow(() -> Lists.newArrayList(itr)));
             assertNotEquals(0, list.size());
             assertNotEquals(1, list.size());
-            System.out.println(list);
+            // System.out.println(list);
         }
 
         @ParameterizedTest
@@ -273,7 +273,7 @@ class AreaTest {
             var itr = area.quarryDigPosIterator(y);
             var list = assertTimeoutPreemptively(Duration.ofSeconds(5), () -> assertDoesNotThrow(() -> Lists.newArrayList(itr)));
             assertEquals(15, list.size());
-            System.out.println(list);
+            // System.out.println(list);
         }
 
         @Test

@@ -97,6 +97,7 @@
   "quarryplus.chat.change_mode": "Working mode was changed to %s",
   "quarryplus.chat.chat.pump_not_contain": "---- This PumpPlus contains NO liquids",
   "quarryplus.chat.current_mode": "Now, working in %s",
+  "quarryplus.chat.disable_item_message": "This item is disabled",
   "quarryplus.chat.disable_message": "%s is disabled. Please enable it in config.",
   "quarryplus.chat.editor_enchantment": "Add the same enchantment as the machine.",
   "quarryplus.chat.filler_mode": "Frame Mode",

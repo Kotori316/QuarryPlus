@@ -1,9 +1,13 @@
 package com.yogpc.qp.machine.quarry;
 
+import com.google.common.collect.Sets;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.*;
 import com.yogpc.qp.machine.misc.DigMinY;
+import com.yogpc.qp.machine.module.ModuleInventory;
+import com.yogpc.qp.machine.module.QuarryModule;
+import com.yogpc.qp.machine.module.QuarryModuleProvider;
 import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -12,6 +16,7 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,6 +46,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -70,6 +76,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     public DigMinY digMinY = new DigMinY();
     @NotNull
     final EnchantmentCache enchantmentCache = new EnchantmentCache();
+    @NotNull
+    Set<QuarryModule> modules = Collections.emptySet();
+    @NotNull
+    final ModuleInventory moduleInventory = new ModuleInventory(5, q -> true, m -> modules);
 
     protected QuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -78,6 +88,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         targetHead = head;
         currentState = QuarryState.FINISHED;
         storage = new MachineStorage();
+        moduleInventory.addListener(container -> setChanged());
     }
 
     static PowerMap.Quarry powerMap() {
@@ -93,7 +104,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 detail(ChatFormatting.GREEN, "Area", String.valueOf(area)),
                 detail(ChatFormatting.GREEN, "Head", String.valueOf(head)),
                 detail(ChatFormatting.GREEN, "Storage", String.valueOf(storage)),
-                detail(ChatFormatting.GREEN, "DigMinY", String.valueOf(digMinY.getMinY(level)))
+                detail(ChatFormatting.GREEN, "DigMinY", String.valueOf(digMinY.getMinY(level))),
+                detail(ChatFormatting.GREEN, "Modules", String.valueOf(modules))
             )
         );
     }
@@ -130,6 +142,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         }
         tag.put("storage", MachineStorage.CODEC.codec().encodeStart(NbtOps.INSTANCE, storage).getOrThrow());
         tag.putLongArray("skipped", skipped.stream().mapToLong(BlockPos::asLong).toArray());
+        tag.put("moduleInventory", moduleInventory.createTag(registries));
     }
 
     @Override
@@ -143,6 +156,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         targetPos = current;
         storage = MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElse(new MachineStorage());
         skipped = LongStream.of(tag.getLongArray("skipped")).mapToObj(BlockPos::of).collect(Collectors.toCollection(HashSet::new));
+        moduleInventory.fromTag(tag.getList("moduleInventory", Tag.TAG_COMPOUND), registries);
     }
 
     @Override
@@ -181,6 +195,12 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         stack.applyComponents(this.collectComponents());
     }
 
+    @Override
+    public void setChanged() {
+        super.setChanged();
+        updateModules();
+    }
+
     public void setArea(@Nullable Area area) {
         this.area = area;
         if (area != null) {
@@ -199,6 +219,18 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             if (level != null) {
                 level.setBlock(getBlockPos(), blockState.setValue(QpBlockProperty.WORKING, QuarryState.isWorking(state)), Block.UPDATE_ALL);
             }
+        }
+    }
+
+    void updateModules() {
+        if (level == null) {
+            // In test?
+            this.modules = moduleInventory.getModules();
+        } else {
+            this.modules = Sets.union(
+                moduleInventory.getModules(),
+                QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
+            );
         }
     }
 
@@ -514,11 +546,13 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             serverLevel.setBlock(target, stateAfterBreak(serverLevel, target, state), Block.UPDATE_ALL);
             afterBreak(serverLevel, player, state, target, blockEntity);
 
-            assert area != null;
-            for (var edge : area.getEdgeForPos(target)) {
-                if (!level.getFluidState(edge).isEmpty()) {
-                    useEnergy((long) (powerMap().breakBlockFluid() * ONE_FE), false, true, "removeFluid");
-                    removeFluidAt(level, edge, player, PlatformAccess.getAccess().registerObjects().frameBlock().get().getDammingState());
+            if (shouldRemoveFluid()) {
+                assert area != null;
+                for (var edge : area.getEdgeForPos(target)) {
+                    if (!level.getFluidState(edge).isEmpty()) {
+                        useEnergy((long) (powerMap().breakBlockFluid() * ONE_FE), false, true, "removeFluid");
+                        removeFluidAt(level, edge, player, PlatformAccess.getAccess().registerObjects().frameBlock().get().getDammingState());
+                    }
                 }
             }
             return WorkResult.SUCCESS;
@@ -534,18 +568,44 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     protected abstract void afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity);
 
-    WorkResult breakBlockModuleOverride(Level level, BlockState state, BlockPos target, float hardness) {
+    WorkResult breakBlockModuleOverride(ServerLevel level, BlockState state, BlockPos target, float hardness) {
+        if (hardness < 0 && state.is(Blocks.BEDROCK) && shouldRemoveBedrock()) {
+            var worldBottom = level.getMinBuildHeight();
+            var targetY = target.getY();
+            if (level.dimension().equals(Level.NETHER)) {
+                if ((worldBottom >= targetY || targetY >= worldBottom + 5) && (122 >= targetY || targetY >= 128)) {
+                    return WorkResult.SKIPPED;
+                }
+            } else {
+                if (worldBottom >= targetY || targetY >= worldBottom + 5) {
+                    return WorkResult.SKIPPED;
+                }
+            }
+
+            var lookup = level.registryAccess().asGetterLookup();
+            var requiredEnergy = powerMap().getBreakEnergy(hardness,
+                enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, lookup),
+                0, 0, true
+            );
+            useEnergy(requiredEnergy, false, true, "breakBlock");
+            level.setBlock(target, stateAfterBreak(level, target, state), Block.UPDATE_ALL);
+            return WorkResult.SUCCESS;
+        }
         return WorkResult.SKIPPED;
     }
 
     protected abstract ServerPlayer getQuarryFakePlayer(ServerLevel level, BlockPos target);
 
-    boolean shouldRemoveFluid() {
-        return true;
+    protected boolean shouldRemoveFluid() {
+        return modules.contains(QuarryModule.Constant.PUMP);
     }
 
-    BlockState stateAfterBreak(Level level, BlockPos pos, BlockState before) {
+    protected BlockState stateAfterBreak(Level level, BlockPos pos, BlockState before) {
         return Blocks.AIR.defaultBlockState();
+    }
+
+    protected boolean shouldRemoveBedrock() {
+        return modules.contains(QuarryModule.Constant.BEDROCK);
     }
 
     void removeFluidAt(@NotNull Level level, BlockPos pos, ServerPlayer player, BlockState newState) {
@@ -600,7 +660,12 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     boolean canBreak(Level level, BlockPos pos, BlockState state) {
-        return !state.isAir() && !state.equals(stateAfterBreak(level, pos, state));
+        var fluid = level.getFluidState(pos);
+        if (fluid.isEmpty()) {
+            return !state.isAir() && !state.equals(stateAfterBreak(level, pos, state));
+        } else {
+            return shouldRemoveFluid();
+        }
     }
 
     /**

@@ -14,7 +14,7 @@ public record YAccessor<T extends BlockEntity & ClientSync>(DigMinY digMinY, T e
         };
     }
 
-    int getDigMinY() {
+    public int getDigMinY() {
         return digMinY.getMinY(entity.getLevel());
     }
 
@@ -22,11 +22,11 @@ public record YAccessor<T extends BlockEntity & ClientSync>(DigMinY digMinY, T e
         digMinY.setMinY(y);
     }
 
-    int getLimitTop() {
+    public int getLimitTop() {
         return entity.getBlockPos().getY() - 1;
     }
 
-    void syncToServer() {
+    public void syncToServer() {
         var message = new YSetterMessage(entity, digMinY.getMinY(entity.getLevel()));
         PlatformAccess.getAccess().packetHandler().sendToServer(message);
     }
