@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.neoforge.gradle)
     id("com.kotori316.publish")
     id("com.kotori316.gt")
+    id("com.kotori316.dg")
 }
 
 val modId = "QuarryPlus".lowercase()
@@ -38,6 +39,21 @@ runs {
         }
         isGameTest = true
     }
+
+    create("data") {
+        workingDirectory.set(project.file("runs/data"))
+        arguments.addAll(
+            "--mod",
+            "quarryplus",
+            "--all",
+            "--output",
+            file("src/generated/resources/").toString(),
+            "--existing",
+            file("src/main/resources/").toString()
+        )
+
+        modSources.add(modId, sourceSets["dataGen"])
+    }
 }
 
 dependencies {
@@ -66,6 +82,10 @@ tasks.processResources {
 
 tasks.compileGameTestJava {
     source(project(":common").sourceSets["gameTest"].allSource)
+}
+
+tasks.compileDataGenScala {
+    source(project(":common").sourceSets["dataGen"].allSource)
 }
 
 tasks.named("jar", Jar::class) {

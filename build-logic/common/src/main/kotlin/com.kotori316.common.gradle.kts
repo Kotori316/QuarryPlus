@@ -1,3 +1,4 @@
+import gradle.kotlin.dsl.accessors._6c780e3b70c94782c315f6f498efe4ad.versionCatalogs
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -131,6 +132,11 @@ repositories {
     }
     mavenCentral()
     mavenLocal()
+}
+
+dependencies {
+    // val catalog = project.versionCatalogs.named("libs")
+    // compileOnly(catalog.findLibrary("scala").get().get())
 }
 
 val jarAttributeMap = mapOf(

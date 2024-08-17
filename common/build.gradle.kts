@@ -3,6 +3,7 @@ import net.fabricmc.loom.task.AbstractRemapJarTask
 plugins {
     id("com.kotori316.common")
     alias(libs.plugins.fabric.loom)
+    id("com.kotori316.dg")
 }
 
 loom {
