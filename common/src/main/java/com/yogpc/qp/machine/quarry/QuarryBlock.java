@@ -79,18 +79,16 @@ public abstract class QuarryBlock extends QpEntityBlock {
     // Action
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (!level.isClientSide) {
-            var entity = this.<QuarryEntity>getBlockEntityType().map(t -> t.getBlockEntity(level, pos)).orElse(null);
-            if (entity != null) {
-                if (!level.isClientSide()) {
-                    if (entity.enabled) {
-                        openGui((ServerPlayer) player, level, pos, entity);
-                    } else {
-                        player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
-                    }
+        var entity = this.<QuarryEntity>getBlockEntityType().map(t -> t.getBlockEntity(level, pos)).orElse(null);
+        if (entity != null) {
+            if (!level.isClientSide()) {
+                if (entity.enabled) {
+                    openGui((ServerPlayer) player, level, pos, entity);
+                } else {
+                    player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
                 }
-                return InteractionResult.sidedSuccess(level.isClientSide());
             }
+            return InteractionResult.sidedSuccess(level.isClientSide());
         }
         return super.useWithoutItem(state, level, pos, player, hitResult);
     }

@@ -69,7 +69,7 @@ public final class QuarryScreenFabric extends AbstractContainerScreen<QuarryMenu
 
     static Tooltip bedrockMessageTooltip(boolean shouldRemoveBedrock) {
         var message = shouldRemoveBedrock ? Component.literal("Remove Bedrock ON") :
-            Component.literal("Craft quarry with Bedrock Module to enable to remove Bedrock");
+            Component.literal("Right click quarry with Bedrock Module to toggle");
         return Tooltip.create(message);
     }
 }

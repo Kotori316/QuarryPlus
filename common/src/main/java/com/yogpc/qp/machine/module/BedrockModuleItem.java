@@ -7,9 +7,6 @@ import net.minecraft.world.item.TooltipFlag;
 
 import java.util.List;
 
-/**
- * This item is always disabled in Fabric.
- */
 public final class BedrockModuleItem extends QpItem implements QuarryModuleProvider.Item {
     public static final String NAME = "remove_bedrock_module";
 
