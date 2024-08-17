@@ -209,6 +209,9 @@ tasks.named("processGenDataResources", ProcessResources::class) {
         }
     }
 }
+tasks.named("compileDataGenScala") {
+    dependsOn("processDataGenResources")
+}
 
 sourceSets.forEach {
     val dir = layout.buildDirectory.dir("forgeSourcesSets/${it.name}")

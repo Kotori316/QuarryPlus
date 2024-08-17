@@ -12,7 +12,8 @@ object QuarryDataGenerator {
   @static
   @SubscribeEvent
   def onEvent(event: GatherDataEvent): Unit = {
-    event.getGenerator.addProvider(event.includeServer, new Recipe(event.getGenerator.getPackOutput, event.getLookupProvider))
+    val ingredientProvider = IngredientProviderForge()
+    event.getGenerator.addProvider(event.includeServer, new Recipe(ingredientProvider, event.getGenerator.getPackOutput, event.getLookupProvider))
   }
 }
 

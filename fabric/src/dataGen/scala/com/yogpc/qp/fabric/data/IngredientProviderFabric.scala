@@ -1,11 +1,13 @@
 package com.yogpc.qp.fabric.data
 
 import com.yogpc.qp.data.IngredientProvider
+import net.fabricmc.fabric.api.resource.conditions.v1.{ResourceCondition, ResourceConditions}
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags
+import net.minecraft.data.recipes.RecipeOutput
 import net.minecraft.world.item.Items
 import net.minecraft.world.item.crafting.Ingredient
 
-final class IngredientProviderFabric extends IngredientProvider {
+final class IngredientProviderFabric(withCondition: (RecipeOutput, Seq[ResourceCondition]) => RecipeOutput) extends IngredientProvider {
   override def glowStoneDust: Ingredient = Ingredient.of(ConventionalItemTags.GLOWSTONE_DUSTS)
 
   override def redStoneDust: Ingredient = Ingredient.of(ConventionalItemTags.REDSTONE_DUSTS)
@@ -28,4 +30,8 @@ final class IngredientProviderFabric extends IngredientProvider {
 
   override def diamondBlock: Ingredient = Ingredient.of(ConventionalItemTags.STORAGE_BLOCKS_DIAMOND)
 
+  override def pumpModuleRecipeOutput(original: RecipeOutput): RecipeOutput = {
+    val condition = ResourceConditions.not(ResourceConditions.alwaysTrue())
+    withCondition(original, Seq(condition))
+  }
 }

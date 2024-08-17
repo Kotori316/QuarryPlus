@@ -10,8 +10,8 @@ import net.minecraft.world.item.{Item, Items}
 
 import java.util.concurrent.CompletableFuture
 
-class Recipe(output: PackOutput, registries: CompletableFuture[HolderLookup.Provider]) extends RecipeProvider(output, registries) {
-  private val ip = IngredientProvider.instance
+class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registries: CompletableFuture[HolderLookup.Provider]) extends RecipeProvider(output, registries) {
+  private val ip = ingredientProvider
 
   override def buildRecipes(recipeOutput: RecipeOutput): Unit = {
     ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects.markerBlock.get)

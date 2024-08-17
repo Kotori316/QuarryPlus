@@ -8,14 +8,6 @@ import net.minecraft.tags.TagKey
 import net.minecraft.world.item.crafting.Ingredient
 import net.minecraft.world.item.{Item, Items}
 
-import java.util.ServiceLoader
-
-object IngredientProvider {
-  val instance: IngredientProvider = {
-    ServiceLoader.load(classOf[IngredientProvider]).iterator.next
-  }
-}
-
 trait IngredientProvider {
   def glowStoneDust: Ingredient
 
