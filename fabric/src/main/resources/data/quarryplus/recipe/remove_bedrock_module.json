@@ -19,11 +19,5 @@
   ],
   "result": {
     "id": "quarryplus:remove_bedrock_module"
-  },
-  "fabric:load_conditions": {
-    "condition": "fabric:not",
-    "value": {
-      "condition": "fabric:true"
-    }
   }
 }

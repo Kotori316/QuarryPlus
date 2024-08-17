@@ -1,4 +1,10 @@
 {
   "type": "quarryplus:install_bedrock_module_recipe",
-  "target": "quarryplus:quarry"
+  "target": "quarryplus:quarry",
+  "fabric:load_conditions": {
+    "condition": "fabric:not",
+    "value": {
+      "condition": "fabric:true"
+    }
+  }
 }
