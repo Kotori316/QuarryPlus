@@ -4,9 +4,11 @@ plugins {
     alias(libs.plugins.forge.parchment)
     id("com.kotori316.publish")
     id("com.kotori316.gt")
+    id("com.kotori316.dg")
 }
 
 val modId = "QuarryPlus".lowercase()
+val minecraftVersion = libs.versions.minecraft.get()
 
 sourceSets {
     val mainSourceSet by main
@@ -18,6 +20,23 @@ sourceSets {
                 extendsFrom(
                     project.configurations.named(mainSourceSet.compileClasspathConfigurationName).get(),
                     project.configurations.named(gameTestSourceSet.compileClasspathConfigurationName).get(),
+                )
+            }
+            named(sourceSet.runtimeClasspathConfigurationName) {
+                extendsFrom(
+                    project.configurations.named(mainSourceSet.runtimeClasspathConfigurationName).get(),
+                )
+            }
+        }
+    }
+    val dataGenSourceSet by dataGen
+    create("genData") {
+        val sourceSet = this
+        project.configurations {
+            named(sourceSet.compileClasspathConfigurationName) {
+                extendsFrom(
+                    project.configurations.named(mainSourceSet.compileClasspathConfigurationName).get(),
+                    project.configurations.named(dataGenSourceSet.compileClasspathConfigurationName).get(),
                 )
             }
             named(sourceSet.runtimeClasspathConfigurationName) {
@@ -69,6 +88,25 @@ minecraft {
             mods {
                 create("main") {
                     source(sourceSets["runGame"])
+                }
+            }
+        }
+
+        create("data") {
+            workingDirectory(project.file("run-server"))
+            args(
+                "--mod",
+                modId,
+                "--all",
+                "--output",
+                file("src/generated/resources/"),
+                "--existing",
+                file("src/main/resources/")
+            )
+
+            mods {
+                create(modId) {
+                    source(sourceSets["genData"])
                 }
             }
         }
@@ -124,7 +162,7 @@ tasks.named("processRunGameResources", ProcessResources::class) {
     from(project.sourceSets.gameTest.get().resources)
 
     val projectVersion = project.version.toString()
-    val minecraft = "1.21"
+    val minecraft = minecraftVersion
     inputs.property("version", projectVersion)
     inputs.property("minecraftVersion", minecraft)
     listOf("fabric.mod.json", "META-INF/mods.toml", "META-INF/neoforge.mods.toml").forEach { fileName ->
@@ -138,10 +176,48 @@ tasks.named("processRunGameResources", ProcessResources::class) {
     }
 }
 
+tasks.named("compileGenDataScala", ScalaCompile::class) {
+    dependsOn("processGenDataResources")
+    project.findProject(":common")?.let {
+        source(it.sourceSets.main.get().java)
+        source(it.sourceSets.dataGen.get().scala)
+    }
+    source(project.sourceSets.main.get().java)
+    source(project.sourceSets.dataGen.get().scala)
+}
+
+tasks.named("processGenDataResources", ProcessResources::class) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    project.findProject(":common")?.let {
+        from(it.sourceSets.main.get().resources)
+        from(it.sourceSets.dataGen.get().resources)
+    }
+    from(project.sourceSets.main.get().resources)
+    from(project.sourceSets.dataGen.get().resources)
+
+    val projectVersion = project.version.toString()
+    val minecraft = minecraftVersion
+    inputs.property("version", projectVersion)
+    inputs.property("minecraftVersion", minecraft)
+    listOf("fabric.mod.json", "META-INF/mods.toml", "META-INF/neoforge.mods.toml").forEach { fileName ->
+        filesMatching(fileName) {
+            expand(
+                "version" to projectVersion,
+                "update_url" to "https://version.kotori316.com/get-version/${minecraft}/${project.name}/${modId}",
+                "mc_version" to minecraft,
+            )
+        }
+    }
+}
+tasks.named("compileDataGenScala") {
+    dependsOn("processDataGenResources")
+}
+
 sourceSets.forEach {
     val dir = layout.buildDirectory.dir("forgeSourcesSets/${it.name}")
     it.output.setResourcesDir(dir)
     it.java.destinationDirectory = dir
+    it.scala.destinationDirectory = dir
 }
 
 tasks.named("jar", Jar::class) {

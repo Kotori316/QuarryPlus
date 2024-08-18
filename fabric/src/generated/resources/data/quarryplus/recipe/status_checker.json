@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "g": {
+      "tag": "c:glass_blocks"
+    },
+    "i": {
+      "tag": "c:ingots/iron"
+    },
+    "m": {
+      "tag": "quarryplus:markers"
+    }
+  },
+  "pattern": [
+    "ggg",
+    "imi"
+  ],
+  "result": {
+    "count": 1,
+    "id": "quarryplus:status_checker"
+  }
+}

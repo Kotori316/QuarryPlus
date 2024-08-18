@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "quarryplus_data",
+  "name": "QuarryPlus Data",
+  "version": "1.0",
+  "license": "All rights reserved",
+  "entrypoints": {
+    "fabric-datagen": [
+      "com.yogpc.qp.fabric.data.QuarryDataGenerator"
+    ]
+  }
+}

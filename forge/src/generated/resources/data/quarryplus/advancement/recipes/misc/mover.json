@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_anvil": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:anvil"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_markers": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#quarryplus:markers"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "quarryplus:mover"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_anvil",
+      "has_markers"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "quarryplus:mover"
+    ]
+  }
+}

@@ -133,6 +133,11 @@ repositories {
     mavenLocal()
 }
 
+dependencies {
+    // val catalog = project.versionCatalogs.named("libs")
+    // compileOnly(catalog.findLibrary("scala").get().get())
+}
+
 val jarAttributeMap = mapOf(
     "Specification-Title" to "QuarryPlus",
     "Specification-Vendor" to "Kotori316",

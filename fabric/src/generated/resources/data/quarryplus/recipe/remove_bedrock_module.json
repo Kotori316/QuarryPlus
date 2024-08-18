@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "m": {
+      "tag": "quarryplus:markers"
+    },
+    "o": {
+      "item": "minecraft:obsidian"
+    }
+  },
+  "pattern": [
+    "ooo",
+    " m ",
+    " m "
+  ],
+  "result": {
+    "count": 1,
+    "id": "quarryplus:remove_bedrock_module"
+  }
+}

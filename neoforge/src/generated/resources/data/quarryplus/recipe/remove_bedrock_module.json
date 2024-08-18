@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "d": {
+      "tag": "c:storage_blocks/diamond"
+    },
+    "m": {
+      "tag": "quarryplus:markers"
+    },
+    "o": {
+      "tag": "c:obsidians"
+    }
+  },
+  "pattern": [
+    "ooo",
+    "dmd",
+    "dmd"
+  ],
+  "result": {
+    "count": 1,
+    "id": "quarryplus:remove_bedrock_module"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:anvil"
+    },
+    "d": {
+      "tag": "forge:gems/diamond"
+    },
+    "g": {
+      "tag": "forge:ingots/gold"
+    },
+    "i": {
+      "tag": "forge:ingots/iron"
+    },
+    "m": {
+      "tag": "quarryplus:markers"
+    },
+    "o": {
+      "tag": "forge:obsidian"
+    }
+  },
+  "pattern": [
+    "md ",
+    "igi",
+    "aoa"
+  ],
+  "result": {
+    "count": 1,
+    "id": "quarryplus:mover"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:false"
+    }
+  ],
+  "type": "quarryplus:install_bedrock_module_recipe",
+  "target": "quarryplus:quarry"
+}

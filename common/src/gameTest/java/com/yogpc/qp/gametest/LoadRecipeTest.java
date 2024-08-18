@@ -253,4 +253,11 @@ public final class LoadRecipeTest {
         assertFalse(recipe.matches(input, helper.getLevel()), "Not to install module twice");
         helper.succeed();
     }
+
+    public static void installBedrockModuleQuarry3(GameTestHelper helper) {
+        var name = "install_bedrock_module_quarry";
+        var recipe = findRecipeNullable(helper, name);
+        assertNull(recipe, "This recipe must not be loaded in all platforms");
+        helper.succeed();
+    }
 }

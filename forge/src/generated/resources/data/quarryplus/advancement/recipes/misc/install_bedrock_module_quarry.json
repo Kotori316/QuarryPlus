@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_bedrock_module": {
+      "conditions": {
+        "items": [
+          {
+            "items": "quarryplus:remove_bedrock_module"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "quarryplus:install_bedrock_module_quarry"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "forge:condition": {
+    "type": "forge:false"
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_bedrock_module"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "quarryplus:install_bedrock_module_quarry"
+    ]
+  }
+}

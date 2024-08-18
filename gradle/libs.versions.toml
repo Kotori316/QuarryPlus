@@ -9,6 +9,8 @@ fabric_version_checker = "2.4.0"
 tu = "21.0.7"
 du = "21.0.7"
 
+scala = "3.5.0"
+
 teamreborn_energy = "4.1.0"
 slp_forge = "3.3.3-build-15"
 slp_neoforge = "3.3.3-build-15"
@@ -34,6 +36,7 @@ plugin_neoforge_gradle = "7.0.161"
 
 [libraries]
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
+scala = { group = "org.scala-lang", name = "scala3-library_3", version.ref = "scala" }
 # JUnit
 junit = { group = "org.junit", name = "junit-bom", version.ref = "jupiter_api" }
 jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
