@@ -3,6 +3,7 @@ package com.yogpc.qp.machine.mover;
 import com.yogpc.qp.BeforeMC;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.PlatformAccessDelegate;
+import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.machine.QpBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -32,6 +34,7 @@ class MoverEntityTest extends BeforeMC {
         when(type.isValid(any())).thenReturn(true);
         PlatformAccess.RegisterObjects registerObjects = mock(PlatformAccess.RegisterObjects.class);
         when(registerObjects.getBlockEntityType(any())).thenReturn(Optional.of(type));
+        when(registerObjects.defaultEnableSetting()).thenReturn(Map.of("mover", EnableMap.EnableOrNot.CONFIG_ON));
         PlatformAccess spied = spy(PlatformAccessDelegate.createVanilla());
         doReturn(registerObjects).when(spied).registerObjects();
 

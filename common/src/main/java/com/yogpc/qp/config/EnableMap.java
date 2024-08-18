@@ -19,7 +19,8 @@ public final class EnableMap {
     }
 
     public boolean enabled(String name) {
-        if (PlatformAccess.getAccess().registerObjects().defaultEnableSetting().get(name) == EnableOrNot.ALWAYS_ON) {
+        if (PlatformAccess.getAccess().registerObjects() != null &&
+            PlatformAccess.getAccess().registerObjects().defaultEnableSetting().get(name) == EnableOrNot.ALWAYS_ON) {
             return true;
         }
         var value = machinesMap.get(name);
@@ -38,6 +39,10 @@ public final class EnableMap {
     }
 
     static EnableMap getDefault(BooleanSupplier inDevelop) {
+        if (PlatformAccess.getAccess().registerObjects() == null) {
+            // In unit test
+            return new EnableMap();
+        }
         var map = PlatformAccess.getAccess().registerObjects().defaultEnableSetting().entrySet().stream()
             .filter(e -> e.getValue().configurable())
             .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().on() || inDevelop.getAsBoolean()));
