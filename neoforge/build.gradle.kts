@@ -15,6 +15,25 @@ subsystems {
     }
 }
 
+// Common data gen
+sourceSets {
+    create("commonDataGen") {
+        val s = this
+        project.configurations {
+            named(s.compileClasspathConfigurationName) {
+                extendsFrom(project.configurations.dataGenCompileClasspath.get())
+            }
+            named(s.runtimeClasspathConfigurationName) {
+                extendsFrom(project.configurations.dataGenRuntimeClasspath.get())
+            }
+        }
+    }
+}
+tasks.named("processCommonDataGenResources", ProcessResources::class) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+// End Common data gen
+
 runs {
     configureEach {
         systemProperty("neoforge.enabledGameTestNamespaces", modId)
@@ -53,6 +72,23 @@ runs {
         )
 
         modSources.add(modId, sourceSets["dataGen"])
+    }
+
+    create("commonData") {
+        runType("data")
+        isDataGenerator = true
+        workingDirectory.set(project.file("runs/commonData"))
+        arguments.addAll(
+            "--mod",
+            "quarryplus",
+            "--all",
+            "--output",
+            project(":common").file("src/generated2/resources/").toString(),
+            "--existing",
+            project(":common").file("src/main/resources/").toString()
+        )
+
+        modSources.add(modId, sourceSets["commonDataGen"])
     }
 }
 
