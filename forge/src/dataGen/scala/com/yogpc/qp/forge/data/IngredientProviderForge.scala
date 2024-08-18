@@ -1,8 +1,10 @@
 package com.yogpc.qp.forge.data
 
 import com.yogpc.qp.data.IngredientProvider
+import net.minecraft.data.recipes.RecipeOutput
 import net.minecraft.world.item.crafting.Ingredient
 import net.minecraftforge.common.Tags
+import net.minecraftforge.common.crafting.conditions.FalseCondition
 
 final class IngredientProviderForge extends IngredientProvider {
 
@@ -27,4 +29,11 @@ final class IngredientProviderForge extends IngredientProvider {
   override def goldBlock: Ingredient = Ingredient.of(Tags.Items.STORAGE_BLOCKS_GOLD)
 
   override def diamondBlock: Ingredient = Ingredient.of(Tags.Items.STORAGE_BLOCKS_DIAMOND)
+
+  override def installBedrockModuleQuarryRecipeOutput(original: RecipeOutput): RecipeOutput = {
+    original match {
+      case recipe: CollectRecipe => recipe.withCondition(Seq(FalseCondition.INSTANCE))
+      case _ => original
+    }
+  }
 }
