@@ -72,6 +72,13 @@ jobs:
           TEST_UTILITY_LOG_ALL_DATA: true
           IGNORE_OTHER_MODS_IN_RUNTIME: true
           RUN_DATA: true
+      - name: 'Data common(in NeoForge module)'
+        if: matrix.platform == 'neoforge'
+        run: ./gradlew :${{ matrix.platform }}:runCommonData
+        env:
+          TEST_UTILITY_LOG_ALL_DATA: true
+          IGNORE_OTHER_MODS_IN_RUNTIME: true
+          RUN_DATA: true
       - name: Check updated files
         run: git diff --exit-code
       - name: GameTest ${{ matrix.platform }}
