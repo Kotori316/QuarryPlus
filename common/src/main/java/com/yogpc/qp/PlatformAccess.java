@@ -1,5 +1,6 @@
 package com.yogpc.qp;
 
+import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
@@ -61,6 +63,8 @@ public interface PlatformAccess {
         Supplier<? extends MoverBlock> moverBlock();
 
         Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block);
+
+        Map<String, EnableMap.EnableOrNot> defaultEnableSetting();
 
         Supplier<? extends BedrockModuleItem> bedrockModuleItem();
 
