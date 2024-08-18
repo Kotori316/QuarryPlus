@@ -22,12 +22,13 @@ object QuarryDataCommonGenerator {
     QuarryPlus.LOGGER.info("Start common data generation")
     val blockTag = QuarryBlockTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider, event.getExistingFileHelper)
     val itemTag = QuarryItemTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider, event.getExistingFileHelper, blockTag.contentsGetter())
-    event.getGenerator.addProvider(event.includeServer(), blockTag)
-    event.getGenerator.addProvider(event.includeServer(), itemTag)
+    event.getGenerator.addProvider(event.includeServer, blockTag)
+    event.getGenerator.addProvider(event.includeServer, itemTag)
 
     event.getGenerator.addProvider(event.includeServer, new LootTableProvider(event.getGenerator.getPackOutput, Collections.emptySet(),
       CollectionConverters.asJava(Seq(new LootTableProvider.SubProviderEntry(r => new BlockDropProvider(r), LootContextParamSets.BLOCK))),
       event.getLookupProvider
     ))
+    event.getGenerator.addProvider(event.includeClient, StateAndModelProvider(event.getGenerator, event.getExistingFileHelper))
   }
 }
