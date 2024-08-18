@@ -1,7 +1,12 @@
 package com.yogpc.qp.common.data
 
 import com.yogpc.qp.QuarryPlus
+import net.minecraft.DetectedVersion
 import net.minecraft.data.loot.LootTableProvider
+import net.minecraft.data.metadata.PackMetadataGenerator
+import net.minecraft.network.chat.Component
+import net.minecraft.server.packs.PackType
+import net.minecraft.server.packs.metadata.pack.PackMetadataSection
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
@@ -31,5 +36,8 @@ object QuarryDataCommonGenerator {
     ))
     event.getGenerator.addProvider(event.includeClient, StateAndModelProvider(event.getGenerator, event.getExistingFileHelper))
     event.getGenerator.addProvider(event.includeClient, QuarrySpriteSourceProvider(event.getGenerator.getPackOutput, event.getLookupProvider, event.getExistingFileHelper))
+    event.getGenerator.addProvider(true, PackMetadataGenerator(event.getGenerator.getPackOutput)
+      .add(PackMetadataSection.TYPE, PackMetadataSection(Component.literal("QuarryPlus Resource"), DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES)))
+    )
   }
 }
