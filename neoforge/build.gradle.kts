@@ -83,7 +83,7 @@ runs {
             "quarryplus",
             "--all",
             "--output",
-            project(":common").file("src/generated2/resources/").toString(),
+            project(":common").file("src/generated/resources/").toString(),
             "--existing",
             project(":common").file("src/main/resources/").toString()
         )
