@@ -30,5 +30,6 @@ object QuarryDataCommonGenerator {
       event.getLookupProvider
     ))
     event.getGenerator.addProvider(event.includeClient, StateAndModelProvider(event.getGenerator, event.getExistingFileHelper))
+    event.getGenerator.addProvider(event.includeClient, QuarrySpriteSourceProvider(event.getGenerator.getPackOutput, event.getLookupProvider, event.getExistingFileHelper))
   }
 }
