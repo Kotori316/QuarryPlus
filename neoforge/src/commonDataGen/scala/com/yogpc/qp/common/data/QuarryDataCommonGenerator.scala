@@ -16,5 +16,9 @@ object QuarryDataCommonGenerator {
   @SubscribeEvent
   def onEvent(event: GatherDataEvent): Unit = {
     QuarryPlus.LOGGER.info("Start common data generation")
+    val blockTag = QuarryBlockTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider, event.getExistingFileHelper)
+    val itemTag = QuarryItemTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider, event.getExistingFileHelper, blockTag.contentsGetter())
+    event.getGenerator.addProvider(event.includeServer(), blockTag)
+    event.getGenerator.addProvider(event.includeServer(), itemTag)
   }
 }
