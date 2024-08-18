@@ -1,11 +1,15 @@
 package com.yogpc.qp.common.data
 
 import com.yogpc.qp.QuarryPlus
+import net.minecraft.data.loot.LootTableProvider
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.data.event.GatherDataEvent
 
+import java.util.Collections
 import scala.annotation.static
+import scala.jdk.javaapi.CollectionConverters
 
 @EventBusSubscriber(modid = QuarryPlus.modID, bus = EventBusSubscriber.Bus.MOD)
 class QuarryDataCommonGenerator {
@@ -20,5 +24,10 @@ object QuarryDataCommonGenerator {
     val itemTag = QuarryItemTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider, event.getExistingFileHelper, blockTag.contentsGetter())
     event.getGenerator.addProvider(event.includeServer(), blockTag)
     event.getGenerator.addProvider(event.includeServer(), itemTag)
+
+    event.getGenerator.addProvider(event.includeServer, new LootTableProvider(event.getGenerator.getPackOutput, Collections.emptySet(),
+      CollectionConverters.asJava(Seq(new LootTableProvider.SubProviderEntry(r => new BlockDropProvider(r), LootContextParamSets.BLOCK))),
+      event.getLookupProvider
+    ))
   }
 }
