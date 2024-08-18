@@ -34,4 +34,6 @@ final class IngredientProviderFabric(withCondition: (RecipeOutput, Seq[ResourceC
     val condition = ResourceConditions.not(ResourceConditions.alwaysTrue())
     withCondition(original, Seq(condition))
   }
+
+  override def installBedrockModuleQuarryRecipeOutput(original: RecipeOutput): RecipeOutput = pumpModuleRecipeOutput(original)
 }

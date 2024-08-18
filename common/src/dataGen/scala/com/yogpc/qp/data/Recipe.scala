@@ -1,5 +1,6 @@
 package com.yogpc.qp.data
 
+import com.yogpc.qp.recipe.InstallBedrockModuleRecipe
 import com.yogpc.qp.{PlatformAccess, QuarryPlus}
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.BuiltInRegistries
@@ -83,8 +84,9 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .unlockedBy(ip.markerTag)
       .save(ip.pumpModuleRecipeOutput(recipeOutput))
 
+    val bedrockModule = quarryItem("remove_bedrock_module")
     {
-      val builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, quarryItem("remove_bedrock_module"))
+      val builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, bedrockModule)
       builder.define('o', ip.obsidian)
         .define('m', ip.marker)
       if (!PlatformAccess.getAccess.platformName().equalsIgnoreCase("fabric")) {
@@ -102,6 +104,10 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
         .unlockedBy(PlatformAccess.getAccess.registerObjects().quarryBlock().get())
         .save(recipeOutput)
     }
+
+    InstallBedrockModuleRecipe.builder(PlatformAccess.getAccess.registerObjects().quarryBlock().get())
+      .unlockedBy("has_bedrock_module", RecipeProvider.has(bedrockModule))
+      .save(ip.installBedrockModuleQuarryRecipeOutput(recipeOutput), ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "install_bedrock_module_quarry"))
   }
 
   private def quarryItem(name: String): Item = {

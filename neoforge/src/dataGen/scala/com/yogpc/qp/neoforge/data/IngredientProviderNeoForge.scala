@@ -1,9 +1,11 @@
 package com.yogpc.qp.neoforge.data
 
 import com.yogpc.qp.data.IngredientProvider
+import net.minecraft.data.recipes.RecipeOutput
 import net.minecraft.world.item.Items
 import net.minecraft.world.item.crafting.Ingredient
 import net.neoforged.neoforge.common.Tags
+import net.neoforged.neoforge.common.conditions.FalseCondition
 
 final class IngredientProviderNeoForge extends IngredientProvider {
   override def glowStoneDust: Ingredient = Ingredient.of(Tags.Items.DUSTS_GLOWSTONE)
@@ -29,4 +31,8 @@ final class IngredientProviderNeoForge extends IngredientProvider {
   override def goldBlock: Ingredient = Ingredient.of(Tags.Items.STORAGE_BLOCKS_GOLD)
 
   override def diamondBlock: Ingredient = Ingredient.of(Tags.Items.STORAGE_BLOCKS_DIAMOND)
+
+  override def installBedrockModuleQuarryRecipeOutput(original: RecipeOutput): RecipeOutput = {
+    original.withConditions(FalseCondition.INSTANCE)
+  }
 }

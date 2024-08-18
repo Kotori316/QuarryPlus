@@ -6,20 +6,30 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryDataComponents;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.QpBlock;
+import net.minecraft.advancements.*;
+import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Registered only in fabric
+ * Used only in fabric. Registered in all platforms.
  */
 public final class InstallBedrockModuleRecipe extends ShapelessRecipe {
     public static final String NAME = "install_bedrock_module_recipe";
@@ -81,7 +91,7 @@ public final class InstallBedrockModuleRecipe extends ShapelessRecipe {
         return stack;
     }
 
-    public static final class Serializer implements RecipeSerializer<InstallBedrockModuleRecipe> {
+    private static final class Serializer implements RecipeSerializer<InstallBedrockModuleRecipe> {
         public static final MapCodec<InstallBedrockModuleRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             RecordCodecBuilder.of(InstallBedrockModuleRecipe::getTargetBlockId, "target", ResourceLocation.CODEC)
         ).apply(i, InstallBedrockModuleRecipe::new));
@@ -96,6 +106,48 @@ public final class InstallBedrockModuleRecipe extends ShapelessRecipe {
         @Override
         public StreamCodec<RegistryFriendlyByteBuf, InstallBedrockModuleRecipe> streamCodec() {
             return STREAM_CODEC;
+        }
+    }
+
+    public static Builder builder(QpBlock block) {
+        return new Builder(block);
+    }
+
+    public static final class Builder implements RecipeBuilder {
+        private final QpBlock block;
+        private final RecipeCategory category = RecipeCategory.MISC;
+        private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
+
+        public Builder(QpBlock block) {
+            this.block = block;
+        }
+
+        @Override
+        public Builder unlockedBy(String name, Criterion<?> criterion) {
+            criteria.put(name, criterion);
+            return this;
+        }
+
+        @Override
+        public Builder group(@Nullable String groupName) {
+            throw new UnsupportedOperationException("Group definition is not supported");
+        }
+
+        @Override
+        public Item getResult() {
+            return block.blockItem;
+        }
+
+        @Override
+        public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+            Advancement.Builder builder = recipeOutput.advancement()
+                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
+                .rewards(AdvancementRewards.Builder.recipe(id))
+                .requirements(AdvancementRequirements.Strategy.OR);
+            this.criteria.forEach(builder::addCriterion);
+            InstallBedrockModuleRecipe recipe = new InstallBedrockModuleRecipe(block);
+            AdvancementHolder advancement = builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/"));
+            recipeOutput.accept(id, recipe, advancement);
         }
     }
 }

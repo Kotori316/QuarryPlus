@@ -43,4 +43,6 @@ trait IngredientProvider {
   }
 
   def pumpModuleRecipeOutput(original: RecipeOutput): RecipeOutput = original
+
+  def installBedrockModuleQuarryRecipeOutput(original: RecipeOutput): RecipeOutput = original
 }
