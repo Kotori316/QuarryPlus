@@ -1,4 +1,3 @@
-import gradle.kotlin.dsl.accessors._6c780e3b70c94782c315f6f498efe4ad.versionCatalogs
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 

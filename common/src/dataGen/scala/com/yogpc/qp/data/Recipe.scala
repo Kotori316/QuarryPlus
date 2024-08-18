@@ -89,16 +89,16 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       val builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, bedrockModule)
       builder.define('o', ip.obsidian)
         .define('m', ip.marker)
-      if (!PlatformAccess.getAccess.platformName().equalsIgnoreCase("fabric")) {
-        builder.define('d', ip.diamondBlock)
-          .pattern("ooo")
-          .pattern("dmd")
-          .pattern("dmd")
-      } else {
+      if (PlatformAccess.getAccess.platformName().equalsIgnoreCase("fabric")) {
         builder
           .pattern("ooo")
           .pattern(" m ")
           .pattern(" m ")
+      } else {
+        builder.define('d', ip.diamondBlock)
+          .pattern("ooo")
+          .pattern("dmd")
+          .pattern("dmd")
       }
       builder
         .unlockedBy(PlatformAccess.getAccess.registerObjects().quarryBlock().get())
