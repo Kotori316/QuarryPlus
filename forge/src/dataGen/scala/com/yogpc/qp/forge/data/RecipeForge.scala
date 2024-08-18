@@ -23,7 +23,7 @@ final class RecipeForge(output: PackOutput, registries: CompletableFuture[Holder
       val collector = CollectRecipe(provider)
       internal.buildRecipes(collector)
       collector
-    }.thenApplyAsync { collected =>
+    }.thenCompose { collected =>
       val registryOps = collected.registry().createSerializationContext(JsonOps.INSTANCE)
       val recipeFeatures = collected.getSavedRecipes.map { (id, recipe, conditions) =>
         val json = net.minecraft.world.item.crafting.Recipe.CODEC.encodeStart(registryOps, recipe).getOrThrow().getAsJsonObject
