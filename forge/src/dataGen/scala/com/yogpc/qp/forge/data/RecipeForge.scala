@@ -47,7 +47,11 @@ final class RecipeForge(output: PackOutput, registries: CompletableFuture[Holder
 
   private def saveConditions(registryOps: DynamicOps[JsonElement], conditions: Seq[ICondition], json: JsonObject): Unit = {
     if (conditions.nonEmpty) {
-      val singleCondition = new AndCondition(CollectionConverters.asJava(conditions))
+      val singleCondition = if (conditions.sizeIs == 1) {
+        conditions.head
+      } else {
+        new AndCondition(CollectionConverters.asJava(conditions))
+      }
       val encoded = ICondition.CODEC.encodeStart(registryOps, singleCondition).getOrThrow()
       json.add(ICondition.DEFAULT_FIELD, encoded)
     }

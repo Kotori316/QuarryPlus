@@ -1,0 +1,7 @@
+{
+  "type": "quarryplus:install_bedrock_module_recipe",
+  "forge:condition": {
+    "type": "forge:false"
+  },
+  "target": "quarryplus:quarry"
+}
