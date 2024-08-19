@@ -108,6 +108,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MachineLootFunction.NAME), MACHINE_LOOT_FUNCTION);
             Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
             Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "quarry_remove_bedrock_component"), QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT);
+            Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "quarry_holding_exp_component"), QuarryDataComponents.HOLDING_EXP_COMPONENT);
             Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, InstallBedrockModuleRecipe.NAME), InstallBedrockModuleRecipe.SERIALIZER);
         }
 

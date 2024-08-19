@@ -4,6 +4,8 @@ import com.google.common.collect.Sets;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.*;
+import com.yogpc.qp.machine.exp.ExpModule;
+import com.yogpc.qp.machine.misc.BlockBreakEventResult;
 import com.yogpc.qp.machine.misc.DigMinY;
 import com.yogpc.qp.machine.module.ModuleInventory;
 import com.yogpc.qp.machine.module.QuarryModule;
@@ -48,6 +50,7 @@ import org.slf4j.MarkerFactory;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -518,8 +521,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
         var hardness = state.getDestroySpeed(serverLevel, target);
         // First check event
-        var eventCancelled = checkBreakEvent(serverLevel, player, state, target, blockEntity);
-        if (eventCancelled) {
+        var eventResult = checkBreakEvent(serverLevel, player, state, target, blockEntity);
+        if (eventResult.canceled()) {
             return WorkResult.FAIL_EVENT;
         }
         // Second, check modules
@@ -542,9 +545,15 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         if (useEnergy(requiredEnergy, true, getMaxEnergy() < requiredEnergy, "breakBlock") == requiredEnergy) {
             useEnergy(requiredEnergy, false, getMaxEnergy() < requiredEnergy, "breakBlock");
             var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe);
-            drops.forEach(storage::addItem);
+            var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, drops, pickaxe);
             serverLevel.setBlock(target, stateAfterBreak(serverLevel, target, state), Block.UPDATE_ALL);
-            afterBreak(serverLevel, player, state, target, blockEntity);
+            if (!afterBreakEventResult.canceled()) {
+                drops.forEach(storage::addItem);
+                var amount = eventResult.exp().orElse(afterBreakEventResult.exp().orElse(0));
+                if (amount != 0) {
+                    ExpModule.getModule(modules).ifPresent(e -> e.addExp(amount));
+                }
+            }
 
             if (shouldRemoveFluid()) {
                 assert area != null;
@@ -561,12 +570,9 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         }
     }
 
-    /**
-     * @return {@code true} if event is cancelled. {@code false} if event is successfully accepted.
-     */
-    protected abstract boolean checkBreakEvent(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity);
+    protected abstract BlockBreakEventResult checkBreakEvent(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity);
 
-    protected abstract void afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity);
+    protected abstract BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe);
 
     WorkResult breakBlockModuleOverride(ServerLevel level, BlockState state, BlockPos target, float hardness) {
         if (hardness < 0 && state.is(Blocks.BEDROCK) && shouldRemoveBedrock()) {
@@ -644,7 +650,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                     return pos;
                 }
             }
-            // temporary set pos to get current Y
+            // temporary set pos to getModule current Y
             targetPos = targetIterator.getLastReturned();
             if (setNextDigTargetIterator()) {
                 return null;

@@ -58,6 +58,8 @@ public final class ExpModuleItem extends QpItem implements QuarryModuleProvider.
 
         @Override
         public void addExp(int amount) {
+            if (amount == 0) return;
+
             stack.update(QuarryDataComponents.HOLDING_EXP_COMPONENT, 0, amount, Integer::sum);
         }
 
