@@ -5,10 +5,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpBlockProperty;
 import com.yogpc.qp.machine.QpItem;
-import com.yogpc.qp.machine.misc.CheckerItem;
-import com.yogpc.qp.machine.misc.YSetterItem;
-import com.yogpc.qp.machine.module.BedrockModuleItem;
-import com.yogpc.qp.machine.module.PumpModuleItem;
+import com.yogpc.qp.neoforge.PlatformAccessNeoForge;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
@@ -66,24 +63,16 @@ final class StateAndModelProvider extends BlockStateProvider {
         // workDirectionalBlockAndItem(Holder.BLOCK_SOLID_FUEL_QUARRY);
 
         // Items
-        // simpleItem(Holder.ITEM_EXP_MODULE, "block/exp_pump_side");
+        simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_EXP_MODULE.get(), "block/exp_pump_side");
         // simpleItem(Holder.ITEM_FILLER_MODULE);
         // simpleItem(Holder.ITEM_FILTER_MODULE, "item/void_module");
         // simpleItem(Holder.ITEM_FUEL_MODULE_NORMAL);
-        simpleItem(findItem(PumpModuleItem.NAME), "block/pump_side");
-        simpleItem(findItem(BedrockModuleItem.NAME), "item/bedrock_module");
+        simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_PUMP_MODULE.get(), "block/pump_side");
+        simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_BEDROCK_MODULE.get(), "item/bedrock_module");
         // simpleItem(Holder.ITEM_REPLACER_MODULE, "block/replacer_side");
-        simpleItem(findItem(CheckerItem.NAME));
-        simpleItem(findItem(YSetterItem.NAME));
+        simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_CHECKER.get());
+        simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_Y_SET.get());
         // simpleItem(Holder.ITEM_REPEAT_MODULE);
-    }
-
-    QpItem findItem(String name) {
-        var item = BuiltInRegistries.ITEM.get(modLoc(name));
-        if (item instanceof QpItem qpItem) {
-            return qpItem;
-        }
-        throw new RuntimeException("Item " + name + " is not a QpItem.");
     }
 
     void frame() {

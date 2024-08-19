@@ -15,6 +15,7 @@ import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpItem;
+import com.yogpc.qp.machine.exp.ExpModuleItem;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.marker.NormalMarkerEntity;
 import com.yogpc.qp.machine.misc.FrameBlock;
@@ -80,6 +81,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final PumpModuleItem PUMP_MODULE_ITEM = new PumpModuleItem();
         public static final MenuType<ModuleContainer> MODULE_MENU = new ExtendedScreenHandlerType<>(ModuleContainer::new, BlockPos.STREAM_CODEC);
         public static final BedrockModuleItem BEDROCK_MODULE_ITEM = new BedrockModuleItem();
+        public static final ExpModuleItem EXP_MODULE_ITEM = new ExpModuleItem();
 
         public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
 
@@ -98,6 +100,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerEntityBlock(MOVER_BLOCK, MOVER_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             registerItem(PUMP_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
             registerItem(BEDROCK_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
+            registerItem(EXP_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
             Registry.register(BuiltInRegistries.MENU, QuarryMenuFabric.GUI_ID, QUARRY_MENU);
             Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, Y_SET_MENU);
             Registry.register(BuiltInRegistries.MENU, MoverContainer.GUI_ID, MOVER_MENU);
@@ -269,6 +272,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         var config = QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment);
         var enableMap = config.enableMap();
         enableMap.set(PumpModuleItem.NAME, false);
+        enableMap.set(ExpModuleItem.NAME, false);
         return config;
     }
 }
