@@ -2,7 +2,6 @@ package com.yogpc.qp.machine.exp;
 
 import com.yogpc.qp.QuarryDataComponents;
 import com.yogpc.qp.machine.QpItem;
-import com.yogpc.qp.machine.module.QuarryModule;
 import com.yogpc.qp.machine.module.QuarryModuleProvider;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -24,7 +23,7 @@ public final class ExpModuleItem extends QpItem implements QuarryModuleProvider.
     }
 
     @Override
-    public QuarryModule getModule(@NotNull ItemStack stack) {
+    public ExpModule getModule(@NotNull ItemStack stack) {
         return new ExpItemModule(stack);
     }
 
