@@ -12,6 +12,7 @@ object QuarryDataGenerator {
   @static
   @SubscribeEvent
   def onEvent(event: GatherDataEvent): Unit = {
+    QuarryPlus.LOGGER.info("Start NeoForge data generation")
     val ingredientProvider = IngredientProviderNeoForge()
     event.getGenerator.addProvider(event.includeServer, new Recipe(ingredientProvider, event.getGenerator.getPackOutput, event.getLookupProvider))
   }

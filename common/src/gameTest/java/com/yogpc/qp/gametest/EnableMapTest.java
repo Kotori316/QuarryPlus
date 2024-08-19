@@ -1,22 +1,21 @@
 package com.yogpc.qp.gametest;
 
 import com.google.common.base.CaseFormat;
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.machine.QpItem;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
-import java.io.InputStreamReader;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 public final class EnableMapTest {
 
@@ -35,22 +34,14 @@ public final class EnableMapTest {
             .filter(e -> e.getValue() instanceof QpItem)
             .map(Map.Entry::getKey)
             .map(ResourceKey::location);
-        var defaultConfig = GsonHelper.parse(new InputStreamReader(
-            Objects.requireNonNull(EnableMap.class.getResourceAsStream("/machine_default.json"), "Content in Jar must not be absent.")
-        ));
 
         return Stream.concat(blockEntityTypes, items).map(e -> {
             var name = "EnableMapTest_%s".formatted(e.getPath());
-            return new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, 100, 0, true, GameTestFunctions.wrapper(g -> {
-                if (EnableMap.ALWAYS_ON.contains(e.getPath())) {
-                    g.succeed();
-                    return;
+            return new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, 5, 0, true, GameTestFunctions.wrapper(g -> {
+                if (!PlatformAccess.getAccess().registerObjects().defaultEnableSetting().containsKey(e.getPath())) {
+                    g.fail("%s is not configured".formatted(e.getPath()));
                 }
-                if (defaultConfig.has(e.getPath())) {
-                    g.succeed();
-                    return;
-                }
-                g.fail("%s is not configured".formatted(e.getPath()));
+                g.succeed();
             }));
         });
     }
@@ -75,5 +66,33 @@ public final class EnableMapTest {
                 }
             }));
         });
+    }
+
+    public static void createInstance(GameTestHelper helper) {
+        assertDoesNotThrow(() -> new EnableMap());
+        helper.succeed();
+    }
+
+    public static void getFromEmptyMap(GameTestHelper helper) {
+        var map = new EnableMap();
+        assertAll(Stream.of("quarry", "pump").map(name -> () -> assertFalse(map.enabled(name))));
+        helper.succeed();
+    }
+
+    public static void getFromMap(GameTestHelper helper) {
+        var map = new EnableMap(Map.of(
+            "quarry", true
+        ));
+        assertTrue(map.enabled("quarry"));
+        assertFalse(map.enabled("pump"));
+        helper.succeed();
+    }
+
+    public static void setToMap(GameTestHelper helper) {
+        var map = new EnableMap();
+        assertFalse(map.enabled("quarry"));
+        map.set("quarry", true);
+        assertTrue(map.enabled("quarry"));
+        helper.succeed();
     }
 }

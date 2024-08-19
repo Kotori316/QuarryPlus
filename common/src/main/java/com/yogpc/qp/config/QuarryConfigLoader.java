@@ -31,7 +31,13 @@ final class QuarryConfigLoader {
         var debug = config.<Boolean>get("debug");
         var quarry = PowerMap.Quarry.CODEC.codec().parse(JavaOps.INSTANCE, config.<Config>get("powerMap.quarry").valueMap()).getOrThrow();
         var powerMap = new PowerMap(quarry);
-        var enableMap = EnableMap.from(config.<Config>get("enableMap").valueMap());
+        var enableMapConfig = config.<Config>get("enableMap");
+        EnableMap enableMap;
+        if (enableMapConfig != null) {
+            enableMap = EnableMap.from(enableMapConfig.valueMap());
+        } else {
+            enableMap = new EnableMap();
+        }
         var rebornEnergyConversionCoefficient = config.<Double>get("rebornEnergyConversionCoefficient");
 
         return new QuarryConfigImpl(debug, powerMap, enableMap, rebornEnergyConversionCoefficient);

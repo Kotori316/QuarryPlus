@@ -3,6 +3,7 @@ package com.yogpc.qp.fabric;
 import com.mojang.datafixers.DSL;
 import com.yogpc.qp.*;
 import com.yogpc.qp.config.ConfigHolder;
+import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.fabric.machine.misc.CheckerItemFabric;
 import com.yogpc.qp.fabric.machine.misc.YSetterItemFabric;
@@ -85,17 +86,18 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         private static final List<InCreativeTabs> TAB_ITEMS = new ArrayList<>();
         public static final CreativeModeTab TAB = QuarryPlus.buildCreativeModeTab(FabricItemGroup.builder()).build();
         private static final Map<Class<? extends QpBlock>, BlockEntityType<?>> BLOCK_ENTITY_TYPES = new HashMap<>();
+        private static final Map<String, EnableMap.EnableOrNot> ENABLE_MAP = new HashMap<>();
 
         static void registerAll() {
-            registerEntityBlock(QUARRY_BLOCK, QUARRY_ENTITY_TYPE);
+            registerEntityBlock(QUARRY_BLOCK, QUARRY_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             registerBlockItem(FRAME_BLOCK);
-            registerEntityBlock(GENERATOR_BLOCK, GENERATOR_ENTITY_TYPE);
-            registerItem(CHECKER_ITEM);
-            registerEntityBlock(MARKER_BLOCK, MARKER_ENTITY_TYPE);
-            registerItem(Y_SET_ITEM);
-            registerEntityBlock(MOVER_BLOCK, MOVER_ENTITY_TYPE);
-            registerItem(PUMP_MODULE_ITEM);
-            registerItem(BEDROCK_MODULE_ITEM);
+            registerEntityBlock(GENERATOR_BLOCK, GENERATOR_ENTITY_TYPE, EnableMap.EnableOrNot.ALWAYS_ON);
+            registerItem(CHECKER_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
+            registerEntityBlock(MARKER_BLOCK, MARKER_ENTITY_TYPE, EnableMap.EnableOrNot.ALWAYS_ON);
+            registerItem(Y_SET_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
+            registerEntityBlock(MOVER_BLOCK, MOVER_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
+            registerItem(PUMP_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
+            registerItem(BEDROCK_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
             Registry.register(BuiltInRegistries.MENU, QuarryMenuFabric.GUI_ID, QUARRY_MENU);
             Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, Y_SET_MENU);
             Registry.register(BuiltInRegistries.MENU, MoverContainer.GUI_ID, MOVER_MENU);
@@ -106,13 +108,14 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, InstallBedrockModuleRecipe.NAME), InstallBedrockModuleRecipe.SERIALIZER);
         }
 
-        private static void registerEntityBlock(QpBlock block, BlockEntityType<?> entityType) {
+        private static void registerEntityBlock(QpBlock block, BlockEntityType<?> entityType, EnableMap.EnableOrNot enable) {
             if (!entityType.isValid(block.defaultBlockState())) {
                 throw new IllegalArgumentException("Invalid block entity type (%s) for %s".formatted(entityType, block.getClass().getSimpleName()));
             }
             registerBlockItem(block);
             Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, block.name, entityType);
             BLOCK_ENTITY_TYPES.put(block.getClass(), entityType);
+            ENABLE_MAP.put(block.name.getPath(), enable);
         }
 
         private static void registerBlockItem(QpBlock block) {
@@ -121,8 +124,9 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             TAB_ITEMS.add(block);
         }
 
-        private static void registerItem(QpItem item) {
+        private static void registerItem(QpItem item, EnableMap.EnableOrNot enable) {
             registerItem(item, item.name);
+            ENABLE_MAP.put(item.name.getPath(), enable);
         }
 
         private static void registerItem(Item item, ResourceLocation name) {
@@ -165,6 +169,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
                 return Optional.empty();
             }
             return Optional.of(t);
+        }
+
+        @Override
+        public Map<String, EnableMap.EnableOrNot> defaultEnableSetting() {
+            return ENABLE_MAP;
         }
 
         @Override

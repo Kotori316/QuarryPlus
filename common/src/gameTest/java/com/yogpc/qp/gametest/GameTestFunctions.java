@@ -18,7 +18,8 @@ import java.util.stream.Stream;
 public final class GameTestFunctions {
     public static List<TestFunction> createTestFunctionsNoPlace(String batchName, String structureName) {
         List<Class<?>> classes = List.of(
-            LoadRecipeTest.class
+            LoadRecipeTest.class,
+            EnableMapTest.class
         );
         var fromClass = getTestFunctionStream(batchName, structureName, classes);
         return Stream.of(
