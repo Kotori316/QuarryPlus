@@ -6,3 +6,4 @@ import net.minecraft.tags.{BlockTags, ItemTags}
 
 val markerBlockTag = BlockTags.create(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "markers"))
 val markerItemTag = ItemTags.create(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "markers"))
+val quarryPickaxeTag = ItemTags.create(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "quarry_pickaxes"))

@@ -25,11 +25,7 @@ object QuarryDataCommonGenerator {
   @SubscribeEvent
   def onEvent(event: GatherDataEvent): Unit = {
     QuarryPlus.LOGGER.info("Start common data generation")
-    val blockTag = QuarryBlockTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider, event.getExistingFileHelper)
-    val itemTag = QuarryItemTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider, event.getExistingFileHelper, blockTag.contentsGetter())
-    event.getGenerator.addProvider(event.includeServer, blockTag)
-    event.getGenerator.addProvider(event.includeServer, itemTag)
-
+    event.getGenerator.addProvider(event.includeServer, new EnchantmentProvider(event.getGenerator.getPackOutput, event.getLookupProvider))
     event.getGenerator.addProvider(event.includeServer, new LootTableProvider(event.getGenerator.getPackOutput, Collections.emptySet(),
       CollectionConverters.asJava(Seq(new LootTableProvider.SubProviderEntry(r => new BlockDropProvider(r), LootContextParamSets.BLOCK))),
       event.getLookupProvider
@@ -39,5 +35,11 @@ object QuarryDataCommonGenerator {
     event.getGenerator.addProvider(true, PackMetadataGenerator(event.getGenerator.getPackOutput)
       .add(PackMetadataSection.TYPE, PackMetadataSection(Component.literal("QuarryPlus Resource"), DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES)))
     )
+
+    val blockTag = QuarryBlockTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider, event.getExistingFileHelper)
+    val itemTag = QuarryItemTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider, event.getExistingFileHelper, blockTag.contentsGetter())
+    event.getGenerator.addProvider(event.includeServer, blockTag)
+    event.getGenerator.addProvider(event.includeServer, itemTag)
+    //  event.getGenerator.addProvider(event.includeServer, QuarryEnchantmentTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider, event.getExistingFileHelper))
   }
 }
