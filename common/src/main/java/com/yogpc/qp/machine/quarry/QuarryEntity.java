@@ -504,8 +504,14 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                     storage.addItem(i.getItem());
                     i.kill();
                 });
-            serverLevel.getEntitiesOfClass(ExperienceOrb.class, new AABB(target).inflate(5), EntitySelector.ENTITY_STILL_ALIVE)
-                .forEach(Entity::kill);
+            if (shouldCollectExp()) {
+                var orbs = serverLevel.getEntitiesOfClass(ExperienceOrb.class, new AABB(target).inflate(5), EntitySelector.ENTITY_STILL_ALIVE);
+                var amount = orbs.stream().mapToInt(ExperienceOrb::getValue).sum();
+                if (amount != 0) {
+                    ExpModule.getModule(modules).ifPresent(e -> e.addExp(amount));
+                }
+                orbs.forEach(Entity::kill);
+            }
         }
 
         var state = serverLevel.getBlockState(target);
@@ -612,6 +618,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     protected boolean shouldRemoveBedrock() {
         return modules.contains(QuarryModule.Constant.BEDROCK);
+    }
+
+    protected boolean shouldCollectExp() {
+        return modules.stream().anyMatch(ExpModule.class::isInstance);
     }
 
     void removeFluidAt(@NotNull Level level, BlockPos pos, ServerPlayer player, BlockState newState) {

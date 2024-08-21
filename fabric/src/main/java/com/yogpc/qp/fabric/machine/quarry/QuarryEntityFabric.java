@@ -95,6 +95,11 @@ public final class QuarryEntityFabric extends QuarryEntity {
     }
 
     @Override
+    protected boolean shouldCollectExp() {
+        return true;
+    }
+
+    @Override
     protected BlockState stateAfterBreak(Level level, BlockPos pos, BlockState before) {
         return Blocks.AIR.defaultBlockState();
     }
