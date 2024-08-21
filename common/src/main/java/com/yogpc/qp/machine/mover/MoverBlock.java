@@ -1,6 +1,7 @@
 package com.yogpc.qp.machine.mover;
 
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.enchantment.QuarryPickaxeEnchantment;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpEntityBlock;
@@ -61,6 +62,12 @@ public final class MoverBlock extends QpEntityBlock {
     public Stream<ItemStack> creativeTabItem(CreativeModeTab.ItemDisplayParameters parameters) {
         var enchantments = parameters.holders().lookupOrThrow(Registries.ENCHANTMENT);
         var builder = Stream.<ItemStack>builder();
+        {
+            var stack = new ItemStack(Items.DIAMOND_PICKAXE);
+            stack.enchant(enchantments.getOrThrow(Enchantments.EFFICIENCY), 5);
+            stack.enchant(enchantments.getOrThrow(QuarryPickaxeEnchantment.KEY), 1);
+            builder.add(stack);
+        }
         {
             var stack = new ItemStack(Items.DIAMOND_PICKAXE);
             stack.enchant(enchantments.getOrThrow(Enchantments.EFFICIENCY), 5);

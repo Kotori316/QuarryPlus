@@ -163,10 +163,11 @@ public abstract class QuarryBlock extends QpEntityBlock {
         var stack = new ItemStack(this);
         builder.add(stack);
 
-        var efficiency = parameters.holders().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.EFFICIENCY);
-        var unbreaking = parameters.holders().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.UNBREAKING);
-        var fortune = parameters.holders().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE);
-        var silkTouch = parameters.holders().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH);
+        var lookup = parameters.holders().lookupOrThrow(Registries.ENCHANTMENT);
+        var efficiency = lookup.getOrThrow(Enchantments.EFFICIENCY);
+        var unbreaking = lookup.getOrThrow(Enchantments.UNBREAKING);
+        var fortune = lookup.getOrThrow(Enchantments.FORTUNE);
+        var silkTouch = lookup.getOrThrow(Enchantments.SILK_TOUCH);
         {
             // Efficiency
             var e = stack.copy();

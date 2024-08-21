@@ -510,10 +510,11 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             // Nothing to do
             return WorkResult.SUCCESS;
         }
+        var lookup = serverLevel.registryAccess().asGetterLookup();
         var blockEntity = serverLevel.getBlockEntity(target);
         var player = getQuarryFakePlayer(serverLevel, target);
         var pickaxe = Items.NETHERITE_PICKAXE.getDefaultInstance();
-        EnchantmentHelper.setEnchantments(pickaxe, getEnchantments());
+        EnchantmentHelper.setEnchantments(pickaxe, enchantmentCache.getEnchantmentsForPickaxe(getEnchantments(), lookup));
         player.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
 
         var hardness = state.getDestroySpeed(serverLevel, target);
@@ -532,7 +533,6 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             // Unbreakable
             return WorkResult.SKIPPED;
         }
-        var lookup = serverLevel.registryAccess().asGetterLookup();
         var requiredEnergy = powerMap().getBreakEnergy(hardness,
             enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, lookup),
             enchantmentCache.getLevel(getEnchantments(), Enchantments.UNBREAKING, lookup),
