@@ -19,7 +19,8 @@ public final class GameTestFunctions {
     public static List<TestFunction> createTestFunctionsNoPlace(String batchName, String structureName) {
         List<Class<?>> classes = List.of(
             LoadRecipeTest.class,
-            EnableMapTest.class
+            EnableMapTest.class,
+            EnchantmentTest.class
         );
         var fromClass = getTestFunctionStream(batchName, structureName, classes);
         return Stream.of(
