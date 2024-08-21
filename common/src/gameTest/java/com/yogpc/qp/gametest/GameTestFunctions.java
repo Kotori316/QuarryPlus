@@ -20,6 +20,7 @@ public final class GameTestFunctions {
         List<Class<?>> classes = List.of(
             LoadRecipeTest.class,
             EnableMapTest.class,
+            ExpModuleItemTest.class,
             EnchantmentTest.class
         );
         var fromClass = getTestFunctionStream(batchName, structureName, classes, 3);
