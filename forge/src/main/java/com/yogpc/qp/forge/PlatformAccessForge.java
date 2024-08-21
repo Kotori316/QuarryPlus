@@ -1,10 +1,7 @@
 package com.yogpc.qp.forge;
 
 import com.mojang.datafixers.DSL;
-import com.yogpc.qp.FluidStackLike;
-import com.yogpc.qp.InCreativeTabs;
-import com.yogpc.qp.PlatformAccess;
-import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.*;
 import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
@@ -18,6 +15,7 @@ import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.exp.ExpModuleItem;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
@@ -96,6 +94,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<YSetterItemForge> ITEM_Y_SET = registerItem(YSetterItemForge.NAME, YSetterItemForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
         public static final RegistryObject<PumpModuleItem> ITEM_PUMP_MODULE = registerItem(PumpModuleItem.NAME, PumpModuleItem::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final RegistryObject<BedrockModuleItem> ITEM_BEDROCK_MODULE = registerItem(BedrockModuleItem.NAME, BedrockModuleItem::new, EnableMap.EnableOrNot.CONFIG_ON);
+        public static final RegistryObject<ExpModuleItem> ITEM_EXP_MODULE = registerItem(ExpModuleItem.NAME, ExpModuleItem::new, EnableMap.EnableOrNot.CONFIG_ON);
 
         private static final Map<Class<? extends QpBlock>, Supplier<BlockEntityType<?>>> BLOCK_ENTITY_TYPES = new HashMap<>();
         public static final RegistryObject<BlockEntityType<QuarryEntityForge>> QUARRY_ENTITY_TYPE = registerBlockEntity(QuarryBlockForge.NAME, BLOCK_QUARRY, QuarryEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
@@ -111,6 +110,11 @@ public final class PlatformAccessForge implements PlatformAccess {
 
         public static final RegistryObject<CreativeModeTab> CREATIVE_MODE_TAB = CREATIVE_TAB_REGISTER.register(QuarryPlus.modID, () -> QuarryPlus.buildCreativeModeTab(CreativeModeTab.builder()).build());
         public static final RegistryObject<RecipeSerializer<InstallBedrockModuleRecipe>> INSTALL_BEDROCK_MODULE_RECIPE = RECIPE_REGISTER.register(InstallBedrockModuleRecipe.NAME, () -> InstallBedrockModuleRecipe.SERIALIZER);
+
+        static {
+            DATA_COMPONENT_TYPE_REGISTER.register("quarry_remove_bedrock_component", () -> QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT);
+            DATA_COMPONENT_TYPE_REGISTER.register("quarry_holding_exp_component", () -> QuarryDataComponents.HOLDING_EXP_COMPONENT);
+        }
 
         private static <T extends QpBlock> RegistryObject<T> registerBlock(String name, Supplier<T> supplier) {
             var block = BLOCK_REGISTER.register(name, supplier);
