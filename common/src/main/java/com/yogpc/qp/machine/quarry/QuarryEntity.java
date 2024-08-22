@@ -548,8 +548,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         if (useEnergy(requiredEnergy, true, getMaxEnergy() < requiredEnergy, "breakBlock") == requiredEnergy) {
             useEnergy(requiredEnergy, false, getMaxEnergy() < requiredEnergy, "breakBlock");
             var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe);
-            serverLevel.setBlock(target, stateAfterBreak(serverLevel, target, state), Block.UPDATE_ALL);
-            var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, drops, pickaxe);
+            var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, drops, pickaxe, stateAfterBreak(serverLevel, target, state));
             if (!afterBreakEventResult.canceled()) {
                 drops.forEach(storage::addItem);
                 var amount = eventResult.exp().orElse(afterBreakEventResult.exp().orElse(0));
@@ -575,7 +574,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     protected abstract BlockBreakEventResult checkBreakEvent(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity);
 
-    protected abstract BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe);
+    /**
+     * In this method, you must replace/remove the target block
+     */
+    protected abstract BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe, BlockState newState);
 
     WorkResult breakBlockModuleOverride(ServerLevel level, BlockState state, BlockPos target, float hardness) {
         if (hardness < 0 && state.is(Blocks.BEDROCK) && shouldRemoveBedrock()) {
