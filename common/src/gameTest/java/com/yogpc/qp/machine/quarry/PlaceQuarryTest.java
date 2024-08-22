@@ -4,9 +4,13 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.gametest.GameTestFunctions;
 import com.yogpc.qp.machine.module.ModuleInventoryHolder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -98,6 +102,47 @@ public final class PlaceQuarryTest {
         assertEquals(0, enchantments.getLevel(GameTestFunctions.getEnchantment(helper, Enchantments.FORTUNE)));
 
         helper.succeed();
+    }
+
+    public static void placeQuarry1(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                var player = helper.makeMockPlayer(GameType.SURVIVAL);
+                var stack = new ItemStack(PlatformAccess.getAccess().registerObjects().quarryBlock().get());
+                player.setItemInHand(InteractionHand.MAIN_HAND, stack);
+
+                helper.placeAt(player, stack, base.below(), Direction.UP);
+            })
+            .thenExecuteAfter(1, () -> helper.assertBlockPresent(PlatformAccess.getAccess().registerObjects().quarryBlock().get(), base))
+            .thenExecuteAfter(1, () -> {
+                QuarryEntity quarry = helper.getBlockEntity(base);
+                var enchantments = quarry.getEnchantments();
+                assertTrue(enchantments.isEmpty());
+            })
+            .thenSucceed();
+    }
+
+    public static void placeQuarry2(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                var player = helper.makeMockPlayer(GameType.SURVIVAL);
+                var stack = new ItemStack(PlatformAccess.getAccess().registerObjects().quarryBlock().get());
+                stack.enchant(GameTestFunctions.getEnchantment(helper, Enchantments.EFFICIENCY), 3);
+                stack.enchant(GameTestFunctions.getEnchantment(helper, Enchantments.UNBREAKING), 3);
+                player.setItemInHand(InteractionHand.MAIN_HAND, stack);
+
+                helper.placeAt(player, stack, base.below(), Direction.UP);
+            })
+            .thenExecuteAfter(1, () -> helper.assertBlockPresent(PlatformAccess.getAccess().registerObjects().quarryBlock().get(), base))
+            .thenExecuteAfter(1, () -> {
+                QuarryEntity quarry = helper.getBlockEntity(base);
+                var enchantments = quarry.getEnchantments();
+                assertFalse(enchantments.isEmpty());
+                assertEquals(3, enchantments.getLevel(GameTestFunctions.getEnchantment(helper, Enchantments.EFFICIENCY)));
+                assertEquals(3, enchantments.getLevel(GameTestFunctions.getEnchantment(helper, Enchantments.UNBREAKING)));
+                assertEquals(0, enchantments.getLevel(GameTestFunctions.getEnchantment(helper, Enchantments.SHARPNESS)));
+            })
+            .thenSucceed();
     }
 
     public static void accessModuleInventory(GameTestHelper helper) {
