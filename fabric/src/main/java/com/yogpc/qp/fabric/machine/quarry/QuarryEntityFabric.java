@@ -3,6 +3,7 @@ package com.yogpc.qp.fabric.machine.quarry;
 import com.yogpc.qp.QuarryDataComponents;
 import com.yogpc.qp.fabric.PlatformAccessFabric;
 import com.yogpc.qp.machine.QuarryFakePlayerCommon;
+import com.yogpc.qp.machine.exp.ExpModule;
 import com.yogpc.qp.machine.misc.BlockBreakEventResult;
 import com.yogpc.qp.machine.quarry.QuarryEntity;
 import net.fabricmc.fabric.api.entity.FakePlayer;
@@ -19,14 +20,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 
-public final class QuarryEntityFabric extends QuarryEntity {
+public final class QuarryEntityFabric extends QuarryEntity implements ExpModule {
     boolean shouldRemoveFluid = true;
     boolean shouldRemoveBedrock = false;
+    int collectedExp = 0;
 
     public QuarryEntityFabric(BlockPos pos, BlockState blockState) {
         super(PlatformAccessFabric.RegisterObjectsFabric.QUARRY_ENTITY_TYPE, pos, blockState);
@@ -37,6 +41,7 @@ public final class QuarryEntityFabric extends QuarryEntity {
         super.saveAdditional(tag, registries);
         tag.putBoolean("shouldRemoveFluid", shouldRemoveFluid);
         tag.putBoolean("shouldRemoveBedrock", shouldRemoveBedrock);
+        tag.putInt("collectedExp", collectedExp);
     }
 
     @Override
@@ -44,6 +49,7 @@ public final class QuarryEntityFabric extends QuarryEntity {
         super.loadAdditional(tag, registries);
         shouldRemoveFluid = tag.getBoolean("shouldRemoveFluid");
         shouldRemoveBedrock = tag.getBoolean("shouldRemoveBedrock");
+        collectedExp = tag.getInt("collectedExp");
     }
 
     @Override
@@ -73,6 +79,7 @@ public final class QuarryEntityFabric extends QuarryEntity {
 
     @Override
     protected BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe) {
+        state.spawnAfterBreak((ServerLevel) level, target, pickaxe, true);
         PlayerBlockBreakEvents.AFTER.invoker().afterBlockBreak(level, fakePlayer, target, state, blockEntity);
         return BlockBreakEventResult.EMPTY;
     }
@@ -100,7 +107,22 @@ public final class QuarryEntityFabric extends QuarryEntity {
     }
 
     @Override
+    protected @NotNull Optional<ExpModule> getExpModule() {
+        return Optional.of(this);
+    }
+
+    @Override
     protected BlockState stateAfterBreak(Level level, BlockPos pos, BlockState before) {
         return Blocks.AIR.defaultBlockState();
+    }
+
+    @Override
+    public void addExp(int amount) {
+        collectedExp += amount;
+    }
+
+    @Override
+    public int getExp() {
+        return collectedExp;
     }
 }
