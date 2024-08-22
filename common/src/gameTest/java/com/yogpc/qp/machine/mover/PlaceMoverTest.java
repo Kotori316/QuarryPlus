@@ -2,28 +2,20 @@ package com.yogpc.qp.machine.mover;
 
 import com.yogpc.qp.PlatformAccess;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
 
 import java.util.List;
 
+import static com.yogpc.qp.gametest.GameTestFunctions.getEnchantment;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("DuplicatedCode")
 public final class PlaceMoverTest {
     static final BlockPos base = BlockPos.ZERO.above();
-
-    static Holder<Enchantment> getEnchantment(GameTestHelper helper, ResourceKey<Enchantment> key) {
-        var reg = helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT);
-        return reg.getHolderOrThrow(key);
-    }
 
     public static void place(GameTestHelper helper) {
         helper.startSequence()
