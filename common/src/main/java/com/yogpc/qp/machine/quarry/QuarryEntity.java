@@ -48,10 +48,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -508,7 +505,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 var orbs = serverLevel.getEntitiesOfClass(ExperienceOrb.class, new AABB(target).inflate(5), EntitySelector.ENTITY_STILL_ALIVE);
                 var amount = orbs.stream().mapToInt(ExperienceOrb::getValue).sum();
                 if (amount != 0) {
-                    ExpModule.getModule(modules).ifPresent(e -> e.addExp(amount));
+                    getExpModule().ifPresent(e -> e.addExp(amount));
                 }
                 orbs.forEach(Entity::kill);
             }
@@ -557,7 +554,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 drops.forEach(storage::addItem);
                 var amount = eventResult.exp().orElse(afterBreakEventResult.exp().orElse(0));
                 if (amount != 0) {
-                    ExpModule.getModule(modules).ifPresent(e -> e.addExp(amount));
+                    getExpModule().ifPresent(e -> e.addExp(amount));
                 }
             }
 
@@ -622,6 +619,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     protected boolean shouldCollectExp() {
         return modules.stream().anyMatch(ExpModule.class::isInstance);
+    }
+
+    protected @NotNull Optional<ExpModule> getExpModule() {
+        return ExpModule.getModule(modules);
     }
 
     void removeFluidAt(@NotNull Level level, BlockPos pos, ServerPlayer player, BlockState newState) {
