@@ -3,8 +3,12 @@ package com.yogpc.qp.gametest;
 import com.google.common.base.CaseFormat;
 import com.yogpc.qp.machine.mover.PlaceMoverTest;
 import com.yogpc.qp.machine.quarry.PlaceQuarryTest;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.enchantment.Enchantment;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
@@ -72,5 +76,10 @@ public final class GameTestFunctions {
                 throw new RuntimeException(e);
             }
         };
+    }
+
+    public static Holder<Enchantment> getEnchantment(GameTestHelper helper, ResourceKey<Enchantment> key) {
+        var reg = helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+        return reg.getHolderOrThrow(key);
     }
 }
