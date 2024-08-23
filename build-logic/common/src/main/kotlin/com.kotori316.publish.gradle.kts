@@ -36,13 +36,18 @@ val modChangelog: Provider<String> = provider {
 
 publishMods {
     dryRun = releaseDebug
-    type = ALPHA
+    type = STABLE
     modLoaders = listOf(platformName)
     displayName = "v${project.version}-$platformName"
     afterEvaluate {
         file = provider {
-            project.tasks.named(ext["publishJarTaskName"].toString(), org.gradle.jvm.tasks.Jar::class)
-        }.flatMap { it }.flatMap { it.archiveFile }
+            ext["publishJarTaskName"].toString()
+        }.flatMap {
+            project.tasks.named(
+                it,
+                org.gradle.jvm.tasks.Jar::class
+            )
+        }.flatMap { it.archiveFile }
         changelog = modChangelog
     }
 
