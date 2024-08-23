@@ -1,5 +1,5 @@
-import com.kotori316.plugin.cf.CallVersionFunctionTask
 import com.kotori316.plugin.cf.CallVersionCheckFunctionTask
+import com.kotori316.plugin.cf.CallVersionFunctionTask
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -411,7 +411,7 @@ String getShortChangelog(boolean includeVersion) {
                     Stream.of(version, ""),
                     content
             ).collect(Collectors.joining(System.lineSeparator()))
-        }else{
+        } else {
             content.collect(Collectors.joining(System.lineSeparator()))
         }
 
@@ -469,9 +469,9 @@ githubRelease {
     prerelease.set(project.version.toString().contains("SNAPSHOT"))
     body.set(getChangeLog())
     releaseAssets = files(
-            jar,
-            deobfJar,
-            srcJar,
+            tasks.jar,
+            tasks.deobfJar,
+            tasks.srcJar,
     )
 }
 
@@ -562,7 +562,7 @@ tasks.register("registerVersion", CallVersionFunctionTask.class) {
 tasks.register("checkReleaseVersion", CallVersionCheckFunctionTask.class) {
     gameVersion = project.findProperty("minecraftVersion") as String
     platform = "forge"
-    modName ="quarryplus"
+    modName = "quarryplus"
     version = project.version.toString()
     failIfExists = true
 }
