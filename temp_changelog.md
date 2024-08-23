@@ -1,6 +1,6 @@
 ## Version LATEST for 1.19.2
 
-* Fix #371
+* Fix #550, load head position from save data
 
 ## Version for 1.19.2
 
@@ -28,6 +28,7 @@
 * Not to load JEI plugin when REI is installed. #426
 * Improve quarry rendering #424
 * Fix #371
+* Fix #550
 
 ## Version 18.23
 
