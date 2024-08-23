@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8.7",
+  "package": "com.yogpc.qp.forge.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "RegistryDataLoaderMixin"
+  ],
+  "client": [],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "mixins.quarryplus.refmap.json"
+}
