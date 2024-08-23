@@ -31,7 +31,9 @@ val modChangelog: Provider<String> = provider {
     """
         QuarryPlus(v${project.version}) for Minecraft $minecraft
         ---
-    """.trimIndent() + System.lineSeparator() + shortFormat
+        
+        The fabric version includes the binaries of `com.electronwill.night-config:core` and `com.electronwill.night-config:toml`, licensed under [the LGPLv3](https://github.com/TheElectronWill/night-config/blob/v3.7.3/LICENSE).
+    """.trimIndent() + System.lineSeparator().repeat(2) + shortFormat
 }
 
 publishMods {
