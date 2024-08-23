@@ -32,6 +32,7 @@ plugin_idea_ext = "1.1.8"
 plugin_fabric_loom = "1.7.3"
 plugin_forge_gradle = "[6.0,6.2)"
 plugin_forge_parchment = "1.+"
+plugin_forge_mixin = "0.7.+"
 plugin_neoforge_gradle = "7.0.161"
 
 [libraries]
@@ -80,4 +81,5 @@ idea-ext = { id = "org.jetbrains.gradle.plugin.idea-ext", version.ref = "plugin_
 fabric-loom = { id = "fabric-loom", version.ref = "plugin_fabric_loom" }
 forge-gradle = { id = "net.minecraftforge.gradle", version.ref = "plugin_forge_gradle" }
 forge-parchment = { id = "org.parchmentmc.librarian.forgegradle", version.ref = "plugin_forge_parchment" }
+forge-mixin = { id = "org.spongepowered.mixin", version.ref = "plugin_forge_mixin" }
 neoforge-gradle = { id = "net.neoforged.gradle.userdev", version.ref = "plugin_neoforge_gradle" }

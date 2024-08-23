@@ -3,8 +3,12 @@ package com.yogpc.qp.gametest;
 import com.google.common.base.CaseFormat;
 import com.yogpc.qp.machine.mover.PlaceMoverTest;
 import com.yogpc.qp.machine.quarry.PlaceQuarryTest;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.enchantment.Enchantment;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
@@ -20,9 +24,10 @@ public final class GameTestFunctions {
         List<Class<?>> classes = List.of(
             LoadRecipeTest.class,
             EnableMapTest.class,
-            ExpModuleItemTest.class
+            ExpModuleItemTest.class,
+            EnchantmentTest.class
         );
-        var fromClass = getTestFunctionStream(batchName, structureName, classes);
+        var fromClass = getTestFunctionStream(batchName, structureName, classes, 3);
         return Stream.of(
             fromClass,
             AccessItemTest.accessItems(batchName, structureName),
@@ -35,14 +40,14 @@ public final class GameTestFunctions {
             PlaceQuarryTest.class,
             PlaceMoverTest.class
         );
-        var fromClass = getTestFunctionStream(batchName, structureName, classes);
+        var fromClass = getTestFunctionStream(batchName, structureName, classes, 100);
         return Stream.of(
             fromClass,
             CheckBlockDropTest.checkDrops(batchName, structureName)
         ).flatMap(Function.identity()).toList();
     }
 
-    private static @NotNull Stream<TestFunction> getTestFunctionStream(String batchName, String structureName, List<Class<?>> classes) {
+    private static @NotNull Stream<TestFunction> getTestFunctionStream(String batchName, String structureName, List<Class<?>> classes, int maxTicks) {
         return classes.stream()
             .flatMap(c -> Stream.of(c.getDeclaredMethods()))
             .filter(Predicate.not(Method::isSynthetic))
@@ -53,7 +58,7 @@ public final class GameTestFunctions {
             .filter(m -> m.getReturnType() == void.class)
             .peek(m -> m.setAccessible(true))
             .map(m ->
-                new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, "%s_%s".formatted(m.getDeclaringClass().getSimpleName(), m.getName())), structureName, 100, 0, true, g -> {
+                new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, "%s_%s".formatted(m.getDeclaringClass().getSimpleName(), m.getName())), structureName, maxTicks, 0, true, g -> {
                     try {
                         m.invoke(null, g);
                     } catch (ReflectiveOperationException | AssertionError e) {
@@ -71,5 +76,10 @@ public final class GameTestFunctions {
                 throw new RuntimeException(e);
             }
         };
+    }
+
+    public static Holder<Enchantment> getEnchantment(GameTestHelper helper, ResourceKey<Enchantment> key) {
+        var reg = helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+        return reg.getHolderOrThrow(key);
     }
 }

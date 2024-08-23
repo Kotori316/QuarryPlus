@@ -2,6 +2,7 @@ plugins {
     id("com.kotori316.common")
     alias(libs.plugins.forge.gradle)
     alias(libs.plugins.forge.parchment)
+    alias(libs.plugins.forge.mixin)
     id("com.kotori316.publish")
     id("com.kotori316.gt")
     id("com.kotori316.dg")
@@ -126,10 +127,29 @@ dependencies {
     implementation(libs.tu.forge) {
         isTransitive = false
     }
+    // Mixin
+    annotationProcessor("org.spongepowered:mixin:0.8.7:processor")
     implementation("net.sf.jopt-simple:jopt-simple:5.0.4") { version { strictly("5.0.4") } }
 
     "runGameRuntimeOnly"(platform(libs.junit))
     "runGameRuntimeOnly"(libs.jupiter)
+}
+
+mixin {
+    add(sourceSets.main.get(), "mixins.${modId}.refmap.json")
+    config("${modId}.mixins.json")
+    isQuiet = true
+}
+
+tasks.jar {
+    manifest {
+        attributes(
+            mapOf(
+                "MixinConfigs" to "${modId}.mixins.json"
+            )
+        )
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 // Share with common

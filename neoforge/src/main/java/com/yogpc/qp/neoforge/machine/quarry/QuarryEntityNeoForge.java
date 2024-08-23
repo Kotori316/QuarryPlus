@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.NeoForge;
@@ -34,10 +35,11 @@ public final class QuarryEntityNeoForge extends QuarryEntity {
     }
 
     @Override
-    protected BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe) {
+    protected BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe, BlockState newState) {
         // Just use BlockDropsEvent to check exp
         var dropEvent = new BlockDropsEvent((ServerLevel) level, target, state, blockEntity, List.of(), fakePlayer, pickaxe);
         NeoForge.EVENT_BUS.post(dropEvent);
+        level.setBlock(target, newState, Block.UPDATE_ALL);
         OptionalInt exp = dropEvent.isCanceled() ? OptionalInt.empty() : OptionalInt.of(dropEvent.getDroppedExperience());
         return new BlockBreakEventResult(dropEvent.isCanceled(), exp);
     }

@@ -43,7 +43,12 @@ runs {
 
     create("client") {
         workingDirectory = project.file("run")
+        systemProperties.put("neoforge.enabledGameTestNamespaces", "$modId,minecraft")
         arguments("--username", "Kotori")
+        modSources.add(modId, sourceSets["gameTest"])
+        dependencies {
+            runtime(project.configurations.gameTestRuntime.get())
+        }
         isClient = true
     }
 

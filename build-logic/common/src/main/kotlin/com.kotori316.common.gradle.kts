@@ -129,6 +129,13 @@ repositories {
         name = "ParchmentMC"
         url = uri("https://maven.parchmentmc.org")
     }
+    maven {
+        name = "Mixin"
+        url = uri("https://repo.spongepowered.org/maven")
+        content {
+            includeGroup("org.spongepowered")
+        }
+    }
     mavenCentral()
     mavenLocal()
 }

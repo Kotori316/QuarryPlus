@@ -48,10 +48,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -508,7 +505,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 var orbs = serverLevel.getEntitiesOfClass(ExperienceOrb.class, new AABB(target).inflate(5), EntitySelector.ENTITY_STILL_ALIVE);
                 var amount = orbs.stream().mapToInt(ExperienceOrb::getValue).sum();
                 if (amount != 0) {
-                    ExpModule.getModule(modules).ifPresent(e -> e.addExp(amount));
+                    getExpModule().ifPresent(e -> e.addExp(amount));
                 }
                 orbs.forEach(Entity::kill);
             }
@@ -519,10 +516,11 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             // Nothing to do
             return WorkResult.SUCCESS;
         }
+        var lookup = serverLevel.registryAccess().asGetterLookup();
         var blockEntity = serverLevel.getBlockEntity(target);
         var player = getQuarryFakePlayer(serverLevel, target);
         var pickaxe = Items.NETHERITE_PICKAXE.getDefaultInstance();
-        EnchantmentHelper.setEnchantments(pickaxe, getEnchantments());
+        EnchantmentHelper.setEnchantments(pickaxe, enchantmentCache.getEnchantmentsForPickaxe(getEnchantments(), lookup));
         player.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
 
         var hardness = state.getDestroySpeed(serverLevel, target);
@@ -541,7 +539,6 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             // Unbreakable
             return WorkResult.SKIPPED;
         }
-        var lookup = serverLevel.registryAccess().asGetterLookup();
         var requiredEnergy = powerMap().getBreakEnergy(hardness,
             enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, lookup),
             enchantmentCache.getLevel(getEnchantments(), Enchantments.UNBREAKING, lookup),
@@ -551,13 +548,12 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         if (useEnergy(requiredEnergy, true, getMaxEnergy() < requiredEnergy, "breakBlock") == requiredEnergy) {
             useEnergy(requiredEnergy, false, getMaxEnergy() < requiredEnergy, "breakBlock");
             var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe);
-            var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, drops, pickaxe);
-            serverLevel.setBlock(target, stateAfterBreak(serverLevel, target, state), Block.UPDATE_ALL);
+            var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, drops, pickaxe, stateAfterBreak(serverLevel, target, state));
             if (!afterBreakEventResult.canceled()) {
                 drops.forEach(storage::addItem);
                 var amount = eventResult.exp().orElse(afterBreakEventResult.exp().orElse(0));
                 if (amount != 0) {
-                    ExpModule.getModule(modules).ifPresent(e -> e.addExp(amount));
+                    getExpModule().ifPresent(e -> e.addExp(amount));
                 }
             }
 
@@ -578,7 +574,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     protected abstract BlockBreakEventResult checkBreakEvent(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity);
 
-    protected abstract BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe);
+    /**
+     * In this method, you must replace/remove the target block
+     */
+    protected abstract BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe, BlockState newState);
 
     WorkResult breakBlockModuleOverride(ServerLevel level, BlockState state, BlockPos target, float hardness) {
         if (hardness < 0 && state.is(Blocks.BEDROCK) && shouldRemoveBedrock()) {
@@ -622,6 +621,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     protected boolean shouldCollectExp() {
         return modules.stream().anyMatch(ExpModule.class::isInstance);
+    }
+
+    protected @NotNull Optional<ExpModule> getExpModule() {
+        return ExpModule.getModule(modules);
     }
 
     void removeFluidAt(@NotNull Level level, BlockPos pos, ServerPlayer player, BlockState newState) {
