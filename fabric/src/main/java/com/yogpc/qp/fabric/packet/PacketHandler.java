@@ -20,6 +20,10 @@ import org.jetbrains.annotations.NotNull;
 
 public final class PacketHandler implements PlatformAccess.Packet {
     public static class Server {
+        public static void initCommon() {
+            PayloadTypeRegistry.playS2C().register(ClientSyncMessage.TYPE, ClientSyncMessage.STREAM_CODEC);
+        }
+
         public static void initServer() {
             PayloadTypeRegistry.playC2S().register(YSetterMessage.TYPE, YSetterMessage.STREAM_CODEC);
             PayloadTypeRegistry.playC2S().register(MoverMessage.TYPE, MoverMessage.STREAM_CODEC);
@@ -34,14 +38,11 @@ public final class PacketHandler implements PlatformAccess.Packet {
             var level = context.player().level();
             context.server().execute(() -> message.onReceive(level));
         }
-
     }
 
     @Environment(EnvType.CLIENT)
     public static class Client {
         public static void initClient() {
-            PayloadTypeRegistry.playS2C().register(ClientSyncMessage.TYPE, ClientSyncMessage.STREAM_CODEC);
-
             ClientPlayNetworking.registerGlobalReceiver(ClientSyncMessage.TYPE, Client::onReceive);
         }
 
