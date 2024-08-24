@@ -2,6 +2,7 @@ package com.yogpc.qp.neoforge.packet;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.marker.ChunkMarkerMessage;
 import com.yogpc.qp.machine.mover.MoverMessage;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.OnReceiveWithLevel;
@@ -42,6 +43,11 @@ public final class PacketHandler implements PlatformAccess.Packet {
         registrar.playToServer(
             MoverMessage.TYPE,
             MoverMessage.STREAM_CODEC,
+            PacketHandler::onReceive
+        );
+        registrar.playToServer(
+            ChunkMarkerMessage.TYPE,
+            ChunkMarkerMessage.STREAM_CODEC,
             PacketHandler::onReceive
         );
     }

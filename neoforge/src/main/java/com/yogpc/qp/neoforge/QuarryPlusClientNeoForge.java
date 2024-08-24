@@ -1,6 +1,7 @@
 package com.yogpc.qp.neoforge;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.marker.ChunkMarkerScreen;
 import com.yogpc.qp.machine.misc.YSetterScreen;
 import com.yogpc.qp.machine.module.ModuleScreen;
 import com.yogpc.qp.machine.mover.MoverScreen;
@@ -25,5 +26,6 @@ public final class QuarryPlusClientNeoForge {
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.Y_SET_MENU_TYPE.get(), YSetterScreen::new);
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.MOVER_MENU_TYPE.get(), MoverScreen::new);
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.MODULE_MENU_TYPE.get(), ModuleScreen::new);
+        event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.CHUNK_MARKER_MENU_TYPE.get(), ChunkMarkerScreen::new);
     }
 }

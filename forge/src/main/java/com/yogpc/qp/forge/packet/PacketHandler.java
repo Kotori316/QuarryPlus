@@ -2,6 +2,7 @@ package com.yogpc.qp.forge.packet;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.marker.ChunkMarkerMessage;
 import com.yogpc.qp.machine.mover.MoverMessage;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.OnReceiveWithLevel;
@@ -46,7 +47,14 @@ public final class PacketHandler implements PlatformAccess.Packet {
             .messageBuilder(MoverMessage.class)
             .codec(MoverMessage.STREAM_CODEC)
             .consumerMainThread(PacketHandler::onReceive)
-            .add();
+            .add()
+            // ChunkMarkerMessage
+            .messageBuilder(ChunkMarkerMessage.class)
+            .codec(ChunkMarkerMessage.STREAM_CODEC)
+            .consumerMainThread(PacketHandler::onReceive)
+            .add()
+        // END
+        ;
 
     private static final Proxy PROXY = ProxyProvider.getInstance();
 

@@ -21,9 +21,9 @@ public final class ChunkMarkerEntity extends QpEntity implements QuarryMarker, C
     private Direction.AxisDirection xDirection = Direction.AxisDirection.POSITIVE;
     @NotNull
     private Direction.AxisDirection zDirection = Direction.AxisDirection.POSITIVE;
-    private int size = 16;
-    private int minY;
-    private int maxY;
+    int size = 16;
+    int minY;
+    int maxY;
 
     public ChunkMarkerEntity(BlockPos pos, BlockState blockState) {
         super(pos, blockState);
