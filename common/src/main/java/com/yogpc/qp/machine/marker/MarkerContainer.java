@@ -2,6 +2,7 @@ package com.yogpc.qp.machine.marker;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.QpEntity;
+import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -31,6 +32,9 @@ public final class MarkerContainer extends AbstractContainerMenu {
         }
         for (int vertical = 0; vertical < 9; vertical++) {
             this.addSlot(new Slot(inventory, vertical, inventoryX + vertical * oneBox, inventoryY + 58));
+        }
+        if (entity instanceof ClientSync sync) {
+            sync.syncToClient();
         }
     }
 

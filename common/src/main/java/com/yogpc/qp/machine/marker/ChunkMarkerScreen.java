@@ -17,7 +17,7 @@ public final class ChunkMarkerScreen extends AbstractContainerScreen<MarkerConta
     private static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/marker.png");
     private static final int CHUNK = 16;
     private final ChunkMarkerEntity marker;
-    private static final int BUTTON_WIDTH = 40;
+    private static final int BUTTON_WIDTH = 44;
 
     public ChunkMarkerScreen(MarkerContainer menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
