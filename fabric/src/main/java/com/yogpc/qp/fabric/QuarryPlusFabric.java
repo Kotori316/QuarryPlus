@@ -11,7 +11,7 @@ public final class QuarryPlusFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         QuarryPlus.LOGGER.info("Initialize Common");
-        PacketHandler.Server.initCommon();
+        PacketHandler.Server.registerMessage();
         PacketHandler.Server.initServer();
         PlatformAccessFabric.RegisterObjectsFabric.registerAll();
         EnergyIntegration.register();
