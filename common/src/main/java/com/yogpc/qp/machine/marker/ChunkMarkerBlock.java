@@ -24,6 +24,6 @@ public final class ChunkMarkerBlock extends ExMarkerBlock {
 
     @Override
     protected GeneralScreenHandler<?> getScreenHandler(QpEntity entity) {
-        return new GeneralScreenHandler<>(entity, (syncId, inventory, pos) -> new MarkerContainer(syncId, inventory.player, pos, 29, 107));
+        return new GeneralScreenHandler<>(entity, MarkerContainer::createChunkMarkerContainer);
     }
 }

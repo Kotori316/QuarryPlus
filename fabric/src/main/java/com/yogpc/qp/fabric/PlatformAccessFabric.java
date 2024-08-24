@@ -16,6 +16,7 @@ import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpItem;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
+import com.yogpc.qp.machine.marker.MarkerContainer;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.marker.NormalMarkerEntity;
 import com.yogpc.qp.machine.misc.FrameBlock;
@@ -82,6 +83,8 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final MenuType<ModuleContainer> MODULE_MENU = new ExtendedScreenHandlerType<>(ModuleContainer::new, BlockPos.STREAM_CODEC);
         public static final BedrockModuleItem BEDROCK_MODULE_ITEM = new BedrockModuleItem();
         public static final ExpModuleItem EXP_MODULE_ITEM = new ExpModuleItem();
+        public static final MenuType<MarkerContainer> FLEXIBLE_MARKER_MENU = new ExtendedScreenHandlerType<>(MarkerContainer::createFlexibleMarkerContainer, BlockPos.STREAM_CODEC);
+        public static final MenuType<MarkerContainer> CHUNK_MARKER_MENU = new ExtendedScreenHandlerType<>(MarkerContainer::createChunkMarkerContainer, BlockPos.STREAM_CODEC);
 
         public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
 
@@ -203,6 +206,16 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         @Override
         public Supplier<MenuType<? extends ModuleContainer>> moduleContainer() {
             return Lazy.value(MODULE_MENU);
+        }
+
+        @Override
+        public Supplier<MenuType<? extends MarkerContainer>> flexibleMarkerContainer() {
+            return Lazy.value(FLEXIBLE_MARKER_MENU);
+        }
+
+        @Override
+        public Supplier<MenuType<? extends MarkerContainer>> chunkMarkerContainer() {
+            return Lazy.value(CHUNK_MARKER_MENU);
         }
 
         @Override

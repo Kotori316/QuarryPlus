@@ -16,6 +16,7 @@ import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
+import com.yogpc.qp.machine.marker.MarkerContainer;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
@@ -105,6 +106,8 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = registerMenu("gui_y_setter", YSetterContainer::new);
         public static final RegistryObject<MenuType<? extends MoverContainer>> MOVER_MENU_TYPE = registerMenu("gui_mover", MoverContainer::new);
         public static final RegistryObject<MenuType<? extends ModuleContainer>> MODULE_MENU_TYPE = registerMenu("gui_quarry_module", ModuleContainer::new);
+        public static final RegistryObject<MenuType<? extends MarkerContainer>> FLEXIBLE_MARKER_MENU_TYPE = registerMenu(MarkerContainer.FLEXIBLE_NAME, MarkerContainer::createFlexibleMarkerContainer);
+        public static final RegistryObject<MenuType<? extends MarkerContainer>> CHUNK_MARKER_MENU_TYPE = registerMenu(MarkerContainer.CHUNK_NAME, MarkerContainer::createChunkMarkerContainer);
 
         public static final RegistryObject<LootItemFunctionType<? extends MachineLootFunction>> MACHINE_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(MachineLootFunction.NAME, () -> new LootItemFunctionType<>(MachineLootFunction.SERIALIZER));
 
@@ -208,6 +211,16 @@ public final class PlatformAccessForge implements PlatformAccess {
         @Override
         public Supplier<MenuType<? extends ModuleContainer>> moduleContainer() {
             return MODULE_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<MenuType<? extends MarkerContainer>> flexibleMarkerContainer() {
+            return FLEXIBLE_MARKER_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<MenuType<? extends MarkerContainer>> chunkMarkerContainer() {
+            return CHUNK_MARKER_MENU_TYPE;
         }
 
         @Override

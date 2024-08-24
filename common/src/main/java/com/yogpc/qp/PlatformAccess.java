@@ -77,7 +77,9 @@ public interface PlatformAccess {
 
         Supplier<MenuType<? extends ModuleContainer>> moduleContainer();
 
-        Supplier<MenuType<? extends MarkerContainer>> markerContainer();
+        Supplier<MenuType<? extends MarkerContainer>> flexibleMarkerContainer();
+
+        Supplier<MenuType<? extends MarkerContainer>> chunkMarkerContainer();
 
         Supplier<LootItemFunctionType<? extends MachineLootFunction>> machineLootFunction();
     }
