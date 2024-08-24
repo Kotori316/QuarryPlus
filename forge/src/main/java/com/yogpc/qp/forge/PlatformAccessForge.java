@@ -5,6 +5,7 @@ import com.yogpc.qp.*;
 import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.forge.machine.marker.ChunkMarkerEntityForge;
 import com.yogpc.qp.forge.machine.marker.NormalMarkerEntityForge;
 import com.yogpc.qp.forge.machine.misc.CheckerItemForge;
 import com.yogpc.qp.forge.machine.misc.YSetterItemForge;
@@ -17,7 +18,6 @@ import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
-import com.yogpc.qp.machine.marker.ChunkMarkerEntity;
 import com.yogpc.qp.machine.marker.MarkerContainer;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
@@ -105,7 +105,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<BlockEntityType<GeneratorEntity>> GENERATOR_ENTITY_TYPE = registerBlockEntity(GeneratorBlock.NAME, BLOCK_GENERATOR, GeneratorEntity::new, EnableMap.EnableOrNot.ALWAYS_ON);
         public static final RegistryObject<BlockEntityType<NormalMarkerEntityForge>> MARKER_ENTITY_TYPE = registerBlockEntity(NormalMarkerBlock.NAME, BLOCK_MARKER, NormalMarkerEntityForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
         public static final RegistryObject<BlockEntityType<MoverEntity>> MOVER_ENTITY_TYPE = registerBlockEntity(MoverBlock.NAME, BLOCK_MOVER, MoverEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
-        public static final RegistryObject<BlockEntityType<ChunkMarkerEntity>> CHUNK_MARKER_ENTITY_TYPE = registerBlockEntity(ChunkMarkerBlock.NAME, BLOCK_CHUNK_MARKER, ChunkMarkerEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
+        public static final RegistryObject<BlockEntityType<ChunkMarkerEntityForge>> CHUNK_MARKER_ENTITY_TYPE = registerBlockEntity(ChunkMarkerBlock.NAME, BLOCK_CHUNK_MARKER, ChunkMarkerEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
 
         public static final RegistryObject<MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = registerMenu("gui_y_setter", YSetterContainer::new);
         public static final RegistryObject<MenuType<? extends MoverContainer>> MOVER_MENU_TYPE = registerMenu("gui_mover", MoverContainer::new);

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.Area;
 import com.yogpc.qp.machine.marker.NormalMarkerEntity;
+import com.yogpc.qp.machine.marker.QuarryMarker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -25,22 +26,23 @@ public class RenderMarker implements BlockEntityRenderer<NormalMarkerEntity> {
         Minecraft.getInstance().getProfiler().push("RenderMarker");
 
         if (blockEntity.getStatus() == NormalMarkerEntity.Status.CONNECTED_MASTER) {
-            blockEntity.getLink().ifPresent(link -> {
-                var markerPos = blockEntity.getBlockPos();
-                var sprite = Sprites.INSTANCE.getWhite();
-                var color = ColorBox.markerBlueColor;
-                var buffer = bufferSource.getBuffer(RenderType.cutout());
-                poseStack.pushPose();
-                poseStack.translate(-markerPos.getX(), -markerPos.getY(), -markerPos.getZ());
-                for (Box box : getRenderBox(link.area())) {
-                    box.render(buffer, poseStack, sprite, color);
-                }
-                poseStack.popPose();
-            });
+            var markerPos = blockEntity.getBlockPos();
+            poseStack.pushPose();
+            poseStack.translate(-markerPos.getX(), -markerPos.getY(), -markerPos.getZ());
+            blockEntity.getLink().ifPresent(link -> renderLink(poseStack, bufferSource, link, ColorBox.markerBlueColor));
+            poseStack.popPose();
         }
 
         Minecraft.getInstance().getProfiler().pop();
         Minecraft.getInstance().getProfiler().pop();
+    }
+
+    public static void renderLink(PoseStack poseStack, MultiBufferSource bufferSource, QuarryMarker.Link link, ColorBox color) {
+        var sprite = Sprites.INSTANCE.getWhite();
+        var buffer = bufferSource.getBuffer(RenderType.cutout());
+        for (Box box : getRenderBox(link.area())) {
+            box.render(buffer, poseStack, sprite, color);
+        }
     }
 
     private static final double a = 0.5d, b = 10d / 16d, c = 6d / 16d;

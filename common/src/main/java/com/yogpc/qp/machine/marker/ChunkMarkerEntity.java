@@ -10,13 +10,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public final class ChunkMarkerEntity extends QpEntity implements QuarryMarker, ClientSync {
+public class ChunkMarkerEntity extends QpEntity implements QuarryMarker, ClientSync {
     @NotNull
     private Direction.AxisDirection xDirection = Direction.AxisDirection.POSITIVE;
     @NotNull
@@ -114,5 +115,11 @@ public final class ChunkMarkerEntity extends QpEntity implements QuarryMarker, C
         public List<ItemStack> drops() {
             return List.of(drop);
         }
+    }
+
+    public AABB getRenderAabb() {
+        var link = createLink();
+        var area = link.area();
+        return new AABB(area.minX(), area.minY(), area.minZ(), area.maxX(), area.maxY(), area.maxZ());
     }
 }
