@@ -319,7 +319,7 @@ final class StateAndModelProvider extends BlockStateProvider {
         itemModels().getBuilder(markerBlock.name.getPath())
             .parent(new ModelFile.UncheckedModelFile("item/generated"))
             .texture("layer0", ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "item/" + markerBlock.name.getPath() + "_item"));
-        for (QpBlock marker : List.<QpBlock>of()) {
+        for (QpBlock marker : List.<QpBlock>of(PlatformAccess.getAccess().registerObjects().chunkMarkerBlock().get())) {
             var baseName = marker.name.getPath();
             var m = models().withExistingParent("block/" + baseName, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "block/marker_post"))
                 .texture("texture", blockTexture(marker))
