@@ -36,4 +36,6 @@ final class IngredientProviderForge extends IngredientProvider {
       case _ => original
     }
   }
+
+  override def enderPearl: Ingredient = Ingredient.of(Tags.Items.ENDER_PEARLS)
 }

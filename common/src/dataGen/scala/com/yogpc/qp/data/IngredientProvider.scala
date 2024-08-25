@@ -21,6 +21,8 @@ trait IngredientProvider {
 
   def goldIngot: Ingredient
 
+  def enderPearl: Ingredient
+
   def obsidian: Ingredient
 
   def glass: Ingredient
@@ -43,6 +45,8 @@ trait IngredientProvider {
   }
 
   def pumpModuleRecipeOutput(original: RecipeOutput): RecipeOutput = original
+
+  def expModuleRecipeOutput(original: RecipeOutput): RecipeOutput = original
 
   def installBedrockModuleQuarryRecipeOutput(original: RecipeOutput): RecipeOutput = original
 }

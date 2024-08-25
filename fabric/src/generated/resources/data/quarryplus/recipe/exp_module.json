@@ -1,0 +1,38 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:not",
+      "value": {
+        "condition": "fabric:true"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "tag": "c:storage_blocks/gold"
+    },
+    "e": {
+      "tag": "c:ender_pearls"
+    },
+    "h": {
+      "item": "minecraft:hay_block"
+    },
+    "m": {
+      "tag": "quarryplus:markers"
+    },
+    "p": {
+      "item": "minecraft:potion"
+    }
+  },
+  "pattern": [
+    "epe",
+    "mhp",
+    "GhG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "quarryplus:exp_module"
+  }
+}

@@ -1,5 +1,6 @@
 package com.yogpc.qp.data
 
+import com.yogpc.qp.machine.exp.ExpModuleItem
 import com.yogpc.qp.recipe.InstallBedrockModuleRecipe
 import com.yogpc.qp.{PlatformAccess, QuarryPlus}
 import net.minecraft.core.HolderLookup
@@ -104,6 +105,18 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
         .unlockedBy(PlatformAccess.getAccess.registerObjects().quarryBlock().get())
         .save(recipeOutput)
     }
+
+    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, quarryItem(ExpModuleItem.NAME))
+      .define('h', Items.HAY_BLOCK)
+      .define('e', ip.enderPearl)
+      .define('G', ip.goldBlock)
+      .define('m', ip.marker)
+      .define('p', Items.POTION)
+      .pattern("epe")
+      .pattern("mhp")
+      .pattern("GhG")
+      .unlockedBy(ip.markerTag)
+      .save(ip.expModuleRecipeOutput(recipeOutput))
 
     InstallBedrockModuleRecipe.builder(PlatformAccess.getAccess.registerObjects().quarryBlock().get())
       .unlockedBy("has_bedrock_module", RecipeProvider.has(bedrockModule))

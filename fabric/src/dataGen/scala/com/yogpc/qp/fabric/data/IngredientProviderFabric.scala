@@ -35,5 +35,9 @@ final class IngredientProviderFabric(withCondition: (RecipeOutput, Seq[ResourceC
     withCondition(original, Seq(condition))
   }
 
+  override def expModuleRecipeOutput(original: RecipeOutput): RecipeOutput = pumpModuleRecipeOutput(original)
+
   override def installBedrockModuleQuarryRecipeOutput(original: RecipeOutput): RecipeOutput = pumpModuleRecipeOutput(original)
+
+  override def enderPearl: Ingredient = Ingredient.of(ConventionalItemTags.ENDER_PEARLS)
 }
