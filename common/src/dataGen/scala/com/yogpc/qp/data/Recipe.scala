@@ -116,7 +116,7 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .pattern("mhp")
       .pattern("GhG")
       .unlockedBy(ip.markerTag)
-      .save(recipeOutput)
+      .save(ip.expModuleRecipeOutput(recipeOutput))
 
     InstallBedrockModuleRecipe.builder(PlatformAccess.getAccess.registerObjects().quarryBlock().get())
       .unlockedBy("has_bedrock_module", RecipeProvider.has(bedrockModule))
