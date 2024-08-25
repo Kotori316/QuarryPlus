@@ -35,4 +35,6 @@ final class IngredientProviderNeoForge extends IngredientProvider {
   override def installBedrockModuleQuarryRecipeOutput(original: RecipeOutput): RecipeOutput = {
     original.withConditions(FalseCondition.INSTANCE)
   }
+
+  override def enderPearl: Ingredient = Ingredient.of(Tags.Items.ENDER_PEARLS)
 }

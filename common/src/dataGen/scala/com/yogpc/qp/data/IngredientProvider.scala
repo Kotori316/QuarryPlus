@@ -21,6 +21,8 @@ trait IngredientProvider {
 
   def goldIngot: Ingredient
 
+  def enderPearl: Ingredient
+
   def obsidian: Ingredient
 
   def glass: Ingredient
