@@ -118,7 +118,7 @@ public abstract class QuarryBlock extends QpEntityBlock {
                             var area = new Area(corner1, corner2, facing.getOpposite());
                             return new QuarryMarker.StaticLink(area);
                         });
-                    quarry.setArea(markerLink.area());
+                    quarry.setArea(assumeY(markerLink.area()));
                     markerLink.drops().forEach(quarry.storage::addItem);
                     markerLink.remove(level);
                 }
@@ -191,5 +191,17 @@ public abstract class QuarryBlock extends QpEntityBlock {
             builder.add(e);
         }
         return builder.build();
+    }
+
+    static Area assumeY(Area area) {
+        int distanceY = area.maxY() - area.minY();
+        if (distanceY >= 4) {
+            return area;
+        }
+        return new Area(
+            area.minX(), area.minY(), area.minZ(),
+            area.maxX(), area.minY() + 4, area.maxZ(),
+            area.direction()
+        );
     }
 }

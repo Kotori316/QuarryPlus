@@ -209,9 +209,6 @@ public class NormalMarkerEntity extends QpEntity implements QuarryMarker, Client
             var maxX = markerPos.stream().mapToInt(BlockPos::getX).max().orElseThrow();
             var maxY = markerPos.stream().mapToInt(BlockPos::getY).max().orElseThrow();
             var maxZ = markerPos.stream().mapToInt(BlockPos::getZ).max().orElseThrow();
-            if (maxY == minY) {
-                return new Area(minX, minY, minZ, maxX, maxY + 4, maxZ, Direction.UP);
-            }
             return new Area(minX, minY, minZ, maxX, maxY, maxZ, Direction.UP);
         }
 

@@ -22,7 +22,7 @@ class NormalMarkerEntityTest {
             new BlockPos(1, 1, 1),
             new BlockPos(4, 1, 3)
         ));
-        assertEquals(new Area(1, 1, 1, 4, 5, 3, Direction.UP), link.area());
+        assertEquals(new Area(1, 1, 1, 4, 1, 3, Direction.UP), link.area());
     }
 
     @Test
@@ -42,6 +42,6 @@ class NormalMarkerEntityTest {
             new BlockPos(1, 1, 8),
             new BlockPos(4, 1, 1)
         ));
-        assertEquals(new Area(1, 1, 1, 4, 5, 8, Direction.UP), link.area());
+        assertEquals(new Area(1, 1, 1, 4, 1, 8, Direction.UP), link.area());
     }
 }
