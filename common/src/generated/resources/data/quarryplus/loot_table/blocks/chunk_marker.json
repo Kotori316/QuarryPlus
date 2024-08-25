@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "quarryplus:marker16"
+          "name": "quarryplus:chunk_marker"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "quarryplus:blocks/marker16"
+  "random_sequence": "quarryplus:blocks/chunk_marker"
 }

@@ -13,7 +13,7 @@ import net.minecraft.world.level.material.PushReaction;
 import org.jetbrains.annotations.Nullable;
 
 public final class ChunkMarkerBlock extends ExMarkerBlock {
-    public static final String NAME = "marker16";
+    public static final String NAME = "chunk_marker";
 
     public ChunkMarkerBlock() {
         super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak().lightLevel(value -> 7).noCollission(), NAME);
