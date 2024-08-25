@@ -26,6 +26,15 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .unlockedBy(Items.REDSTONE_TORCH)
       .save(recipeOutput)
 
+    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().chunkMarkerBlock().get())
+      .define('r', ip.redStoneDust)
+      .define('m', ip.marker)
+      .pattern("rrr")
+      .pattern("mmm")
+      .unlockedBy(ip.markerTag)
+      .unlockedBy(Items.REDSTONE)
+      .save(recipeOutput)
+
     ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().moverBlock().get())
       .define('d', ip.diamond)
       .define('a', Items.ANVIL)

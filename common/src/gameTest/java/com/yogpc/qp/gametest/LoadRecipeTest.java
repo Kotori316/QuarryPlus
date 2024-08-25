@@ -3,6 +3,7 @@ package com.yogpc.qp.gametest;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryDataComponents;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
@@ -67,6 +68,25 @@ public final class LoadRecipeTest {
         ));
         var result = recipe.matches(input, helper.getLevel());
         assertTrue(result);
+        helper.succeed();
+    }
+
+    public static void createChunkMarker(GameTestHelper helper) {
+        var recipe = findRecipe(helper, ChunkMarkerBlock.NAME);
+
+        var r = Items.REDSTONE.getDefaultInstance();
+        var m = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
+        var input = CraftingInput.of(3, 2, List.of(
+            r, r, r,
+            m, m, m
+        ));
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        assertEquals(
+            PlatformAccess.getAccess().registerObjects().chunkMarkerBlock().get().blockItem,
+            result.getItem()
+        );
+
         helper.succeed();
     }
 
