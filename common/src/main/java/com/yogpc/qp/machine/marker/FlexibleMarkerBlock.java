@@ -12,7 +12,7 @@ import net.minecraft.world.level.material.PushReaction;
 import org.jetbrains.annotations.Nullable;
 
 public final class FlexibleMarkerBlock extends ExMarkerBlock {
-    public static final String NAME = "flex_marker";
+    public static final String NAME = "flexible_marker";
 
     public FlexibleMarkerBlock() {
         super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak().lightLevel(value -> 7).noCollission(), NAME);
