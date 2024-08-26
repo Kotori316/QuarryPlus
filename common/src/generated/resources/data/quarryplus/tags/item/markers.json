@@ -1,5 +1,7 @@
 {
   "values": [
-    "quarryplus:marker"
+    "quarryplus:marker",
+    "quarryplus:flexible_marker",
+    "quarryplus:chunk_marker"
   ]
 }

@@ -174,6 +174,11 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         }
 
         @Override
+        public Supplier<? extends FlexibleMarkerBlock> flexibleMarkerBlock() {
+            return BLOCK_FLEXIBLE_MARKER;
+        }
+
+        @Override
         public Supplier<? extends ChunkMarkerBlock> chunkMarkerBlock() {
             return BLOCK_CHUNK_MARKER;
         }

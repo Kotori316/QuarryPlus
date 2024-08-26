@@ -155,6 +155,10 @@ public class FlexibleMarkerEntity extends QpEntity implements QuarryMarker, Clie
         return new FlexibleMarkerLink(getBlockPos(), min, max, direction, stack);
     }
 
+    public Direction getDirection() {
+        return direction;
+    }
+
     record FlexibleMarkerLink(BlockPos markerPos, BlockPos min, BlockPos max,
                               Direction direction, ItemStack stack) implements QuarryMarker.Link {
         @Override

@@ -179,6 +179,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         }
 
         @Override
+        public Supplier<? extends FlexibleMarkerBlock> flexibleMarkerBlock() {
+            return Lazy.value(FLEXIBLE_MARKER_BLOCK);
+        }
+
+        @Override
         public Supplier<? extends ChunkMarkerBlock> chunkMarkerBlock() {
             return Lazy.value(CHUNK_MARKER_BLOCK);
         }

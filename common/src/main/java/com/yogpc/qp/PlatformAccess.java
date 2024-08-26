@@ -6,6 +6,7 @@ import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
+import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
 import com.yogpc.qp.machine.marker.MarkerContainer;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
@@ -63,6 +64,8 @@ public interface PlatformAccess {
         Supplier<? extends NormalMarkerBlock> markerBlock();
 
         Supplier<? extends MoverBlock> moverBlock();
+
+        Supplier<? extends FlexibleMarkerBlock> flexibleMarkerBlock();
 
         Supplier<? extends ChunkMarkerBlock> chunkMarkerBlock();
 

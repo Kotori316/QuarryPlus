@@ -6,6 +6,7 @@ import com.yogpc.qp.machine.misc.YSetterScreen;
 import com.yogpc.qp.machine.module.ModuleScreen;
 import com.yogpc.qp.machine.mover.MoverScreen;
 import com.yogpc.qp.neoforge.render.RenderChunkMarkerNeoForge;
+import com.yogpc.qp.neoforge.render.RenderFlexibleMarkerNeoForge;
 import com.yogpc.qp.neoforge.render.RenderMarkerNeoForge;
 import com.yogpc.qp.neoforge.render.RenderQuarryNeoForge;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -19,6 +20,7 @@ public final class QuarryPlusClientNeoForge {
         QuarryPlus.LOGGER.info("Initialize Client");
         BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.QUARRY_ENTITY_TYPE.get(), RenderQuarryNeoForge::new);
         BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.MARKER_ENTITY_TYPE.get(), RenderMarkerNeoForge::new);
+        BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.FLEXIBLE_MARKER_ENTITY_TYPE.get(), RenderFlexibleMarkerNeoForge::new);
         BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.CHUNK_MARKER_ENTITY_TYPE.get(), RenderChunkMarkerNeoForge::new);
         QuarryPlus.LOGGER.info("Initialize Client finished");
     }
