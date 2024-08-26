@@ -81,6 +81,8 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final MenuType<ModuleContainer> MODULE_MENU = new ExtendedScreenHandlerType<>(ModuleContainer::new, BlockPos.STREAM_CODEC);
         public static final BedrockModuleItem BEDROCK_MODULE_ITEM = new BedrockModuleItem();
         public static final ExpModuleItem EXP_MODULE_ITEM = new ExpModuleItem();
+        public static final FlexibleMarkerBlock FLEXIBLE_MARKER_BLOCK = new FlexibleMarkerBlock();
+        public static final BlockEntityType<FlexibleMarkerEntity> FLEXIBLE_MARKER_ENTITY_TYPE = BlockEntityType.Builder.of(FlexibleMarkerEntity::new, FLEXIBLE_MARKER_BLOCK).build(DSL.emptyPartType());
         public static final ChunkMarkerBlock CHUNK_MARKER_BLOCK = new ChunkMarkerBlock();
         public static final BlockEntityType<ChunkMarkerEntity> CHUNK_MARKER_ENTITY_TYPE = BlockEntityType.Builder.of(ChunkMarkerEntity::new, CHUNK_MARKER_BLOCK).build(DSL.emptyPartType());
         public static final MenuType<MarkerContainer> FLEXIBLE_MARKER_MENU = new ExtendedScreenHandlerType<>(MarkerContainer::createFlexibleMarkerContainer, BlockPos.STREAM_CODEC);
@@ -100,6 +102,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerEntityBlock(MOVER_BLOCK, MOVER_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             // Marker
             registerEntityBlock(MARKER_BLOCK, MARKER_ENTITY_TYPE, EnableMap.EnableOrNot.ALWAYS_ON);
+            registerEntityBlock(FLEXIBLE_MARKER_BLOCK, FLEXIBLE_MARKER_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             registerEntityBlock(CHUNK_MARKER_BLOCK, CHUNK_MARKER_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             // Module
             registerItem(PUMP_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
