@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 public abstract class PowerEntity extends QpEntity {
     public static final long ONE_FE = 1_000_000_000L;
-    private final EnergyCounter energyCounter;
+    protected final EnergyCounter energyCounter;
     private LongSupplier timeProvider;
     private long energy;
     private long maxEnergy;
