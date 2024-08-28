@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_marker": {
+    "has_flexible_marker": {
       "conditions": {
         "items": [
           {
-            "items": "quarryplus:marker"
+            "items": "quarryplus:flexible_marker"
           }
         ]
       },
@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "quarryplus:chunk_marker"
+        "recipe": "quarryplus:chunk_marker_from_flexible_marker"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -31,13 +31,13 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_marker",
+      "has_flexible_marker",
       "has_redstone"
     ]
   ],
   "rewards": {
     "recipes": [
-      "quarryplus:chunk_marker"
+      "quarryplus:chunk_marker_from_flexible_marker"
     ]
   }
 }

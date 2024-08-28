@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_markers": {
+    "has_marker": {
       "conditions": {
         "items": [
           {
-            "items": "#quarryplus:markers"
+            "items": "quarryplus:marker"
           }
         ]
       },
@@ -31,7 +31,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_markers",
+      "has_marker",
       "has_redstone"
     ]
   ],

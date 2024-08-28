@@ -4,6 +4,7 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryDataComponents;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
+import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
@@ -71,6 +72,45 @@ public final class LoadRecipeTest {
         helper.succeed();
     }
 
+    public static void createFlexibleMarker(GameTestHelper helper) {
+        var recipe = findRecipe(helper, FlexibleMarkerBlock.NAME);
+
+        var d = Items.GREEN_DYE.getDefaultInstance();
+        var m = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
+        var input = CraftingInput.of(3, 2, List.of(
+            d, d, d,
+            m, m, m
+        ));
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        assertEquals(
+            PlatformAccess.getAccess().registerObjects().flexibleMarkerBlock().get().blockItem,
+            result.getItem()
+        );
+
+        helper.succeed();
+    }
+
+    public static void createFlexibleMarker2(GameTestHelper helper) {
+        var recipe = findRecipe(helper, FlexibleMarkerBlock.NAME + "_from_" + ChunkMarkerBlock.NAME);
+
+        var e = ItemStack.EMPTY;
+        var d = Items.GREEN_DYE.getDefaultInstance();
+        var m = PlatformAccess.getAccess().registerObjects().chunkMarkerBlock().get().blockItem.getDefaultInstance();
+        var input = CraftingInput.of(3, 2, List.of(
+            d, d, d,
+            e, m, e
+        ));
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        assertEquals(
+            PlatformAccess.getAccess().registerObjects().flexibleMarkerBlock().get().blockItem,
+            result.getItem()
+        );
+
+        helper.succeed();
+    }
+
     public static void createChunkMarker(GameTestHelper helper) {
         var recipe = findRecipe(helper, ChunkMarkerBlock.NAME);
 
@@ -79,6 +119,26 @@ public final class LoadRecipeTest {
         var input = CraftingInput.of(3, 2, List.of(
             r, r, r,
             m, m, m
+        ));
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        assertEquals(
+            PlatformAccess.getAccess().registerObjects().chunkMarkerBlock().get().blockItem,
+            result.getItem()
+        );
+
+        helper.succeed();
+    }
+
+    public static void createChunkMarker2(GameTestHelper helper) {
+        var recipe = findRecipe(helper, ChunkMarkerBlock.NAME + "_from_" + FlexibleMarkerBlock.NAME);
+
+        var e = ItemStack.EMPTY;
+        var r = Items.REDSTONE.getDefaultInstance();
+        var m = PlatformAccess.getAccess().registerObjects().flexibleMarkerBlock().get().blockItem.getDefaultInstance();
+        var input = CraftingInput.of(3, 2, List.of(
+            r, r, r,
+            e, m, e
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
         var result = recipe.assemble(input, helper.getLevel().registryAccess());

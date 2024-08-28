@@ -1,6 +1,7 @@
 package com.yogpc.qp.data
 
 import com.yogpc.qp.machine.exp.ExpModuleItem
+import com.yogpc.qp.machine.marker.{ChunkMarkerBlock, FlexibleMarkerBlock}
 import com.yogpc.qp.recipe.InstallBedrockModuleRecipe
 import com.yogpc.qp.{PlatformAccess, QuarryPlus}
 import net.minecraft.core.HolderLookup
@@ -26,14 +27,41 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .unlockedBy(Items.REDSTONE_TORCH)
       .save(recipeOutput)
 
+    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().flexibleMarkerBlock().get())
+      .define('g', Items.GREEN_DYE)
+      .define('m', PlatformAccess.getAccess.registerObjects.markerBlock.get)
+      .pattern("ggg")
+      .pattern("mmm")
+      .unlockedBy(PlatformAccess.getAccess.registerObjects.markerBlock.get)
+      .unlockedBy(Items.GREEN_DYE)
+      .save(recipeOutput)
+
+    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().flexibleMarkerBlock().get())
+      .define('g', Items.GREEN_DYE)
+      .define('m', PlatformAccess.getAccess.registerObjects.chunkMarkerBlock.get)
+      .pattern("ggg")
+      .pattern(" m ")
+      .unlockedBy(PlatformAccess.getAccess.registerObjects.chunkMarkerBlock.get)
+      .unlockedBy(Items.GREEN_DYE)
+      .save(recipeOutput, modLoc(FlexibleMarkerBlock.NAME + "_from_" + ChunkMarkerBlock.NAME))
+
     ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().chunkMarkerBlock().get())
       .define('r', ip.redStoneDust)
-      .define('m', ip.marker)
+      .define('m', PlatformAccess.getAccess.registerObjects.markerBlock.get)
       .pattern("rrr")
       .pattern("mmm")
-      .unlockedBy(ip.markerTag)
+      .unlockedBy(PlatformAccess.getAccess.registerObjects.markerBlock.get)
       .unlockedBy(Items.REDSTONE)
       .save(recipeOutput)
+
+    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().chunkMarkerBlock().get())
+      .define('r', ip.redStoneDust)
+      .define('m', PlatformAccess.getAccess.registerObjects.flexibleMarkerBlock.get)
+      .pattern("rrr")
+      .pattern(" m ")
+      .unlockedBy(PlatformAccess.getAccess.registerObjects.flexibleMarkerBlock.get)
+      .unlockedBy(Items.REDSTONE)
+      .save(recipeOutput, modLoc(ChunkMarkerBlock.NAME + "_from_" + FlexibleMarkerBlock.NAME))
 
     ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().moverBlock().get())
       .define('d', ip.diamond)
@@ -134,5 +162,9 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
 
   private def quarryItem(name: String): Item = {
     BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name))
+  }
+
+  private def modLoc(name: String): ResourceLocation = {
+    ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name)
   }
 }

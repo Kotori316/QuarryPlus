@@ -1,6 +1,16 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
+    "has_green_dye": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:green_dye"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
     "has_marker": {
       "conditions": {
         "items": [
@@ -11,19 +21,9 @@
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_redstone": {
-      "conditions": {
-        "items": [
-          {
-            "items": "minecraft:redstone"
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
-    },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "quarryplus:chunk_marker"
+        "recipe": "quarryplus:flexible_marker"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -32,12 +32,12 @@
     [
       "has_the_recipe",
       "has_marker",
-      "has_redstone"
+      "has_green_dye"
     ]
   ],
   "rewards": {
     "recipes": [
-      "quarryplus:chunk_marker"
+      "quarryplus:flexible_marker"
     ]
   }
 }

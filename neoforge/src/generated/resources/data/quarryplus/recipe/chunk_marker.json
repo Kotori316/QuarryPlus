@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "m": {
-      "tag": "quarryplus:markers"
+      "item": "quarryplus:marker"
     },
     "r": {
       "tag": "c:dusts/redstone"

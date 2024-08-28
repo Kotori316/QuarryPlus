@@ -3,15 +3,15 @@
   "category": "misc",
   "key": {
     "m": {
-      "item": "quarryplus:marker"
+      "item": "quarryplus:flexible_marker"
     },
     "r": {
-      "tag": "c:dusts/redstone"
+      "tag": "forge:dusts/redstone"
     }
   },
   "pattern": [
     "rrr",
-    "mmm"
+    " m "
   ],
   "result": {
     "count": 1,

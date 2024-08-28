@@ -2,19 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
+    "g": {
+      "item": "minecraft:green_dye"
+    },
     "m": {
       "item": "quarryplus:marker"
-    },
-    "r": {
-      "tag": "c:dusts/redstone"
     }
   },
   "pattern": [
-    "rrr",
+    "ggg",
     "mmm"
   ],
   "result": {
     "count": 1,
-    "id": "quarryplus:chunk_marker"
+    "id": "quarryplus:flexible_marker"
   }
 }
