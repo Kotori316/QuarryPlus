@@ -3,6 +3,7 @@ package com.yogpc.qp.fabric.packet;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.fabric.machine.quarry.QuarryConfigSyncMessage;
 import com.yogpc.qp.machine.marker.ChunkMarkerMessage;
+import com.yogpc.qp.machine.marker.FlexibleMarkerMessage;
 import com.yogpc.qp.machine.mover.MoverMessage;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.OnReceiveWithLevel;
@@ -26,6 +27,7 @@ public final class PacketHandler implements PlatformAccess.Packet {
             PayloadTypeRegistry.playC2S().register(YSetterMessage.TYPE, YSetterMessage.STREAM_CODEC);
             PayloadTypeRegistry.playC2S().register(MoverMessage.TYPE, MoverMessage.STREAM_CODEC);
             PayloadTypeRegistry.playC2S().register(QuarryConfigSyncMessage.TYPE, QuarryConfigSyncMessage.STREAM_CODEC);
+            PayloadTypeRegistry.playC2S().register(FlexibleMarkerMessage.TYPE, FlexibleMarkerMessage.STREAM_CODEC);
             PayloadTypeRegistry.playC2S().register(ChunkMarkerMessage.TYPE, ChunkMarkerMessage.STREAM_CODEC);
         }
 
@@ -33,6 +35,7 @@ public final class PacketHandler implements PlatformAccess.Packet {
             ServerPlayNetworking.registerGlobalReceiver(YSetterMessage.TYPE, Server::onReceive);
             ServerPlayNetworking.registerGlobalReceiver(MoverMessage.TYPE, Server::onReceive);
             ServerPlayNetworking.registerGlobalReceiver(QuarryConfigSyncMessage.TYPE, Server::onReceive);
+            ServerPlayNetworking.registerGlobalReceiver(FlexibleMarkerMessage.TYPE, Server::onReceive);
             ServerPlayNetworking.registerGlobalReceiver(ChunkMarkerMessage.TYPE, Server::onReceive);
         }
 

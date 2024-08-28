@@ -3,6 +3,7 @@ package com.yogpc.qp.forge.packet;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.marker.ChunkMarkerMessage;
+import com.yogpc.qp.machine.marker.FlexibleMarkerMessage;
 import com.yogpc.qp.machine.mover.MoverMessage;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.OnReceiveWithLevel;
@@ -48,6 +49,11 @@ public final class PacketHandler implements PlatformAccess.Packet {
             .codec(MoverMessage.STREAM_CODEC)
             .consumerMainThread(PacketHandler::onReceive)
             .add()
+            // FlexibleMarkerMessage
+            .messageBuilder(FlexibleMarkerMessage.class)
+            .codec(FlexibleMarkerMessage.STREAM_CODEC)
+            .consumerMainThread(PacketHandler::onReceive)
+            .add()
             // ChunkMarkerMessage
             .messageBuilder(ChunkMarkerMessage.class)
             .codec(ChunkMarkerMessage.STREAM_CODEC)
@@ -70,6 +76,7 @@ public final class PacketHandler implements PlatformAccess.Packet {
     public void sendToClientWorld(@NotNull CustomPacketPayload message, @NotNull Level level) {
         if (level.getServer() instanceof GameTestServer) {
             // sending message to test server will cause NPE
+            QuarryPlus.LOGGER.debug("PacketHandler#sendToClientWorld is called in GameTestServer for {}", message.getClass().getSimpleName());
             return;
         }
         CHANNEL.send(message, PacketDistributor.DIMENSION.with(level.dimension()));

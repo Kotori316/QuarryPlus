@@ -3,6 +3,7 @@ package com.yogpc.qp.neoforge.packet;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.marker.ChunkMarkerMessage;
+import com.yogpc.qp.machine.marker.FlexibleMarkerMessage;
 import com.yogpc.qp.machine.mover.MoverMessage;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.OnReceiveWithLevel;
@@ -46,6 +47,11 @@ public final class PacketHandler implements PlatformAccess.Packet {
             PacketHandler::onReceive
         );
         registrar.playToServer(
+            FlexibleMarkerMessage.TYPE,
+            FlexibleMarkerMessage.STREAM_CODEC,
+            PacketHandler::onReceive
+        );
+        registrar.playToServer(
             ChunkMarkerMessage.TYPE,
             ChunkMarkerMessage.STREAM_CODEC,
             PacketHandler::onReceive
@@ -60,7 +66,7 @@ public final class PacketHandler implements PlatformAccess.Packet {
     public void sendToClientWorld(@NotNull CustomPacketPayload message, @NotNull Level level) {
         if (level.getServer() instanceof GameTestServer) {
             // sending message to test server will cause NPE
-            QuarryPlus.LOGGER.trace("PacketHandler#sendToClient is called in GameTestServer");
+            QuarryPlus.LOGGER.debug("PacketHandler#sendToClient is called in GameTestServer for {}", message.getClass().getSimpleName());
         } else if (level instanceof ServerLevel serverLevel) {
             PacketDistributor.sendToPlayersInDimension(serverLevel, message);
         } else {
