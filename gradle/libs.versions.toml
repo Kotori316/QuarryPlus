@@ -7,7 +7,7 @@ neoforge = "21.1.26"
 fabric_version_checker = "2.4.0"
 
 tu = "21.1-SNAPHOT"
-du = "21.1-SNAPHOT"
+du = "21.1-SNAPSHOT"
 
 scala = "3.5.0"
 
