@@ -60,6 +60,7 @@ public final class FlexibleMarkerMessage implements CustomPacketPayload, OnRecei
         }
         if (level.getBlockEntity(pos) instanceof FlexibleMarkerEntity marker && marker.enabled) {
             marker.move(movable, amount);
+            marker.syncToClient();
         }
     }
 

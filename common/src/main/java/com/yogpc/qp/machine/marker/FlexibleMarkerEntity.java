@@ -21,10 +21,10 @@ import java.util.function.UnaryOperator;
 
 public class FlexibleMarkerEntity extends QpEntity implements QuarryMarker, ClientSync {
     @NotNull
-    private BlockPos min;
+    BlockPos min;
     @NotNull
-    private BlockPos max;
-    private Direction direction = Direction.NORTH;
+    BlockPos max;
+    Direction direction = Direction.NORTH;
 
     public FlexibleMarkerEntity(@NotNull BlockPos pos, BlockState blockState) {
         super(pos, blockState);
