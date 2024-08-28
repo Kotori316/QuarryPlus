@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "m": {
+      "tag": "quarryplus:markers"
+    },
+    "r": {
+      "tag": "forge:dusts/redstone"
+    }
+  },
+  "pattern": [
+    "rrr",
+    "mmm"
+  ],
+  "result": {
+    "count": 1,
+    "id": "quarryplus:chunk_marker"
+  }
+}

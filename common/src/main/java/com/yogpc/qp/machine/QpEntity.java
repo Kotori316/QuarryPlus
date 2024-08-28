@@ -15,6 +15,10 @@ public abstract class QpEntity extends BlockEntity {
         this.enabled = PlatformAccess.config().enableMap().enabled(getMachineName(type));
     }
 
+    protected QpEntity(BlockPos pos, BlockState blockState) {
+        this(PlatformAccess.getAccess().registerObjects().getBlockEntityType((QpBlock) blockState.getBlock()).orElseThrow(), pos, blockState);
+    }
+
     protected String getMachineName(BlockEntityType<?> type) {
         var key = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type);
         if (key == null) {

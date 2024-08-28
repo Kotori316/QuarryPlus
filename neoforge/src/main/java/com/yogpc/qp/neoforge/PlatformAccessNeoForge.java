@@ -10,8 +10,7 @@ import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
-import com.yogpc.qp.machine.marker.NormalMarkerBlock;
-import com.yogpc.qp.machine.marker.NormalMarkerEntity;
+import com.yogpc.qp.machine.marker.*;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
@@ -81,28 +80,37 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         private static final List<Supplier<? extends InCreativeTabs>> TAB_ITEMS = new ArrayList<>();
         private static final Map<String, EnableMap.EnableOrNot> ENABLE_MAP = new HashMap<>();
 
+        // Machine
         public static final DeferredBlock<QuarryBlockNeoForge> BLOCK_QUARRY = registerBlock(QuarryBlockNeoForge.NAME, QuarryBlockNeoForge::new);
-        public static final DeferredBlock<FrameBlock> BLOCK_FRAME = registerBlock(FrameBlock.NAME, FrameBlock::new);
         public static final DeferredBlock<GeneratorBlock> BLOCK_GENERATOR = registerBlock(GeneratorBlock.NAME, GeneratorBlock::new);
-        public static final DeferredBlock<NormalMarkerBlock> BLOCK_MARKER = registerBlock(NormalMarkerBlock.NAME, NormalMarkerBlock::new);
         public static final DeferredBlock<MoverBlock> BLOCK_MOVER = registerBlock(MoverBlock.NAME, MoverBlock::new);
-
-        public static final DeferredItem<CheckerItemNeoForge> ITEM_CHECKER = registerItem(CheckerItemNeoForge.NAME, CheckerItemNeoForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
-        public static final DeferredItem<YSetterItemNeoForge> ITEM_Y_SET = registerItem(YSetterItemNeoForge.NAME, YSetterItemNeoForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
+        // Marker
+        public static final DeferredBlock<NormalMarkerBlock> BLOCK_MARKER = registerBlock(NormalMarkerBlock.NAME, NormalMarkerBlock::new);
+        public static final DeferredBlock<FlexibleMarkerBlock> BLOCK_FLEXIBLE_MARKER = registerBlock(FlexibleMarkerBlock.NAME, FlexibleMarkerBlock::new);
+        public static final DeferredBlock<ChunkMarkerBlock> BLOCK_CHUNK_MARKER = registerBlock(ChunkMarkerBlock.NAME, ChunkMarkerBlock::new);
+        // Module
         public static final DeferredItem<PumpModuleItem> ITEM_PUMP_MODULE = registerItem(PumpModuleItem.NAME, PumpModuleItem::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final DeferredItem<BedrockModuleItem> ITEM_BEDROCK_MODULE = registerItem(BedrockModuleItem.NAME, BedrockModuleItem::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final DeferredItem<ExpModuleItem> ITEM_EXP_MODULE = registerItem(ExpModuleItem.NAME, ExpModuleItem::new, EnableMap.EnableOrNot.CONFIG_ON);
+        // Misc
+        public static final DeferredItem<CheckerItemNeoForge> ITEM_CHECKER = registerItem(CheckerItemNeoForge.NAME, CheckerItemNeoForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
+        public static final DeferredItem<YSetterItemNeoForge> ITEM_Y_SET = registerItem(YSetterItemNeoForge.NAME, YSetterItemNeoForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
+        public static final DeferredBlock<FrameBlock> BLOCK_FRAME = registerBlock(FrameBlock.NAME, FrameBlock::new);
 
         private static final Map<Class<? extends QpBlock>, Supplier<BlockEntityType<?>>> BLOCK_ENTITY_TYPES = new HashMap<>();
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<QuarryEntityNeoForge>> QUARRY_ENTITY_TYPE = registerBlockEntity(QuarryBlockNeoForge.NAME, BLOCK_QUARRY, QuarryEntityNeoForge::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GeneratorEntity>> GENERATOR_ENTITY_TYPE = registerBlockEntity(GeneratorBlock.NAME, BLOCK_GENERATOR, GeneratorEntity::new, EnableMap.EnableOrNot.ALWAYS_ON);
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NormalMarkerEntity>> MARKER_ENTITY_TYPE = registerBlockEntity(NormalMarkerBlock.NAME, BLOCK_MARKER, NormalMarkerEntity::new, EnableMap.EnableOrNot.ALWAYS_ON);
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MoverEntity>> MOVER_ENTITY_TYPE = registerBlockEntity(MoverBlock.NAME, BLOCK_MOVER, MoverEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
+        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FlexibleMarkerEntity>> FLEXIBLE_MARKER_ENTITY_TYPE = registerBlockEntity(FlexibleMarkerBlock.NAME, BLOCK_FLEXIBLE_MARKER, FlexibleMarkerEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
+        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ChunkMarkerEntity>> CHUNK_MARKER_ENTITY_TYPE = registerBlockEntity(ChunkMarkerBlock.NAME, BLOCK_CHUNK_MARKER, ChunkMarkerEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
 
         public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_MODE_TAB = CREATIVE_TAB_REGISTER.register(QuarryPlus.modID, () -> QuarryPlus.buildCreativeModeTab(CreativeModeTab.builder()).build());
         public static final DeferredHolder<MenuType<?>, MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = registerMenu("gui_y_setter", YSetterContainer::new);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends MoverContainer>> MOVER_MENU_TYPE = registerMenu("gui_mover", MoverContainer::new);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends ModuleContainer>> MODULE_MENU_TYPE = registerMenu("gui_quarry_module", ModuleContainer::new);
+        public static final DeferredHolder<MenuType<?>, MenuType<? extends MarkerContainer>> FLEXIBLE_MARKER_MENU_TYPE = registerMenu(MarkerContainer.FLEXIBLE_NAME, MarkerContainer::createFlexibleMarkerContainer);
+        public static final DeferredHolder<MenuType<?>, MenuType<? extends MarkerContainer>> CHUNK_MARKER_MENU_TYPE = registerMenu(MarkerContainer.CHUNK_NAME, MarkerContainer::createChunkMarkerContainer);
         public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<? extends MachineLootFunction>> MACHINE_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(MachineLootFunction.NAME, () -> new LootItemFunctionType<>(MachineLootFunction.SERIALIZER));
         public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<InstallBedrockModuleRecipe>> INSTALL_BEDROCK_MODULE_RECIPE = RECIPE_REGISTER.register(InstallBedrockModuleRecipe.NAME, () -> InstallBedrockModuleRecipe.SERIALIZER);
 
@@ -166,6 +174,16 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         }
 
         @Override
+        public Supplier<? extends FlexibleMarkerBlock> flexibleMarkerBlock() {
+            return BLOCK_FLEXIBLE_MARKER;
+        }
+
+        @Override
+        public Supplier<? extends ChunkMarkerBlock> chunkMarkerBlock() {
+            return BLOCK_CHUNK_MARKER;
+        }
+
+        @Override
         public Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block) {
             var t = BLOCK_ENTITY_TYPES.get(block.getClass());
             if (t == null) {
@@ -203,6 +221,16 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         @Override
         public Supplier<MenuType<? extends ModuleContainer>> moduleContainer() {
             return MODULE_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<MenuType<? extends MarkerContainer>> flexibleMarkerContainer() {
+            return FLEXIBLE_MARKER_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<MenuType<? extends MarkerContainer>> chunkMarkerContainer() {
+            return CHUNK_MARKER_MENU_TYPE;
         }
 
         @Override

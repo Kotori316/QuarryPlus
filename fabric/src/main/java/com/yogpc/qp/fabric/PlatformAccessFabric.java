@@ -16,8 +16,7 @@ import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpItem;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
-import com.yogpc.qp.machine.marker.NormalMarkerBlock;
-import com.yogpc.qp.machine.marker.NormalMarkerEntity;
+import com.yogpc.qp.machine.marker.*;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.GeneratorEntity;
@@ -82,6 +81,12 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final MenuType<ModuleContainer> MODULE_MENU = new ExtendedScreenHandlerType<>(ModuleContainer::new, BlockPos.STREAM_CODEC);
         public static final BedrockModuleItem BEDROCK_MODULE_ITEM = new BedrockModuleItem();
         public static final ExpModuleItem EXP_MODULE_ITEM = new ExpModuleItem();
+        public static final FlexibleMarkerBlock FLEXIBLE_MARKER_BLOCK = new FlexibleMarkerBlock();
+        public static final BlockEntityType<FlexibleMarkerEntity> FLEXIBLE_MARKER_ENTITY_TYPE = BlockEntityType.Builder.of(FlexibleMarkerEntity::new, FLEXIBLE_MARKER_BLOCK).build(DSL.emptyPartType());
+        public static final ChunkMarkerBlock CHUNK_MARKER_BLOCK = new ChunkMarkerBlock();
+        public static final BlockEntityType<ChunkMarkerEntity> CHUNK_MARKER_ENTITY_TYPE = BlockEntityType.Builder.of(ChunkMarkerEntity::new, CHUNK_MARKER_BLOCK).build(DSL.emptyPartType());
+        public static final MenuType<MarkerContainer> FLEXIBLE_MARKER_MENU = new ExtendedScreenHandlerType<>(MarkerContainer::createFlexibleMarkerContainer, BlockPos.STREAM_CODEC);
+        public static final MenuType<MarkerContainer> CHUNK_MARKER_MENU = new ExtendedScreenHandlerType<>(MarkerContainer::createChunkMarkerContainer, BlockPos.STREAM_CODEC);
 
         public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
 
@@ -91,20 +96,28 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         private static final Map<String, EnableMap.EnableOrNot> ENABLE_MAP = new HashMap<>();
 
         static void registerAll() {
+            // Machine
             registerEntityBlock(QUARRY_BLOCK, QUARRY_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
-            registerBlockItem(FRAME_BLOCK);
             registerEntityBlock(GENERATOR_BLOCK, GENERATOR_ENTITY_TYPE, EnableMap.EnableOrNot.ALWAYS_ON);
-            registerItem(CHECKER_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
-            registerEntityBlock(MARKER_BLOCK, MARKER_ENTITY_TYPE, EnableMap.EnableOrNot.ALWAYS_ON);
-            registerItem(Y_SET_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
             registerEntityBlock(MOVER_BLOCK, MOVER_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
+            // Marker
+            registerEntityBlock(MARKER_BLOCK, MARKER_ENTITY_TYPE, EnableMap.EnableOrNot.ALWAYS_ON);
+            registerEntityBlock(FLEXIBLE_MARKER_BLOCK, FLEXIBLE_MARKER_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
+            registerEntityBlock(CHUNK_MARKER_BLOCK, CHUNK_MARKER_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
+            // Module
             registerItem(PUMP_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
             registerItem(BEDROCK_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
             registerItem(EXP_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
+            // Misc
+            registerItem(CHECKER_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
+            registerItem(Y_SET_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
+            registerBlockItem(FRAME_BLOCK);
             Registry.register(BuiltInRegistries.MENU, QuarryMenuFabric.GUI_ID, QUARRY_MENU);
             Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, Y_SET_MENU);
             Registry.register(BuiltInRegistries.MENU, MoverContainer.GUI_ID, MOVER_MENU);
             Registry.register(BuiltInRegistries.MENU, ModuleContainer.GUI_ID, MODULE_MENU);
+            Registry.register(BuiltInRegistries.MENU, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MarkerContainer.FLEXIBLE_NAME), FLEXIBLE_MARKER_MENU);
+            Registry.register(BuiltInRegistries.MENU, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MarkerContainer.CHUNK_NAME), CHUNK_MARKER_MENU);
             Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MachineLootFunction.NAME), MACHINE_LOOT_FUNCTION);
             Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
             Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "quarry_remove_bedrock_component"), QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT);
@@ -166,6 +179,16 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         }
 
         @Override
+        public Supplier<? extends FlexibleMarkerBlock> flexibleMarkerBlock() {
+            return Lazy.value(FLEXIBLE_MARKER_BLOCK);
+        }
+
+        @Override
+        public Supplier<? extends ChunkMarkerBlock> chunkMarkerBlock() {
+            return Lazy.value(CHUNK_MARKER_BLOCK);
+        }
+
+        @Override
         public Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block) {
             var t = BLOCK_ENTITY_TYPES.get(block.getClass());
             if (t == null) {
@@ -203,6 +226,16 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         @Override
         public Supplier<MenuType<? extends ModuleContainer>> moduleContainer() {
             return Lazy.value(MODULE_MENU);
+        }
+
+        @Override
+        public Supplier<MenuType<? extends MarkerContainer>> flexibleMarkerContainer() {
+            return Lazy.value(FLEXIBLE_MARKER_MENU);
+        }
+
+        @Override
+        public Supplier<MenuType<? extends MarkerContainer>> chunkMarkerContainer() {
+            return Lazy.value(CHUNK_MARKER_MENU);
         }
 
         @Override

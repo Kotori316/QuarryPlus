@@ -5,6 +5,8 @@ import com.yogpc.qp.*;
 import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.forge.machine.marker.ChunkMarkerEntityForge;
+import com.yogpc.qp.forge.machine.marker.FlexibleMarkerEntityForge;
 import com.yogpc.qp.forge.machine.marker.NormalMarkerEntityForge;
 import com.yogpc.qp.forge.machine.misc.CheckerItemForge;
 import com.yogpc.qp.forge.machine.misc.YSetterItemForge;
@@ -16,6 +18,9 @@ import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
+import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
+import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
+import com.yogpc.qp.machine.marker.MarkerContainer;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
@@ -84,27 +89,36 @@ public final class PlatformAccessForge implements PlatformAccess {
         private static final List<Supplier<? extends InCreativeTabs>> TAB_ITEMS = new ArrayList<>();
         private static final Map<String, EnableMap.EnableOrNot> ENABLE_MAP = new HashMap<>();
 
+        // Machine
         public static final RegistryObject<QuarryBlockForge> BLOCK_QUARRY = registerBlock(QuarryBlockForge.NAME, QuarryBlockForge::new);
-        public static final RegistryObject<FrameBlock> BLOCK_FRAME = registerBlock(FrameBlock.NAME, FrameBlock::new);
         public static final RegistryObject<GeneratorBlock> BLOCK_GENERATOR = registerBlock(GeneratorBlock.NAME, GeneratorBlock::new);
-        public static final RegistryObject<NormalMarkerBlock> BLOCK_MARKER = registerBlock(NormalMarkerBlock.NAME, NormalMarkerBlock::new);
         public static final RegistryObject<MoverBlock> BLOCK_MOVER = registerBlock(MoverBlock.NAME, MoverBlock::new);
-
-        public static final RegistryObject<CheckerItemForge> ITEM_CHECKER = registerItem(CheckerItemForge.NAME, CheckerItemForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
-        public static final RegistryObject<YSetterItemForge> ITEM_Y_SET = registerItem(YSetterItemForge.NAME, YSetterItemForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
+        // Marker
+        public static final RegistryObject<NormalMarkerBlock> BLOCK_MARKER = registerBlock(NormalMarkerBlock.NAME, NormalMarkerBlock::new);
+        public static final RegistryObject<FlexibleMarkerBlock> BLOCK_FLEXIBLE_MARKER = registerBlock(FlexibleMarkerBlock.NAME, FlexibleMarkerBlock::new);
+        public static final RegistryObject<ChunkMarkerBlock> BLOCK_CHUNK_MARKER = registerBlock(ChunkMarkerBlock.NAME, ChunkMarkerBlock::new);
+        // Module
         public static final RegistryObject<PumpModuleItem> ITEM_PUMP_MODULE = registerItem(PumpModuleItem.NAME, PumpModuleItem::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final RegistryObject<BedrockModuleItem> ITEM_BEDROCK_MODULE = registerItem(BedrockModuleItem.NAME, BedrockModuleItem::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final RegistryObject<ExpModuleItem> ITEM_EXP_MODULE = registerItem(ExpModuleItem.NAME, ExpModuleItem::new, EnableMap.EnableOrNot.CONFIG_ON);
+        // Misc
+        public static final RegistryObject<CheckerItemForge> ITEM_CHECKER = registerItem(CheckerItemForge.NAME, CheckerItemForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
+        public static final RegistryObject<YSetterItemForge> ITEM_Y_SET = registerItem(YSetterItemForge.NAME, YSetterItemForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
+        public static final RegistryObject<FrameBlock> BLOCK_FRAME = registerBlock(FrameBlock.NAME, FrameBlock::new);
 
         private static final Map<Class<? extends QpBlock>, Supplier<BlockEntityType<?>>> BLOCK_ENTITY_TYPES = new HashMap<>();
         public static final RegistryObject<BlockEntityType<QuarryEntityForge>> QUARRY_ENTITY_TYPE = registerBlockEntity(QuarryBlockForge.NAME, BLOCK_QUARRY, QuarryEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final RegistryObject<BlockEntityType<GeneratorEntity>> GENERATOR_ENTITY_TYPE = registerBlockEntity(GeneratorBlock.NAME, BLOCK_GENERATOR, GeneratorEntity::new, EnableMap.EnableOrNot.ALWAYS_ON);
         public static final RegistryObject<BlockEntityType<NormalMarkerEntityForge>> MARKER_ENTITY_TYPE = registerBlockEntity(NormalMarkerBlock.NAME, BLOCK_MARKER, NormalMarkerEntityForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
         public static final RegistryObject<BlockEntityType<MoverEntity>> MOVER_ENTITY_TYPE = registerBlockEntity(MoverBlock.NAME, BLOCK_MOVER, MoverEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
+        public static final RegistryObject<BlockEntityType<FlexibleMarkerEntityForge>> FLEXIBLE_MARKER_ENTITY_TYPE = registerBlockEntity(FlexibleMarkerBlock.NAME, BLOCK_FLEXIBLE_MARKER, FlexibleMarkerEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
+        public static final RegistryObject<BlockEntityType<ChunkMarkerEntityForge>> CHUNK_MARKER_ENTITY_TYPE = registerBlockEntity(ChunkMarkerBlock.NAME, BLOCK_CHUNK_MARKER, ChunkMarkerEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
 
         public static final RegistryObject<MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = registerMenu("gui_y_setter", YSetterContainer::new);
         public static final RegistryObject<MenuType<? extends MoverContainer>> MOVER_MENU_TYPE = registerMenu("gui_mover", MoverContainer::new);
         public static final RegistryObject<MenuType<? extends ModuleContainer>> MODULE_MENU_TYPE = registerMenu("gui_quarry_module", ModuleContainer::new);
+        public static final RegistryObject<MenuType<? extends MarkerContainer>> FLEXIBLE_MARKER_MENU_TYPE = registerMenu(MarkerContainer.FLEXIBLE_NAME, MarkerContainer::createFlexibleMarkerContainer);
+        public static final RegistryObject<MenuType<? extends MarkerContainer>> CHUNK_MARKER_MENU_TYPE = registerMenu(MarkerContainer.CHUNK_NAME, MarkerContainer::createChunkMarkerContainer);
 
         public static final RegistryObject<LootItemFunctionType<? extends MachineLootFunction>> MACHINE_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(MachineLootFunction.NAME, () -> new LootItemFunctionType<>(MachineLootFunction.SERIALIZER));
 
@@ -171,6 +185,16 @@ public final class PlatformAccessForge implements PlatformAccess {
         }
 
         @Override
+        public Supplier<? extends FlexibleMarkerBlock> flexibleMarkerBlock() {
+            return BLOCK_FLEXIBLE_MARKER;
+        }
+
+        @Override
+        public Supplier<? extends ChunkMarkerBlock> chunkMarkerBlock() {
+            return BLOCK_CHUNK_MARKER;
+        }
+
+        @Override
         public Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block) {
             var t = BLOCK_ENTITY_TYPES.get(block.getClass());
             if (t == null) {
@@ -208,6 +232,16 @@ public final class PlatformAccessForge implements PlatformAccess {
         @Override
         public Supplier<MenuType<? extends ModuleContainer>> moduleContainer() {
             return MODULE_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<MenuType<? extends MarkerContainer>> flexibleMarkerContainer() {
+            return FLEXIBLE_MARKER_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<MenuType<? extends MarkerContainer>> chunkMarkerContainer() {
+            return CHUNK_MARKER_MENU_TYPE;
         }
 
         @Override

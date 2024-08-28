@@ -5,6 +5,9 @@ import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
+import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
+import com.yogpc.qp.machine.marker.MarkerContainer;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
@@ -62,6 +65,10 @@ public interface PlatformAccess {
 
         Supplier<? extends MoverBlock> moverBlock();
 
+        Supplier<? extends FlexibleMarkerBlock> flexibleMarkerBlock();
+
+        Supplier<? extends ChunkMarkerBlock> chunkMarkerBlock();
+
         Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block);
 
         Map<String, EnableMap.EnableOrNot> defaultEnableSetting();
@@ -75,6 +82,10 @@ public interface PlatformAccess {
         Supplier<MenuType<? extends MoverContainer>> moverContainer();
 
         Supplier<MenuType<? extends ModuleContainer>> moduleContainer();
+
+        Supplier<MenuType<? extends MarkerContainer>> flexibleMarkerContainer();
+
+        Supplier<MenuType<? extends MarkerContainer>> chunkMarkerContainer();
 
         Supplier<LootItemFunctionType<? extends MachineLootFunction>> machineLootFunction();
     }

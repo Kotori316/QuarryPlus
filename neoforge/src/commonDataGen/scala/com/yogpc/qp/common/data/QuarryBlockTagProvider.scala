@@ -19,5 +19,7 @@ class QuarryBlockTagProvider(output: PackOutput, lookupProvider: CompletableFutu
 
     tag(markerBlockTag)
       .add(holder.markerBlock().get())
+      .add(holder.flexibleMarkerBlock().get())
+      .add(holder.chunkMarkerBlock().get())
   }
 }
