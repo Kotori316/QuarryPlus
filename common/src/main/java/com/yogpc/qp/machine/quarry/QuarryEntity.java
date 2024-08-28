@@ -408,6 +408,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 .filter(p -> !skipped.contains(p))
                 .filter(p -> !level.getFluidState(p).isEmpty())
                 .findAny()
+                .map(BlockPos::immutable)
                 .orElse(null);
             if (fluidPos != null) {
                 targetIterator = new PickIterator.Single<>(fluidPos);
@@ -423,6 +424,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 .filter(p -> !skipped.contains(p))
                 .filter(p -> canBreak(level, p, level.getBlockState(p)))
                 .findAny()
+                .map(BlockPos::immutable)
                 .orElse(null);
             if (blockPos != null) {
                 targetIterator = new PickIterator.Single<>(blockPos);
