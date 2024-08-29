@@ -1,5 +1,6 @@
 package com.yogpc.qp;
 
+import com.electronwill.nightconfig.core.Config;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,7 +30,7 @@ public class PlatformAccessDelegate implements PlatformAccess {
     public void reset() {
         this.access = new VanillaImpl();
         this.configPath = null;
-        this.config = null;
+        setConfig(null);
     }
 
     public void setAccess(PlatformAccess access) {
@@ -39,6 +40,14 @@ public class PlatformAccessDelegate implements PlatformAccess {
     public void setConfigPath(Path configPath) {
         this.configPath = configPath;
         this.config = QuarryConfig.load(configPath, this::isInDevelopmentEnvironment);
+    }
+
+    public void setConfig(@Nullable QuarryConfig config) {
+        this.config = config;
+    }
+
+    public void setConfig(Config config, boolean debug) {
+        setConfig(QuarryConfig.fromConfig(config, debug));
     }
 
     @Override

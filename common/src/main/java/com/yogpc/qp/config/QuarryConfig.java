@@ -12,6 +12,8 @@ import java.util.function.BooleanSupplier;
 public interface QuarryConfig {
     boolean debug();
 
+    boolean noEnergy();
+
     PowerMap powerMap();
 
     EnableMap enableMap();
