@@ -8,7 +8,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public final class RepeatTickModuleItem extends QpItem implements QuarryModuleProvider.Item {
     public static final String NAME = "repeat_tick_module";
@@ -33,5 +35,14 @@ public final class RepeatTickModuleItem extends QpItem implements QuarryModulePr
         public ResourceLocation moduleId() {
             return ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, NAME);
         }
+    }
+
+    public static RepeatTickModule ZERO = new RepeatTickModule(0);
+
+    public static Optional<RepeatTickModule> getModule(Collection<QuarryModule> modules) {
+        return modules.stream()
+            .filter(RepeatTickModule.class::isInstance)
+            .map(RepeatTickModule.class::cast)
+            .findAny();
     }
 }

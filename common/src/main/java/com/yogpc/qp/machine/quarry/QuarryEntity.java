@@ -10,6 +10,7 @@ import com.yogpc.qp.machine.misc.DigMinY;
 import com.yogpc.qp.machine.module.ModuleInventory;
 import com.yogpc.qp.machine.module.QuarryModule;
 import com.yogpc.qp.machine.module.QuarryModuleProvider;
+import com.yogpc.qp.machine.module.RepeatTickModuleItem;
 import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -112,19 +113,25 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     @SuppressWarnings("unused")
     static void serverTick(Level level, BlockPos pos, BlockState state, QuarryEntity quarryEntity) {
-        if (!quarryEntity.hasEnoughEnergy()) {
-            return;
-        }
-        switch (quarryEntity.currentState) {
-            case FINISHED -> {
+        for (int i = 0; i < quarryEntity.repeatCount(); i++) {
+            if (!quarryEntity.hasEnoughEnergy()) {
+                return;
             }
-            case WAITING -> quarryEntity.waiting();
-            case BREAK_INSIDE_FRAME -> quarryEntity.breakInsideFrame();
-            case MAKE_FRAME -> quarryEntity.makeFrame();
-            case MOVE_HEAD -> quarryEntity.moveHead();
-            case BREAK_BLOCK -> quarryEntity.breakBlock();
-            case REMOVE_FLUID -> quarryEntity.removeFluid();
-            case FILLER -> quarryEntity.filler();
+            switch (quarryEntity.currentState) {
+                case FINISHED -> {
+                    return;
+                }
+                case WAITING -> {
+                    quarryEntity.waiting();
+                    return;
+                }
+                case BREAK_INSIDE_FRAME -> quarryEntity.breakInsideFrame();
+                case MAKE_FRAME -> quarryEntity.makeFrame();
+                case MOVE_HEAD -> quarryEntity.moveHead();
+                case BREAK_BLOCK -> quarryEntity.breakBlock();
+                case REMOVE_FLUID -> quarryEntity.removeFluid();
+                case FILLER -> quarryEntity.filler();
+            }
         }
     }
 
@@ -630,6 +637,11 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     protected @NotNull Optional<ExpModule> getExpModule() {
         return ExpModule.getModule(modules);
+    }
+
+    protected int repeatCount() {
+        var repeatTickModule = RepeatTickModuleItem.getModule(modules).orElse(RepeatTickModuleItem.ZERO);
+        return repeatTickModule.stackSize() + 1;
     }
 
     void removeFluidAt(@NotNull Level level, BlockPos pos, ServerPlayer player, BlockState newState) {
