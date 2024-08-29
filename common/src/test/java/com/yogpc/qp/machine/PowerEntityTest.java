@@ -10,8 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,12 +52,18 @@ class PowerEntityTest extends BeforeMC {
         var c = Config.inMemory();
         c.set("noEnergy", false);
         delegate.setConfig(c, false);
+        PlatformAccess.config().enableMap().set("test", true);
 
         var e = instance();
         e.setMaxEnergy(1000);
-        assertEquals(0, e.getEnergy());
-        assertEquals(0, e.useEnergy(100, true, false, "test"));
-        assertEquals(100, e.addEnergy(100, false));
+
+        assertAll(
+            () -> assertEquals(0, e.getEnergy()),
+            () -> assertEquals(0, e.useEnergy(100, true, false, "test")),
+            () -> assertEquals(100, e.addEnergy(100, true)),
+            () -> assertTrue(e.enabled),
+            () -> assertFalse(e.hasEnoughEnergy())
+        );
     }
 
     @Test
@@ -67,11 +72,16 @@ class PowerEntityTest extends BeforeMC {
         var c = Config.inMemory();
         c.set("noEnergy", true);
         delegate.setConfig(c, false);
+        PlatformAccess.config().enableMap().set("test", true);
 
         var e = instance();
         e.setMaxEnergy(1000);
-        assertEquals(1000, e.getEnergy());
-        assertEquals(100, e.useEnergy(100, true, false, "test"));
-        assertEquals(0, e.addEnergy(100, false));
+        assertAll(
+            () -> assertEquals(1000, e.getEnergy()),
+            () -> assertEquals(100, e.useEnergy(100, true, false, "test")),
+            () -> assertEquals(0, e.addEnergy(100, true)),
+            () -> assertTrue(e.enabled),
+            () -> assertTrue(e.hasEnoughEnergy())
+        );
     }
 }

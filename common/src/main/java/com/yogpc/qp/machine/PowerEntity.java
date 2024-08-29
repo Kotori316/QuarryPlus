@@ -66,7 +66,7 @@ public abstract class PowerEntity extends QpEntity {
     }
 
     protected final boolean hasEnoughEnergy() {
-        return enabled && (getEnergy() > 0 || noEnergy);
+        return enabled && getEnergy() > 0;
     }
 
     protected long getMaxReceive() {
