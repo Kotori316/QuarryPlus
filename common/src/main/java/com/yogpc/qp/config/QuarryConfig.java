@@ -18,6 +18,8 @@ public interface QuarryConfig {
 
     double rebornEnergyConversionCoefficient();
 
+    boolean removeBedrockOnNetherTop();
+
     static QuarryConfig load(Path path, BooleanSupplier inDevelop) {
         try (var config = CommentedFileConfig.builder(path)
             .preserveInsertionOrder()

@@ -39,15 +39,17 @@ final class QuarryConfigLoader {
             enableMap = new EnableMap();
         }
         var rebornEnergyConversionCoefficient = config.<Double>get("rebornEnergyConversionCoefficient");
+        var removeBedrockOnNetherTop = config.<Boolean>get("removeBedrockOnNetherTop");
 
-        return new QuarryConfigImpl(debug, powerMap, enableMap, rebornEnergyConversionCoefficient);
+        return new QuarryConfigImpl(debug, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop);
     }
 
     record QuarryConfigImpl(
         boolean debug,
         PowerMap powerMap,
         EnableMap enableMap,
-        double rebornEnergyConversionCoefficient
+        double rebornEnergyConversionCoefficient,
+        boolean removeBedrockOnNetherTop
     ) implements QuarryConfig {
     }
 
@@ -60,6 +62,8 @@ final class QuarryConfigLoader {
         specConfig.setComment("debug", "In debug mode. Default: " + inDevelop.getAsBoolean());
 
         defineDouble(config, specConfig, "rebornEnergyConversionCoefficient", 1d / 16d, 0d, 1e10, "[Fabric ONLY] 1E = ?FE");
+        config.define("removeBedrockOnNetherTop", inDevelop.getAsBoolean());
+        specConfig.setComment("removeBedrockOnNetherTop", "Remove bedrock at y=127 in Nether");
 
         // powerMap.quarry.*
         defineInCodec(config, specConfig, "powerMap.quarry", PowerMap.Default.QUARRY);

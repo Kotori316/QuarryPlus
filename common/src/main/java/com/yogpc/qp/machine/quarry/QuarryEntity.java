@@ -596,7 +596,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             var worldBottom = level.getMinBuildHeight();
             var targetY = target.getY();
             if (level.dimension().equals(Level.NETHER)) {
-                if ((worldBottom >= targetY || targetY >= worldBottom + 5) && (122 >= targetY || targetY >= 128)) {
+                int top = PlatformAccess.config().removeBedrockOnNetherTop() ? level.getMaxBuildHeight() + 1 : 127;
+                if ((worldBottom >= targetY || targetY >= worldBottom + 5) && (122 >= targetY || targetY >= top)) {
                     return WorkResult.SKIPPED;
                 }
             } else {
