@@ -17,11 +17,15 @@ trait IngredientProvider {
 
   def diamond: Ingredient
 
+  def amethyst: Ingredient
+
   def ironIngot: Ingredient
 
   def goldIngot: Ingredient
 
   def enderPearl: Ingredient
+
+  def prismarineShard: Ingredient
 
   def obsidian: Ingredient
 
@@ -49,4 +53,6 @@ trait IngredientProvider {
   def expModuleRecipeOutput(original: RecipeOutput): RecipeOutput = original
 
   def installBedrockModuleQuarryRecipeOutput(original: RecipeOutput): RecipeOutput = original
+
+  def repeatTickModuleRecipeOutput(original: RecipeOutput): RecipeOutput = original
 }

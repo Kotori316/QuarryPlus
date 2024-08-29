@@ -39,5 +39,11 @@ final class IngredientProviderFabric(withCondition: (RecipeOutput, Seq[ResourceC
 
   override def installBedrockModuleQuarryRecipeOutput(original: RecipeOutput): RecipeOutput = pumpModuleRecipeOutput(original)
 
+  override def repeatTickModuleRecipeOutput(original: RecipeOutput): RecipeOutput = pumpModuleRecipeOutput(original)
+
   override def enderPearl: Ingredient = Ingredient.of(ConventionalItemTags.ENDER_PEARLS)
+
+  override def amethyst: Ingredient = Ingredient.of(ConventionalItemTags.AMETHYST_GEMS)
+
+  override def prismarineShard: Ingredient = Ingredient.of(Items.PRISMARINE_SHARD)
 }

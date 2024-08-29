@@ -1,0 +1,35 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:not",
+      "value": {
+        "condition": "fabric:true"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "c:gems/amethyst"
+    },
+    "m": {
+      "tag": "quarryplus:markers"
+    },
+    "p": {
+      "item": "minecraft:prismarine_shard"
+    },
+    "w": {
+      "item": "minecraft:lingering_potion"
+    }
+  },
+  "pattern": [
+    "apa",
+    "pwp",
+    "apm"
+  ],
+  "result": {
+    "count": 1,
+    "id": "quarryplus:repeat_tick_module"
+  }
+}

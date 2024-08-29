@@ -5,11 +5,14 @@ import com.yogpc.qp.QuarryDataComponents;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
 import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
+import com.yogpc.qp.machine.module.RepeatTickModuleItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -364,6 +367,32 @@ public final class LoadRecipeTest {
         var name = "install_bedrock_module_quarry";
         var recipe = findRecipeNullable(helper, name);
         assertNull(recipe, "This recipe must not be loaded in all platforms");
+        helper.succeed();
+    }
+
+    public static void createRepeatTickModule(GameTestHelper helper) {
+        var name = RepeatTickModuleItem.NAME;
+        var recipe = findRecipeNullable(helper, name);
+        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+            assertNull(recipe, "This recipe(%s) must not be loaded in fabric".formatted(name));
+            helper.succeed();
+            return;
+        }
+        assertNotNull(recipe, "Recipe not found");
+
+        var a = Items.AMETHYST_SHARD.getDefaultInstance();
+        var p = Items.PRISMARINE_SHARD.getDefaultInstance();
+        var w = PotionContents.createItemStack(Items.LINGERING_POTION, Potions.STRONG_SWIFTNESS);
+        var m = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
+        var input = CraftingInput.of(3, 3, List.of(
+            a, p, a,
+            p, w, p,
+            a, p, m
+        ));
+
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        assertEquals(name, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
         helper.succeed();
     }
 }

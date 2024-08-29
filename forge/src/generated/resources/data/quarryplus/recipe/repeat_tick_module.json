@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "forge:gems/amethyst"
+    },
+    "m": {
+      "tag": "quarryplus:markers"
+    },
+    "p": {
+      "tag": "forge:dusts/prismarine"
+    },
+    "w": {
+      "item": "minecraft:lingering_potion"
+    }
+  },
+  "pattern": [
+    "apa",
+    "pwp",
+    "apm"
+  ],
+  "result": {
+    "count": 1,
+    "id": "quarryplus:repeat_tick_module"
+  }
+}

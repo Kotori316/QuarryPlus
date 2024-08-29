@@ -2,6 +2,7 @@ package com.yogpc.qp.data
 
 import com.yogpc.qp.machine.exp.ExpModuleItem
 import com.yogpc.qp.machine.marker.{ChunkMarkerBlock, FlexibleMarkerBlock}
+import com.yogpc.qp.machine.module.RepeatTickModuleItem
 import com.yogpc.qp.recipe.InstallBedrockModuleRecipe
 import com.yogpc.qp.{PlatformAccess, QuarryPlus}
 import net.minecraft.core.HolderLookup
@@ -9,6 +10,8 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.data.PackOutput
 import net.minecraft.data.recipes.{RecipeCategory, RecipeOutput, RecipeProvider, ShapedRecipeBuilder}
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.item.alchemy.{PotionContents, Potions}
+import net.minecraft.world.item.crafting.Ingredient
 import net.minecraft.world.item.{Item, Items}
 
 import java.util.concurrent.CompletableFuture
@@ -158,6 +161,17 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
     InstallBedrockModuleRecipe.builder(PlatformAccess.getAccess.registerObjects().quarryBlock().get())
       .unlockedBy("has_bedrock_module", RecipeProvider.has(bedrockModule))
       .save(ip.installBedrockModuleQuarryRecipeOutput(recipeOutput), ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "install_bedrock_module_quarry"))
+
+    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, quarryItem(RepeatTickModuleItem.NAME))
+      .define('a', ip.amethyst)
+      .define('p', ip.prismarineShard)
+      .define('m', ip.marker)
+      .define('w', Ingredient.of(PotionContents.createItemStack(Items.LINGERING_POTION, Potions.STRONG_SWIFTNESS)))
+      .pattern("apa")
+      .pattern("pwp")
+      .pattern("apm")
+      .unlockedBy(ip.markerTag)
+      .save(ip.repeatTickModuleRecipeOutput(recipeOutput))
   }
 
   private def quarryItem(name: String): Item = {
