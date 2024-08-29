@@ -19,9 +19,12 @@ public final class EnableMap {
     }
 
     public boolean enabled(String name) {
-        if (PlatformAccess.getAccess().registerObjects() != null &&
-            PlatformAccess.getAccess().registerObjects().defaultEnableSetting().get(name) == EnableOrNot.ALWAYS_ON) {
+        var defaultSetting = getDefaultValue(name);
+        if (defaultSetting == EnableOrNot.ALWAYS_ON) {
             return true;
+        }
+        if (defaultSetting == EnableOrNot.ALWAYS_OFF) {
+            return false;
         }
         var value = machinesMap.get(name);
         if (value == null) {
@@ -55,11 +58,17 @@ public final class EnableMap {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
+    static EnableOrNot getDefaultValue(String name) {
+        if (PlatformAccess.getAccess().registerObjects() != null) return null;
+
+        return PlatformAccess.getAccess().registerObjects().defaultEnableSetting().get(name);
+    }
+
     public enum EnableOrNot {
-        CONFIG_ON, CONFIG_OFF, ALWAYS_ON;
+        CONFIG_ON, CONFIG_OFF, ALWAYS_ON, ALWAYS_OFF;
 
         public boolean configurable() {
-            return this == CONFIG_ON || this == CONFIG_OFF;
+            return this == CONFIG_ON || this == CONFIG_OFF || this == ALWAYS_OFF;
         }
 
         public boolean on() {

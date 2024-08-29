@@ -107,10 +107,10 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerEntityBlock(FLEXIBLE_MARKER_BLOCK, FLEXIBLE_MARKER_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             registerEntityBlock(CHUNK_MARKER_BLOCK, CHUNK_MARKER_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             // Module
-            registerItem(PUMP_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
+            registerItem(PUMP_MODULE_ITEM, EnableMap.EnableOrNot.ALWAYS_OFF);
             registerItem(BEDROCK_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
-            registerItem(EXP_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
-            registerItem(REPEAT_TICK_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
+            registerItem(EXP_MODULE_ITEM, EnableMap.EnableOrNot.ALWAYS_OFF);
+            registerItem(REPEAT_TICK_MODULE_ITEM, EnableMap.EnableOrNot.ALWAYS_OFF);
             // Misc
             registerItem(CHECKER_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
             registerItem(Y_SET_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
@@ -306,11 +306,6 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
     }
 
     private QuarryConfig modified() {
-        var config = QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment);
-        var enableMap = config.enableMap();
-        enableMap.set(PumpModuleItem.NAME, false);
-        enableMap.set(ExpModuleItem.NAME, false);
-        enableMap.set(RepeatTickModuleItem.NAME, false);
-        return config;
+        return QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment);
     }
 }
