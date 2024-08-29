@@ -72,7 +72,7 @@ final class StateAndModelProvider extends BlockStateProvider {
         // simpleItem(Holder.ITEM_REPLACER_MODULE, "block/replacer_side");
         simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_CHECKER.get());
         simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_Y_SET.get());
-        // simpleItem(Holder.ITEM_REPEAT_MODULE);
+        simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_REPEAT_MODULE.get());
     }
 
     void frame() {

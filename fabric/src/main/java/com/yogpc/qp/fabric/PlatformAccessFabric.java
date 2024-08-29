@@ -24,6 +24,7 @@ import com.yogpc.qp.machine.misc.YSetterContainer;
 import com.yogpc.qp.machine.module.BedrockModuleItem;
 import com.yogpc.qp.machine.module.ModuleContainer;
 import com.yogpc.qp.machine.module.PumpModuleItem;
+import com.yogpc.qp.machine.module.RepeatTickModuleItem;
 import com.yogpc.qp.machine.mover.MoverBlock;
 import com.yogpc.qp.machine.mover.MoverContainer;
 import com.yogpc.qp.machine.mover.MoverEntity;
@@ -87,6 +88,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final BlockEntityType<ChunkMarkerEntity> CHUNK_MARKER_ENTITY_TYPE = BlockEntityType.Builder.of(ChunkMarkerEntity::new, CHUNK_MARKER_BLOCK).build(DSL.emptyPartType());
         public static final MenuType<MarkerContainer> FLEXIBLE_MARKER_MENU = new ExtendedScreenHandlerType<>(MarkerContainer::createFlexibleMarkerContainer, BlockPos.STREAM_CODEC);
         public static final MenuType<MarkerContainer> CHUNK_MARKER_MENU = new ExtendedScreenHandlerType<>(MarkerContainer::createChunkMarkerContainer, BlockPos.STREAM_CODEC);
+        public static final RepeatTickModuleItem REPEAT_TICK_MODULE_ITEM = new RepeatTickModuleItem();
 
         public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
 
@@ -108,6 +110,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerItem(PUMP_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
             registerItem(BEDROCK_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
             registerItem(EXP_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
+            registerItem(REPEAT_TICK_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
             // Misc
             registerItem(CHECKER_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
             registerItem(Y_SET_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
@@ -307,6 +310,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         var enableMap = config.enableMap();
         enableMap.set(PumpModuleItem.NAME, false);
         enableMap.set(ExpModuleItem.NAME, false);
+        enableMap.set(RepeatTickModuleItem.NAME, false);
         return config;
     }
 }
