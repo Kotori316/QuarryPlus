@@ -29,6 +29,7 @@ final class QuarryConfigLoader {
         }
 
         var debug = config.<Boolean>get("debug");
+        var noEnergy = config.<Boolean>get("noEnergy");
         var quarry = PowerMap.Quarry.CODEC.codec().parse(JavaOps.INSTANCE, config.<Config>get("powerMap.quarry").valueMap()).getOrThrow();
         var powerMap = new PowerMap(quarry);
         var enableMapConfig = config.<Config>get("enableMap");
@@ -41,11 +42,12 @@ final class QuarryConfigLoader {
         var rebornEnergyConversionCoefficient = config.<Double>get("rebornEnergyConversionCoefficient");
         var removeBedrockOnNetherTop = config.<Boolean>get("removeBedrockOnNetherTop");
 
-        return new QuarryConfigImpl(debug, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop);
+        return new QuarryConfigImpl(debug, noEnergy, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop);
     }
 
     record QuarryConfigImpl(
         boolean debug,
+        boolean noEnergy,
         PowerMap powerMap,
         EnableMap enableMap,
         double rebornEnergyConversionCoefficient,
@@ -58,12 +60,11 @@ final class QuarryConfigLoader {
         var specConfig = CommentedConfig.wrap(comments, InMemoryFormat.withUniversalSupport());
         var config = new ConfigSpec(specConfig);
 
-        config.define("debug", inDevelop.getAsBoolean());
-        specConfig.setComment("debug", "In debug mode. Default: " + inDevelop.getAsBoolean());
+        defineBoolean(config, specConfig, "debug", inDevelop.getAsBoolean(), "In debug mode");
+        defineBoolean(config, specConfig, "noEnergy", false, "Enable No Energy mode");
 
         defineDouble(config, specConfig, "rebornEnergyConversionCoefficient", 1d / 16d, 0d, 1e10, "[Fabric ONLY] 1E = ?FE");
-        config.define("removeBedrockOnNetherTop", inDevelop.getAsBoolean());
-        specConfig.setComment("removeBedrockOnNetherTop", "Remove bedrock at y=127 in Nether");
+        defineBoolean(config, specConfig, "removeBedrockOnNetherTop", inDevelop.getAsBoolean(), "Remove bedrock at y=127 in Nether");
 
         // powerMap.quarry.*
         defineInCodec(config, specConfig, "powerMap.quarry", PowerMap.Default.QUARRY);
@@ -72,6 +73,11 @@ final class QuarryConfigLoader {
         defineEnableMap(config, specConfig, "enableMap", EnableMap.getDefault(inDevelop));
 
         return Pair.of(config, specConfig);
+    }
+
+    static void defineBoolean(ConfigSpec spec, CommentedConfig commentMap, String key, boolean defaultValue, String comment) {
+        spec.define(key, defaultValue);
+        commentMap.setComment(key, "%s. Default: %s".formatted(comment, defaultValue));
     }
 
     static void defineDouble(ConfigSpec spec, CommentedConfig commentMap, String key, double defaultValue, double min, double max, String comment) {
