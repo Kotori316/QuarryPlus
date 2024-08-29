@@ -11,7 +11,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Objects;
@@ -24,6 +23,7 @@ public abstract class PowerEntity extends QpEntity {
     private LongSupplier timeProvider;
     private long energy;
     private long maxEnergy;
+    private final boolean noEnergy;
 
     protected PowerEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -33,6 +33,7 @@ public abstract class PowerEntity extends QpEntity {
                 Level in block entity is null. Are you in test?
                 Make sure to run `setTimeProvider` to replace the default time provider."""
         ).getGameTime());
+        this.noEnergy = PlatformAccess.config().noEnergy();
     }
 
     @Override
@@ -53,6 +54,10 @@ public abstract class PowerEntity extends QpEntity {
     -------------------- ENERGY --------------------
      */
     public final long getEnergy() {
+        if (noEnergy) {
+            // Behave as it always has the same amount of energy as max
+            return maxEnergy;
+        }
         return energy;
     }
 
@@ -61,7 +66,7 @@ public abstract class PowerEntity extends QpEntity {
     }
 
     protected final boolean hasEnoughEnergy() {
-        return enabled && getEnergy() > 0;
+        return enabled && (getEnergy() > 0 || noEnergy);
     }
 
     protected long getMaxReceive() {
@@ -83,6 +88,7 @@ public abstract class PowerEntity extends QpEntity {
      * @return the amount of <strong>accepted</strong> energy.
      */
     public final long addEnergy(long amount, boolean simulate) {
+        if (noEnergy) return 0;
         long accepted = Math.min(Math.min(maxEnergy - energy, amount), getMaxReceive());
         if (!simulate && accepted >= 0) {
             energy += accepted;
@@ -100,6 +106,10 @@ public abstract class PowerEntity extends QpEntity {
      * @return the amount of <strong>consumed</strong> energy.
      */
     public final long useEnergy(long amount, boolean simulate, boolean force, String reason) {
+        if (noEnergy) {
+            energyCounter.useEnergy(this.timeProvider, amount, reason);
+            return amount;
+        }
         long used = force ? amount : Math.min(amount, energy);
         if (!simulate && used >= 0) {
             energy -= used;
@@ -110,6 +120,7 @@ public abstract class PowerEntity extends QpEntity {
     }
 
     public final void setEnergy(long energy, boolean log) {
+        if (noEnergy) return;
         if (this.energy > energy) {
             // Energy is consumed
             energyCounter.useEnergy(log ? this.timeProvider : () -> 1L, this.energy - energy, "FORCE_SET");
@@ -136,15 +147,6 @@ public abstract class PowerEntity extends QpEntity {
 
     public static BlockEntityTicker<PowerEntity> logTicker() {
         return (w, p, s, blockEntity) -> blockEntity.energyCounter.logOutput(blockEntity.timeProvider.getAsLong());
-    }
-
-    @Nullable
-    public static BlockEntityTicker<PowerEntity> getGenerator() {
-        if (false) {
-            return (w, p, s, tile) -> tile.setEnergy(tile.getMaxEnergy(), true);
-        } else {
-            return null;
-        }
     }
 
     protected static MutableComponent detail(ChatFormatting color, String title, String content) {
