@@ -66,13 +66,6 @@ repositories {
         url = uri("https://maven.kotori316.com/")
         content {
             includeGroup("com.kotori316")
-        }
-    }
-    maven {
-        name = "Azure-SLP"
-        url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
-        content {
-            includeGroup("com.kotori316")
             includeModule("org.typelevel", "cats-core_3")
             includeModule("org.typelevel", "cats-kernel_3")
             includeModule("org.typelevel", "cats-free_3")
@@ -138,6 +131,13 @@ repositories {
     }
     mavenCentral()
     mavenLocal()
+    maven {
+        name = "Kotori316Mirror"
+        url = uri("https://storage.googleapis.com/kotori316-maven-storage/maven/")
+        content {
+            includeGroup("com.kotori316")
+        }
+    }
 }
 
 dependencies {
