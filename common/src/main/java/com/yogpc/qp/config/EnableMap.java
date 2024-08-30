@@ -59,7 +59,7 @@ public final class EnableMap {
     }
 
     static EnableOrNot getDefaultValue(String name) {
-        if (PlatformAccess.getAccess().registerObjects() != null) return null;
+        if (PlatformAccess.getAccess().registerObjects() == null) return null;
 
         return PlatformAccess.getAccess().registerObjects().defaultEnableSetting().get(name);
     }

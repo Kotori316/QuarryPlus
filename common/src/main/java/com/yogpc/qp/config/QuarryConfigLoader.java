@@ -113,7 +113,12 @@ final class QuarryConfigLoader {
         for (var e : map.entrySet()) {
             var key = prefix + "." + e.getKey();
             spec.define(key, e.getValue());
-            commentMap.setComment(key, "%s Default: %b".formatted(e.getKey(), e.getValue()));
+            var defaultSetting = EnableMap.getDefaultValue(e.getKey());
+            if (defaultSetting == EnableMap.EnableOrNot.ALWAYS_OFF) {
+                commentMap.setComment(key, "This item can't be enabled in this platform. Configuration will be ignored. (%s)".formatted(e.getKey()));
+            } else {
+                commentMap.setComment(key, "%s Default: %b".formatted(e.getKey(), e.getValue()));
+            }
         }
     }
 }
