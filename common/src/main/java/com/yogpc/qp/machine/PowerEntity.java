@@ -4,9 +4,7 @@ import com.yogpc.qp.PlatformAccess;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -133,15 +131,9 @@ public abstract class PowerEntity extends QpEntity {
     }
 
     public Stream<MutableComponent> checkerLogs() {
-        return Stream.of(
-            Component.literal("-".repeat(32)),
-            Component.empty()
-                .append(Component.literal("BlockEntity").withStyle(ChatFormatting.AQUA))
-                .append(": %s".formatted(BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(getType())))
-                .append(" (%s)".formatted(getClass().getSimpleName())),
-            detail(ChatFormatting.AQUA, "Enabled", String.valueOf(enabled)),
-            detail(ChatFormatting.AQUA, "Pos", getBlockPos().toShortString()),
-            detail(ChatFormatting.AQUA, "Energy", "%d".formatted(getEnergy() / ONE_FE))
+        return Stream.concat(
+            super.checkerLogs(),
+            Stream.of(detail(ChatFormatting.AQUA, "Energy", "%d".formatted(getEnergy() / ONE_FE)))
         );
     }
 
@@ -149,10 +141,4 @@ public abstract class PowerEntity extends QpEntity {
         return (w, p, s, blockEntity) -> blockEntity.energyCounter.logOutput(blockEntity.timeProvider.getAsLong());
     }
 
-    protected static MutableComponent detail(ChatFormatting color, String title, String content) {
-        return Component.empty()
-            .append(Component.literal(title).withStyle(color))
-            .append(": ")
-            .append(content);
-    }
 }
