@@ -1,5 +1,6 @@
 package com.yogpc.qp.machine;
 
+import com.google.common.collect.Iterators;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -232,5 +233,31 @@ public final class MachineStorage {
         return state.isAir()
             || state.is(PlatformAccess.getAccess().registerObjects().frameBlock().get())
             || state.is(PlatformAccess.getAccess().registerObjects().generatorBlock().get());
+    }
+
+    // For Forge FluidHandler
+    public int fluidTanks() {
+        return fluids.size();
+    }
+
+    public FluidStackLike getFluidByIndex(int i) {
+        if (i < 0 || i >= fluids.size()) {
+            return FluidStackLike.EMPTY;
+        }
+        var e = Iterators.get(fluids.sequencedEntrySet().iterator(), i);
+        return new FluidStackLike(e.getKey().fluid(), e.getValue(), e.getKey().patch());
+    }
+
+    // For Forge ItemHandler
+    public int itemSlots() {
+        return items.size();
+    }
+
+    public ItemStack getItemByIndex(int i) {
+        if (i < 0 || i >= items.size()) {
+            return ItemStack.EMPTY;
+        }
+        var e = Iterators.get(items.sequencedEntrySet().iterator(), i);
+        return e.getKey().toStack(Math.clamp(e.getValue(), 0, Integer.MAX_VALUE));
     }
 }

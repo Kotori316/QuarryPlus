@@ -3,6 +3,7 @@ package com.yogpc.qp.forge;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.forge.integration.EnergyIntegration;
+import com.yogpc.qp.forge.integration.StorageIntegration;
 import com.yogpc.qp.forge.packet.PacketHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -20,6 +21,7 @@ public final class QuarryPlusForge {
             callClient(modBus);
         }
         MinecraftForge.EVENT_BUS.register(EnergyIntegration.class);
+        MinecraftForge.EVENT_BUS.register(StorageIntegration.class);
         MinecraftForge.EVENT_BUS.register(PlatformAccess.getAccess());
         QuarryPlus.LOGGER.info("Initialize Common finished");
     }
