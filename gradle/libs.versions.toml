@@ -34,7 +34,7 @@ plugin_fabric_loom = "1.7.3"
 plugin_forge_gradle = "[6.0,6.2)"
 plugin_forge_parchment = "1.+"
 plugin_forge_mixin = "0.7.+"
-plugin_neoforge_gradle = "7.0.162"
+plugin_neoforge_gradle = "7.0.163"
 
 [libraries]
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
