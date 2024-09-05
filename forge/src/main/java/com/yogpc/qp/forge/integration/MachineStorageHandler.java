@@ -1,8 +1,10 @@
 package com.yogpc.qp.forge.integration;
 
+import com.yogpc.qp.FluidStackLike;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.MachineStorageHolder;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
@@ -20,6 +22,14 @@ public record MachineStorageHandler<T>(MachineStorageHolder<T> holder, T object)
         return holder.getMachineStorage(object);
     }
 
+    static FluidStack toForge(FluidStackLike f) {
+        return new FluidStack(f.fluid(), Math.clamp(f.amount(), 0, Integer.MAX_VALUE));
+    }
+
+    static FluidStackLike toCommon(FluidStack f) {
+        return new FluidStackLike(f.getFluid(), f.getAmount(), DataComponentPatch.EMPTY);
+    }
+
     @Override
     public int getTanks() {
         return storage().fluidTanks();
@@ -28,7 +38,7 @@ public record MachineStorageHandler<T>(MachineStorageHolder<T> holder, T object)
     @Override
     public @NotNull FluidStack getFluidInTank(int tank) {
         var f = storage().getFluidByIndex(tank);
-        return new FluidStack(f.fluid(), Math.clamp(f.amount(), 0, Integer.MAX_VALUE));
+        return toForge(f);
     }
 
     @Override
@@ -51,12 +61,14 @@ public record MachineStorageHandler<T>(MachineStorageHolder<T> holder, T object)
 
     @Override
     public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
-        return FluidStack.EMPTY;
+        var drained = storage().drainFluid(toCommon(resource), action.execute());
+        return toForge(drained);
     }
 
     @Override
     public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
-        return FluidStack.EMPTY;
+        var drained = storage().drainFluidByIndex(0, maxDrain, action.execute());
+        return toForge(drained);
     }
 
     @Override
@@ -79,7 +91,7 @@ public record MachineStorageHandler<T>(MachineStorageHolder<T> holder, T object)
 
     @Override
     public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-        return ItemStack.EMPTY;
+        return storage().extractItemByIndex(slot, amount, simulate);
     }
 
     @Override

@@ -244,8 +244,30 @@ public final class MachineStorage {
         if (i < 0 || i >= fluids.size()) {
             return FluidStackLike.EMPTY;
         }
-        var e = Iterators.get(fluids.sequencedEntrySet().iterator(), i);
-        return new FluidStackLike(e.getKey().fluid(), e.getValue(), e.getKey().patch());
+        var e = Iterators.get(fluids.object2LongEntrySet().iterator(), i);
+        return new FluidStackLike(e.getKey().fluid(), e.getLongValue(), e.getKey().patch());
+    }
+
+    public FluidStackLike drainFluid(FluidStackLike toDrain, boolean execute) {
+        var key = new FluidKey(toDrain.fluid(), toDrain.patch());
+        var amount = fluids.getLong(key);
+        var toDrainAmount = Math.min(amount, toDrain.amount());
+        if (execute) {
+            if (amount - toDrainAmount > 0) {
+                fluids.put(key, amount - toDrainAmount);
+            } else {
+                fluids.removeLong(key);
+            }
+        }
+        return toDrain.withAmount(toDrainAmount);
+    }
+
+    public FluidStackLike drainFluidByIndex(int index, long amount, boolean execute) {
+        var fluid = getFluidByIndex(index);
+        if (fluid.isEmpty()) {
+            return FluidStackLike.EMPTY;
+        }
+        return drainFluid(fluid.withAmount(amount), execute);
     }
 
     // For Forge ItemHandler
@@ -257,7 +279,23 @@ public final class MachineStorage {
         if (i < 0 || i >= items.size()) {
             return ItemStack.EMPTY;
         }
-        var e = Iterators.get(items.sequencedEntrySet().iterator(), i);
-        return e.getKey().toStack(Math.clamp(e.getValue(), 0, Integer.MAX_VALUE));
+        var e = Iterators.get(items.object2LongEntrySet().iterator(), i);
+        return e.getKey().toStack(Math.clamp(e.getLongValue(), 0, Integer.MAX_VALUE));
+    }
+
+    public ItemStack extractItemByIndex(int i, int amount, boolean execute) {
+        if (i < 0 || i >= items.size()) {
+            return ItemStack.EMPTY;
+        }
+        var e = Iterators.get(items.object2LongEntrySet().iterator(), i);
+        var toExtractAmount = Math.min(amount, e.getLongValue());
+        if (execute) {
+            if (amount - toExtractAmount > 0) {
+                items.put(e.getKey(), amount - toExtractAmount);
+            } else {
+                items.removeLong(e.getKey());
+            }
+        }
+        return e.getKey().toStack(Math.clamp(toExtractAmount, 0, Integer.MAX_VALUE));
     }
 }
