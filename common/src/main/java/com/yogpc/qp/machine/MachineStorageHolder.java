@@ -21,4 +21,19 @@ public interface MachineStorageHolder<T> {
         }
         return Optional.empty();
     }
+
+    record Constant(MachineStorage storage) {
+    }
+
+    class ForConstant implements MachineStorageHolder<Constant> {
+        @Override
+        public MachineStorage getMachineStorage(Constant instance) {
+            return instance.storage;
+        }
+
+        @Override
+        public Class<Constant> supportingClass() {
+            return Constant.class;
+        }
+    }
 }
