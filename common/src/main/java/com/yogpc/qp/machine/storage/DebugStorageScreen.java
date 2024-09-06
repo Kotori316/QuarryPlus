@@ -32,4 +32,12 @@ public final class DebugStorageScreen extends AbstractContainerScreen<DebugStora
         graphics.blit(LOCATION, pX, pY, 0, 0, imageWidth, imageHeight);
     }
 
+    @Override
+    protected void init() {
+        super.init();
+
+        var widget = new ItemCountList(this.minecraft, 205, inventoryLabelY - 20, topPos + 18, getMenu().storage.storage);
+        widget.setX(leftPos + (imageWidth - 205) / 2);
+        addRenderableWidget(widget);
+    }
 }

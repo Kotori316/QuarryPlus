@@ -28,6 +28,8 @@ public final class DebugStorageContainer extends AbstractContainerMenu {
         for (int vertical = 0; vertical < 9; vertical++) {
             this.addSlot(new Slot(inventory, vertical, inventoryX + vertical * oneBox, inventoryY + 58));
         }
+
+        storage.syncToClient();
     }
 
     @Override

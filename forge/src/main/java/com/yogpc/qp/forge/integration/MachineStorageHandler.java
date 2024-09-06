@@ -32,7 +32,8 @@ public record MachineStorageHandler<T>(MachineStorageHolder<T> holder, T object)
 
     @Override
     public int getTanks() {
-        return storage().fluidTanks();
+        // It must contain an empty tank for new fluid
+        return storage().fluidTanks() + 1;
     }
 
     @Override
@@ -73,7 +74,8 @@ public record MachineStorageHandler<T>(MachineStorageHolder<T> holder, T object)
 
     @Override
     public int getSlots() {
-        return storage().itemSlots();
+        // It must contain an empty tank for new item
+        return storage().itemSlots() + 1;
     }
 
     @Override

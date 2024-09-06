@@ -104,23 +104,23 @@ public final class MachineStorage {
         return Objects.hash(items, fluids);
     }
 
-    record ItemKey(Item item, DataComponentPatch patch) {
+    public record ItemKey(Item item, DataComponentPatch patch) {
         static ItemKey of(ItemStack stack) {
             return new ItemKey(stack.getItem(), stack.getComponentsPatch());
         }
 
-        ItemStack toStack(int count) {
+        public ItemStack toStack(int count) {
             return new ItemStack(Holder.direct(item), count, patch);
         }
     }
 
-    record FluidKey(Fluid fluid, DataComponentPatch patch) {
+    public record FluidKey(Fluid fluid, DataComponentPatch patch) {
         public FluidStackLike toStack(int amount) {
             return new FluidStackLike(fluid, amount, patch);
         }
     }
 
-    record ItemKeyCount(ItemKey key, long count) {
+    public record ItemKeyCount(ItemKey key, long count) {
         static Map<ItemKey, Long> list2Map(List<ItemKeyCount> list) {
             return list.stream().collect(Collectors.toMap(ItemKeyCount::key, ItemKeyCount::count));
         }
@@ -129,19 +129,19 @@ public final class MachineStorage {
     /**
      * @param count Unit is fabric one, 81000 equals to 1 bucket.
      */
-    record FluidKeyCount(FluidKey key, long count) {
+    public record FluidKeyCount(FluidKey key, long count) {
         static Map<FluidKey, Long> list2Map(List<FluidKeyCount> list) {
             return list.stream().collect(Collectors.toMap(FluidKeyCount::key, FluidKeyCount::count));
         }
     }
 
-    List<ItemKeyCount> itemKeyCounts() {
+    public List<ItemKeyCount> itemKeyCounts() {
         return items.object2LongEntrySet().stream()
             .map(e -> new ItemKeyCount(e.getKey(), e.getLongValue()))
             .toList();
     }
 
-    List<FluidKeyCount> fluidKeyCounts() {
+    public List<FluidKeyCount> fluidKeyCounts() {
         return fluids.object2LongEntrySet().stream()
             .map(e -> new FluidKeyCount(e.getKey(), e.getLongValue()))
             .toList();
