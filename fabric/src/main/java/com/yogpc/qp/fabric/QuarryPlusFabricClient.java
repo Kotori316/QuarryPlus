@@ -8,6 +8,7 @@ import com.yogpc.qp.machine.marker.FlexibleMarkerScreen;
 import com.yogpc.qp.machine.misc.YSetterScreen;
 import com.yogpc.qp.machine.module.ModuleScreen;
 import com.yogpc.qp.machine.mover.MoverScreen;
+import com.yogpc.qp.machine.storage.DebugStorageScreen;
 import com.yogpc.qp.render.RenderChunkMarker;
 import com.yogpc.qp.render.RenderFlexibleMarker;
 import com.yogpc.qp.render.RenderMarker;
@@ -34,6 +35,7 @@ public final class QuarryPlusFabricClient implements ClientModInitializer {
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.MODULE_MENU, ModuleScreen::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.FLEXIBLE_MARKER_MENU, FlexibleMarkerScreen::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.CHUNK_MARKER_MENU, ChunkMarkerScreen::new);
+        MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.DEBUG_STORAGE_MENU, DebugStorageScreen::new);
         QuarryPlus.LOGGER.info("Initialize Client finished");
     }
 }
