@@ -64,6 +64,11 @@ public final class PacketHandler implements PlatformAccess.Packet {
     }
 
     @Override
+    public void sendToClientPlayer(@NotNull CustomPacketPayload message, @NotNull ServerPlayer player) {
+        ServerPlayNetworking.send(player, message);
+    }
+
+    @Override
     public void sendToServer(@NotNull CustomPacketPayload message) {
         ClientPlayNetworking.send(message);
     }

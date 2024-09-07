@@ -83,6 +83,16 @@ public final class PacketHandler implements PlatformAccess.Packet {
     }
 
     @Override
+    public void sendToClientPlayer(@NotNull CustomPacketPayload message, @NotNull ServerPlayer player) {
+        if (player.level().getServer() instanceof GameTestServer) {
+            // sending message to test server will cause NPE
+            QuarryPlus.LOGGER.debug("PacketHandler#sendToClientPlayer is called in GameTestServer for {}", message.getClass().getSimpleName());
+            return;
+        }
+        CHANNEL.send(message, PacketDistributor.PLAYER.with(player));
+    }
+
+    @Override
     public void sendToServer(@NotNull CustomPacketPayload message) {
         CHANNEL.send(message, PacketDistributor.SERVER.noArg());
     }

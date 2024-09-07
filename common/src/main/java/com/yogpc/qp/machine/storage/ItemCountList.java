@@ -53,8 +53,12 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
         public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
             var stack = item.key().toStack(Math.clamp(item.count(), 0, Integer.MAX_VALUE));
             guiGraphics.renderFakeItem(stack, left, top);
-            renderScrollingString(guiGraphics, minecraft.font, getNarration(), left + 8, top + 6, left + 8 + 40, top + 6, 0xFFFFFF);
-            guiGraphics.drawString(minecraft.font, String.valueOf(item.count()), left + 8 + 40, top + 6, 0xFFFFFF, false);
+            var text = getNarration();
+            final int textWidth = minecraft.font.width(text);
+            final int textX = left + 20;
+            final int textY = top + 4;
+            guiGraphics.drawString(minecraft.font, text, textX, textY, 0xFFFFFF);
+            guiGraphics.drawString(minecraft.font, String.valueOf(item.count()), textX + textWidth + 8, textY, 0xFFFFFF, true);
         }
     }
 }

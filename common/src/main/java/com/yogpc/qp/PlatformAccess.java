@@ -98,6 +98,8 @@ public interface PlatformAccess {
     interface Packet {
         void sendToClientWorld(@NotNull CustomPacketPayload message, @NotNull Level level);
 
+        void sendToClientPlayer(@NotNull CustomPacketPayload message, @NotNull ServerPlayer player);
+
         void sendToServer(@NotNull CustomPacketPayload message);
     }
 

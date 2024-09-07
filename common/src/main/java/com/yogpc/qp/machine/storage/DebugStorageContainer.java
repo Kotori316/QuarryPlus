@@ -28,7 +28,7 @@ public final class DebugStorageContainer extends AbstractContainerMenu {
         for (int vertical = 0; vertical < 9; vertical++) {
             this.addSlot(new Slot(inventory, vertical, inventoryX + vertical * oneBox, inventoryY + 58));
         }
-
+        storage.startOpen(inventory.player);
         storage.syncToClient();
     }
 
@@ -40,5 +40,11 @@ public final class DebugStorageContainer extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player player) {
         return storage.getBlockPos().closerToCenterThan(player.position(), 8);
+    }
+
+    @Override
+    public void removed(Player player) {
+        super.removed(player);
+        storage.stopOpen(player);
     }
 }
