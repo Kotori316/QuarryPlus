@@ -103,6 +103,10 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         private static final Map<Class<? extends QpBlock>, BlockEntityType<?>> BLOCK_ENTITY_TYPES = new HashMap<>();
         private static final Map<String, EnableMap.EnableOrNot> ENABLE_MAP = new HashMap<>();
 
+        public static BlockEntityType<?>[] entityTypes() {
+            return BLOCK_ENTITY_TYPES.values().toArray(new BlockEntityType[0]);
+        }
+
         static void registerAll() {
             // Machine
             registerEntityBlock(QUARRY_BLOCK, QUARRY_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);

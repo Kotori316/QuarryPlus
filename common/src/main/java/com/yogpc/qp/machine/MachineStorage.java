@@ -19,30 +19,34 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public final class MachineStorage {
+public class MachineStorage {
     public static final int ONE_BUCKET = 81000;
 
-    private final Object2LongLinkedOpenHashMap<ItemKey> items = new Object2LongLinkedOpenHashMap<>();
+    protected final Object2LongLinkedOpenHashMap<ItemKey> items = new Object2LongLinkedOpenHashMap<>();
     /**
      * Unit is Fabric one
      */
-    private final Object2LongLinkedOpenHashMap<FluidKey> fluids = new Object2LongLinkedOpenHashMap<>();
+    protected final Object2LongLinkedOpenHashMap<FluidKey> fluids = new Object2LongLinkedOpenHashMap<>();
 
-    public MachineStorage() {
-        items.defaultReturnValue(0L);
-        fluids.defaultReturnValue(0L);
+    public static MachineStorage of() {
+        var factory = ServiceLoader.load(MachineStorageFactory.class, MachineStorageFactory.class.getClassLoader())
+            .findFirst().orElseThrow(() -> new IllegalStateException("Could not find Machine Storage implementation"));
+        return factory.createMachineStorage();
     }
 
-    MachineStorage(Map<ItemKey, Long> items, Map<FluidKey, Long> fluids) {
-        this();
-        this.items.putAll(items);
-        this.fluids.putAll(fluids);
+    static MachineStorage of(Map<ItemKey, Long> items, Map<FluidKey, Long> fluids) {
+        var storage = of();
+        storage.items.putAll(items);
+        storage.fluids.putAll(fluids);
+        return storage;
+    }
+
+    protected MachineStorage() {
+        items.defaultReturnValue(0L);
+        fluids.defaultReturnValue(0L);
     }
 
     public void addItem(ItemStack stack) {
@@ -162,7 +166,7 @@ public final class MachineStorage {
     public static final MapCodec<MachineStorage> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
         RecordCodecBuilder.of(MachineStorage::itemKeyCounts, "items", ITEM_KEY_COUNT_MAP_CODEC.codec().listOf()),
         RecordCodecBuilder.of(MachineStorage::fluidKeyCounts, "fluids", FLUID_KEY_COUNT_MAP_CODEC.codec().listOf())
-    ).apply(i, (itemKeyCounts, fluidKeyCounts) -> new MachineStorage(
+    ).apply(i, (itemKeyCounts, fluidKeyCounts) -> MachineStorage.of(
         ItemKeyCount.list2Map(itemKeyCounts),
         FluidKeyCount.list2Map(fluidKeyCounts)
     )));

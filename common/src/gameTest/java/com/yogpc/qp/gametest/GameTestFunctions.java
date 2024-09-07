@@ -25,7 +25,8 @@ public final class GameTestFunctions {
             LoadRecipeTest.class,
             EnableMapTest.class,
             ExpModuleItemTest.class,
-            EnchantmentTest.class
+            EnchantmentTest.class,
+            MachineStorageTest.class
         );
         var fromClass = getTestFunctionStream(batchName, structureName, classes, 3);
         return Stream.of(

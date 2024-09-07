@@ -16,7 +16,7 @@ public final class DebugStorageEntity extends QpEntity implements ClientSync {
 
     public DebugStorageEntity(BlockPos pos, BlockState blockState) {
         super(pos, blockState);
-        storage = new MachineStorage();
+        storage = MachineStorage.of();
     }
 
     @Override
@@ -39,6 +39,6 @@ public final class DebugStorageEntity extends QpEntity implements ClientSync {
 
     @Override
     public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        storage = MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElseGet(MachineStorage::new);
+        storage = MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElseGet(MachineStorage::of);
     }
 }

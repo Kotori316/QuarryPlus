@@ -24,12 +24,17 @@ import static org.junit.jupiter.api.Assertions.*;
 class MachineStorageTest extends BeforeMC {
     @Test
     void instance() {
-        assertDoesNotThrow(() -> new MachineStorage());
+        assertDoesNotThrow(MachineStorage::new);
+    }
+
+    @Test
+    void instanceViaFactory() {
+        assertDoesNotThrow(() -> MachineStorage.of());
     }
 
     @Test
     void instanceFromMap() {
-        assertDoesNotThrow(() -> new MachineStorage(Map.of(), Map.of()));
+        assertDoesNotThrow(() -> MachineStorage.of(Map.of(), Map.of()));
     }
 
     @Nested
