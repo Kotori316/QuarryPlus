@@ -26,6 +26,16 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
         return false;
     }
 
+    @Override
+    public int getRowWidth() {
+        return getWidth() - 10;
+    }
+
+    @Override
+    protected int getScrollbarPosition() {
+        return getRight() - 6;
+    }
+
     class ItemCountRow extends ObjectSelectionList.Entry<ItemCountRow> {
         final MachineStorage.ItemKeyCount item;
 
@@ -42,8 +52,9 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
         @Override
         public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
             var stack = item.key().toStack(Math.clamp(item.count(), 0, Integer.MAX_VALUE));
-            guiGraphics.renderFakeItem(stack, left + 8, top);
-            guiGraphics.drawString(minecraft.font, String.valueOf(item.count()), left + 8 + 16, top + 6, 0x404040, false);
+            guiGraphics.renderFakeItem(stack, left, top);
+            renderScrollingString(guiGraphics, minecraft.font, getNarration(), left + 8, top + 6, left + 8 + 40, top + 6, 0xFFFFFF);
+            guiGraphics.drawString(minecraft.font, String.valueOf(item.count()), left + 8 + 40, top + 6, 0xFFFFFF, false);
         }
     }
 }

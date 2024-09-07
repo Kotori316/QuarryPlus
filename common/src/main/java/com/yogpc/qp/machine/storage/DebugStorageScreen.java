@@ -9,6 +9,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public final class DebugStorageScreen extends AbstractContainerScreen<DebugStorageContainer> {
     private static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/marker.png");
+    ItemCountList itemCountList;
 
     public DebugStorageScreen(DebugStorageContainer menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -36,8 +37,18 @@ public final class DebugStorageScreen extends AbstractContainerScreen<DebugStora
     protected void init() {
         super.init();
 
-        var widget = new ItemCountList(this.minecraft, 205, inventoryLabelY - 20, topPos + 18, getMenu().storage.storage);
-        widget.setX(leftPos + (imageWidth - 205) / 2);
-        addRenderableWidget(widget);
+        itemCountList = new ItemCountList(this.minecraft, 205, inventoryLabelY - 20, topPos + 18, getMenu().storage.storage);
+        itemCountList.setX(leftPos + (imageWidth - 205) / 2);
+        addRenderableWidget(itemCountList);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (itemCountList.isMouseOver(mouseX, mouseY)) {
+            if (itemCountList.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
+                return true;
+            }
+        }
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 }
