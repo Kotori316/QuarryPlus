@@ -135,6 +135,8 @@ dependencies {
     "runGameRuntimeOnly"(platform(libs.junit))
     "runGameRuntimeOnly"(libs.jupiter)
 
+    implementation(libs.config.core)
+    implementation(libs.config.toml)
     val configCore = jarJar(group = "com.electronwill.night-config", name = "core", version = "[3.8, 4.0]")
     jarJar.pin(configCore, libs.versions.night.config.get())
     val configLoad = jarJar(group = "com.electronwill.night-config", name = "toml", version = "[3.8, 4.0]")

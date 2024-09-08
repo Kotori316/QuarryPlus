@@ -40,6 +40,9 @@ runs {
         systemProperty("neoforge.enabledGameTestNamespaces", modId)
         systemProperty("mixin.debug.export", "true")
         modSources.add(modId, sourceSets["main"])
+        dependencies {
+            runtime(project.configurations.jarJar.get())
+        }
     }
 
     create("client") {
@@ -111,6 +114,8 @@ dependencies {
     gameTestRuntime(platform(libs.junit))
     gameTestRuntime(libs.jupiter)
 
+    implementation(libs.config.core)
+    implementation(libs.config.toml)
     jarJar(group = "com.electronwill.night-config", name = "core", version = "[3.8, 4.0]") {
         version {
             prefer(libs.versions.night.config.get())

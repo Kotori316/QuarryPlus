@@ -25,7 +25,7 @@ public interface QuarryConfig {
     static QuarryConfig load(Path path, BooleanSupplier inDevelop) {
         try (var config = CommentedFileConfig.builder(path)
             .preserveInsertionOrder()
-            .sync()
+            .async()
             .autosave()
             .onLoad(() -> QuarryPlus.LOGGER.info("Config loaded from {}", path))
             .onAutoSave(() -> QuarryPlus.LOGGER.info("Config saved to {}", path))
