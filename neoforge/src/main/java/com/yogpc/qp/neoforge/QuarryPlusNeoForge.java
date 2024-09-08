@@ -3,6 +3,7 @@ package com.yogpc.qp.neoforge;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.neoforge.integration.EnergyIntegration;
+import com.yogpc.qp.neoforge.integration.StorageIntegration;
 import com.yogpc.qp.neoforge.packet.PacketHandler;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -22,6 +23,7 @@ public final class QuarryPlusNeoForge {
             modBus.register(QuarryPlusClientNeoForge.class);
         }
         modBus.register(EnergyIntegration.class);
+        modBus.register(StorageIntegration.class);
         NeoForge.EVENT_BUS.register(PlatformAccess.getAccess());
         QuarryPlus.LOGGER.info("Initialize finished {}", container.getModId());
     }
