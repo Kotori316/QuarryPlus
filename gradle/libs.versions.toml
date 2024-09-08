@@ -19,7 +19,7 @@ jei_forge = "19.8.2.99"
 jei_fabric = "19.8.2.99"
 jei_neoforge = "19.8.2.99"
 
-night-config = "3.7.3"
+night-config = "3.8.1"
 
 jupiter_api = "5.11.0"
 mockito_core = "5.13.0"
