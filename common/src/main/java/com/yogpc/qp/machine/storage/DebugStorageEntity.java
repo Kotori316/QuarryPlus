@@ -5,6 +5,7 @@ import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpEntity;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.ClientSyncMessage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -24,6 +25,7 @@ public final class DebugStorageEntity extends QpEntity implements ClientSync {
     public DebugStorageEntity(BlockPos pos, BlockState blockState) {
         super(pos, blockState);
         storage = MachineStorage.of();
+        setStorage(storage);
     }
 
     @Override
@@ -46,10 +48,28 @@ public final class DebugStorageEntity extends QpEntity implements ClientSync {
 
     @Override
     public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        storage = MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElseGet(MachineStorage::of);
+        setStorage(MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElseGet(MachineStorage::of));
     }
 
-    private Set<ServerPlayer> players = new HashSet<>();
+    void setStorage(MachineStorage storage) {
+        this.storage = storage;
+        this.storage.onUpdate(this::syncToOpeningPlayers);
+        if (level != null && level.isClientSide()) {
+            updateScreenList();
+        }
+    }
+
+    /**
+     * Client only
+     */
+    void updateScreenList() {
+        var mc = Minecraft.getInstance();
+        if (mc.screen instanceof DebugStorageScreen screen && screen.itemCountList != null) {
+            screen.itemCountList.refreshEntries();
+        }
+    }
+
+    private final Set<ServerPlayer> players = new HashSet<>();
 
     void startOpen(Player player) {
         if (player instanceof ServerPlayer serverPlayer) {

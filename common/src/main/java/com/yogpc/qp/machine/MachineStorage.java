@@ -30,6 +30,7 @@ public class MachineStorage {
      * Unit is Fabric one
      */
     protected final Object2LongLinkedOpenHashMap<FluidKey> fluids = new Object2LongLinkedOpenHashMap<>();
+    List<Runnable> onUpdate = new ArrayList<>();
 
     public static MachineStorage of() {
         var factory = ServiceLoader.load(MachineStorageFactory.class, MachineStorageFactory.class.getClassLoader())
@@ -49,16 +50,26 @@ public class MachineStorage {
         fluids.defaultReturnValue(0L);
     }
 
+    public void onUpdate(Runnable runnable) {
+        onUpdate.add(runnable);
+    }
+
+    protected void notifyUpdate() {
+        onUpdate.forEach(Runnable::run);
+    }
+
     public void addItem(ItemStack stack) {
         if (stack.isEmpty()) return;
         var key = ItemKey.of(stack);
         items.addTo(key, stack.getCount());
+        notifyUpdate();
     }
 
     public void addFluid(Fluid fluid, int amount) {
         if (fluid.isSame(Fluids.EMPTY)) return;
         var key = new FluidKey(fluid, DataComponentPatch.EMPTY);
         fluids.addTo(key, amount);
+        notifyUpdate();
     }
 
     public void addBucketFluid(ItemStack stack) {
@@ -67,6 +78,7 @@ public class MachineStorage {
         if (content.fluid().isSame(Fluids.EMPTY)) return;
         var key = new FluidKey(content.fluid(), content.patch());
         fluids.addTo(key, content.amount());
+        notifyUpdate();
     }
 
     long getItemCount(ItemKey key) {
@@ -177,6 +189,7 @@ public class MachineStorage {
         var mutablePos = new BlockPos.MutableBlockPos();
         int count = 0;
         Direction[] directions = {Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST, Direction.DOWN, Direction.UP};
+        root:
         for (Direction direction : directions) {
             var pos = mutablePos.setWithOffset(storagePos, direction);
             var state = level.getBlockState(pos);
@@ -197,9 +210,12 @@ public class MachineStorage {
                     entry.setValue((entry.getLongValue() - stack.getCount()) + rest.getCount());
                 }
                 if (count++ > MAX_TRANSFER) {
-                    return;
+                    break root;
                 }
             }
+        }
+        if (count > 0) {
+            notifyUpdate();
         }
     }
 
@@ -207,6 +223,7 @@ public class MachineStorage {
         var mutablePos = new BlockPos.MutableBlockPos();
         int count = 0;
         Direction[] directions = {Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST, Direction.DOWN, Direction.UP};
+        root:
         for (Direction direction : directions) {
             var pos = mutablePos.setWithOffset(storagePos, direction);
             var state = level.getBlockState(pos);
@@ -227,9 +244,12 @@ public class MachineStorage {
                     entry.setValue((entry.getLongValue() - stack.amount()) + rest.amount());
                 }
                 if (count++ > MAX_TRANSFER) {
-                    return;
+                    break root;
                 }
             }
+        }
+        if (count > 0) {
+            notifyUpdate();
         }
     }
 
@@ -262,6 +282,7 @@ public class MachineStorage {
             } else {
                 fluids.removeLong(key);
             }
+            notifyUpdate();
         }
         return toDrain.withAmount(toDrainAmount);
     }
@@ -299,6 +320,7 @@ public class MachineStorage {
             } else {
                 items.removeLong(e.getKey());
             }
+            notifyUpdate();
         }
         return e.getKey().toStack(Math.clamp(toExtractAmount, 0, Integer.MAX_VALUE));
     }

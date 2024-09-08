@@ -84,5 +84,11 @@ public final class MachineStorageFabric extends MachineStorage {
             storage().items.clear();
             storage().items.putAll(snapshot);
         }
+
+        @Override
+        protected void onFinalCommit() {
+            super.onFinalCommit();
+            storage().notifyUpdate();
+        }
     }
 }

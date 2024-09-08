@@ -5,16 +5,24 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow> {
+    final DebugStorageEntity storageEntity;
 
-    public ItemCountList(Minecraft minecraft, int width, int height, int y, MachineStorage storage) {
+    public ItemCountList(Minecraft minecraft, int width, int height, int y, DebugStorageEntity storageEntity) {
         super(minecraft, width, height, y, 22);
+        this.storageEntity = storageEntity;
         setRenderHeader(false, 0);
 
-        for (MachineStorage.ItemKeyCount itemKeyCount : storage.itemKeyCounts()) {
+        for (MachineStorage.ItemKeyCount itemKeyCount : storageEntity.storage.itemKeyCounts()) {
             addEntry(new ItemCountRow(itemKeyCount));
         }
+    }
+
+    void refreshEntries() {
+        replaceEntries(storageEntity.storage.itemKeyCounts().stream().map(ItemCountRow::new).toList());
     }
 
     @Override
@@ -36,6 +44,18 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
         return getRight() - 6;
     }
 
+    @Override
+    protected void renderDecorations(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        super.renderDecorations(guiGraphics, mouseX, mouseY);
+        if (isMouseOver(mouseX, mouseY)) {
+            var hovered = getHovered();
+            if (hovered != null) {
+                var stack = hovered.getStack();
+                guiGraphics.renderTooltip(minecraft.font, stack, mouseX, mouseY);
+            }
+        }
+    }
+
     class ItemCountRow extends ObjectSelectionList.Entry<ItemCountRow> {
         final MachineStorage.ItemKeyCount item;
 
@@ -43,15 +63,19 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
             this.item = item;
         }
 
+        private @NotNull ItemStack getStack() {
+            return item.key().toStack(Math.clamp(item.count(), 0, Integer.MAX_VALUE));
+        }
+
         @Override
         public Component getNarration() {
-            var stack = item.key().toStack(Math.clamp(item.count(), 0, Integer.MAX_VALUE));
+            var stack = getStack();
             return stack.getHoverName();
         }
 
         @Override
         public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-            var stack = item.key().toStack(Math.clamp(item.count(), 0, Integer.MAX_VALUE));
+            var stack = getStack();
             guiGraphics.renderFakeItem(stack, left, top);
             var text = getNarration();
             final int textWidth = minecraft.font.width(text);

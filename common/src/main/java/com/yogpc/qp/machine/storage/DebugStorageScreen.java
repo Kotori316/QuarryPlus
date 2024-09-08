@@ -37,7 +37,7 @@ public final class DebugStorageScreen extends AbstractContainerScreen<DebugStora
     protected void init() {
         super.init();
 
-        itemCountList = new ItemCountList(this.minecraft, 205, inventoryLabelY - 20, topPos + 18, getMenu().storage.storage);
+        itemCountList = new ItemCountList(this.minecraft, 205, inventoryLabelY - 20, topPos + 18, getMenu().storage);
         itemCountList.setX(leftPos + (imageWidth - 205) / 2);
         addRenderableWidget(itemCountList);
     }
