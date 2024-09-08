@@ -1,6 +1,6 @@
 package com.yogpc.qp.machine.misc;
 
-import com.yogpc.qp.machine.PowerEntity;
+import com.yogpc.qp.machine.QpEntity;
 import com.yogpc.qp.machine.QpItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -24,7 +24,7 @@ public abstract class CheckerItem extends QpItem {
             }
             return InteractionResult.sidedSuccess(level.isClientSide());
         }
-        if (level.getBlockEntity(pos) instanceof PowerEntity e) {
+        if (level.getBlockEntity(pos) instanceof QpEntity e) {
             if (!level.isClientSide() && player != null) {
                 e.checkerLogs().forEach(c -> player.displayClientMessage(c, false));
             }

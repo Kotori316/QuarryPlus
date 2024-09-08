@@ -1,6 +1,7 @@
 package com.yogpc.qp.gametest;
 
 import com.google.common.base.CaseFormat;
+import com.yogpc.qp.machine.DebugStorageTest;
 import com.yogpc.qp.machine.mover.PlaceMoverTest;
 import com.yogpc.qp.machine.quarry.PlaceQuarryTest;
 import net.minecraft.core.Holder;
@@ -25,7 +26,8 @@ public final class GameTestFunctions {
             LoadRecipeTest.class,
             EnableMapTest.class,
             ExpModuleItemTest.class,
-            EnchantmentTest.class
+            EnchantmentTest.class,
+            MachineStorageTest.class
         );
         var fromClass = getTestFunctionStream(batchName, structureName, classes, 3);
         return Stream.of(
@@ -38,7 +40,8 @@ public final class GameTestFunctions {
     public static List<TestFunction> createTestFunctionsPlace(String batchName, String structureName) {
         List<Class<?>> classes = List.of(
             PlaceQuarryTest.class,
-            PlaceMoverTest.class
+            PlaceMoverTest.class,
+            DebugStorageTest.class
         );
         var fromClass = getTestFunctionStream(batchName, structureName, classes, 100);
         return Stream.of(

@@ -3,6 +3,7 @@ package com.yogpc.qp.gametest;
 import com.google.common.base.CaseFormat;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.misc.FrameBlock;
+import com.yogpc.qp.machine.storage.DebugStorageBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.TestFunction;
@@ -15,7 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public final class CheckBlockDropTest {
     private static final Set<String> EXCEPT = Set.of(
-        FrameBlock.NAME
+        FrameBlock.NAME,
+        DebugStorageBlock.NAME
     );
 
     public static Stream<TestFunction> checkDrops(String batchName, String structureName) {

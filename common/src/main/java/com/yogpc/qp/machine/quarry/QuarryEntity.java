@@ -88,7 +88,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         head = Vec3.atBottomCenterOf(pos);
         targetHead = head;
         currentState = QuarryState.FINISHED;
-        storage = new MachineStorage();
+        storage = MachineStorage.of();
         moduleInventory.addListener(container -> setChanged());
     }
 
@@ -161,7 +161,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         var current = BlockPos.CODEC.parse(NbtOps.INSTANCE, tag.get("targetPos")).result().orElse(null);
         targetIterator = createTargetIterator(currentState, area, current);
         targetPos = current;
-        storage = MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElse(new MachineStorage());
+        storage = MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElseGet(MachineStorage::of);
         skipped = LongStream.of(tag.getLongArray("skipped")).mapToObj(BlockPos::of).collect(Collectors.toCollection(HashSet::new));
         moduleInventory.fromTag(tag.getList("moduleInventory", Tag.TAG_COMPOUND), registries);
     }

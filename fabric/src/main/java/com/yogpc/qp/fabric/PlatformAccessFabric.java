@@ -29,17 +29,23 @@ import com.yogpc.qp.machine.mover.MoverBlock;
 import com.yogpc.qp.machine.mover.MoverContainer;
 import com.yogpc.qp.machine.mover.MoverEntity;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
+import com.yogpc.qp.machine.storage.DebugStorageBlock;
+import com.yogpc.qp.machine.storage.DebugStorageContainer;
+import com.yogpc.qp.machine.storage.DebugStorageEntity;
 import com.yogpc.qp.recipe.InstallBedrockModuleRecipe;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -89,6 +95,9 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final MenuType<MarkerContainer> FLEXIBLE_MARKER_MENU = new ExtendedScreenHandlerType<>(MarkerContainer::createFlexibleMarkerContainer, BlockPos.STREAM_CODEC);
         public static final MenuType<MarkerContainer> CHUNK_MARKER_MENU = new ExtendedScreenHandlerType<>(MarkerContainer::createChunkMarkerContainer, BlockPos.STREAM_CODEC);
         public static final RepeatTickModuleItem REPEAT_TICK_MODULE_ITEM = new RepeatTickModuleItem();
+        public static final DebugStorageBlock DEBUG_STORAGE_BLOCK = new DebugStorageBlock();
+        public static final BlockEntityType<DebugStorageEntity> DEBUG_STORAGE_TYPE = BlockEntityType.Builder.of(DebugStorageEntity::new, DEBUG_STORAGE_BLOCK).build(DSL.emptyPartType());
+        public static final MenuType<DebugStorageContainer> DEBUG_STORAGE_MENU = new ExtendedScreenHandlerType<>(DebugStorageContainer::new, BlockPos.STREAM_CODEC);
 
         public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
 
@@ -96,6 +105,10 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final CreativeModeTab TAB = QuarryPlus.buildCreativeModeTab(FabricItemGroup.builder()).build();
         private static final Map<Class<? extends QpBlock>, BlockEntityType<?>> BLOCK_ENTITY_TYPES = new HashMap<>();
         private static final Map<String, EnableMap.EnableOrNot> ENABLE_MAP = new HashMap<>();
+
+        public static BlockEntityType<?>[] entityTypes() {
+            return BLOCK_ENTITY_TYPES.values().toArray(new BlockEntityType[0]);
+        }
 
         static void registerAll() {
             // Machine
@@ -115,12 +128,14 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerItem(CHECKER_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
             registerItem(Y_SET_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
             registerBlockItem(FRAME_BLOCK);
+            registerEntityBlock(DEBUG_STORAGE_BLOCK, DEBUG_STORAGE_TYPE, EnableMap.EnableOrNot.ALWAYS_ON);
             Registry.register(BuiltInRegistries.MENU, QuarryMenuFabric.GUI_ID, QUARRY_MENU);
             Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, Y_SET_MENU);
             Registry.register(BuiltInRegistries.MENU, MoverContainer.GUI_ID, MOVER_MENU);
             Registry.register(BuiltInRegistries.MENU, ModuleContainer.GUI_ID, MODULE_MENU);
             Registry.register(BuiltInRegistries.MENU, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MarkerContainer.FLEXIBLE_NAME), FLEXIBLE_MARKER_MENU);
             Registry.register(BuiltInRegistries.MENU, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MarkerContainer.CHUNK_NAME), CHUNK_MARKER_MENU);
+            Registry.register(BuiltInRegistries.MENU, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, DebugStorageContainer.NAME), DEBUG_STORAGE_MENU);
             Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MachineLootFunction.NAME), MACHINE_LOOT_FUNCTION);
             Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
             Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "quarry_remove_bedrock_component"), QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT);
@@ -192,6 +207,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         }
 
         @Override
+        public Supplier<? extends DebugStorageBlock> debugStorageBlock() {
+            return Lazy.value(DEBUG_STORAGE_BLOCK);
+        }
+
+        @Override
         public Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block) {
             var t = BLOCK_ENTITY_TYPES.get(block.getClass());
             if (t == null) {
@@ -239,6 +259,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         @Override
         public Supplier<MenuType<? extends MarkerContainer>> chunkMarkerContainer() {
             return Lazy.value(CHUNK_MARKER_MENU);
+        }
+
+        @Override
+        public Supplier<MenuType<? extends DebugStorageContainer>> debugStorageContainer() {
+            return Lazy.value(DEBUG_STORAGE_MENU);
         }
 
         @Override
@@ -293,6 +318,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             return FluidStackLike.EMPTY;
         }
         return new FluidStackLike(extracted.resource().getFluid(), extracted.amount(), extracted.resource().getComponents());
+    }
+
+    @Override
+    public Component getFluidName(FluidStackLike stack) {
+        return FluidVariantAttributes.getName(FluidVariant.of(stack.fluid(), stack.patch()));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.yogpc.qp.machine;
 
+import com.google.common.collect.Iterators;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -18,42 +19,57 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public final class MachineStorage {
+public class MachineStorage {
     public static final int ONE_BUCKET = 81000;
 
-    private final Object2LongLinkedOpenHashMap<ItemKey> items = new Object2LongLinkedOpenHashMap<>();
+    protected final Object2LongLinkedOpenHashMap<ItemKey> items = new Object2LongLinkedOpenHashMap<>();
     /**
      * Unit is Fabric one
      */
-    private final Object2LongLinkedOpenHashMap<FluidKey> fluids = new Object2LongLinkedOpenHashMap<>();
+    protected final Object2LongLinkedOpenHashMap<FluidKey> fluids = new Object2LongLinkedOpenHashMap<>();
+    List<Runnable> onUpdate = new ArrayList<>();
 
-    public MachineStorage() {
+    public static MachineStorage of() {
+        var factory = ServiceLoader.load(MachineStorageFactory.class, MachineStorageFactory.class.getClassLoader())
+            .findFirst().orElseThrow(() -> new IllegalStateException("Could not find Machine Storage implementation"));
+        return factory.createMachineStorage();
+    }
+
+    static MachineStorage of(Map<ItemKey, Long> items, Map<FluidKey, Long> fluids) {
+        var storage = of();
+        storage.items.putAll(items);
+        storage.fluids.putAll(fluids);
+        return storage;
+    }
+
+    protected MachineStorage() {
         items.defaultReturnValue(0L);
         fluids.defaultReturnValue(0L);
     }
 
-    MachineStorage(Map<ItemKey, Long> items, Map<FluidKey, Long> fluids) {
-        this();
-        this.items.putAll(items);
-        this.fluids.putAll(fluids);
+    public void onUpdate(Runnable runnable) {
+        onUpdate.add(runnable);
+    }
+
+    protected void notifyUpdate() {
+        onUpdate.forEach(Runnable::run);
     }
 
     public void addItem(ItemStack stack) {
         if (stack.isEmpty()) return;
         var key = ItemKey.of(stack);
         items.addTo(key, stack.getCount());
+        notifyUpdate();
     }
 
-    public void addFluid(Fluid fluid, int amount) {
+    public void addFluid(Fluid fluid, long amount) {
         if (fluid.isSame(Fluids.EMPTY)) return;
         var key = new FluidKey(fluid, DataComponentPatch.EMPTY);
         fluids.addTo(key, amount);
+        notifyUpdate();
     }
 
     public void addBucketFluid(ItemStack stack) {
@@ -62,6 +78,7 @@ public final class MachineStorage {
         if (content.fluid().isSame(Fluids.EMPTY)) return;
         var key = new FluidKey(content.fluid(), content.patch());
         fluids.addTo(key, content.amount());
+        notifyUpdate();
     }
 
     long getItemCount(ItemKey key) {
@@ -103,23 +120,23 @@ public final class MachineStorage {
         return Objects.hash(items, fluids);
     }
 
-    record ItemKey(Item item, DataComponentPatch patch) {
+    public record ItemKey(Item item, DataComponentPatch patch) {
         static ItemKey of(ItemStack stack) {
             return new ItemKey(stack.getItem(), stack.getComponentsPatch());
         }
 
-        ItemStack toStack(int count) {
+        public ItemStack toStack(int count) {
             return new ItemStack(Holder.direct(item), count, patch);
         }
     }
 
-    record FluidKey(Fluid fluid, DataComponentPatch patch) {
+    public record FluidKey(Fluid fluid, DataComponentPatch patch) {
         public FluidStackLike toStack(int amount) {
             return new FluidStackLike(fluid, amount, patch);
         }
     }
 
-    record ItemKeyCount(ItemKey key, long count) {
+    public record ItemKeyCount(ItemKey key, long count) {
         static Map<ItemKey, Long> list2Map(List<ItemKeyCount> list) {
             return list.stream().collect(Collectors.toMap(ItemKeyCount::key, ItemKeyCount::count));
         }
@@ -128,19 +145,19 @@ public final class MachineStorage {
     /**
      * @param count Unit is fabric one, 81000 equals to 1 bucket.
      */
-    record FluidKeyCount(FluidKey key, long count) {
+    public record FluidKeyCount(FluidKey key, long count) {
         static Map<FluidKey, Long> list2Map(List<FluidKeyCount> list) {
             return list.stream().collect(Collectors.toMap(FluidKeyCount::key, FluidKeyCount::count));
         }
     }
 
-    List<ItemKeyCount> itemKeyCounts() {
+    public List<ItemKeyCount> itemKeyCounts() {
         return items.object2LongEntrySet().stream()
             .map(e -> new ItemKeyCount(e.getKey(), e.getLongValue()))
             .toList();
     }
 
-    List<FluidKeyCount> fluidKeyCounts() {
+    public List<FluidKeyCount> fluidKeyCounts() {
         return fluids.object2LongEntrySet().stream()
             .map(e -> new FluidKeyCount(e.getKey(), e.getLongValue()))
             .toList();
@@ -161,7 +178,7 @@ public final class MachineStorage {
     public static final MapCodec<MachineStorage> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
         RecordCodecBuilder.of(MachineStorage::itemKeyCounts, "items", ITEM_KEY_COUNT_MAP_CODEC.codec().listOf()),
         RecordCodecBuilder.of(MachineStorage::fluidKeyCounts, "fluids", FLUID_KEY_COUNT_MAP_CODEC.codec().listOf())
-    ).apply(i, (itemKeyCounts, fluidKeyCounts) -> new MachineStorage(
+    ).apply(i, (itemKeyCounts, fluidKeyCounts) -> MachineStorage.of(
         ItemKeyCount.list2Map(itemKeyCounts),
         FluidKeyCount.list2Map(fluidKeyCounts)
     )));
@@ -172,6 +189,7 @@ public final class MachineStorage {
         var mutablePos = new BlockPos.MutableBlockPos();
         int count = 0;
         Direction[] directions = {Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST, Direction.DOWN, Direction.UP};
+        root:
         for (Direction direction : directions) {
             var pos = mutablePos.setWithOffset(storagePos, direction);
             var state = level.getBlockState(pos);
@@ -192,9 +210,12 @@ public final class MachineStorage {
                     entry.setValue((entry.getLongValue() - stack.getCount()) + rest.getCount());
                 }
                 if (count++ > MAX_TRANSFER) {
-                    return;
+                    break root;
                 }
             }
+        }
+        if (count > 0) {
+            notifyUpdate();
         }
     }
 
@@ -202,6 +223,7 @@ public final class MachineStorage {
         var mutablePos = new BlockPos.MutableBlockPos();
         int count = 0;
         Direction[] directions = {Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST, Direction.DOWN, Direction.UP};
+        root:
         for (Direction direction : directions) {
             var pos = mutablePos.setWithOffset(storagePos, direction);
             var state = level.getBlockState(pos);
@@ -222,9 +244,12 @@ public final class MachineStorage {
                     entry.setValue((entry.getLongValue() - stack.amount()) + rest.amount());
                 }
                 if (count++ > MAX_TRANSFER) {
-                    return;
+                    break root;
                 }
             }
+        }
+        if (count > 0) {
+            notifyUpdate();
         }
     }
 
@@ -232,5 +257,71 @@ public final class MachineStorage {
         return state.isAir()
             || state.is(PlatformAccess.getAccess().registerObjects().frameBlock().get())
             || state.is(PlatformAccess.getAccess().registerObjects().generatorBlock().get());
+    }
+
+    // For Forge FluidHandler
+    public int fluidTanks() {
+        return fluids.size();
+    }
+
+    public FluidStackLike getFluidByIndex(int i) {
+        if (i < 0 || i >= fluids.size()) {
+            return FluidStackLike.EMPTY;
+        }
+        var e = Iterators.get(fluids.object2LongEntrySet().iterator(), i);
+        return new FluidStackLike(e.getKey().fluid(), e.getLongValue(), e.getKey().patch());
+    }
+
+    public FluidStackLike drainFluid(FluidStackLike toDrain, boolean execute) {
+        var key = new FluidKey(toDrain.fluid(), toDrain.patch());
+        var amount = fluids.getLong(key);
+        var toDrainAmount = Math.min(amount, toDrain.amount());
+        if (execute) {
+            if (amount - toDrainAmount > 0) {
+                fluids.put(key, amount - toDrainAmount);
+            } else {
+                fluids.removeLong(key);
+            }
+            notifyUpdate();
+        }
+        return toDrain.withAmount(toDrainAmount);
+    }
+
+    public FluidStackLike drainFluidByIndex(int index, long amount, boolean execute) {
+        var fluid = getFluidByIndex(index);
+        if (fluid.isEmpty()) {
+            return FluidStackLike.EMPTY;
+        }
+        return drainFluid(fluid.withAmount(amount), execute);
+    }
+
+    // For Forge ItemHandler
+    public int itemSlots() {
+        return items.size();
+    }
+
+    public ItemStack getItemByIndex(int i) {
+        if (i < 0 || i >= items.size()) {
+            return ItemStack.EMPTY;
+        }
+        var e = Iterators.get(items.object2LongEntrySet().iterator(), i);
+        return e.getKey().toStack(Math.clamp(e.getLongValue(), 0, Integer.MAX_VALUE));
+    }
+
+    public ItemStack extractItemByIndex(int i, int amount, boolean execute) {
+        if (i < 0 || i >= items.size()) {
+            return ItemStack.EMPTY;
+        }
+        var e = Iterators.get(items.object2LongEntrySet().iterator(), i);
+        var toExtractAmount = Math.min(amount, e.getLongValue());
+        if (execute) {
+            if (amount - toExtractAmount > 0) {
+                items.put(e.getKey(), amount - toExtractAmount);
+            } else {
+                items.removeLong(e.getKey());
+            }
+            notifyUpdate();
+        }
+        return e.getKey().toStack(Math.clamp(toExtractAmount, 0, Integer.MAX_VALUE));
     }
 }

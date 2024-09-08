@@ -17,8 +17,11 @@ import com.yogpc.qp.machine.module.ModuleContainer;
 import com.yogpc.qp.machine.mover.MoverBlock;
 import com.yogpc.qp.machine.mover.MoverContainer;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
+import com.yogpc.qp.machine.storage.DebugStorageBlock;
+import com.yogpc.qp.machine.storage.DebugStorageContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -69,6 +72,8 @@ public interface PlatformAccess {
 
         Supplier<? extends ChunkMarkerBlock> chunkMarkerBlock();
 
+        Supplier<? extends DebugStorageBlock> debugStorageBlock();
+
         Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block);
 
         Map<String, EnableMap.EnableOrNot> defaultEnableSetting();
@@ -87,6 +92,8 @@ public interface PlatformAccess {
 
         Supplier<MenuType<? extends MarkerContainer>> chunkMarkerContainer();
 
+        Supplier<MenuType<? extends DebugStorageContainer>> debugStorageContainer();
+
         Supplier<LootItemFunctionType<? extends MachineLootFunction>> machineLootFunction();
     }
 
@@ -94,6 +101,8 @@ public interface PlatformAccess {
 
     interface Packet {
         void sendToClientWorld(@NotNull CustomPacketPayload message, @NotNull Level level);
+
+        void sendToClientPlayer(@NotNull CustomPacketPayload message, @NotNull ServerPlayer player);
 
         void sendToServer(@NotNull CustomPacketPayload message);
     }
@@ -116,6 +125,8 @@ public interface PlatformAccess {
     Transfer transfer();
 
     FluidStackLike getFluidInItem(ItemStack stack);
+
+    Component getFluidName(FluidStackLike stack);
 
     <T extends AbstractContainerMenu> void openGui(ServerPlayer player, GeneralScreenHandler<T> handler);
 }

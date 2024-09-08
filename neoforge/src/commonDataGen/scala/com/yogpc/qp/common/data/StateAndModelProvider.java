@@ -50,6 +50,7 @@ final class StateAndModelProvider extends BlockStateProvider {
         // simpleBlockAndItemCubeAll(Holder.BLOCK_WORKBENCH);
         // simpleBlockAndItemCubeAll(Holder.BLOCK_CONTROLLER);
         // simpleBlockAndItemCubeAll(Holder.BLOCK_REMOTE_PLACER);
+        simpleBlockAndItemCubeAll(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_DEBUG_STORAGE.get());
         // workBlockAndItem(Holder.BLOCK_ADV_PUMP);
         // workBlockAndItem(Holder.BLOCK_EXP_PUMP);
         simpleBlockAndItemCubeBottomTop(holder.moverBlock().get(), blockTexture(holder.moverBlock().get()), blockTexture("mover_top"), blockTexture("mover_bottom"));

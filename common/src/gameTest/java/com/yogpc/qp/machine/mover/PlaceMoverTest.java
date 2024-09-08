@@ -18,15 +18,10 @@ public final class PlaceMoverTest {
     static final BlockPos base = BlockPos.ZERO.above();
 
     public static void place(GameTestHelper helper) {
-        helper.startSequence()
-            .thenExecute(() -> helper.setBlock(base, PlatformAccess.getAccess().registerObjects().moverBlock().get()))
-            .thenExecuteAfter(1, () ->
-                assertInstanceOf(MoverBlock.class, helper.getBlockState(base).getBlock())
-            )
-            .thenExecuteAfter(1, () ->
-                assertInstanceOf(MoverEntity.class, helper.getBlockEntity(base))
-            )
-            .thenSucceed();
+        helper.setBlock(base, PlatformAccess.getAccess().registerObjects().moverBlock().get());
+        assertInstanceOf(MoverBlock.class, helper.getBlockState(base).getBlock());
+        assertInstanceOf(MoverEntity.class, helper.getBlockEntity(base));
+        helper.succeed();
     }
 
     public static void setItem(GameTestHelper helper) {

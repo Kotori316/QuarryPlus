@@ -10,4 +10,8 @@ public record FluidStackLike(Fluid fluid, long amount, DataComponentPatch patch)
     public boolean isEmpty() {
         return this.fluid == Fluids.EMPTY || this.amount == 0;
     }
+
+    public FluidStackLike withAmount(long amount) {
+        return new FluidStackLike(this.fluid, amount, this.patch);
+    }
 }

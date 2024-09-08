@@ -23,6 +23,9 @@ import com.yogpc.qp.machine.mover.MoverBlock;
 import com.yogpc.qp.machine.mover.MoverContainer;
 import com.yogpc.qp.machine.mover.MoverEntity;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
+import com.yogpc.qp.machine.storage.DebugStorageBlock;
+import com.yogpc.qp.machine.storage.DebugStorageContainer;
+import com.yogpc.qp.machine.storage.DebugStorageEntity;
 import com.yogpc.qp.neoforge.machine.misc.CheckerItemNeoForge;
 import com.yogpc.qp.neoforge.machine.misc.YSetterItemNeoForge;
 import com.yogpc.qp.neoforge.machine.quarry.QuarryBlockNeoForge;
@@ -32,6 +35,7 @@ import com.yogpc.qp.recipe.InstallBedrockModuleRecipe;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -49,6 +53,7 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.registries.*;
 import org.apache.logging.log4j.util.Lazy;
 
@@ -98,6 +103,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredItem<CheckerItemNeoForge> ITEM_CHECKER = registerItem(CheckerItemNeoForge.NAME, CheckerItemNeoForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
         public static final DeferredItem<YSetterItemNeoForge> ITEM_Y_SET = registerItem(YSetterItemNeoForge.NAME, YSetterItemNeoForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
         public static final DeferredBlock<FrameBlock> BLOCK_FRAME = registerBlock(FrameBlock.NAME, FrameBlock::new);
+        public static final DeferredBlock<DebugStorageBlock> BLOCK_DEBUG_STORAGE = registerBlock(DebugStorageBlock.NAME, DebugStorageBlock::new);
 
         private static final Map<Class<? extends QpBlock>, Supplier<BlockEntityType<?>>> BLOCK_ENTITY_TYPES = new HashMap<>();
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<QuarryEntityNeoForge>> QUARRY_ENTITY_TYPE = registerBlockEntity(QuarryBlockNeoForge.NAME, BLOCK_QUARRY, QuarryEntityNeoForge::new, EnableMap.EnableOrNot.CONFIG_ON);
@@ -106,6 +112,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MoverEntity>> MOVER_ENTITY_TYPE = registerBlockEntity(MoverBlock.NAME, BLOCK_MOVER, MoverEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FlexibleMarkerEntity>> FLEXIBLE_MARKER_ENTITY_TYPE = registerBlockEntity(FlexibleMarkerBlock.NAME, BLOCK_FLEXIBLE_MARKER, FlexibleMarkerEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ChunkMarkerEntity>> CHUNK_MARKER_ENTITY_TYPE = registerBlockEntity(ChunkMarkerBlock.NAME, BLOCK_CHUNK_MARKER, ChunkMarkerEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
+        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DebugStorageEntity>> DEBUG_STORAGE_TYPE = registerBlockEntity(DebugStorageBlock.NAME, BLOCK_DEBUG_STORAGE, DebugStorageEntity::new, EnableMap.EnableOrNot.ALWAYS_ON);
 
         public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_MODE_TAB = CREATIVE_TAB_REGISTER.register(QuarryPlus.modID, () -> QuarryPlus.buildCreativeModeTab(CreativeModeTab.builder()).build());
         public static final DeferredHolder<MenuType<?>, MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = registerMenu("gui_y_setter", YSetterContainer::new);
@@ -113,6 +120,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredHolder<MenuType<?>, MenuType<? extends ModuleContainer>> MODULE_MENU_TYPE = registerMenu("gui_quarry_module", ModuleContainer::new);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends MarkerContainer>> FLEXIBLE_MARKER_MENU_TYPE = registerMenu(MarkerContainer.FLEXIBLE_NAME, MarkerContainer::createFlexibleMarkerContainer);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends MarkerContainer>> CHUNK_MARKER_MENU_TYPE = registerMenu(MarkerContainer.CHUNK_NAME, MarkerContainer::createChunkMarkerContainer);
+        public static final DeferredHolder<MenuType<?>, MenuType<? extends DebugStorageContainer>> DEBUG_STORAGE_MENU_TYPE = registerMenu(DebugStorageContainer.NAME, DebugStorageContainer::new);
         public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<? extends MachineLootFunction>> MACHINE_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(MachineLootFunction.NAME, () -> new LootItemFunctionType<>(MachineLootFunction.SERIALIZER));
         public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<InstallBedrockModuleRecipe>> INSTALL_BEDROCK_MODULE_RECIPE = RECIPE_REGISTER.register(InstallBedrockModuleRecipe.NAME, () -> InstallBedrockModuleRecipe.SERIALIZER);
 
@@ -186,6 +194,11 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         }
 
         @Override
+        public Supplier<? extends DebugStorageBlock> debugStorageBlock() {
+            return BLOCK_DEBUG_STORAGE;
+        }
+
+        @Override
         public Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block) {
             var t = BLOCK_ENTITY_TYPES.get(block.getClass());
             if (t == null) {
@@ -236,6 +249,11 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         }
 
         @Override
+        public Supplier<MenuType<? extends DebugStorageContainer>> debugStorageContainer() {
+            return DEBUG_STORAGE_MENU_TYPE;
+        }
+
+        @Override
         public Supplier<LootItemFunctionType<? extends MachineLootFunction>> machineLootFunction() {
             return MACHINE_LOOT_FUNCTION;
         }
@@ -282,6 +300,12 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
             return new FluidStackLike(bucketItem.content, MachineStorage.ONE_BUCKET, DataComponentPatch.EMPTY);
         }
         return FluidStackLike.EMPTY;
+    }
+
+    @Override
+    public Component getFluidName(FluidStackLike stack) {
+        var s = new FluidStack(stack.fluid(), Math.clamp(stack.amount(), 0, Integer.MAX_VALUE));
+        return s.getHoverName();
     }
 
     @Override

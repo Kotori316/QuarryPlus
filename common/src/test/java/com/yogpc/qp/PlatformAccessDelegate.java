@@ -3,6 +3,8 @@ package com.yogpc.qp;
 import com.electronwill.nightconfig.core.Config;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.GeneralScreenHandler;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -106,6 +108,11 @@ public class PlatformAccessDelegate implements PlatformAccess {
     }
 
     @Override
+    public Component getFluidName(FluidStackLike stack) {
+        return access.getFluidName(stack);
+    }
+
+    @Override
     public <T extends AbstractContainerMenu> void openGui(ServerPlayer player, GeneralScreenHandler<T> handler) {
         access.openGui(player, handler);
     }
@@ -154,6 +161,12 @@ public class PlatformAccessDelegate implements PlatformAccess {
         @Override
         public FluidStackLike getFluidInItem(ItemStack stack) {
             return null;
+        }
+
+        @Override
+        public Component getFluidName(FluidStackLike stack) {
+            var name = BuiltInRegistries.FLUID.getKey(stack.fluid());
+            return Component.literal(name.toString());
         }
 
         @Override
