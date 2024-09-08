@@ -10,6 +10,7 @@ plugins {
 
 val modId = "QuarryPlus".lowercase()
 val minecraftVersion = libs.versions.minecraft.get()
+jarJar.enable()
 
 sourceSets {
     val mainSourceSet by main
@@ -133,6 +134,11 @@ dependencies {
 
     "runGameRuntimeOnly"(platform(libs.junit))
     "runGameRuntimeOnly"(libs.jupiter)
+
+    val configCore = jarJar(group = "com.electronwill.night-config", name = "core", version = "[3.8, 4.0]")
+    jarJar.pin(configCore, libs.versions.night.config.get())
+    val configLoad = jarJar(group = "com.electronwill.night-config", name = "toml", version = "[3.8, 4.0]")
+    jarJar.pin(configLoad, libs.versions.night.config.get())
 }
 
 mixin {
@@ -242,6 +248,7 @@ sourceSets.forEach {
 
 tasks.named("jar", Jar::class) {
     finalizedBy("jksSignJar")
+    archiveClassifier = "normal"
 }
 
 tasks.register("jksSignJar", com.kotori316.common.JarSignTask::class) {
@@ -249,6 +256,20 @@ tasks.register("jksSignJar", com.kotori316.common.JarSignTask::class) {
     jarTask = tasks.jar
 }
 
+tasks.jarJar {
+    finalizedBy("jksSignJarJar")
+    archiveClassifier = ""
+}
+
+tasks.register("jksSignJarJar", com.kotori316.common.JarSignTask::class) {
+    dependsOn(tasks.jarJar)
+    jarTask = tasks.jarJar
+}
+
+tasks.named("assemble") {
+    dependsOn("jarJar")
+}
+
 ext {
-    set("publishJarTaskName", "jar")
+    set("publishJarTaskName", "jarJar")
 }

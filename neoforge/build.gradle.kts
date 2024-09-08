@@ -7,6 +7,7 @@ plugins {
 }
 
 val modId = "QuarryPlus".lowercase()
+jarJar.enable()
 
 subsystems {
     parchment {
@@ -109,6 +110,17 @@ dependencies {
 
     gameTestRuntime(platform(libs.junit))
     gameTestRuntime(libs.jupiter)
+
+    jarJar(group = "com.electronwill.night-config", name = "core", version = "[3.8, 4.0]") {
+        version {
+            prefer(libs.versions.night.config.get())
+        }
+    }
+    jarJar(group = "com.electronwill.night-config", name = "toml", version = "[3.8, 4.0]") {
+        version {
+            prefer(libs.versions.night.config.get())
+        }
+    }
 }
 
 // Share with common
@@ -131,6 +143,7 @@ tasks.compileDataGenScala {
 
 tasks.named("jar", Jar::class) {
     finalizedBy("jksSignJar")
+    archiveClassifier = "normal"
 }
 
 tasks.register("jksSignJar", com.kotori316.common.JarSignTask::class) {
@@ -138,6 +151,16 @@ tasks.register("jksSignJar", com.kotori316.common.JarSignTask::class) {
     jarTask = tasks.jar
 }
 
+tasks.jarJar {
+    finalizedBy("jksSignJarJar")
+    archiveClassifier = ""
+}
+
+tasks.register("jksSignJarJar", com.kotori316.common.JarSignTask::class) {
+    dependsOn(tasks.jarJar)
+    jarTask = tasks.jarJar
+}
+
 ext {
-    set("publishJarTaskName", "jar")
+    set("publishJarTaskName", "jarJar")
 }
