@@ -21,6 +21,7 @@ import com.yogpc.qp.machine.storage.DebugStorageBlock;
 import com.yogpc.qp.machine.storage.DebugStorageContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -124,6 +125,8 @@ public interface PlatformAccess {
     Transfer transfer();
 
     FluidStackLike getFluidInItem(ItemStack stack);
+
+    Component getFluidName(FluidStackLike stack);
 
     <T extends AbstractContainerMenu> void openGui(ServerPlayer player, GeneralScreenHandler<T> handler);
 }

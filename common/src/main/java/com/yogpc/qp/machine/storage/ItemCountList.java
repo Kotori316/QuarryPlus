@@ -1,12 +1,15 @@
 package com.yogpc.qp.machine.storage;
 
+import com.yogpc.qp.FluidStackLike;
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.MachineStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.stream.Stream;
 
 final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow> {
     final DebugStorageEntity storageEntity;
@@ -16,13 +19,15 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
         this.storageEntity = storageEntity;
         setRenderHeader(false, 0);
 
-        for (MachineStorage.ItemKeyCount itemKeyCount : storageEntity.storage.itemKeyCounts()) {
-            addEntry(new ItemCountRow(itemKeyCount));
-        }
+        refreshEntries();
     }
 
     void refreshEntries() {
-        replaceEntries(storageEntity.storage.itemKeyCounts().stream().map(ItemCountRow::new).toList());
+        replaceEntries(
+            Stream.concat(
+                storageEntity.storage.itemKeyCounts().stream().map(ItemCountRow::new),
+                storageEntity.storage.fluidKeyCounts().stream().map(ItemCountRow::new)
+            ).toList());
     }
 
     @Override
@@ -50,39 +55,45 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
         if (isMouseOver(mouseX, mouseY)) {
             var hovered = getHovered();
             if (hovered != null) {
-                var stack = hovered.getStack();
-                guiGraphics.renderTooltip(minecraft.font, stack, mouseX, mouseY);
+                guiGraphics.renderTooltip(minecraft.font, hovered.stack, mouseX, mouseY);
             }
         }
     }
 
     class ItemCountRow extends ObjectSelectionList.Entry<ItemCountRow> {
-        final MachineStorage.ItemKeyCount item;
+        final ItemStack stack;
+        final Component name;
+        final long count;
+        final String unit;
 
         ItemCountRow(MachineStorage.ItemKeyCount item) {
-            this.item = item;
+            stack = item.key().toStack(1);
+            count = item.count();
+            name = stack.getHoverName();
+            unit = "";
         }
 
-        private @NotNull ItemStack getStack() {
-            return item.key().toStack(Math.clamp(item.count(), 0, Integer.MAX_VALUE));
+        ItemCountRow(MachineStorage.FluidKeyCount fluid) {
+            stack = fluid.key().fluid().getBucket().getDefaultInstance();
+            count = fluid.count() * 1000 / MachineStorage.ONE_BUCKET;
+            name = PlatformAccess.getAccess().getFluidName(new FluidStackLike(fluid.key().fluid(), fluid.count(), fluid.key().patch()));
+            unit = " mB";
         }
 
         @Override
         public Component getNarration() {
-            var stack = getStack();
-            return stack.getHoverName();
+            return name;
         }
 
         @Override
         public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-            var stack = getStack();
             guiGraphics.renderFakeItem(stack, left, top);
             var text = getNarration();
             final int textWidth = minecraft.font.width(text);
             final int textX = left + 20;
             final int textY = top + 4;
             guiGraphics.drawString(minecraft.font, text, textX, textY, 0xFFFFFF);
-            guiGraphics.drawString(minecraft.font, String.valueOf(item.count()), textX + textWidth + 8, textY, 0xFFFFFF, true);
+            guiGraphics.drawString(minecraft.font, count + unit, textX + textWidth + 8, textY, 0xFFFFFF, true);
         }
     }
 }

@@ -38,11 +38,14 @@ import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -315,6 +318,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             return FluidStackLike.EMPTY;
         }
         return new FluidStackLike(extracted.resource().getFluid(), extracted.amount(), extracted.resource().getComponents());
+    }
+
+    @Override
+    public Component getFluidName(FluidStackLike stack) {
+        return FluidVariantAttributes.getName(FluidVariant.of(stack.fluid(), stack.patch()));
     }
 
     @Override

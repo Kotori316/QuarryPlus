@@ -35,6 +35,7 @@ import com.yogpc.qp.recipe.InstallBedrockModuleRecipe;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -52,6 +53,7 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.registries.*;
 import org.apache.logging.log4j.util.Lazy;
 
@@ -298,6 +300,12 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
             return new FluidStackLike(bucketItem.content, MachineStorage.ONE_BUCKET, DataComponentPatch.EMPTY);
         }
         return FluidStackLike.EMPTY;
+    }
+
+    @Override
+    public Component getFluidName(FluidStackLike stack) {
+        var s = new FluidStack(stack.fluid(), Math.clamp(stack.amount(), 0, Integer.MAX_VALUE));
+        return s.getHoverName();
     }
 
     @Override
