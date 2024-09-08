@@ -65,7 +65,7 @@ public class MachineStorage {
         notifyUpdate();
     }
 
-    public void addFluid(Fluid fluid, int amount) {
+    public void addFluid(Fluid fluid, long amount) {
         if (fluid.isSame(Fluids.EMPTY)) return;
         var key = new FluidKey(fluid, DataComponentPatch.EMPTY);
         fluids.addTo(key, amount);
