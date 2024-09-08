@@ -17,6 +17,7 @@ import com.yogpc.qp.machine.module.ModuleContainer;
 import com.yogpc.qp.machine.mover.MoverBlock;
 import com.yogpc.qp.machine.mover.MoverContainer;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
+import com.yogpc.qp.machine.storage.DebugStorageBlock;
 import com.yogpc.qp.machine.storage.DebugStorageContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -69,6 +70,8 @@ public interface PlatformAccess {
         Supplier<? extends FlexibleMarkerBlock> flexibleMarkerBlock();
 
         Supplier<? extends ChunkMarkerBlock> chunkMarkerBlock();
+
+        Supplier<? extends DebugStorageBlock> debugStorageBlock();
 
         Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block);
 

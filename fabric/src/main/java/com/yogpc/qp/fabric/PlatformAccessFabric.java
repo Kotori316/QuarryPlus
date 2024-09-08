@@ -204,6 +204,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         }
 
         @Override
+        public Supplier<? extends DebugStorageBlock> debugStorageBlock() {
+            return Lazy.value(DEBUG_STORAGE_BLOCK);
+        }
+
+        @Override
         public Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block) {
             var t = BLOCK_ENTITY_TYPES.get(block.getClass());
             if (t == null) {

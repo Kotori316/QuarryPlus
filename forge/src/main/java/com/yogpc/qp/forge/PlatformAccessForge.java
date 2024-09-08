@@ -203,6 +203,11 @@ public final class PlatformAccessForge implements PlatformAccess {
         }
 
         @Override
+        public Supplier<? extends DebugStorageBlock> debugStorageBlock() {
+            return BLOCK_DEBUG_STORAGE;
+        }
+
+        @Override
         public Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block) {
             var t = BLOCK_ENTITY_TYPES.get(block.getClass());
             if (t == null) {
