@@ -8,14 +8,15 @@ import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 public final class EnableMap {
-    private final Map<String, Boolean> machinesMap;
+    // Must be mutable
+    private final HashMap<String, Boolean> machinesMap;
 
     public EnableMap(Map<String, Boolean> machinesMap) {
-        this.machinesMap = machinesMap;
+        this.machinesMap = new HashMap<>(machinesMap);
     }
 
     public EnableMap() {
-        this(new HashMap<>());
+        machinesMap = new HashMap<>();
     }
 
     public boolean enabled(String name) {

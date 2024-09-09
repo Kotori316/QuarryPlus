@@ -8,11 +8,13 @@ import com.mojang.serialization.JavaOps;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.PowerMap;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.RecordComponent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 final class QuarryConfigLoader {
     static QuarryConfig load(Config config) {
@@ -28,21 +30,22 @@ final class QuarryConfigLoader {
             c.putAllComments(specPair.getValue());
         }
 
-        var debug = config.<Boolean>get("debug");
-        var noEnergy = config.<Boolean>get("noEnergy");
-        var quarry = PowerMap.Quarry.CODEC.codec().parse(JavaOps.INSTANCE, config.<Config>get("powerMap.quarry").valueMap()).getOrThrow();
-        var powerMap = new PowerMap(quarry);
-        var enableMapConfig = config.<Config>get("enableMap");
-        EnableMap enableMap;
-        if (enableMapConfig != null) {
-            enableMap = EnableMap.from(enableMapConfig.valueMap());
-        } else {
-            enableMap = new EnableMap();
-        }
-        var rebornEnergyConversionCoefficient = config.<Double>get("rebornEnergyConversionCoefficient");
-        var removeBedrockOnNetherTop = config.<Boolean>get("removeBedrockOnNetherTop");
+        boolean debug = config.get("debug");
+        boolean noEnergy = config.get("noEnergy");
+        PowerMap.Quarry quarry = PowerMap.Quarry.CODEC.codec().parse(JavaOps.INSTANCE, convertToMap(config.get("powerMap.quarry"))).getOrThrow();
+        PowerMap powerMap = new PowerMap(quarry);
+        EnableMap enableMap = EnableMap.from(convertToMap(config.get("enableMap")));
+        double rebornEnergyConversionCoefficient = config.get("rebornEnergyConversionCoefficient");
+        boolean removeBedrockOnNetherTop = config.get("removeBedrockOnNetherTop");
 
         return new QuarryConfigImpl(debug, noEnergy, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop);
+    }
+
+    static Map<String, Object> convertToMap(@Nullable Config config) {
+        if (config == null) {
+            return Map.of();
+        }
+        return config.entrySet().stream().collect(Collectors.toMap(Config.Entry::getKey, Config.Entry::getValue));
     }
 
     record QuarryConfigImpl(
