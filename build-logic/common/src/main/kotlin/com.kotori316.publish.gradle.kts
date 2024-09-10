@@ -117,7 +117,12 @@ publishing {
             else
                 "AdditionalEnchantedMiner-$platformName"
             artifactId = baseName.lowercase()
-            from(components["java"])
+            afterEvaluate {
+                artifact(tasks["jar"]) {
+                    classifier = ""
+                }
+                artifact(tasks["sourcesJar"])
+            }
             pom {
                 description = "QuarryPlus for Minecraft $minecraft with $platformName"
                 url = "https://github.com/Kotori316/QuarryPlus"
