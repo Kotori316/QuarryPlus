@@ -59,7 +59,7 @@ final class StateAndModelProvider extends BlockStateProvider {
         // simpleBlockAndItemCubeBottomTop(Holder.BLOCK_FILLER, blockTexture("filler_side"), blockTexture("filler_top"), blockTexture("filler_top"));
         simpleBlockAndItemCubeBottomTop(holder.generatorBlock().get(), blockTexture("replacer_bottom"), blockTexture("pump_bottom"), blockTexture("adv_pump_bottom"));
         workDirectionalBlockAndItem(holder.quarryBlock().get(), "quarryplus");
-        // workDirectionalBlockAndItem(Holder.BLOCK_ADV_QUARRY);
+        workDirectionalBlockAndItem(holder.advQuarryBlock().get());
         // workDirectionalBlockAndItem(Holder.BLOCK_MINI_QUARRY);
         // workDirectionalBlockAndItem(Holder.BLOCK_SOLID_FUEL_QUARRY);
 

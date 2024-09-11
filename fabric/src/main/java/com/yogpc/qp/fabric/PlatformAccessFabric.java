@@ -5,6 +5,7 @@ import com.yogpc.qp.*;
 import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.fabric.machine.advquarry.AdvQuarryEntityFabric;
 import com.yogpc.qp.fabric.machine.misc.CheckerItemFabric;
 import com.yogpc.qp.fabric.machine.misc.YSetterItemFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
@@ -15,6 +16,7 @@ import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpItem;
+import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
 import com.yogpc.qp.machine.marker.*;
 import com.yogpc.qp.machine.misc.FrameBlock;
@@ -73,6 +75,8 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final QuarryBlockFabric QUARRY_BLOCK = new QuarryBlockFabric();
         public static final BlockEntityType<QuarryEntityFabric> QUARRY_ENTITY_TYPE = BlockEntityType.Builder.of(QuarryEntityFabric::new, QUARRY_BLOCK).build(DSL.emptyPartType());
         public static final MenuType<QuarryMenuFabric> QUARRY_MENU = new ExtendedScreenHandlerType<>(QuarryMenuFabric::new, BlockPos.STREAM_CODEC);
+        public static final AdvQuarryBlock ADV_QUARRY_BLOCK = new AdvQuarryBlock();
+        public static final BlockEntityType<AdvQuarryEntityFabric> ADV_QUARRY_ENTITY_TYPE = BlockEntityType.Builder.of(AdvQuarryEntityFabric::new, ADV_QUARRY_BLOCK).build(DSL.emptyPartType());
         public static final FrameBlock FRAME_BLOCK = new FrameBlock();
         public static final GeneratorBlock GENERATOR_BLOCK = new GeneratorBlock();
         public static final BlockEntityType<GeneratorEntity> GENERATOR_ENTITY_TYPE = BlockEntityType.Builder.of(GeneratorEntity::new, GENERATOR_BLOCK).build(DSL.emptyPartType());
@@ -209,6 +213,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         @Override
         public Supplier<? extends DebugStorageBlock> debugStorageBlock() {
             return Lazy.value(DEBUG_STORAGE_BLOCK);
+        }
+
+        @Override
+        public Supplier<? extends AdvQuarryBlock> advQuarryBlock() {
+            return Lazy.value(ADV_QUARRY_BLOCK);
         }
 
         @Override

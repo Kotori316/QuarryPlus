@@ -5,6 +5,7 @@ import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
 import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
 import com.yogpc.qp.machine.marker.MarkerContainer;
@@ -73,6 +74,8 @@ public interface PlatformAccess {
         Supplier<? extends ChunkMarkerBlock> chunkMarkerBlock();
 
         Supplier<? extends DebugStorageBlock> debugStorageBlock();
+
+        Supplier<? extends AdvQuarryBlock> advQuarryBlock();
 
         Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block);
 
