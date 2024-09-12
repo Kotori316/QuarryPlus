@@ -117,6 +117,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         static void registerAll() {
             // Machine
             registerEntityBlock(QUARRY_BLOCK, QUARRY_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
+            registerEntityBlock(ADV_QUARRY_BLOCK, ADV_QUARRY_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             registerEntityBlock(GENERATOR_BLOCK, GENERATOR_ENTITY_TYPE, EnableMap.EnableOrNot.ALWAYS_ON);
             registerEntityBlock(MOVER_BLOCK, MOVER_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             // Marker
