@@ -3,11 +3,13 @@ package com.yogpc.qp.machine.marker;
 import com.yogpc.qp.machine.Area;
 import com.yogpc.qp.machine.QpEntity;
 import com.yogpc.qp.packet.ClientSync;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 public class FlexibleMarkerEntity extends QpEntity implements QuarryMarker, ClientSync {
     @NotNull
@@ -57,6 +60,14 @@ public class FlexibleMarkerEntity extends QpEntity implements QuarryMarker, Clie
         tag.put("max", BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, max).getOrThrow());
         tag.put("direction", Direction.CODEC.encodeStart(NbtOps.INSTANCE, direction).getOrThrow());
         return tag;
+    }
+
+    @Override
+    public Stream<MutableComponent> checkerLogs() {
+        return Stream.concat(super.checkerLogs(), Stream.of(
+            detail(ChatFormatting.GREEN, "min", String.valueOf(min)),
+            detail(ChatFormatting.GREEN, "max", String.valueOf(max))
+        ));
     }
 
     public void init(Direction facing) {

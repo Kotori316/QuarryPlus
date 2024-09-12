@@ -3,10 +3,12 @@ package com.yogpc.qp.machine.marker;
 import com.yogpc.qp.machine.Area;
 import com.yogpc.qp.machine.QpEntity;
 import com.yogpc.qp.packet.ClientSync;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class ChunkMarkerEntity extends QpEntity implements QuarryMarker, ClientSync {
     @NotNull
@@ -59,6 +62,17 @@ public class ChunkMarkerEntity extends QpEntity implements QuarryMarker, ClientS
         tag.putInt("minY", minY);
         tag.putInt("maxY", maxY);
         return tag;
+    }
+
+    @Override
+    public Stream<MutableComponent> checkerLogs() {
+        return Stream.concat(super.checkerLogs(), Stream.of(
+            detail(ChatFormatting.GREEN, "xDirection", String.valueOf(xDirection)),
+            detail(ChatFormatting.GREEN, "zDirection", String.valueOf(zDirection)),
+            detail(ChatFormatting.GREEN, "size", String.valueOf(size)),
+            detail(ChatFormatting.GREEN, "minY", String.valueOf(minY)),
+            detail(ChatFormatting.GREEN, "maxY", String.valueOf(maxY))
+        ));
     }
 
     @Override

@@ -7,12 +7,14 @@ import com.yogpc.qp.machine.Area;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpEntity;
 import com.yogpc.qp.packet.ClientSync;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -170,6 +172,14 @@ public class NormalMarkerEntity extends QpEntity implements QuarryMarker, Client
                 .map(NormalMarkerEntity.class::cast)
                 .forEach(m -> m.setLink(null, false));
         }
+    }
+
+    @Override
+    public Stream<MutableComponent> checkerLogs() {
+        return Stream.concat(super.checkerLogs(), Stream.of(
+            detail(ChatFormatting.GREEN, "Status", String.valueOf(status)),
+            detail(ChatFormatting.GREEN, "Link", String.valueOf(link))
+        ));
     }
 
     /**
