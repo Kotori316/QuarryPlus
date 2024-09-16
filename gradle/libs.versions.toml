@@ -6,8 +6,7 @@ fabric_loader = "0.16.5"
 neoforge = "21.1.45"
 fabric_version_checker = "2.4.0"
 
-tu = "21.1.2"
-du = "21.1.2"
+du = "21.1.99-SNAPSHOT"
 
 scala = "3.5.0"
 
@@ -48,7 +47,6 @@ mockito_inline = { group = "org.mockito", name = "mockito-inline", version.ref =
 
 # Forge
 forge = { group = "net.minecraftforge", name = "forge", version.ref = "forge" }
-tu_forge = { group = "com.kotori316", name = "test-utility-forge", version.ref = "tu" }
 du_forge = { group = "com.kotori316", name = "debug-utility-forge", version.ref = "du" }
 slp_forge = { group = "com.kotori316", name = "scalablecatsforce", version.ref = "slp_forge" }
 jei_forge = { group = "mezz.jei", name = "jei-1.21-forge", version.ref = "jei_forge" }
@@ -56,7 +54,6 @@ jei_forge = { group = "mezz.jei", name = "jei-1.21-forge", version.ref = "jei_fo
 fabric_api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabric_api" }
 fabric_loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric_loader" }
 fabric_junit = { group = "net.fabricmc", name = "fabric-loader-junit", version.ref = "fabric_loader" }
-tu_fabric = { group = "com.kotori316", name = "test-utility-fabric", version.ref = "tu" }
 du_fabric = { group = "com.kotori316", name = "debug-utility-fabric", version.ref = "du" }
 fabric_version_checker = { group = "com.kotori316", name = "VersionCheckerMod", version.ref = "fabric_version_checker" }
 slp_fabric = { group = "com.kotori316", name = "scalable-cats-force-fabric", version.ref = "slp_fabric" }
@@ -66,7 +63,6 @@ config_core = { group = "com.electronwill.night-config", name = "core", version.
 config_toml = { group = "com.electronwill.night-config", name = "toml", version.ref = "night-config" }
 # NeoForge
 neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
-tu_neoforge = { group = "com.kotori316", name = "test-utility-neoforge", version.ref = "tu" }
 du_neoforge = { group = "com.kotori316", name = "debug-utility-neoforge", version.ref = "du" }
 slp_neoforge = { group = "com.kotori316", name = "scalablecatsforce-neoforge", version.ref = "slp_neoforge" }
 jei_neoforge = { group = "mezz.jei", name = "jei-1.21-neoforge", version.ref = "jei_neoforge" }

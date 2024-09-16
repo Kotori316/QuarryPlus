@@ -124,9 +124,6 @@ dependencies {
     implementation(libs.du.forge) {
         isTransitive = false
     }
-    implementation(libs.tu.forge) {
-        isTransitive = false
-    }
     // Mixin
     annotationProcessor("org.spongepowered:mixin:0.8.7:processor")
     implementation("net.sf.jopt-simple:jopt-simple:5.0.4") { version { strictly("5.0.4") } }
