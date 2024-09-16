@@ -15,6 +15,15 @@ subsystems {
     }
 }
 
+configurations.all {
+    resolutionStrategy.eachDependency {
+        // Hack for NeoForge, conflicts with Mockito?
+        if (requested.group == "org.ow2.asm" && requested.name.startsWith("asm")) {
+            useVersion("9.7")
+        }
+    }
+}
+
 // Common data gen
 sourceSets {
     create("commonDataGen") {
