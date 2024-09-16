@@ -7,6 +7,7 @@ import com.yogpc.qp.machine.misc.DigMinY;
 import com.yogpc.qp.machine.module.ModuleInventory;
 import com.yogpc.qp.machine.module.QuarryModule;
 import com.yogpc.qp.machine.module.QuarryModuleProvider;
+import com.yogpc.qp.machine.module.RepeatTickModuleItem;
 import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -15,6 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -53,6 +55,26 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
 
     static PowerMap.AdvQuarry powerMap() {
         return PlatformAccess.config().powerMap().advQuarry();
+    }
+
+    @SuppressWarnings("unused")
+    static void serverTick(Level level, BlockPos pos, BlockState state, AdvQuarryEntity quarry) {
+        for (int i = 0; i < quarry.repeatCount(); i++) {
+            if (!quarry.hasEnoughEnergy()) {
+                return;
+            }
+            switch (quarry.currentState) {
+                case FINISHED -> {
+                    return;
+                }
+                case WAITING -> {
+                    quarry.waiting();
+                    return;
+                }
+                case MAKE_FRAME -> quarry.makeFrame();
+                case BREAK_BLOCK -> quarry.breakBlock();
+            }
+        }
     }
 
     @Override
@@ -145,8 +167,48 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         }
     }
 
+    protected int repeatCount() {
+        var repeatTickModule = RepeatTickModuleItem.getModule(modules).orElse(RepeatTickModuleItem.ZERO);
+        return repeatTickModule.stackSize() + 1;
+    }
+
     @Nullable
     static PickIterator<BlockPos> createTargetIterator(@NotNull AdvQuarryState currentState, @Nullable Area area, BlockPos current, WorkConfig config) {
+        if (area == null) {
+            return null;
+        }
+        if (currentState == AdvQuarryState.MAKE_FRAME) {
+            var iterator = area.quarryFramePosIterator();
+            iterator.setLastReturned(current);
+            return iterator;
+        }
+        if (currentState == AdvQuarryState.BREAK_BLOCK) {
+            PickIterator<BlockPos> iterator;
+            if (config.chunkByChunk()) {
+                iterator = new AdvQuarryTarget.ChunkByChunk(area);
+            } else {
+                iterator = new AdvQuarryTarget.North(area);
+            }
+            iterator.setLastReturned(current);
+            return iterator;
+        }
         return null;
+    }
+
+    void waiting() {
+        if (!workConfig.startImmediately()) {
+            return;
+        }
+        if (getEnergy() > getMaxEnergy() / 200 && this.area != null) {
+            var next = workConfig.placeAreaFrame() ? AdvQuarryState.MAKE_FRAME : AdvQuarryState.BREAK_BLOCK;
+            setState(next, getBlockState());
+        }
+    }
+
+    void makeFrame() {
+
+    }
+
+    void breakBlock() {
     }
 }
