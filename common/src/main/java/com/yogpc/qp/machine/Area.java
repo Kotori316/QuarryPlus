@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -60,6 +61,20 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, D
             return true;
         }
         return xCondition && inAreaZ(pos.getZ()) || zCondition && inAreaX(pos.getX());
+    }
+
+    @VisibleForTesting
+    public Area shrink(int x, int y, int z) {
+        int x1 = minX + x;
+        int x2 = maxX - x;
+        int y1 = minY + y;
+        int y2 = maxY - y;
+        int z1 = minZ + z;
+        int z2 = maxZ - z;
+        return new Area(
+            Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2),
+            Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2),
+            direction);
     }
 
     public Set<BlockPos> getChainBlocks(BlockPos start, Predicate<BlockPos> filter, int maxY) {
