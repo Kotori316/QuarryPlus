@@ -27,7 +27,7 @@ mockito_inline = "5.2.0"
 plugin_cf = "3.3"
 plugin_publish_all = "0.+"
 plugin_github_release = "2.5.2"
-plugin_idea_ext = "1.1.8"
+plugin_idea_ext = "1.1.9"
 
 plugin_fabric_loom = "1.7.4"
 plugin_forge_gradle = "[6.0,6.2)"
