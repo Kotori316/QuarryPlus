@@ -51,6 +51,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
 
     protected AdvQuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
+        setMaxEnergy((long) (powerMap().maxEnergy() * ONE_FE));
     }
 
     static PowerMap.AdvQuarry powerMap() {
@@ -206,7 +207,56 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
     }
 
     void makeFrame() {
+        if (level == null || level.isClientSide() || area == null) {
+            return;
+        }
+        if (targetIterator == null) {
+            targetIterator = createTargetIterator(currentState, getArea(), null, workConfig);
+            assert targetIterator != null;
+        }
+        if (targetPos == null) {
+            targetPos = targetIterator.next();
+        }
 
+        var state = level.getBlockState(targetPos);
+        if (state.is(PlatformAccess.getAccess().registerObjects().frameBlock().get())) {
+            // Do nothing if frame is already placed
+            if (targetIterator.hasNext()) {
+                targetPos = targetIterator.next();
+                makeFrame();
+            } else {
+                targetIterator = null;
+                targetPos = null;
+                setState(AdvQuarryState.BREAK_BLOCK, getBlockState());
+            }
+            return;
+        }
+
+        if (!getBlockPos().equals(targetPos) && !state.isAir()) {
+           /* var result = breakBlock(targetPos);
+            if (!result.isSuccess()) {
+                // Wait until quarry can remove the block
+                return;
+            }
+            if (result != WorkResult.SUCCESS) {
+                skipped.add(targetPos.immutable());
+            }*/
+        }
+
+        var requiredEnergy = (long) (ONE_FE * powerMap().makeFrame());
+        if (useEnergy(requiredEnergy, true, false, "makeFrame") == requiredEnergy) {
+            useEnergy(requiredEnergy, false, false, "makeFrame");
+            if (!targetPos.equals(getBlockPos())) {
+                level.setBlock(targetPos, PlatformAccess.getAccess().registerObjects().frameBlock().get().defaultBlockState(), Block.UPDATE_ALL);
+            }
+            if (targetIterator.hasNext()) {
+                targetPos = targetIterator.next();
+            } else {
+                targetIterator = null;
+                targetPos = null;
+                setState(AdvQuarryState.BREAK_BLOCK, getBlockState());
+            }
+        }
     }
 
     void breakBlock() {

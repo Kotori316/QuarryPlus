@@ -42,6 +42,18 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, D
             Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()), direction);
     }
 
+    public static Area assumeY(Area area) {
+        int distanceY = area.maxY() - area.minY();
+        if (distanceY >= 4) {
+            return area;
+        }
+        return new Area(
+            area.minX(), area.minY(), area.minZ(),
+            area.maxX(), area.minY() + 4, area.maxZ(),
+            area.direction()
+        );
+    }
+
     public boolean inAreaX(int x) {
         return this.minX < x && x < this.maxX;
     }
