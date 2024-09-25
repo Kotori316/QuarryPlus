@@ -445,6 +445,10 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                     // Handled in breakBlockModuleOverride, skip
                     continue;
                 }
+                if (hardness < 0) {
+                    // Unbreakable
+                    continue;
+                }
                 // Calc required energy
                 var energy = powerMap().getBreakEnergy(hardness,
                     enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, lookup),
@@ -475,7 +479,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
             if (!state.isAir()) {
                 breakOneBlock(pair.getLeft());
             }
-            serverLevel.setBlock(pair.getLeft(), PlatformAccess.getAccess().registerObjects().frameBlock().get().defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+            serverLevel.setBlock(pair.getLeft(), PlatformAccess.getAccess().registerObjects().softBlock().get().defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
         }
         // Get drops
         for (Pair<BlockPos, BlockState> statePair : toBreak) {

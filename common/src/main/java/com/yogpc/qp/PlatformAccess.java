@@ -12,6 +12,7 @@ import com.yogpc.qp.machine.marker.MarkerContainer;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
+import com.yogpc.qp.machine.misc.SoftBlock;
 import com.yogpc.qp.machine.misc.YSetterContainer;
 import com.yogpc.qp.machine.module.BedrockModuleItem;
 import com.yogpc.qp.machine.module.ModuleContainer;
@@ -76,6 +77,8 @@ public interface PlatformAccess {
         Supplier<? extends DebugStorageBlock> debugStorageBlock();
 
         Supplier<? extends AdvQuarryBlock> advQuarryBlock();
+
+        Supplier<? extends SoftBlock> softBlock();
 
         Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block);
 

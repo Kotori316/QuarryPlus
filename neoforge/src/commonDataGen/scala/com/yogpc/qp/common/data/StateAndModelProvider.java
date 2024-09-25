@@ -120,9 +120,9 @@ final class StateAndModelProvider extends BlockStateProvider {
         var dummyReplacerModel = models().withExistingParent("block/dummy_replacer", ResourceLocation.fromNamespaceAndPath("minecraft", "block/glass")).renderType("translucent");
         itemModels().withExistingParent("item/dummy_replacer", ResourceLocation.fromNamespaceAndPath("minecraft", "block/glass"));
         var dummyBlockModel = models().cubeAll("block/dummy_block", blockTexture("dummy_block")).renderType("translucent");
-        itemModels().withExistingParent("item/dummy", blockTexture("dummy_block"));
 
-        // simpleBlock(Holder.BLOCK_DUMMY, dummyBlockModel);
+        simpleBlock(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get(), dummyBlockModel);
+        simpleBlockItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get(), dummyBlockModel);
         // simpleBlock(Holder.BLOCK_DUMMY_REPLACER, dummyReplacerModel);
     }
 
