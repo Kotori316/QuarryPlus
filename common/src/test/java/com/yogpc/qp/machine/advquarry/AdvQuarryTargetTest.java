@@ -60,6 +60,17 @@ class AdvQuarryTargetTest {
                 new BlockPos(-1005, 5, 92)
             ), allElements);
         }
+
+        @Test
+        void oneChunk() {
+            var area = new Area(-1, 0, -1, 16, 16, 16, Direction.UP);
+            Iterable<BlockPos> iterable = () -> new AdvQuarryTarget.North(area);
+            var allElements = assertTimeout(Duration.ofSeconds(3), () ->
+                StreamSupport.stream(iterable.spliterator(), false)
+                    .map(BlockPos::immutable)
+                    .toList());
+            assertEquals(16 * 16, allElements.size());
+        }
     }
 
 

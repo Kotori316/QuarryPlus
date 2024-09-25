@@ -62,7 +62,7 @@ sealed abstract class AdvQuarryTarget extends PickIterator<BlockPos> {
                 cursor.setZ(lastReturned.getZ() + 1);
             } else {
                 // Next x
-                cursor.set(lastReturned.getX() - 1, lastReturned.getY(), lastReturned.getZ() - 1);
+                cursor.set(lastReturned.getX() - 1, lastReturned.getY(), area.minZ() + 1);
             }
             return cursor;
         }

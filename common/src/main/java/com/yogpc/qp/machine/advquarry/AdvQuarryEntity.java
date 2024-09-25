@@ -305,6 +305,9 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
 
         WorkResult result = null;
         while (result == null || result == WorkResult.SKIPPED) {
+            if (targetPos == null) {
+                return;
+            }
             if (!searchEnergyConsumed) {
                 var energy = (long) powerMap().searchBase() * ONE_FE * targetPos.getY();
                 var used = useEnergy(energy, false, false, "searchEnergy");
@@ -323,7 +326,10 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                     targetIterator = null;
                     targetPos = null;
                     setState(AdvQuarryState.FINISHED, getBlockState());
+                    return;
                 }
+            } else if (result == WorkResult.NOT_ENOUGH_ENERGY) {
+                return;
             }
         }
     }
@@ -417,7 +423,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         List<Pair<BlockPos, BlockState>> toBreak = new ArrayList<>();
         List<Pair<BlockPos, BlockState>> toDrain = new ArrayList<>();
         Map<BlockPos, BlockBreakEventResult> resultMap = new HashMap<>();
-        for (int y = getBlockPos().getY() - 1; y > digMinY.getMinY(serverLevel); y--) {
+        for (int y = getBlockPos().getY() - 1; y >= digMinY.getMinY(serverLevel); y--) {
             mutableBlockPos.setY(y);
             var state = serverLevel.getBlockState(mutableBlockPos);
             var fluidState = serverLevel.getFluidState(mutableBlockPos);
