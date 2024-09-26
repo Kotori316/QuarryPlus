@@ -15,7 +15,7 @@
   "block.quarryplus.chunk_marker": "Chunkっぽいマーカー",
   "block.quarryplus.creative_generator": "クリエイティブ発電機",
   "block.quarryplus.debug_storage": "Quarryのデバッグ用ストレージ",
-  "block.quarryplus.dummy": "Dummy Block",
+  "block.quarryplus.soft_block": "Dummy Block",
   "block.quarryplus.dummy_replacer": "Replacer Dummy Block",
   "block.quarryplus.exp_pump": "採掘機用経験値ポンプ",
   "block.quarryplus.filler": "フィラー",

@@ -15,7 +15,7 @@
   "block.quarryplus.chunk_marker": "청크 마커",
   "block.quarryplus.creative_generator": "크리에이티브 발전기",
   "block.quarryplus.debug_storage": "Quarry Debug Storage",
-  "block.quarryplus.dummy": "더미 블록",
+  "block.quarryplus.soft_block": "더미 블록",
   "block.quarryplus.dummy_replacer": "교체기 더미 블록",
   "block.quarryplus.exp_pump": "쿼리 경험치 펌프",
   "block.quarryplus.filler": "필러",

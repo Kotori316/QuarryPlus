@@ -23,6 +23,7 @@ import java.util.function.Predicate;
 
 public final class SoftBlock extends TransparentBlock implements InCreativeTabs {
     public static final String NAME = "soft_block";
+    private static final int CHAIN_MAX = Short.MAX_VALUE / 2;
     public final ResourceLocation location = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, NAME);
     public final BlockItem blockItem;
 
@@ -72,7 +73,8 @@ public final class SoftBlock extends TransparentBlock implements InCreativeTabs 
             }
             if (!nextCheck.isEmpty()) {
                 var server = Objects.requireNonNull(world.getServer());
-                server.tell(new TickTask(server.getTickCount() + 4, new ChainBreakTask(world, nextCheck, 1, b -> this.breaking = b, new HashSet<>(), Predicate.isEqual(this))));
+                var tickOffset = world.getRandom().nextIntBetweenInclusive(8, 30);
+                server.tell(new TickTask(server.getTickCount() + tickOffset, new ChainBreakTask(world, nextCheck, 1, b -> this.breaking = b, new HashSet<>(), Predicate.isEqual(this))));
             }
         }
     }
@@ -90,7 +92,7 @@ public final class SoftBlock extends TransparentBlock implements InCreativeTabs 
         public void run() {
             var removed = new HashSet<BlockPos>();
             var nextCheck = new ArrayList<>(targets);
-            while (!nextCheck.isEmpty() && removed.size() < Short.MAX_VALUE / 2) {
+            while (!nextCheck.isEmpty() && removed.size() < CHAIN_MAX) {
                 var copied = nextCheck.toArray(new BlockPos[0]);
                 nextCheck.clear();
                 for (var pos : copied) {
@@ -122,7 +124,8 @@ public final class SoftBlock extends TransparentBlock implements InCreativeTabs 
 
             if (!nextCheck.isEmpty()) {
                 var server = Objects.requireNonNull(level.getServer());
-                server.tell(new TickTask(server.getTickCount() + 4, new ChainBreakTask(level, nextCheck, totalRemoved + removed.size(), consumer, checked, continueChain)));
+                var tickOffset = level.getRandom().nextIntBetweenInclusive(8, 30);
+                server.tell(new TickTask(server.getTickCount() + tickOffset, new ChainBreakTask(level, nextCheck, totalRemoved + removed.size(), consumer, checked, continueChain)));
             }
         }
     }
