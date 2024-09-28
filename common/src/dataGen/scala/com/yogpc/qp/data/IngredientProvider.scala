@@ -27,7 +27,9 @@ trait IngredientProvider {
 
   def prismarineShard: Ingredient
 
-  def obsidian: Ingredient
+  def obsidian: Ingredient = Ingredient.of(obsidianTag)
+
+  def obsidianTag: TagKey[Item]
 
   def glass: Ingredient
 

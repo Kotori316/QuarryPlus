@@ -2,6 +2,8 @@ package com.yogpc.qp.forge.data
 
 import com.yogpc.qp.data.IngredientProvider
 import net.minecraft.data.recipes.RecipeOutput
+import net.minecraft.tags.TagKey
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.crafting.Ingredient
 import net.minecraftforge.common.Tags
 import net.minecraftforge.common.crafting.conditions.FalseCondition
@@ -20,7 +22,7 @@ final class IngredientProviderForge extends IngredientProvider {
 
   override def goldIngot: Ingredient = Ingredient.of(Tags.Items.INGOTS_GOLD)
 
-  override def obsidian: Ingredient = Ingredient.of(Tags.Items.OBSIDIAN)
+  override def obsidianTag: TagKey[Item] = Tags.Items.OBSIDIAN
 
   override def glass: Ingredient = Ingredient.of(Tags.Items.GLASS)
 

@@ -78,6 +78,7 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .pattern("aoa")
       .unlockedBy(Items.ANVIL)
       .unlockedBy(ip.markerTag)
+      .unlockedBy(ip.obsidianTag)
       .save(recipeOutput)
 
     ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().quarryBlock().get())
@@ -128,7 +129,8 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
     val bedrockModule = quarryItem("remove_bedrock_module")
     {
       val builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, bedrockModule)
-      builder.define('o', ip.obsidian)
+      builder
+        .define('o', ip.obsidian)
         .define('m', ip.marker)
       if (PlatformAccess.getAccess.platformName().equalsIgnoreCase("fabric")) {
         builder
@@ -136,13 +138,15 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
           .pattern(" m ")
           .pattern(" m ")
       } else {
-        builder.define('d', ip.diamondBlock)
+        builder
+          .define('d', ip.diamondBlock)
           .pattern("ooo")
           .pattern("dmd")
           .pattern("dmd")
       }
       builder
         .unlockedBy(PlatformAccess.getAccess.registerObjects().quarryBlock().get())
+        .unlockedBy(ip.obsidianTag)
         .save(recipeOutput)
     }
 
@@ -175,7 +179,7 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
   }
 
   private def quarryItem(name: String): Item = {
-    BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name))
+    BuiltInRegistries.ITEM.get(modLoc(name))
   }
 
   private def modLoc(name: String): ResourceLocation = {

@@ -2,8 +2,9 @@ package com.yogpc.qp.neoforge.data
 
 import com.yogpc.qp.data.IngredientProvider
 import net.minecraft.data.recipes.RecipeOutput
-import net.minecraft.world.item.Items
+import net.minecraft.tags.TagKey
 import net.minecraft.world.item.crafting.Ingredient
+import net.minecraft.world.item.{Item, Items}
 import net.neoforged.neoforge.common.Tags
 import net.neoforged.neoforge.common.conditions.FalseCondition
 
@@ -18,7 +19,7 @@ final class IngredientProviderNeoForge extends IngredientProvider {
 
   override def goldIngot: Ingredient = Ingredient.of(Tags.Items.INGOTS_GOLD)
 
-  override def obsidian: Ingredient = Ingredient.of(Tags.Items.OBSIDIANS)
+  override def obsidianTag: TagKey[Item] = Tags.Items.OBSIDIANS
 
   override def glass: Ingredient = Ingredient.of(Tags.Items.GLASS_BLOCKS)
 
