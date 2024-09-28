@@ -27,12 +27,14 @@ public final class GameTestFunctions {
             EnableMapTest.class,
             ExpModuleItemTest.class,
             EnchantmentTest.class,
-            MachineStorageTest.class
+            MachineStorageTest.class,
+            AccessFluidTest.class
         );
         var fromClass = getTestFunctionStream(batchName, structureName, classes, 3);
         return Stream.of(
             fromClass,
             AccessItemTest.accessItems(batchName, structureName),
+            AccessFluidTest.empty(batchName, structureName),
             EnableMapTest.test(batchName, structureName)
         ).flatMap(Function.identity()).toList();
     }

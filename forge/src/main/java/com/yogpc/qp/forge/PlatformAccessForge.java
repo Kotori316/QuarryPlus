@@ -321,7 +321,7 @@ public final class PlatformAccessForge implements PlatformAccess {
 
     @Override
     public FluidStackLike getFluidInItem(ItemStack stack) {
-        if (stack.getItem() instanceof BucketItem bucketItem) {
+        if (stack.getItem() instanceof BucketItem bucketItem && !stack.is(Items.BUCKET)) {
             return new FluidStackLike(bucketItem.getFluid(), MachineStorage.ONE_BUCKET, DataComponentPatch.EMPTY);
         }
         return FluidStackLike.EMPTY;
