@@ -4,8 +4,11 @@ import com.yogpc.qp.machine.*;
 import com.yogpc.qp.machine.marker.QuarryMarker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -23,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static com.yogpc.qp.machine.QpBlockProperty.WORKING;
@@ -98,6 +102,12 @@ public class AdvQuarryBlock extends QpEntityBlock {
                 quarry.setState(AdvQuarryState.WAITING, state);
             }
         }
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        tooltipComponents.add(Component.literal("WIP"));
     }
 
     @NotNull
