@@ -6,6 +6,7 @@ import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpBlockProperty;
 import com.yogpc.qp.machine.QpItem;
 import com.yogpc.qp.neoforge.PlatformAccessNeoForge;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
@@ -78,14 +79,14 @@ final class StateAndModelProvider extends BlockStateProvider {
 
     void frame() {
         var center = models().getBuilder("block/frame_post")
-            .renderType("cutout")
+            .renderType(RenderType.cutout().name)
             .texture("texture", blockTexture("frame"))
             .texture("particle", blockTexture("frame"))
             .element().from(4.0f, 4.0f, 4.0f).to(12.0f, 12.0f, 12.0f)
             .allFaces((direction, faceBuilder) -> faceBuilder.uvs(4, 4, 12, 12).texture("#texture"))
             .end();
         var side = models().getBuilder("block/frame_side")
-            .renderType("cutout")
+            .renderType(RenderType.cutout().name)
             .texture("texture", blockTexture("frame"))
             .texture("particle", blockTexture("frame"))
             .element().from(4, 4, 0).to(12, 12, 4)
@@ -117,9 +118,9 @@ final class StateAndModelProvider extends BlockStateProvider {
     }
 
     void dummyBlocks() {
-        var dummyReplacerModel = models().withExistingParent("block/dummy_replacer", ResourceLocation.fromNamespaceAndPath("minecraft", "block/glass")).renderType("translucent");
+        var dummyReplacerModel = models().withExistingParent("block/dummy_replacer", ResourceLocation.fromNamespaceAndPath("minecraft", "block/glass")).renderType(RenderType.translucent().name);
         itemModels().withExistingParent("item/dummy_replacer", ResourceLocation.fromNamespaceAndPath("minecraft", "block/glass"));
-        var dummyBlockModel = models().cubeAll("block/dummy_block", blockTexture("dummy_block")).renderType("translucent");
+        var dummyBlockModel = models().cubeAll("block/dummy_block", blockTexture("dummy_block")).renderType(RenderType.translucent().name);
 
         simpleBlock(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get(), dummyBlockModel);
         simpleBlockItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get(), dummyBlockModel);

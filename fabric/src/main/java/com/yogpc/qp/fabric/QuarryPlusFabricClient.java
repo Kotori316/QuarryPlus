@@ -21,7 +21,8 @@ public final class QuarryPlusFabricClient implements ClientModInitializer {
     public void onInitializeClient() {
         QuarryPlus.LOGGER.info("Initialize Client");
         PacketHandler.Client.initClient();
-        BlockRenderLayerMap.INSTANCE.putBlock(PlatformAccessFabric.RegisterObjectsFabric.FRAME_BLOCK, RenderType.cutoutMipped());
+        BlockRenderLayerMap.INSTANCE.putBlock(PlatformAccessFabric.RegisterObjectsFabric.FRAME_BLOCK, RenderType.cutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(PlatformAccessFabric.RegisterObjectsFabric.SOFT_BLOCK, RenderType.translucent());
         BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.QUARRY_ENTITY_TYPE, RenderQuarry::new);
         BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.MARKER_ENTITY_TYPE, RenderMarker::new);
         BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.FLEXIBLE_MARKER_ENTITY_TYPE, RenderFlexibleMarker::new);

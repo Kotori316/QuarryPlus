@@ -167,7 +167,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         }
 
         private static <T extends Block & InCreativeTabs> void registerBlockItem(T block, String name, Function<T, ? extends BlockItem> itemGetter) {
-            Registry.register(BuiltInRegistries.BLOCK, name, block);
+            Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name), block);
             registerItem(itemGetter.apply(block), ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name));
             TAB_ITEMS.add(block);
         }
