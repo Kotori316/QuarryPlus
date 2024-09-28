@@ -20,6 +20,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -96,6 +97,9 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                 }
                 case MAKE_FRAME -> quarry.makeFrame();
                 case BREAK_BLOCK -> quarry.breakBlock();
+                case CLEAN_UP -> quarry.cleanUp();
+                case null, default ->
+                    throw new UnsupportedOperationException("Not implemented: " + quarry.currentState);
             }
         }
     }
@@ -224,7 +228,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
             iterator.setLastReturned(current);
             return iterator;
         }
-        if (currentState == AdvQuarryState.BREAK_BLOCK) {
+        if (currentState == AdvQuarryState.BREAK_BLOCK || currentState == AdvQuarryState.CLEAN_UP) {
             PickIterator<BlockPos> iterator;
             if (config.chunkByChunk()) {
                 iterator = new AdvQuarryTarget.ChunkByChunk(area);
@@ -332,10 +336,43 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                 } else {
                     targetIterator = null;
                     targetPos = null;
-                    setState(AdvQuarryState.FINISHED, getBlockState());
+                    setState(AdvQuarryState.CLEAN_UP, getBlockState());
                     return;
                 }
             } else if (result == WorkResult.NOT_ENOUGH_ENERGY) {
+                return;
+            }
+        }
+    }
+
+    void cleanUp() {
+        if (level == null || level.isClientSide() || area == null) {
+            return;
+        }
+        if (targetIterator == null) {
+            targetIterator = createTargetIterator(currentState, getArea(), null, workConfig);
+            assert targetIterator != null;
+        }
+        if (targetPos == null) {
+            targetPos = targetIterator.next();
+            assert targetPos != null;
+        }
+
+        int count = 0;
+        while (count < 32 && currentState == AdvQuarryState.CLEAN_UP) {
+            if (targetPos == null) {
+                return;
+            }
+            var result = cleanUpFluid(targetPos.getX(), targetPos.getZ());
+            if (result.isSuccess()) {
+                count++;
+            }
+            if (targetIterator.hasNext()) {
+                targetPos = targetIterator.next();
+            } else {
+                targetIterator = null;
+                targetPos = null;
+                setState(AdvQuarryState.FINISHED, getBlockState());
                 return;
             }
         }
@@ -513,6 +550,31 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         }
         setChanged();
         return WorkResult.SUCCESS;
+    }
+
+    @NotNull
+    WorkResult cleanUpFluid(int x, int z) {
+        assert level != null;
+        var serverLevel = (ServerLevel) level;
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+        boolean flagRemoved = false;
+        for (int y = getBlockPos().getY() - 1; y >= digMinY.getMinY(serverLevel); y--) {
+            mutableBlockPos.set(x, y, z);
+            var state = serverLevel.getBlockState(mutableBlockPos);
+            var fluid = serverLevel.getFluidState(mutableBlockPos);
+
+            var blockCondition = state.is(PlatformAccess.getAccess().registerObjects().softBlock().get())
+                || state.is(Blocks.STONE)
+                || state.is(Blocks.COBBLESTONE)
+                || (fluid.is(FluidTags.WATER) && !fluid.isSource());
+            var blockIsReplaced = stateAfterBreak(serverLevel, mutableBlockPos, state) == state;
+            if (blockCondition && !blockIsReplaced) {
+                serverLevel.setBlock(mutableBlockPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+                flagRemoved = true;
+            }
+        }
+
+        return flagRemoved ? WorkResult.SUCCESS : WorkResult.SKIPPED;
     }
 
     protected abstract ServerPlayer getQuarryFakePlayer(ServerLevel level, BlockPos target);

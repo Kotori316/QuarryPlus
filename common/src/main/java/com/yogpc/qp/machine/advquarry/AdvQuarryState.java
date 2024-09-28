@@ -5,6 +5,7 @@ enum AdvQuarryState {
     WAITING,
     MAKE_FRAME,
     BREAK_BLOCK,
+    CLEAN_UP,
     ;
 
     static boolean isWorking(AdvQuarryState state) {
