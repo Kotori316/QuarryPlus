@@ -1,14 +1,25 @@
 package com.yogpc.qp.fabric.integration;
 
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.PowerEntity;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
+import net.minecraft.core.Direction;
+import org.jetbrains.annotations.Nullable;
 import team.reborn.energy.api.EnergyStorage;
 
 final class RebornEnergyStorage extends SnapshotParticipant<Long> implements EnergyStorage {
     public final long conversionRate;
     private final PowerEntity powerEntity;
+
+    @Nullable
+    static EnergyStorage provider(Object blockEntity, Direction ignored) {
+        if (blockEntity instanceof PowerEntity entity) {
+            return new RebornEnergyStorage(entity, PlatformAccess.config());
+        }
+        return null;
+    }
 
     RebornEnergyStorage(PowerEntity powerEntity, QuarryConfig config) {
         this.powerEntity = powerEntity;

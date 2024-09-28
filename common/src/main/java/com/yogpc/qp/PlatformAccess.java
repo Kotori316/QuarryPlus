@@ -23,6 +23,7 @@ import com.yogpc.qp.machine.storage.DebugStorageBlock;
 import com.yogpc.qp.machine.storage.DebugStorageContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,10 +36,7 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -81,6 +79,13 @@ public interface PlatformAccess {
         Supplier<? extends SoftBlock> softBlock();
 
         Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block);
+
+        default Collection<? extends BlockEntityType<?>> getBlockEntityTypes() {
+            return BuiltInRegistries.BLOCK_ENTITY_TYPE.entrySet().stream()
+                .filter(p -> p.getKey().location().getNamespace().equals(QuarryPlus.modID))
+                .map(Map.Entry::getValue)
+                .toList();
+        }
 
         Map<String, EnableMap.EnableOrNot> defaultEnableSetting();
 

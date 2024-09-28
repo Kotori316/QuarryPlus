@@ -2,8 +2,6 @@ package com.yogpc.qp.fabric.integration;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.fabric.PlatformAccessFabric;
-import com.yogpc.qp.machine.PowerEntity;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -36,19 +34,9 @@ public final class EnergyIntegration {
 
 class RebornEnergyRegister {
     static boolean register() {
-        EnergyStorage.SIDED.registerForBlockEntities((blockEntity, context) -> {
-            if (blockEntity instanceof PowerEntity entity) {
-                return new RebornEnergyStorage(entity, PlatformAccess.config());
-            }
-            return null;
-        }, types());
-
+        for (BlockEntityType<?> blockEntityType : PlatformAccess.getAccess().registerObjects().getBlockEntityTypes()) {
+            EnergyStorage.SIDED.registerForBlockEntities(RebornEnergyStorage::provider, blockEntityType);
+        }
         return true;
-    }
-
-    static BlockEntityType<?>[] types() {
-        return new BlockEntityType[]{
-            PlatformAccessFabric.RegisterObjectsFabric.QUARRY_ENTITY_TYPE
-        };
     }
 }
