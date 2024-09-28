@@ -1,17 +1,29 @@
 package com.yogpc.qp.neoforge.integration;
 
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.PowerEntity;
-import com.yogpc.qp.neoforge.PlatformAccessNeoForge;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.energy.IEnergyStorage;
+import org.jetbrains.annotations.Nullable;
 
 public final class EnergyIntegration {
     @SubscribeEvent
     public static void attachCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, PlatformAccessNeoForge.RegisterObjectsNeoForge.QUARRY_ENTITY_TYPE.get(), PowerEntityStorage::new);
+        for (BlockEntityType<?> blockEntityType : PlatformAccess.getAccess().registerObjects().getBlockEntityTypes()) {
+            event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, blockEntityType, EnergyIntegration::provider);
+        }
+    }
+
+    @Nullable
+    private static IEnergyStorage provider(Object entity, Direction direction) {
+        if (entity instanceof PowerEntity powerEntity) {
+            return new PowerEntityStorage(powerEntity, direction);
+        }
+        return null;
     }
 
     record PowerEntityStorage(PowerEntity entity) implements IEnergyStorage {

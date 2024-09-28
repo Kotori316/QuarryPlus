@@ -5,6 +5,7 @@ import com.yogpc.qp.*;
 import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.fabric.machine.advquarry.AdvQuarryEntityFabric;
 import com.yogpc.qp.fabric.machine.misc.CheckerItemFabric;
 import com.yogpc.qp.fabric.machine.misc.YSetterItemFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
@@ -15,12 +16,10 @@ import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpItem;
+import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
 import com.yogpc.qp.machine.marker.*;
-import com.yogpc.qp.machine.misc.FrameBlock;
-import com.yogpc.qp.machine.misc.GeneratorBlock;
-import com.yogpc.qp.machine.misc.GeneratorEntity;
-import com.yogpc.qp.machine.misc.YSetterContainer;
+import com.yogpc.qp.machine.misc.*;
 import com.yogpc.qp.machine.module.BedrockModuleItem;
 import com.yogpc.qp.machine.module.ModuleContainer;
 import com.yogpc.qp.machine.module.PumpModuleItem;
@@ -51,15 +50,18 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import org.apache.logging.log4j.util.Lazy;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -73,7 +75,10 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final QuarryBlockFabric QUARRY_BLOCK = new QuarryBlockFabric();
         public static final BlockEntityType<QuarryEntityFabric> QUARRY_ENTITY_TYPE = BlockEntityType.Builder.of(QuarryEntityFabric::new, QUARRY_BLOCK).build(DSL.emptyPartType());
         public static final MenuType<QuarryMenuFabric> QUARRY_MENU = new ExtendedScreenHandlerType<>(QuarryMenuFabric::new, BlockPos.STREAM_CODEC);
+        public static final AdvQuarryBlock ADV_QUARRY_BLOCK = new AdvQuarryBlock();
+        public static final BlockEntityType<AdvQuarryEntityFabric> ADV_QUARRY_ENTITY_TYPE = BlockEntityType.Builder.of(AdvQuarryEntityFabric::new, ADV_QUARRY_BLOCK).build(DSL.emptyPartType());
         public static final FrameBlock FRAME_BLOCK = new FrameBlock();
+        public static final SoftBlock SOFT_BLOCK = new SoftBlock();
         public static final GeneratorBlock GENERATOR_BLOCK = new GeneratorBlock();
         public static final BlockEntityType<GeneratorEntity> GENERATOR_ENTITY_TYPE = BlockEntityType.Builder.of(GeneratorEntity::new, GENERATOR_BLOCK).build(DSL.emptyPartType());
         public static final CheckerItemFabric CHECKER_ITEM = new CheckerItemFabric();
@@ -113,6 +118,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         static void registerAll() {
             // Machine
             registerEntityBlock(QUARRY_BLOCK, QUARRY_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
+            registerEntityBlock(ADV_QUARRY_BLOCK, ADV_QUARRY_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             registerEntityBlock(GENERATOR_BLOCK, GENERATOR_ENTITY_TYPE, EnableMap.EnableOrNot.ALWAYS_ON);
             registerEntityBlock(MOVER_BLOCK, MOVER_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             // Marker
@@ -128,6 +134,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerItem(CHECKER_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
             registerItem(Y_SET_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
             registerBlockItem(FRAME_BLOCK);
+            registerBlockItem(SOFT_BLOCK, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, SoftBlock.NAME), softBlock -> softBlock.blockItem);
             registerEntityBlock(DEBUG_STORAGE_BLOCK, DEBUG_STORAGE_TYPE, EnableMap.EnableOrNot.ALWAYS_ON);
             Registry.register(BuiltInRegistries.MENU, QuarryMenuFabric.GUI_ID, QUARRY_MENU);
             Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, Y_SET_MENU);
@@ -154,8 +161,12 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         }
 
         private static void registerBlockItem(QpBlock block) {
-            Registry.register(BuiltInRegistries.BLOCK, block.name, block);
-            registerItem(block.blockItem, block.name);
+            registerBlockItem(block, block.name, b -> b.blockItem);
+        }
+
+        private static <T extends Block & InCreativeTabs> void registerBlockItem(T block, ResourceLocation name, Function<T, ? extends BlockItem> itemGetter) {
+            Registry.register(BuiltInRegistries.BLOCK, name, block);
+            registerItem(itemGetter.apply(block), name);
             TAB_ITEMS.add(block);
         }
 
@@ -209,6 +220,16 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         @Override
         public Supplier<? extends DebugStorageBlock> debugStorageBlock() {
             return Lazy.value(DEBUG_STORAGE_BLOCK);
+        }
+
+        @Override
+        public Supplier<? extends AdvQuarryBlock> advQuarryBlock() {
+            return Lazy.value(ADV_QUARRY_BLOCK);
+        }
+
+        @Override
+        public Supplier<? extends SoftBlock> softBlock() {
+            return Lazy.value(SOFT_BLOCK);
         }
 
         @Override

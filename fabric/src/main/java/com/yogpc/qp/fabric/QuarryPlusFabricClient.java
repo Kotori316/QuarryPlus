@@ -9,10 +9,7 @@ import com.yogpc.qp.machine.misc.YSetterScreen;
 import com.yogpc.qp.machine.module.ModuleScreen;
 import com.yogpc.qp.machine.mover.MoverScreen;
 import com.yogpc.qp.machine.storage.DebugStorageScreen;
-import com.yogpc.qp.render.RenderChunkMarker;
-import com.yogpc.qp.render.RenderFlexibleMarker;
-import com.yogpc.qp.render.RenderMarker;
-import com.yogpc.qp.render.RenderQuarry;
+import com.yogpc.qp.render.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -24,11 +21,13 @@ public final class QuarryPlusFabricClient implements ClientModInitializer {
     public void onInitializeClient() {
         QuarryPlus.LOGGER.info("Initialize Client");
         PacketHandler.Client.initClient();
-        BlockRenderLayerMap.INSTANCE.putBlock(PlatformAccessFabric.RegisterObjectsFabric.FRAME_BLOCK, RenderType.cutoutMipped());
+        BlockRenderLayerMap.INSTANCE.putBlock(PlatformAccessFabric.RegisterObjectsFabric.FRAME_BLOCK, RenderType.cutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(PlatformAccessFabric.RegisterObjectsFabric.SOFT_BLOCK, RenderType.translucent());
         BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.QUARRY_ENTITY_TYPE, RenderQuarry::new);
         BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.MARKER_ENTITY_TYPE, RenderMarker::new);
         BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.FLEXIBLE_MARKER_ENTITY_TYPE, RenderFlexibleMarker::new);
         BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.CHUNK_MARKER_ENTITY_TYPE, RenderChunkMarker::new);
+        BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.ADV_QUARRY_ENTITY_TYPE, RenderAdvQuarry::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.QUARRY_MENU, QuarryScreenFabric::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.Y_SET_MENU, YSetterScreen::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.MOVER_MENU, MoverScreen::new);

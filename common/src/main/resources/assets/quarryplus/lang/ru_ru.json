@@ -15,7 +15,7 @@
   "block.quarryplus.chunk_marker": "Chunk Marker",
   "block.quarryplus.creative_generator": "Creative Generator",
   "block.quarryplus.debug_storage": "Quarry Debug Storage",
-  "block.quarryplus.dummy": "Dummy Block",
+  "block.quarryplus.soft_block": "Dummy Block",
   "block.quarryplus.dummy_replacer": "Replacer Dummy Block",
   "block.quarryplus.exp_pump": "Experience Pump for Quarry",
   "block.quarryplus.filler": "Filler",

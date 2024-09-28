@@ -324,4 +324,38 @@ class AreaTest {
             assertEquals(new BlockPos(1, 2, 5), itr.next());
         }
     }
+
+    @Nested
+    class AssumeAreaTest {
+        @ParameterizedTest
+        @MethodSource("lowDistance")
+        void lowDistance(Direction direction, int maxY) {
+            var area = new Area(0, 0, 0, 1, maxY, 3, direction);
+            var modified = Area.assumeY(area);
+            var expected = new Area(0, 0, 0, 1, 4, 3, direction);
+            assertEquals(expected, modified);
+        }
+
+        static Stream<Arguments> lowDistance() {
+            return Stream.of(Direction.values())
+                .flatMap(d -> IntStream.range(0, 5).mapToObj(y ->
+                    Arguments.of(d, y)
+                ));
+        }
+
+        @ParameterizedTest
+        @MethodSource("longDistance")
+        void longDistance(Direction direction, int maxY) {
+            var area = new Area(3, 0, 0, 5, maxY, 3, direction);
+            var modified = Area.assumeY(area);
+            assertEquals(area, modified);
+        }
+
+        static Stream<Arguments> longDistance() {
+            return Stream.of(Direction.values())
+                .flatMap(d -> IntStream.range(5, 7).mapToObj(y ->
+                    Arguments.of(d, y)
+                ));
+        }
+    }
 }

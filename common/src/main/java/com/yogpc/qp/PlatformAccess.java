@@ -5,12 +5,14 @@ import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
 import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
 import com.yogpc.qp.machine.marker.MarkerContainer;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.GeneratorBlock;
+import com.yogpc.qp.machine.misc.SoftBlock;
 import com.yogpc.qp.machine.misc.YSetterContainer;
 import com.yogpc.qp.machine.module.BedrockModuleItem;
 import com.yogpc.qp.machine.module.ModuleContainer;
@@ -21,6 +23,7 @@ import com.yogpc.qp.machine.storage.DebugStorageBlock;
 import com.yogpc.qp.machine.storage.DebugStorageContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,10 +36,7 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -74,7 +74,18 @@ public interface PlatformAccess {
 
         Supplier<? extends DebugStorageBlock> debugStorageBlock();
 
+        Supplier<? extends AdvQuarryBlock> advQuarryBlock();
+
+        Supplier<? extends SoftBlock> softBlock();
+
         Optional<BlockEntityType<?>> getBlockEntityType(QpBlock block);
+
+        default Collection<? extends BlockEntityType<?>> getBlockEntityTypes() {
+            return BuiltInRegistries.BLOCK_ENTITY_TYPE.entrySet().stream()
+                .filter(p -> p.getKey().location().getNamespace().equals(QuarryPlus.modID))
+                .map(Map.Entry::getValue)
+                .toList();
+        }
 
         Map<String, EnableMap.EnableOrNot> defaultEnableSetting();
 

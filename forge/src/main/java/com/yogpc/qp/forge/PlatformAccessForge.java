@@ -5,6 +5,7 @@ import com.yogpc.qp.*;
 import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.forge.machine.advquarry.AdvQuarryEntityForge;
 import com.yogpc.qp.forge.machine.marker.ChunkMarkerEntityForge;
 import com.yogpc.qp.forge.machine.marker.FlexibleMarkerEntityForge;
 import com.yogpc.qp.forge.machine.marker.NormalMarkerEntityForge;
@@ -17,15 +18,13 @@ import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
 import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
 import com.yogpc.qp.machine.marker.MarkerContainer;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
-import com.yogpc.qp.machine.misc.FrameBlock;
-import com.yogpc.qp.machine.misc.GeneratorBlock;
-import com.yogpc.qp.machine.misc.GeneratorEntity;
-import com.yogpc.qp.machine.misc.YSetterContainer;
+import com.yogpc.qp.machine.misc.*;
 import com.yogpc.qp.machine.module.BedrockModuleItem;
 import com.yogpc.qp.machine.module.ModuleContainer;
 import com.yogpc.qp.machine.module.PumpModuleItem;
@@ -45,10 +44,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -68,6 +64,7 @@ import org.apache.logging.log4j.util.Lazy;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -97,6 +94,7 @@ public final class PlatformAccessForge implements PlatformAccess {
 
         // Machine
         public static final RegistryObject<QuarryBlockForge> BLOCK_QUARRY = registerBlock(QuarryBlockForge.NAME, QuarryBlockForge::new);
+        public static final RegistryObject<AdvQuarryBlock> BLOCK_ADV_QUARRY = registerBlock(AdvQuarryBlock.NAME, AdvQuarryBlock::new);
         public static final RegistryObject<GeneratorBlock> BLOCK_GENERATOR = registerBlock(GeneratorBlock.NAME, GeneratorBlock::new);
         public static final RegistryObject<MoverBlock> BLOCK_MOVER = registerBlock(MoverBlock.NAME, MoverBlock::new);
         // Marker
@@ -112,6 +110,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<CheckerItemForge> ITEM_CHECKER = registerItem(CheckerItemForge.NAME, CheckerItemForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
         public static final RegistryObject<YSetterItemForge> ITEM_Y_SET = registerItem(YSetterItemForge.NAME, YSetterItemForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
         public static final RegistryObject<FrameBlock> BLOCK_FRAME = registerBlock(FrameBlock.NAME, FrameBlock::new);
+        public static final RegistryObject<SoftBlock> BLOCK_SOFT = registerBlock(SoftBlock.NAME, SoftBlock::new, b -> b.blockItem);
         public static final RegistryObject<DebugStorageBlock> BLOCK_DEBUG_STORAGE = registerBlock(DebugStorageBlock.NAME, DebugStorageBlock::new);
 
         private static final Map<Class<? extends QpBlock>, Supplier<BlockEntityType<?>>> BLOCK_ENTITY_TYPES = new HashMap<>();
@@ -122,6 +121,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<BlockEntityType<FlexibleMarkerEntityForge>> FLEXIBLE_MARKER_ENTITY_TYPE = registerBlockEntity(FlexibleMarkerBlock.NAME, BLOCK_FLEXIBLE_MARKER, FlexibleMarkerEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final RegistryObject<BlockEntityType<ChunkMarkerEntityForge>> CHUNK_MARKER_ENTITY_TYPE = registerBlockEntity(ChunkMarkerBlock.NAME, BLOCK_CHUNK_MARKER, ChunkMarkerEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final RegistryObject<BlockEntityType<DebugStorageEntity>> DEBUG_STORAGE_TYPE = registerBlockEntity(DebugStorageBlock.NAME, BLOCK_DEBUG_STORAGE, DebugStorageEntity::new, EnableMap.EnableOrNot.ALWAYS_ON);
+        public static final RegistryObject<BlockEntityType<AdvQuarryEntityForge>> ADV_QUARRY_ENTITY_TYPE = registerBlockEntity(AdvQuarryBlock.NAME, BLOCK_ADV_QUARRY, AdvQuarryEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
 
         public static final RegistryObject<MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = registerMenu("gui_y_setter", YSetterContainer::new);
         public static final RegistryObject<MenuType<? extends MoverContainer>> MOVER_MENU_TYPE = registerMenu("gui_mover", MoverContainer::new);
@@ -141,8 +141,12 @@ public final class PlatformAccessForge implements PlatformAccess {
         }
 
         private static <T extends QpBlock> RegistryObject<T> registerBlock(String name, Supplier<T> supplier) {
+            return registerBlock(name, supplier, b -> b.blockItem);
+        }
+
+        private static <T extends Block & InCreativeTabs> RegistryObject<T> registerBlock(String name, Supplier<T> supplier, Function<T, ? extends BlockItem> itemGetter) {
             var block = BLOCK_REGISTER.register(name, supplier);
-            ITEM_REGISTER.register(name, () -> block.get().blockItem);
+            ITEM_REGISTER.register(name, () -> itemGetter.apply(block.get()));
             TAB_ITEMS.add(block);
             return block;
         }
@@ -207,6 +211,16 @@ public final class PlatformAccessForge implements PlatformAccess {
         @Override
         public Supplier<? extends DebugStorageBlock> debugStorageBlock() {
             return BLOCK_DEBUG_STORAGE;
+        }
+
+        @Override
+        public Supplier<? extends AdvQuarryBlock> advQuarryBlock() {
+            return BLOCK_ADV_QUARRY;
+        }
+
+        @Override
+        public Supplier<? extends SoftBlock> softBlock() {
+            return BLOCK_SOFT;
         }
 
         @Override

@@ -31,7 +31,8 @@ final class QuarryConfigLoader {
         var debug = config.<Boolean>get("debug");
         var noEnergy = config.<Boolean>get("noEnergy");
         var quarry = PowerMap.Quarry.CODEC.codec().parse(JavaOps.INSTANCE, config.<Config>get("powerMap.quarry").valueMap()).getOrThrow();
-        var powerMap = new PowerMap(quarry);
+        var advQuarry = PowerMap.AdvQuarry.CODEC.codec().parse(JavaOps.INSTANCE, config.<Config>get("powerMap.advQuarry").valueMap()).getOrThrow();
+        var powerMap = new PowerMap(quarry, advQuarry);
         var enableMapConfig = config.<Config>get("enableMap");
         EnableMap enableMap;
         if (enableMapConfig != null) {
@@ -68,6 +69,8 @@ final class QuarryConfigLoader {
 
         // powerMap.quarry.*
         defineInCodec(config, specConfig, "powerMap.quarry", PowerMap.Default.QUARRY);
+        // powerMap.advQuarry.*
+        defineInCodec(config, specConfig, "powerMap.advQuarry", PowerMap.Default.ADV_QUARRY);
 
         // enableMap.*
         defineEnableMap(config, specConfig, "enableMap", EnableMap.getDefault(inDevelop));

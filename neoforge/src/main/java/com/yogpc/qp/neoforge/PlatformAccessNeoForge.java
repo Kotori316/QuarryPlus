@@ -9,12 +9,10 @@ import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
 import com.yogpc.qp.machine.marker.*;
-import com.yogpc.qp.machine.misc.FrameBlock;
-import com.yogpc.qp.machine.misc.GeneratorBlock;
-import com.yogpc.qp.machine.misc.GeneratorEntity;
-import com.yogpc.qp.machine.misc.YSetterContainer;
+import com.yogpc.qp.machine.misc.*;
 import com.yogpc.qp.machine.module.BedrockModuleItem;
 import com.yogpc.qp.machine.module.ModuleContainer;
 import com.yogpc.qp.machine.module.PumpModuleItem;
@@ -26,6 +24,7 @@ import com.yogpc.qp.machine.quarry.QuarryBlock;
 import com.yogpc.qp.machine.storage.DebugStorageBlock;
 import com.yogpc.qp.machine.storage.DebugStorageContainer;
 import com.yogpc.qp.machine.storage.DebugStorageEntity;
+import com.yogpc.qp.neoforge.machine.advquarry.AdvQuarryEntityNeoForge;
 import com.yogpc.qp.neoforge.machine.misc.CheckerItemNeoForge;
 import com.yogpc.qp.neoforge.machine.misc.YSetterItemNeoForge;
 import com.yogpc.qp.neoforge.machine.quarry.QuarryBlockNeoForge;
@@ -39,11 +38,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
@@ -59,6 +56,7 @@ import org.apache.logging.log4j.util.Lazy;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -88,6 +86,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
 
         // Machine
         public static final DeferredBlock<QuarryBlockNeoForge> BLOCK_QUARRY = registerBlock(QuarryBlockNeoForge.NAME, QuarryBlockNeoForge::new);
+        public static final DeferredBlock<AdvQuarryBlock> BLOCK_ADV_QUARRY = registerBlock(AdvQuarryBlock.NAME, AdvQuarryBlock::new);
         public static final DeferredBlock<GeneratorBlock> BLOCK_GENERATOR = registerBlock(GeneratorBlock.NAME, GeneratorBlock::new);
         public static final DeferredBlock<MoverBlock> BLOCK_MOVER = registerBlock(MoverBlock.NAME, MoverBlock::new);
         // Marker
@@ -103,6 +102,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredItem<CheckerItemNeoForge> ITEM_CHECKER = registerItem(CheckerItemNeoForge.NAME, CheckerItemNeoForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
         public static final DeferredItem<YSetterItemNeoForge> ITEM_Y_SET = registerItem(YSetterItemNeoForge.NAME, YSetterItemNeoForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
         public static final DeferredBlock<FrameBlock> BLOCK_FRAME = registerBlock(FrameBlock.NAME, FrameBlock::new);
+        public static final DeferredBlock<SoftBlock> BLOCK_SOFT = registerBlock(SoftBlock.NAME, SoftBlock::new, b -> b.blockItem);
         public static final DeferredBlock<DebugStorageBlock> BLOCK_DEBUG_STORAGE = registerBlock(DebugStorageBlock.NAME, DebugStorageBlock::new);
 
         private static final Map<Class<? extends QpBlock>, Supplier<BlockEntityType<?>>> BLOCK_ENTITY_TYPES = new HashMap<>();
@@ -113,6 +113,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FlexibleMarkerEntity>> FLEXIBLE_MARKER_ENTITY_TYPE = registerBlockEntity(FlexibleMarkerBlock.NAME, BLOCK_FLEXIBLE_MARKER, FlexibleMarkerEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ChunkMarkerEntity>> CHUNK_MARKER_ENTITY_TYPE = registerBlockEntity(ChunkMarkerBlock.NAME, BLOCK_CHUNK_MARKER, ChunkMarkerEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DebugStorageEntity>> DEBUG_STORAGE_TYPE = registerBlockEntity(DebugStorageBlock.NAME, BLOCK_DEBUG_STORAGE, DebugStorageEntity::new, EnableMap.EnableOrNot.ALWAYS_ON);
+        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AdvQuarryEntityNeoForge>> ADV_QUARRY_ENTITY_TYPE = registerBlockEntity(AdvQuarryBlock.NAME, BLOCK_ADV_QUARRY, AdvQuarryEntityNeoForge::new, EnableMap.EnableOrNot.CONFIG_ON);
 
         public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_MODE_TAB = CREATIVE_TAB_REGISTER.register(QuarryPlus.modID, () -> QuarryPlus.buildCreativeModeTab(CreativeModeTab.builder()).build());
         public static final DeferredHolder<MenuType<?>, MenuType<? extends YSetterContainer>> Y_SET_MENU_TYPE = registerMenu("gui_y_setter", YSetterContainer::new);
@@ -130,8 +131,12 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         }
 
         private static <T extends QpBlock> DeferredBlock<T> registerBlock(String name, Supplier<T> supplier) {
+            return registerBlock(name, supplier, b -> b.blockItem);
+        }
+
+        private static <T extends Block & InCreativeTabs> DeferredBlock<T> registerBlock(String name, Supplier<T> supplier, Function<T, ? extends BlockItem> itemGetter) {
             var block = BLOCK_REGISTER.register(name, supplier);
-            ITEM_REGISTER.register(name, () -> block.get().blockItem);
+            ITEM_REGISTER.register(name, () -> itemGetter.apply(block.get()));
             TAB_ITEMS.add(block);
             return block;
         }
@@ -196,6 +201,16 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         @Override
         public Supplier<? extends DebugStorageBlock> debugStorageBlock() {
             return BLOCK_DEBUG_STORAGE;
+        }
+
+        @Override
+        public Supplier<? extends AdvQuarryBlock> advQuarryBlock() {
+            return BLOCK_ADV_QUARRY;
+        }
+
+        @Override
+        public Supplier<? extends SoftBlock> softBlock() {
+            return BLOCK_SOFT;
         }
 
         @Override

@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -41,6 +42,18 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, D
             Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()), direction);
     }
 
+    public static Area assumeY(Area area) {
+        int distanceY = area.maxY() - area.minY();
+        if (distanceY >= 4) {
+            return area;
+        }
+        return new Area(
+            area.minX(), area.minY(), area.minZ(),
+            area.maxX(), area.minY() + 4, area.maxZ(),
+            area.direction()
+        );
+    }
+
     public boolean inAreaX(int x) {
         return this.minX < x && x < this.maxX;
     }
@@ -60,6 +73,20 @@ public record Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, D
             return true;
         }
         return xCondition && inAreaZ(pos.getZ()) || zCondition && inAreaX(pos.getX());
+    }
+
+    @VisibleForTesting
+    public Area shrink(int x, int y, int z) {
+        int x1 = minX + x;
+        int x2 = maxX - x;
+        int y1 = minY + y;
+        int y2 = maxY - y;
+        int z1 = minZ + z;
+        int z2 = maxZ - z;
+        return new Area(
+            Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2),
+            Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2),
+            direction);
     }
 
     public Set<BlockPos> getChainBlocks(BlockPos start, Predicate<BlockPos> filter, int maxY) {
