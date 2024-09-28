@@ -6,7 +6,7 @@
       "tag": "quarryplus:markers"
     },
     "o": {
-      "item": "minecraft:obsidian"
+      "tag": "c:obsidians"
     }
   },
   "pattern": [

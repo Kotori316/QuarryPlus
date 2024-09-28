@@ -21,6 +21,16 @@
       },
       "trigger": "minecraft:inventory_changed"
     },
+    "has_obsidians": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:obsidians"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
     "has_the_recipe": {
       "conditions": {
         "recipe": "quarryplus:mover"
@@ -32,7 +42,8 @@
     [
       "has_the_recipe",
       "has_anvil",
-      "has_markers"
+      "has_markers",
+      "has_obsidians"
     ]
   ],
   "rewards": {

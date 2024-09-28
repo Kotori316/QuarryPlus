@@ -1,6 +1,16 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
+    "has_obsidians": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:obsidians"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
     "has_quarry": {
       "conditions": {
         "items": [
@@ -21,7 +31,8 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_quarry"
+      "has_quarry",
+      "has_obsidians"
     ]
   ],
   "rewards": {
