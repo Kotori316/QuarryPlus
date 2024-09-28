@@ -134,7 +134,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerItem(CHECKER_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
             registerItem(Y_SET_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
             registerBlockItem(FRAME_BLOCK);
-            registerBlockItem(SOFT_BLOCK, SoftBlock.NAME, softBlock -> softBlock.blockItem);
+            registerBlockItem(SOFT_BLOCK, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, SoftBlock.NAME), softBlock -> softBlock.blockItem);
             registerEntityBlock(DEBUG_STORAGE_BLOCK, DEBUG_STORAGE_TYPE, EnableMap.EnableOrNot.ALWAYS_ON);
             Registry.register(BuiltInRegistries.MENU, QuarryMenuFabric.GUI_ID, QUARRY_MENU);
             Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, Y_SET_MENU);
@@ -161,14 +161,12 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         }
 
         private static void registerBlockItem(QpBlock block) {
-            Registry.register(BuiltInRegistries.BLOCK, block.name, block);
-            registerItem(block.blockItem, block.name);
-            TAB_ITEMS.add(block);
+            registerBlockItem(block, block.name, b -> b.blockItem);
         }
 
-        private static <T extends Block & InCreativeTabs> void registerBlockItem(T block, String name, Function<T, ? extends BlockItem> itemGetter) {
-            Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name), block);
-            registerItem(itemGetter.apply(block), ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name));
+        private static <T extends Block & InCreativeTabs> void registerBlockItem(T block, ResourceLocation name, Function<T, ? extends BlockItem> itemGetter) {
+            Registry.register(BuiltInRegistries.BLOCK, name, block);
+            registerItem(itemGetter.apply(block), name);
             TAB_ITEMS.add(block);
         }
 
