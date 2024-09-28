@@ -178,6 +178,13 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         }
     }
 
+    public String renderMode() {
+        return switch (this.currentState) {
+            case WAITING, MAKE_FRAME -> "frame";
+            default -> "none";
+        };
+    }
+
     void updateModules() {
         if (level == null) {
             // In test?

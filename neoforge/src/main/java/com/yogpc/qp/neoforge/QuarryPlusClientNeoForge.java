@@ -11,6 +11,7 @@ import com.yogpc.qp.neoforge.render.RenderChunkMarkerNeoForge;
 import com.yogpc.qp.neoforge.render.RenderFlexibleMarkerNeoForge;
 import com.yogpc.qp.neoforge.render.RenderMarkerNeoForge;
 import com.yogpc.qp.neoforge.render.RenderQuarryNeoForge;
+import com.yogpc.qp.render.RenderAdvQuarry;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -19,11 +20,12 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 public final class QuarryPlusClientNeoForge {
     @SubscribeEvent
     public static void clientInit(FMLClientSetupEvent event) {
-        QuarryPlus.LOGGER.info("Initialize Client");
+        QuarryPlus.LOGGER.info("Initialize Client({})", event.description());
         BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.QUARRY_ENTITY_TYPE.get(), RenderQuarryNeoForge::new);
         BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.MARKER_ENTITY_TYPE.get(), RenderMarkerNeoForge::new);
         BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.FLEXIBLE_MARKER_ENTITY_TYPE.get(), RenderFlexibleMarkerNeoForge::new);
         BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.CHUNK_MARKER_ENTITY_TYPE.get(), RenderChunkMarkerNeoForge::new);
+        BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.ADV_QUARRY_ENTITY_TYPE.get(), RenderAdvQuarry::new);
         QuarryPlus.LOGGER.info("Initialize Client finished");
     }
 
