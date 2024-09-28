@@ -17,6 +17,7 @@ import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpItem;
 import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
+import com.yogpc.qp.machine.advquarry.AdvQuarryContainer;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
 import com.yogpc.qp.machine.marker.*;
 import com.yogpc.qp.machine.misc.*;
@@ -77,6 +78,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final MenuType<QuarryMenuFabric> QUARRY_MENU = new ExtendedScreenHandlerType<>(QuarryMenuFabric::new, BlockPos.STREAM_CODEC);
         public static final AdvQuarryBlock ADV_QUARRY_BLOCK = new AdvQuarryBlock();
         public static final BlockEntityType<AdvQuarryEntityFabric> ADV_QUARRY_ENTITY_TYPE = BlockEntityType.Builder.of(AdvQuarryEntityFabric::new, ADV_QUARRY_BLOCK).build(DSL.emptyPartType());
+        public static final MenuType<AdvQuarryContainer> ADV_QUARRY_MENU = new ExtendedScreenHandlerType<>(AdvQuarryContainer::new, BlockPos.STREAM_CODEC);
         public static final FrameBlock FRAME_BLOCK = new FrameBlock();
         public static final SoftBlock SOFT_BLOCK = new SoftBlock();
         public static final GeneratorBlock GENERATOR_BLOCK = new GeneratorBlock();
@@ -143,6 +145,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             Registry.register(BuiltInRegistries.MENU, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MarkerContainer.FLEXIBLE_NAME), FLEXIBLE_MARKER_MENU);
             Registry.register(BuiltInRegistries.MENU, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MarkerContainer.CHUNK_NAME), CHUNK_MARKER_MENU);
             Registry.register(BuiltInRegistries.MENU, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, DebugStorageContainer.NAME), DEBUG_STORAGE_MENU);
+            Registry.register(BuiltInRegistries.MENU, AdvQuarryContainer.GUI_ID, ADV_QUARRY_MENU);
             Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MachineLootFunction.NAME), MACHINE_LOOT_FUNCTION);
             Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
             Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "quarry_remove_bedrock_component"), QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT);
@@ -285,6 +288,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         @Override
         public Supplier<MenuType<? extends DebugStorageContainer>> debugStorageContainer() {
             return Lazy.value(DEBUG_STORAGE_MENU);
+        }
+
+        @Override
+        public Supplier<MenuType<? extends AdvQuarryContainer>> advQuarryContainer() {
+            return Lazy.value(ADV_QUARRY_MENU);
         }
 
         @Override

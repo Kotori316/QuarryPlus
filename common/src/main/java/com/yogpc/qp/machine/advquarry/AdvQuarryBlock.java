@@ -1,11 +1,15 @@
 package com.yogpc.qp.machine.advquarry;
 
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.*;
 import com.yogpc.qp.machine.marker.QuarryMarker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -22,6 +26,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -75,6 +80,22 @@ public class AdvQuarryBlock extends QpEntityBlock {
             (l, p, s, e) -> e.storage.passItems(l, p),
             (l, p, s, e) -> e.storage.passFluids(l, p)
         ));
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        var entity = this.<AdvQuarryEntity>getBlockEntityType().map(t -> t.getBlockEntity(level, pos)).orElse(null);
+        if (entity != null) {
+            if (!level.isClientSide()) {
+                if (entity.enabled) {
+                    PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, AdvQuarryContainer::new));
+                } else {
+                    player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
+                }
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide());
+        }
+        return super.useWithoutItem(state, level, pos, player, hitResult);
     }
 
     @Override

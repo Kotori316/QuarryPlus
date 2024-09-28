@@ -6,6 +6,7 @@ import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
+import com.yogpc.qp.machine.advquarry.AdvQuarryContainer;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
 import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
 import com.yogpc.qp.machine.marker.MarkerContainer;
@@ -104,6 +105,8 @@ public interface PlatformAccess {
         Supplier<MenuType<? extends MarkerContainer>> chunkMarkerContainer();
 
         Supplier<MenuType<? extends DebugStorageContainer>> debugStorageContainer();
+
+        Supplier<MenuType<? extends AdvQuarryContainer>> advQuarryContainer();
 
         Supplier<LootItemFunctionType<? extends MachineLootFunction>> machineLootFunction();
     }
