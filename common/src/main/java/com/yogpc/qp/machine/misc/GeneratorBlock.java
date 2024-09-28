@@ -4,6 +4,7 @@ import com.yogpc.qp.machine.CombinedBlockEntityTicker;
 import com.yogpc.qp.machine.PowerEntity;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpEntityBlock;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -62,6 +63,7 @@ public class GeneratorBlock extends QpEntityBlock {
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
         tooltipComponents.add(Component.literal("Works only for Quarry"));
+        tooltipComponents.add(Component.literal("Only for debug purposes").withStyle(ChatFormatting.RED));
     }
 
     @Nullable
