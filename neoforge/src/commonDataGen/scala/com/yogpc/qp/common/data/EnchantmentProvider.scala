@@ -8,8 +8,6 @@ import net.minecraft.core.registries.Registries
 import net.minecraft.core.{HolderLookup, RegistrySetBuilder}
 import net.minecraft.data.PackOutput
 import net.minecraft.data.worldgen.BootstrapContext
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.entity.EquipmentSlotGroup
 import net.minecraft.world.item.enchantment.Enchantment
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider
 
@@ -28,18 +26,9 @@ object EnchantmentProvider {
     builder
   }
 
-  private class Registerer extends RegistryBootstrap[Enchantment] {
+  private final class Registerer extends RegistryBootstrap[Enchantment] {
     override def run(context: BootstrapContext[Enchantment]): Unit = {
-      val enchantment = Enchantment.enchantment(
-        Enchantment.definition(
-          context.lookup(Registries.ITEM).getOrThrow(quarryPickaxeTag),
-          1,
-          1,
-          Enchantment.constantCost(25), Enchantment.constantCost(50),
-          1,
-          EquipmentSlotGroup.HAND
-        )
-      ).build(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPickaxeEnchantment.NAME))
+      val enchantment = QuarryPickaxeEnchantment.createEnchantment(context, quarryPickaxeTag)
       context.register(QuarryPickaxeEnchantment.KEY, enchantment)
     }
   }
