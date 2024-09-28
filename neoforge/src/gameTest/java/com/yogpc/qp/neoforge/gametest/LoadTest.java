@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 @PrefixGameTestTemplate(value = false)
 public final class LoadTest {
-    private static final String STRUCTURE = "no_place";
-    private static final String STRUCTURE_MOD_ID = QuarryPlus.modID + ":" + STRUCTURE;
+    public static final String STRUCTURE = "no_place";
+    public static final String STRUCTURE_MOD_ID = QuarryPlus.modID + ":" + STRUCTURE;
 
     @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = QuarryPlus.modID)
     public static final class Register {

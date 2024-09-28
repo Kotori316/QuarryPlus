@@ -23,11 +23,11 @@ public record MachineStorageHandler<T>(MachineStorageHolder<T> holder, T object)
     }
 
     static FluidStack toForge(FluidStackLike f) {
-        return new FluidStack(f.fluid(), Math.clamp(f.amount() / MachineStorage.ONE_BUCKET, 0, Integer.MAX_VALUE));
+        return new FluidStack(f.fluid(), Math.clamp(f.amount() * 1000 / MachineStorage.ONE_BUCKET, 0, Integer.MAX_VALUE));
     }
 
     static FluidStackLike toCommon(FluidStack f) {
-        return new FluidStackLike(f.getFluid(), (long) f.getAmount() * MachineStorage.ONE_BUCKET, DataComponentPatch.EMPTY);
+        return new FluidStackLike(f.getFluid(), (long) f.getAmount() * MachineStorage.ONE_BUCKET / 1000, DataComponentPatch.EMPTY);
     }
 
     @Override

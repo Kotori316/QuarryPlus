@@ -19,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 @SuppressWarnings("unused")
 @GameTestHolder(QuarryPlus.modID)
 public final class LoadTest {
-    private static final String STRUCTURE = "no_place";
-    private static final String STRUCTURE_MOD_ID = QuarryPlus.modID + ":" + QuarryPlus.modID + "." + STRUCTURE;
+    public static final String STRUCTURE = "no_place";
+    public static final String STRUCTURE_MOD_ID = QuarryPlus.modID + ":" + QuarryPlus.modID + "." + STRUCTURE;
 
     @GameTest(template = STRUCTURE)
     public void load(GameTestHelper helper) {
