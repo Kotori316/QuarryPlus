@@ -32,20 +32,23 @@ public final class AdvActionSyncMessage implements CustomPacketPayload, OnReceiv
     private final Area area;
     @NotNull
     private final WorkConfig workConfig;
+    private final boolean syncArea;
 
-    AdvActionSyncMessage(BlockPos pos, ResourceKey<Level> dim, @Nullable Area area, @NotNull WorkConfig workConfig) {
+    AdvActionSyncMessage(BlockPos pos, ResourceKey<Level> dim, @Nullable Area area, @NotNull WorkConfig workConfig, boolean syncArea) {
         this.pos = pos;
         this.dim = dim;
         this.area = area;
         this.workConfig = workConfig;
+        this.syncArea = syncArea;
     }
 
-    AdvActionSyncMessage(AdvQuarryEntity entity) {
+    AdvActionSyncMessage(AdvQuarryEntity entity, boolean syncArea) {
         this(
             entity.getBlockPos(),
             Objects.requireNonNull(entity.getLevel()).dimension(),
             entity.getArea(),
-            entity.workConfig
+            entity.workConfig,
+            syncArea
         );
     }
 
@@ -59,6 +62,7 @@ public final class AdvActionSyncMessage implements CustomPacketPayload, OnReceiv
             this.area = null;
         }
         this.workConfig = buffer.readJsonWithCodec(WorkConfig.CODEC.codec());
+        this.syncArea = buffer.readBoolean();
     }
 
     void write(FriendlyByteBuf buffer) {
@@ -70,6 +74,7 @@ public final class AdvActionSyncMessage implements CustomPacketPayload, OnReceiv
             buffer.writeJsonWithCodec(Area.CODEC.codec(), area);
         }
         buffer.writeJsonWithCodec(WorkConfig.CODEC.codec(), workConfig);
+        buffer.writeBoolean(syncArea);
     }
 
     @Override
@@ -79,7 +84,9 @@ public final class AdvActionSyncMessage implements CustomPacketPayload, OnReceiv
         }
         var entity = level.getBlockEntity(pos);
         if (entity instanceof AdvQuarryEntity quarry && quarry.enabled) {
-            quarry.setArea(area);
+            if (syncArea) {
+                quarry.setArea(area);
+            }
             quarry.workConfig = workConfig;
         }
     }

@@ -97,7 +97,7 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryContainer>
             quarry.workConfig = quarry.workConfig.startSoonConfig();
             startCheckBox.setSelected(quarry.workConfig.startImmediately());
             PlatformAccess.getAccess().packetHandler().sendToServer(new AdvActionActionMessage(quarry, AdvActionActionMessage.Action.QUICK_START));
-            PlatformAccess.getAccess().packetHandler().sendToServer(new AdvActionSyncMessage(quarry)); // To sync work config change
+            PlatformAccess.getAccess().packetHandler().sendToServer(new AdvActionSyncMessage(quarry, false)); // To sync work config change
         }
     }
 
@@ -113,7 +113,7 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryContainer>
             boolean chunkByChunk = chunkByChunkCheckBox.isSelected();
             boolean startImmediately = startCheckBox.isSelected();
             quarry.workConfig = new WorkConfig(startImmediately, placeAreaFrame, chunkByChunk);
-            PlatformAccess.getAccess().packetHandler().sendToServer(new AdvActionSyncMessage(quarry));
+            PlatformAccess.getAccess().packetHandler().sendToServer(new AdvActionSyncMessage(quarry, false));
         }
     }
 
@@ -175,7 +175,7 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryContainer>
                 default -> range;
             };
             quarry.setArea(newRange);
-            PlatformAccess.getAccess().packetHandler().sendToServer(new AdvActionSyncMessage(quarry));
+            PlatformAccess.getAccess().packetHandler().sendToServer(new AdvActionSyncMessage(quarry, true));
         };
     }
 

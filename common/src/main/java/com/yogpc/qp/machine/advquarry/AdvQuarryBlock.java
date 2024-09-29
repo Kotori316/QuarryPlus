@@ -101,8 +101,8 @@ public class AdvQuarryBlock extends QpEntityBlock {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-        if (!level.isClientSide) {
-            if (level.getBlockEntity(pos) instanceof AdvQuarryEntity quarry) {
+        if (level.getBlockEntity(pos) instanceof AdvQuarryEntity quarry) {
+            if (!level.isClientSide) {
                 var facing = state.getValue(BlockStateProperties.FACING);
                 {
                     var markerLink = Stream.of(facing.getOpposite(), facing.getCounterClockWise(), facing.getClockWise())
