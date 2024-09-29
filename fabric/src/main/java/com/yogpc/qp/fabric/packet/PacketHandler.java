@@ -4,6 +4,7 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.fabric.machine.quarry.QuarryConfigSyncMessage;
 import com.yogpc.qp.machine.advquarry.AdvActionActionMessage;
 import com.yogpc.qp.machine.advquarry.AdvActionSyncMessage;
+import com.yogpc.qp.machine.advquarry.AdvQuarryInitialAskMessage;
 import com.yogpc.qp.machine.marker.ChunkMarkerMessage;
 import com.yogpc.qp.machine.marker.FlexibleMarkerMessage;
 import com.yogpc.qp.machine.mover.MoverMessage;
@@ -33,6 +34,7 @@ public final class PacketHandler implements PlatformAccess.Packet {
             PayloadTypeRegistry.playC2S().register(ChunkMarkerMessage.TYPE, ChunkMarkerMessage.STREAM_CODEC);
             PayloadTypeRegistry.playC2S().register(AdvActionActionMessage.TYPE, AdvActionActionMessage.STREAM_CODEC);
             PayloadTypeRegistry.playC2S().register(AdvActionSyncMessage.TYPE, AdvActionSyncMessage.STREAM_CODEC);
+            PayloadTypeRegistry.playC2S().register(AdvQuarryInitialAskMessage.TYPE, AdvQuarryInitialAskMessage.STREAM_CODEC);
         }
 
         public static void initServer() {
@@ -55,6 +57,7 @@ public final class PacketHandler implements PlatformAccess.Packet {
     public static class Client {
         public static void initClient() {
             ClientPlayNetworking.registerGlobalReceiver(ClientSyncMessage.TYPE, Client::onReceive);
+            ClientPlayNetworking.registerGlobalReceiver(AdvQuarryInitialAskMessage.TYPE, Client::onReceive);
         }
 
         private static void onReceive(OnReceiveWithLevel message, ClientPlayNetworking.Context context) {
