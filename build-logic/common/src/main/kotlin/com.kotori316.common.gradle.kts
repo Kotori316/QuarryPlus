@@ -52,6 +52,10 @@ sourceSets {
     }
 }
 
+val mockitoAgent = configurations.create("mockitoAgent") {
+    isTransitive = false
+}
+
 repositories {
     maven {
         name = "Minecraft-Manually"
@@ -141,8 +145,10 @@ repositories {
 }
 
 dependencies {
-    // val catalog = project.versionCatalogs.named("libs")
+    val catalog = project.versionCatalogs.named("libs")
     // compileOnly(catalog.findLibrary("scala").get().get())
+    // See instruction of https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3
+    mockitoAgent(catalog.findLibrary("mockito_core").get().get())
 }
 
 val jarAttributeMap = mapOf(
@@ -184,6 +190,7 @@ tasks.processResources {
 
 tasks.test {
     useJUnitPlatform()
+    jvmArgs("-javaagent:${mockitoAgent.asPath}")
 }
 
 signing {
