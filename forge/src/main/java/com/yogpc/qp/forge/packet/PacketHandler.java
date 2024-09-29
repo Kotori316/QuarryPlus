@@ -2,6 +2,8 @@ package com.yogpc.qp.forge.packet;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.advquarry.AdvActionActionMessage;
+import com.yogpc.qp.machine.advquarry.AdvActionSyncMessage;
 import com.yogpc.qp.machine.marker.ChunkMarkerMessage;
 import com.yogpc.qp.machine.marker.FlexibleMarkerMessage;
 import com.yogpc.qp.machine.mover.MoverMessage;
@@ -57,6 +59,16 @@ public final class PacketHandler implements PlatformAccess.Packet {
             // ChunkMarkerMessage
             .messageBuilder(ChunkMarkerMessage.class)
             .codec(ChunkMarkerMessage.STREAM_CODEC)
+            .consumerMainThread(PacketHandler::onReceive)
+            .add()
+            // AdvActionActionMessage
+            .messageBuilder(AdvActionActionMessage.class)
+            .codec(AdvActionActionMessage.STREAM_CODEC)
+            .consumerMainThread(PacketHandler::onReceive)
+            .add()
+            // AdvActionSyncMessage
+            .messageBuilder(AdvActionSyncMessage.class)
+            .codec(AdvActionSyncMessage.STREAM_CODEC)
             .consumerMainThread(PacketHandler::onReceive)
             .add()
         // END

@@ -2,6 +2,8 @@ package com.yogpc.qp.machine.advquarry;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.GeneralScreenHandler;
+import com.yogpc.qp.machine.module.ModuleContainer;
 import com.yogpc.qp.packet.OnReceiveWithLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -10,6 +12,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
@@ -59,8 +62,8 @@ public final class AdvActionActionMessage implements CustomPacketPayload, OnRece
         if (entity instanceof AdvQuarryEntity quarry && quarry.enabled) {
             switch (action) {
                 case MODULE_INV -> {
-                    if (!PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
-
+                    if (player instanceof ServerPlayer serverPlayer && !PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+                        PlatformAccess.getAccess().openGui(serverPlayer, new GeneralScreenHandler<>(quarry, ModuleContainer::new));
                     }
                 }
                 case QUICK_START -> {

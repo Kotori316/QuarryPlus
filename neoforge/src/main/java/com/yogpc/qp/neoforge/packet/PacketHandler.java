@@ -2,6 +2,8 @@ package com.yogpc.qp.neoforge.packet;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.advquarry.AdvActionActionMessage;
+import com.yogpc.qp.machine.advquarry.AdvActionSyncMessage;
 import com.yogpc.qp.machine.marker.ChunkMarkerMessage;
 import com.yogpc.qp.machine.marker.FlexibleMarkerMessage;
 import com.yogpc.qp.machine.mover.MoverMessage;
@@ -55,6 +57,16 @@ public final class PacketHandler implements PlatformAccess.Packet {
         registrar.playToServer(
             ChunkMarkerMessage.TYPE,
             ChunkMarkerMessage.STREAM_CODEC,
+            PacketHandler::onReceive
+        );
+        registrar.playToServer(
+            AdvActionActionMessage.TYPE,
+            AdvActionActionMessage.STREAM_CODEC,
+            PacketHandler::onReceive
+        );
+        registrar.playToServer(
+            AdvActionSyncMessage.TYPE,
+            AdvActionSyncMessage.STREAM_CODEC,
             PacketHandler::onReceive
         );
     }

@@ -44,7 +44,7 @@ public class AdvQuarryContainer extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return quarry.getBlockPos().distToCenterSqr(player.position()) < 64;
+        return quarry.getBlockPos().closerToCenterThan(player.position(), 8);
     }
 
     @Override
