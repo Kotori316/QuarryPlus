@@ -34,7 +34,7 @@ public final class PacketHandler implements PlatformAccess.Packet {
             PayloadTypeRegistry.playC2S().register(ChunkMarkerMessage.TYPE, ChunkMarkerMessage.STREAM_CODEC);
             PayloadTypeRegistry.playC2S().register(AdvActionActionMessage.TYPE, AdvActionActionMessage.STREAM_CODEC);
             PayloadTypeRegistry.playC2S().register(AdvActionSyncMessage.TYPE, AdvActionSyncMessage.STREAM_CODEC);
-            PayloadTypeRegistry.playC2S().register(AdvQuarryInitialAskMessage.TYPE, AdvQuarryInitialAskMessage.STREAM_CODEC);
+            PayloadTypeRegistry.playS2C().register(AdvQuarryInitialAskMessage.TYPE, AdvQuarryInitialAskMessage.STREAM_CODEC);
         }
 
         public static void initServer() {
