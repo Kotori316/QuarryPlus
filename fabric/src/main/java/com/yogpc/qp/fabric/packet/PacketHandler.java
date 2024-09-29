@@ -41,7 +41,7 @@ public final class PacketHandler implements PlatformAccess.Packet {
 
         private static void onReceive(OnReceiveWithLevel message, ServerPlayNetworking.Context context) {
             var level = context.player().level();
-            context.server().execute(() -> message.onReceive(level));
+            context.server().execute(() -> message.onReceive(level, context.player()));
         }
     }
 
@@ -53,7 +53,7 @@ public final class PacketHandler implements PlatformAccess.Packet {
 
         private static void onReceive(OnReceiveWithLevel message, ClientPlayNetworking.Context context) {
             var level = context.client().level;
-            context.client().execute(() -> message.onReceive(level));
+            context.client().execute(() -> message.onReceive(level, context.player()));
         }
     }
 

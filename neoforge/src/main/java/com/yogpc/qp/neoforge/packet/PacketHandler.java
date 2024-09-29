@@ -60,7 +60,7 @@ public final class PacketHandler implements PlatformAccess.Packet {
     }
 
     private static void onReceive(OnReceiveWithLevel message, IPayloadContext context) {
-        context.enqueueWork(() -> PROXY.getPacketWorld(context).ifPresent(message::onReceive));
+        context.enqueueWork(() -> PROXY.getPacketPlayer(context).ifPresent(player -> message.onReceive(player.level(), player)));
     }
 
     @Override
@@ -114,20 +114,12 @@ public final class PacketHandler implements PlatformAccess.Packet {
     }
 
     private static abstract class Proxy {
-        @NotNull
-        abstract Optional<Level> getPacketWorld(@NotNull IPayloadContext context);
 
         @NotNull
         abstract Optional<Player> getPacketPlayer(@NotNull IPayloadContext context);
     }
 
     private static class ProxyServer extends Proxy {
-
-        @Override
-        @NotNull
-        Optional<Level> getPacketWorld(@NotNull IPayloadContext context) {
-            return Optional.of(context.player()).map(Player::level);
-        }
 
         @Override
         @NotNull
@@ -138,12 +130,6 @@ public final class PacketHandler implements PlatformAccess.Packet {
 
     @OnlyIn(Dist.CLIENT)
     private static class ProxyClient extends Proxy {
-
-        @Override
-        @NotNull
-        Optional<Level> getPacketWorld(@NotNull IPayloadContext context) {
-            return Optional.of(context.player()).map(Player::level);
-        }
 
         @Override
         @NotNull

@@ -68,8 +68,8 @@ public final class PacketHandler implements PlatformAccess.Packet {
     }
 
     private static void onReceive(OnReceiveWithLevel message, CustomPayloadEvent.Context context) {
-        PROXY.getPacketWorld(context)
-            .ifPresent(message::onReceive);
+        PROXY.getPacketPlayer(context)
+            .ifPresent(player -> message.onReceive(player.level(), player));
     }
 
     @Override
@@ -121,20 +121,12 @@ public final class PacketHandler implements PlatformAccess.Packet {
     }
 
     private static abstract class Proxy {
-        @NotNull
-        abstract Optional<Level> getPacketWorld(@NotNull CustomPayloadEvent.Context context);
 
         @NotNull
         abstract Optional<Player> getPacketPlayer(@NotNull CustomPayloadEvent.Context context);
     }
 
     private static class ProxyServer extends Proxy {
-
-        @Override
-        @NotNull
-        Optional<Level> getPacketWorld(@NotNull CustomPayloadEvent.Context context) {
-            return Optional.ofNullable(context.getSender()).map(ServerPlayer::serverLevel);
-        }
 
         @Override
         @NotNull
@@ -145,17 +137,6 @@ public final class PacketHandler implements PlatformAccess.Packet {
 
     @OnlyIn(Dist.CLIENT)
     private static class ProxyClient extends Proxy {
-
-        @Override
-        @NotNull
-        Optional<Level> getPacketWorld(@NotNull CustomPayloadEvent.Context context) {
-            var sender = context.getSender();
-            if (sender == null) {
-                return Optional.ofNullable(Minecraft.getInstance().level);
-            } else {
-                return Optional.of(sender).map(ServerPlayer::serverLevel);
-            }
-        }
 
         @Override
         @NotNull
