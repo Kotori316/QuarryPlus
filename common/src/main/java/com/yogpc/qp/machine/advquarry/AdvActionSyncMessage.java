@@ -95,4 +95,17 @@ public final class AdvActionSyncMessage implements CustomPacketPayload, OnReceiv
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AdvActionSyncMessage that = (AdvActionSyncMessage) o;
+        return syncArea == that.syncArea && Objects.equals(pos, that.pos) && Objects.equals(dim, that.dim) && Objects.equals(area, that.area) && Objects.equals(workConfig, that.workConfig);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pos, dim, area, workConfig, syncArea);
+    }
 }
