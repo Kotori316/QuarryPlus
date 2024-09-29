@@ -120,6 +120,10 @@ public class AdvQuarryBlock extends QpEntityBlock {
                     markerLink.drops().forEach(quarry.storage::addItem);
                     markerLink.remove(level);
                 }
+                if (placer instanceof ServerPlayer serverPlayer) {
+                    quarry.workConfig = quarry.workConfig.noAutoStartConfig();
+                    PlatformAccess.getAccess().packetHandler().sendToClientPlayer(new AdvQuarryInitialAskMessage(quarry), serverPlayer);
+                }
                 quarry.setState(AdvQuarryState.WAITING, state);
             }
         }
