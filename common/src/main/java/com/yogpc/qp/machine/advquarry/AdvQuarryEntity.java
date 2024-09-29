@@ -246,9 +246,13 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
             return;
         }
         if (getEnergy() > getMaxEnergy() / 200 && this.area != null) {
-            var next = workConfig.placeAreaFrame() ? AdvQuarryState.MAKE_FRAME : AdvQuarryState.BREAK_BLOCK;
-            setState(next, getBlockState());
+            startQuarryWork();
         }
+    }
+
+    void startQuarryWork() {
+        var next = workConfig.placeAreaFrame() ? AdvQuarryState.MAKE_FRAME : AdvQuarryState.BREAK_BLOCK;
+        setState(next, getBlockState());
     }
 
     void makeFrame() {

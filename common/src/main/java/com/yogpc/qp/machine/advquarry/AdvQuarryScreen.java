@@ -1,5 +1,6 @@
 package com.yogpc.qp.machine.advquarry;
 
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.misc.IndexedButton;
 import com.yogpc.qp.machine.misc.SmallCheckBox;
@@ -69,33 +70,40 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryContainer>
         this.addRenderableWidget(new IndexedButton(7, leftPos + 118, topPos + 39, 12, 8, minus, this));
 
         this.addRenderableWidget(new IndexedButton(8, leftPos + 118, topPos + 58, 50, 12, Component.literal("Start"), this));
-        this.addRenderableWidget(new IndexedButton(9, leftPos + 8, topPos + 58, 50, 12, Component.literal("Modules"), this));
+        if (!PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+            this.addRenderableWidget(new IndexedButton(9, leftPos + 8, topPos + 58, 50, 12, Component.literal("Modules"), this::openModuleOnPress));
+        }
 
-        areaFrameCheckBox = new SmallCheckBox(leftPos + 8, topPos + 72, 60, 10, 10, 10,
+        areaFrameCheckBox = new SmallCheckBox(leftPos + 8, topPos + 72, 100, 10, 10, 10,
             Component.literal("Area Frame"), getMenu().quarry.workConfig.placeAreaFrame(), this);
         this.addRenderableWidget(areaFrameCheckBox);
-        chunkByChunkCheckBox = new SmallCheckBox(leftPos + 8, topPos + 83, 60, 10, 10, 10,
+        chunkByChunkCheckBox = new SmallCheckBox(leftPos + 8, topPos + 83, 100, 10, 10, 10,
             Component.literal("Chunk by Chunk"), getMenu().quarry.workConfig.chunkByChunk(), this);
         this.addRenderableWidget(chunkByChunkCheckBox);
-        startCheckBox = new SmallCheckBox(leftPos + 8, topPos + 94, 60, 10, 10, 10,
-            Component.literal("Ready to Start"), getMenu().quarry.workConfig.startImmediately(), this);
+        startCheckBox = new SmallCheckBox(leftPos + 8, topPos + 94, 100, 10, 10, 10,
+            Component.literal("Ready to Start"), getMenu().quarry.workConfig.startImmediately(), this::startQuarryOnPress);
         this.addRenderableWidget(startCheckBox);
+    }
+
+    private void startQuarryOnPress(Button b) {
+        var quarry = getMenu().quarry;
+        if (quarry.currentState == AdvQuarryState.WAITING) {
+            quarry.workConfig = quarry.workConfig.startSoonConfig();
+            startCheckBox.setSelected(quarry.workConfig.startImmediately());
+            PlatformAccess.getAccess().packetHandler().sendToServer(new AdvActionActionMessage(quarry, AdvActionActionMessage.Action.QUICK_START));
+        }
+    }
+
+    private void openModuleOnPress(Button b) {
+        var quarry = getMenu().quarry;
+        PlatformAccess.getAccess().packetHandler().sendToServer(new AdvActionActionMessage(quarry, AdvActionActionMessage.Action.MODULE_INV));
     }
 
     @Override
     public void onPress(Button b) {
         /*var tile = getMenu().quarry;
         if (b instanceof IndexedButton button) {
-            if (button.id() == 8) {
-                if (tile.getAction() == AdvQuarryAction.Waiting.WAITING) {
-                    tile.workConfig = tile.workConfig.startSoonConfig();
-                    startCheckBox.setSelected(tile.workConfig.startImmediately());
-                    PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.QUICK_START));
-                }
-            } else if (button.id() == 9) {
-                PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.MODULE_INV));
-                //      onClose()
-            } else if (tile.getAction() == AdvQuarryAction.Waiting.WAITING) {
+            if (tile.getAction() == AdvQuarryAction.Waiting.WAITING) {
                 var direction = Direction.from3DDataValue(button.id() / 2 + 2);
                 var increase = button.id() % 2 == 0 ? 1 : -1;
                 var shift = Screen.hasShiftDown();
@@ -149,7 +157,7 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryContainer>
                         }
                         default -> tile.getArea();
                     };
-                    PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.CHANGE_RANGE, newRange));
+                    PacketHandler.sendToServer(new AdvActionSyncMessage(tile, AdvActionSyncMessage.Actions.CHANGE_RANGE, newRange));
                 }
             }
         }
@@ -159,7 +167,7 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryContainer>
             boolean startImmediately = startCheckBox.isSelected();
             WorkConfig workConfig = new WorkConfig(startImmediately, placeAreaFrame, chunkByChunk);
             tile.workConfig = workConfig;
-            PacketHandler.sendToServer(new AdvActionMessage(tile, AdvActionMessage.Actions.SYNC, workConfig));
+            PacketHandler.sendToServer(new AdvActionSyncMessage(tile, AdvActionSyncMessage.Actions.SYNC, workConfig));
         }*/
     }
 
