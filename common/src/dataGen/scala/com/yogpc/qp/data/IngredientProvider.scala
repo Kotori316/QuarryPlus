@@ -27,6 +27,8 @@ trait IngredientProvider {
 
   def prismarineShard: Ingredient
 
+  def netherStar: Ingredient
+
   def obsidian: Ingredient = Ingredient.of(obsidianTag)
 
   def obsidianTag: TagKey[Item]
@@ -38,6 +40,8 @@ trait IngredientProvider {
   def goldBlock: Ingredient
 
   def diamondBlock: Ingredient
+
+  def emeraldBlock: Ingredient
 
   def pickaxeForQuarry: Ingredient = Ingredient.of(Items.GOLDEN_PICKAXE)
 

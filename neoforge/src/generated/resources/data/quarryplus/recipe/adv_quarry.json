@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "d": {
+      "tag": "c:storage_blocks/diamond"
+    },
+    "e": {
+      "tag": "c:storage_blocks/emerald"
+    },
+    "h": {
+      "item": "minecraft:dragon_head"
+    },
+    "i": {
+      "item": "minecraft:ender_eye"
+    },
+    "q": {
+      "item": "quarryplus:quarry"
+    },
+    "s": {
+      "tag": "c:nether_stars"
+    }
+  },
+  "pattern": [
+    "dhd",
+    "qsq",
+    "eie"
+  ],
+  "result": {
+    "count": 1,
+    "id": "quarryplus:adv_quarry"
+  }
+}

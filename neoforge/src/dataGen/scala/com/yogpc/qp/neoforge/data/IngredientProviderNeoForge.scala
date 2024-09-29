@@ -42,4 +42,8 @@ final class IngredientProviderNeoForge extends IngredientProvider {
   override def amethyst: Ingredient = Ingredient.of(Tags.Items.GEMS_AMETHYST)
 
   override def prismarineShard: Ingredient = Ingredient.of(Items.PRISMARINE_SHARD)
+
+  override def netherStar: Ingredient = Ingredient.of(Tags.Items.NETHER_STARS)
+
+  override def emeraldBlock: Ingredient = Ingredient.of(Tags.Items.STORAGE_BLOCKS_EMERALD)
 }

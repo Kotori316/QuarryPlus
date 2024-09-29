@@ -47,4 +47,8 @@ final class IngredientProviderFabric(withCondition: (RecipeOutput, Seq[ResourceC
   override def amethyst: Ingredient = Ingredient.of(ConventionalItemTags.AMETHYST_GEMS)
 
   override def prismarineShard: Ingredient = Ingredient.of(Items.PRISMARINE_SHARD)
+
+  override def netherStar: Ingredient = Ingredient.of(Items.NETHER_STAR)
+
+  override def emeraldBlock: Ingredient = Ingredient.of(ConventionalItemTags.STORAGE_BLOCKS_EMERALD)
 }

@@ -176,6 +176,19 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .pattern("apm")
       .unlockedBy(ip.markerTag)
       .save(ip.repeatTickModuleRecipeOutput(recipeOutput))
+
+    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().advQuarryBlock().get())
+      .define('d', ip.diamondBlock)
+      .define('e', ip.emeraldBlock)
+      .define('q', PlatformAccess.getAccess.registerObjects().quarryBlock().get())
+      .define('i', Items.ENDER_EYE)
+      .define('h', Items.DRAGON_HEAD)
+      .define('s', ip.netherStar)
+      .pattern("dhd")
+      .pattern("qsq")
+      .pattern("eie")
+      .unlockedBy(PlatformAccess.getAccess.registerObjects().quarryBlock().get())
+      .save(recipeOutput)
   }
 
   private def quarryItem(name: String): Item = {
