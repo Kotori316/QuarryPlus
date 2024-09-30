@@ -20,16 +20,19 @@ public final class ModuleInventory extends SimpleContainer {
     );
     private final Predicate<QuarryModule> staticFilter;
     private final Function<ModuleInventory, Set<QuarryModule>> holdings;
+    private final Runnable onChanged;
 
-    public ModuleInventory(int size, Predicate<QuarryModule> staticFilter, Function<ModuleInventory, Set<QuarryModule>> holdings) {
+    public ModuleInventory(int size, Predicate<QuarryModule> staticFilter, Function<ModuleInventory, Set<QuarryModule>> holdings, Runnable onChanged) {
         super(size);
         this.staticFilter = staticFilter;
         this.holdings = holdings;
+        this.onChanged = onChanged;
     }
 
     @VisibleForTesting
     ModuleInventory(int size) {
-        this(size, q -> true, m -> Set.copyOf(m.getModules()));
+        this(size, q -> true, m -> Set.copyOf(m.getModules()), () -> {
+        });
     }
 
     @Override
@@ -49,6 +52,12 @@ public final class ModuleInventory extends SimpleContainer {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public void setChanged() {
+        super.setChanged();
+        onChanged.run();
     }
 
     public Set<QuarryModule> getModules() {

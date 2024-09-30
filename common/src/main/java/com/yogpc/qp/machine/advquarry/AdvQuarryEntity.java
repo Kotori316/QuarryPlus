@@ -20,10 +20,10 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -69,7 +69,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
     @NotNull
     Set<QuarryModule> modules = Collections.emptySet();
     @NotNull
-    final ModuleInventory moduleInventory = new ModuleInventory(5, AdvQuarryEntity::moduleFilter, m -> modules);
+    final ModuleInventory moduleInventory = new ModuleInventory(5, AdvQuarryEntity::moduleFilter, m -> modules, this::setChanged);
     boolean searchEnergyConsumed = false;
 
     protected AdvQuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
@@ -463,6 +463,11 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                 storage.addItem(i.getItem());
                 i.kill();
             });
+        serverLevel.getEntitiesOfClass(FallingBlockEntity.class, aabb)
+            .forEach(i -> {
+                storage.addItem(new ItemStack(i.getBlockState().getBlock()));
+                i.discard();
+            });
         getExpModule().ifPresent(e ->
             serverLevel.getEntitiesOfClass(ExperienceOrb.class, aabb, EntitySelector.ENTITY_STILL_ALIVE)
                 .forEach(orb -> {
@@ -476,6 +481,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         var exp = new AtomicInteger(0);
         List<Pair<BlockPos, BlockState>> toBreak = new ArrayList<>();
         List<Pair<BlockPos, BlockState>> toDrain = new ArrayList<>();
+        Set<BlockPos> handled = new HashSet<>();
         Map<BlockPos, BlockBreakEventResult> resultMap = new HashMap<>();
         for (int y = getBlockPos().getY() - 1; y >= digMinY.getMinY(serverLevel); y--) {
             mutableBlockPos.setY(y);
@@ -497,6 +503,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                 var moduleResult = breakBlockModuleOverride(serverLevel, state, mutableBlockPos, hardness);
                 if (moduleResult != WorkResult.SKIPPED) {
                     // Handled in breakBlockModuleOverride, skip
+                    handled.add(mutableBlockPos); // Just add instance, value won't be used.
                     continue;
                 }
                 if (hardness < 0) {
@@ -520,7 +527,11 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
             }
         }
         if (toBreak.isEmpty() && toDrain.isEmpty()) {
-            return WorkResult.SKIPPED;
+            if (handled.isEmpty()) {
+                return WorkResult.SKIPPED;
+            } else {
+                return WorkResult.SUCCESS;
+            }
         }
         useEnergy(requiredEnergy, false, true, "breakBlock");
         // Drain fluids
@@ -576,7 +587,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
             var blockCondition = state.is(PlatformAccess.getAccess().registerObjects().softBlock().get())
                 || state.is(Blocks.STONE)
                 || state.is(Blocks.COBBLESTONE)
-                || (fluid.is(FluidTags.WATER) && !fluid.isSource());
+                || (!fluid.isEmpty() && !fluid.isSource());
             var blockIsReplaced = stateAfterBreak(serverLevel, mutableBlockPos, state) == state;
             if (blockCondition && !blockIsReplaced) {
                 serverLevel.setBlock(mutableBlockPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);

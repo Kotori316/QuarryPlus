@@ -80,7 +80,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     @NotNull
     Set<QuarryModule> modules = Collections.emptySet();
     @NotNull
-    final ModuleInventory moduleInventory = new ModuleInventory(5, q -> true, m -> modules);
+    final ModuleInventory moduleInventory = new ModuleInventory(5, q -> true, m -> modules, this::setChanged);
 
     protected QuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
