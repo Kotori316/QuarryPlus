@@ -11,6 +11,7 @@ import com.yogpc.qp.machine.module.QuarryModule;
 import com.yogpc.qp.machine.module.QuarryModuleProvider;
 import com.yogpc.qp.machine.module.RepeatTickModuleItem;
 import com.yogpc.qp.packet.ClientSync;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
@@ -18,6 +19,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -47,6 +49,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync {
 
@@ -167,6 +170,23 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         updateModules();
     }
 
+    @Override
+    public Stream<MutableComponent> checkerLogs() {
+        return Stream.concat(
+            super.checkerLogs(),
+            Stream.of(
+                detail(ChatFormatting.GREEN, "State", currentState.name()),
+                detail(ChatFormatting.GREEN, "Area", String.valueOf(area)),
+                detail(ChatFormatting.GREEN, "Target", String.valueOf(targetPos)),
+                detail(ChatFormatting.GREEN, "TargetIterator", targetIterator != null ? targetIterator.getClass().getSimpleName() : "null"),
+                detail(ChatFormatting.GREEN, "Storage", String.valueOf(storage)),
+                detail(ChatFormatting.GREEN, "DigMinY", String.valueOf(digMinY.getMinY(level))),
+                detail(ChatFormatting.GREEN, "Modules", String.valueOf(modules)),
+                detail(ChatFormatting.GREEN, "Enchantment", String.valueOf(enchantmentCache))
+            )
+        );
+    }
+
     public void setArea(@Nullable Area area) {
         this.area = area;
     }
@@ -214,10 +234,6 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
 
     protected boolean shouldRemoveBedrock() {
         return modules.contains(QuarryModule.Constant.BEDROCK);
-    }
-
-    protected boolean shouldCollectExp() {
-        return modules.stream().anyMatch(ExpModule.class::isInstance);
     }
 
     protected @NotNull Optional<ExpModule> getExpModule() {
