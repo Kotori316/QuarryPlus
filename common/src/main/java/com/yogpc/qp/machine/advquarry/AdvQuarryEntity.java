@@ -69,7 +69,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
     @NotNull
     Set<QuarryModule> modules = Collections.emptySet();
     @NotNull
-    final ModuleInventory moduleInventory = new ModuleInventory(5, q -> true, m -> modules);
+    final ModuleInventory moduleInventory = new ModuleInventory(5, AdvQuarryEntity::moduleFilter, m -> modules);
     boolean searchEnergyConsumed = false;
 
     protected AdvQuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
@@ -159,6 +159,12 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
     public void saveToItem(ItemStack stack, HolderLookup.Provider registries) {
         // Not to save NBT, as it causes crash
         stack.applyComponents(this.collectComponents());
+    }
+
+    @Override
+    public void setChanged() {
+        super.setChanged();
+        updateModules();
     }
 
     public void setArea(@Nullable Area area) {
@@ -655,6 +661,33 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
     protected abstract BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe, BlockState newState);
 
     WorkResult breakBlockModuleOverride(ServerLevel level, BlockState state, BlockPos target, float hardness) {
+        if (hardness < 0 && state.is(Blocks.BEDROCK) && shouldRemoveBedrock()) {
+            var worldBottom = level.getMinBuildHeight();
+            var targetY = target.getY();
+            if (level.dimension().equals(Level.NETHER)) {
+                int top = PlatformAccess.config().removeBedrockOnNetherTop() ? level.getMaxBuildHeight() + 1 : 127;
+                if ((worldBottom >= targetY || targetY >= worldBottom + 5) && (122 >= targetY || targetY >= top)) {
+                    return WorkResult.SKIPPED;
+                }
+            } else {
+                if (worldBottom >= targetY || targetY >= worldBottom + 5) {
+                    return WorkResult.SKIPPED;
+                }
+            }
+
+            var lookup = level.registryAccess().asGetterLookup();
+            var requiredEnergy = powerMap().getBreakEnergy(hardness,
+                enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, lookup),
+                0, 0, true
+            );
+            useEnergy(requiredEnergy, false, true, "breakBlock");
+            level.setBlock(target, stateAfterBreak(level, target, state), Block.UPDATE_ALL);
+            return WorkResult.SUCCESS;
+        }
+        if (state.is(Blocks.NETHER_PORTAL)) {
+            level.removeBlock(target, false);
+            return WorkResult.SUCCESS;
+        }
         return WorkResult.SKIPPED;
     }
 
@@ -670,5 +703,9 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                 .set(DataComponents.ENCHANTMENTS, enchantments)
                 .build()
         );
+    }
+
+    static boolean moduleFilter(QuarryModule module) {
+        return module != QuarryModule.Constant.PUMP;
     }
 }
