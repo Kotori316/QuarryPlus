@@ -5,6 +5,7 @@ import com.yogpc.qp.*;
 import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.fabric.machine.advquarry.AdvQuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.advquarry.AdvQuarryEntityFabric;
 import com.yogpc.qp.fabric.machine.misc.CheckerItemFabric;
 import com.yogpc.qp.fabric.machine.misc.YSetterItemFabric;
@@ -76,7 +77,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final QuarryBlockFabric QUARRY_BLOCK = new QuarryBlockFabric();
         public static final BlockEntityType<QuarryEntityFabric> QUARRY_ENTITY_TYPE = BlockEntityType.Builder.of(QuarryEntityFabric::new, QUARRY_BLOCK).build(DSL.emptyPartType());
         public static final MenuType<QuarryMenuFabric> QUARRY_MENU = new ExtendedScreenHandlerType<>(QuarryMenuFabric::new, BlockPos.STREAM_CODEC);
-        public static final AdvQuarryBlock ADV_QUARRY_BLOCK = new AdvQuarryBlock();
+        public static final AdvQuarryBlockFabric ADV_QUARRY_BLOCK = new AdvQuarryBlockFabric();
         public static final BlockEntityType<AdvQuarryEntityFabric> ADV_QUARRY_ENTITY_TYPE = BlockEntityType.Builder.of(AdvQuarryEntityFabric::new, ADV_QUARRY_BLOCK).build(DSL.emptyPartType());
         public static final MenuType<AdvQuarryContainer> ADV_QUARRY_MENU = new ExtendedScreenHandlerType<>(AdvQuarryContainer::new, BlockPos.STREAM_CODEC);
         public static final FrameBlock FRAME_BLOCK = new FrameBlock();

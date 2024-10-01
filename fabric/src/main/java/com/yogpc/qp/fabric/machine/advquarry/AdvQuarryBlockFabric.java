@@ -1,14 +1,10 @@
-package com.yogpc.qp.fabric.machine.quarry;
+package com.yogpc.qp.fabric.machine.advquarry;
 
 import com.yogpc.qp.PlatformAccess;
-import com.yogpc.qp.fabric.ExtendedGeneralScreenHandler;
-import com.yogpc.qp.machine.GeneralScreenHandler;
-import com.yogpc.qp.machine.quarry.QuarryBlock;
-import com.yogpc.qp.machine.quarry.QuarryEntity;
+import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -19,26 +15,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
-public final class QuarryBlockFabric extends QuarryBlock {
-    public QuarryBlockFabric() {
-        super(QuarryItemFabric::new);
-    }
-
-    @Override
-    protected QuarryBlockFabric createBlock(Properties properties) {
-        return new QuarryBlockFabric();
-    }
-
-    @Override
-    protected void openGui(ServerPlayer player, Level level, BlockPos pos, QuarryEntity quarry) {
-        player.openMenu(new ExtendedGeneralScreenHandler<>(new GeneralScreenHandler<>(quarry, QuarryMenuFabric::new)));
-    }
-
+public final class AdvQuarryBlockFabric extends AdvQuarryBlock {
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         var item = PlatformAccess.getAccess().registerObjects().bedrockModuleItem().get();
         if (stack.is(item)) {
-            var entity = this.<QuarryEntityFabric>getBlockEntityType().map(t -> t.getBlockEntity(level, pos)).orElse(null);
+            var entity = this.<AdvQuarryEntityFabric>getBlockEntityType().map(t -> t.getBlockEntity(level, pos)).orElse(null);
             if (entity != null && !level.isClientSide()) {
                 if (!item.isEnabled()) {
                     player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", Component.translatable(stack.getDescriptionId())), true);
@@ -57,7 +39,7 @@ public final class QuarryBlockFabric extends QuarryBlock {
     @Override
     protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack stack, boolean dropExperience) {
         super.spawnAfterBreak(state, level, pos, stack, dropExperience);
-        if (dropExperience && level.getBlockEntity(pos) instanceof QuarryEntityFabric q) {
+        if (dropExperience && level.getBlockEntity(pos) instanceof AdvQuarryEntityFabric q) {
             ExperienceOrb.award(level, Vec3.atCenterOf(pos), q.getExp());
         }
     }
