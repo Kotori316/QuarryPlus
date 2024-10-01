@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -127,6 +128,18 @@ public class AdvQuarryBlock extends QpEntityBlock {
                 quarry.setState(AdvQuarryState.WAITING, state);
             }
         }
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            // Logic from Containers.dropContentsOnDestroy()
+            if (level.getBlockEntity(pos) instanceof AdvQuarryEntity entity) {
+                Containers.dropContents(level, pos, entity.moduleInventory);
+                level.updateNeighbourForOutputSignal(pos, state.getBlock());
+            }
+        }
+        super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Override
