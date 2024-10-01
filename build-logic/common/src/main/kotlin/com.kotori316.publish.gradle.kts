@@ -25,15 +25,23 @@ val curseProjectId = "282837"
 val modrinthProjectId = "jhxX1zVW"
 val releaseDebug: Boolean = (System.getenv("RELEASE_DEBUG") ?: "true").toBoolean()
 
-val modChangelog: Provider<String> = provider {
-    val fromFile = rootProject.file(project.property("changelog_file")!!).readText()
-    val shortFormat = fromFile.split(Regex("^# ", RegexOption.MULTILINE), limit = 3)[1]
+val commonChangelog =
     """
         QuarryPlus(v${project.version}) for Minecraft $minecraft
         ---
         
         The fabric version includes the binaries of `com.electronwill.night-config:core` and `com.electronwill.night-config:toml`, licensed under [the LGPLv3](https://github.com/TheElectronWill/night-config/blob/v3.7.3/LICENSE).
-    """.trimIndent() + System.lineSeparator().repeat(2) + shortFormat
+    """.trimIndent() + System.lineSeparator().repeat(2)
+
+val modChangelog: Provider<String> = provider {
+    val fromFile = rootProject.file(project.property("changelog_file")!!).readText()
+    val shortFormat = fromFile.split(Regex("^# ", RegexOption.MULTILINE), limit = 3)[1]
+    commonChangelog + shortFormat
+}
+
+val curseChangelog: Provider<String> = provider {
+    val fromFile = rootProject.file(project.property("changelog_file")!!).readText()
+    commonChangelog + fromFile
 }
 
 publishMods {
@@ -67,6 +75,9 @@ publishMods {
             requires {
                 slug = "automatic-potato"
             }
+        }
+        afterEvaluate {
+            changelog = curseChangelog
         }
     }
     modrinth {
