@@ -1,6 +1,7 @@
 package com.yogpc.qp.forge;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.advquarry.AdvQuarryScreen;
 import com.yogpc.qp.machine.marker.ChunkMarkerScreen;
 import com.yogpc.qp.machine.marker.FlexibleMarkerScreen;
 import com.yogpc.qp.machine.misc.YSetterScreen;
@@ -33,6 +34,7 @@ public final class QuarryPlusClientForge {
         MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.FLEXIBLE_MARKER_MENU_TYPE.get(), FlexibleMarkerScreen::new);
         MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.CHUNK_MARKER_MENU_TYPE.get(), ChunkMarkerScreen::new);
         MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.DEBUG_STORAGE_MENU_TYPE.get(), DebugStorageScreen::new);
+        MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.ADV_QUARRY_MENU_TYPE.get(), AdvQuarryScreen::new);
         QuarryPlus.LOGGER.info("Initialize Client finished");
     }
 }

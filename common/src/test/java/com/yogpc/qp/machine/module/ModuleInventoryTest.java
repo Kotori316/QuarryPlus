@@ -11,10 +11,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ModuleInventoryTest extends BeforeMC {
+    private final Runnable empty = () -> {
+    };
     @Test
     void instance() {
         var inv = assertDoesNotThrow(() -> new ModuleInventory(5));
@@ -52,14 +55,14 @@ class ModuleInventoryTest extends BeforeMC {
     @ParameterizedTest
     @EnumSource(QuarryModule.Constant.class)
     void notAcceptDuplicatedModule(QuarryModule.Constant module) {
-        var inv = new ModuleInventory(5, q -> true, m -> Set.of(module));
+        var inv = new ModuleInventory(5, q -> true, m -> Set.of(module), empty);
         var item = new Module1(module);
         assertFalse(inv.canPlaceItem(0, new ItemStack(item)));
     }
 
     @Test
     void acceptNotDuplicatedModule() {
-        var inv = new ModuleInventory(5, q -> true, m -> Set.of(QuarryModule.Constant.PUMP));
+        var inv = new ModuleInventory(5, q -> true, m -> Set.of(QuarryModule.Constant.PUMP), empty);
         var item = new Module1(QuarryModule.Constant.DUMMY);
         assertTrue(inv.canPlaceItem(0, new ItemStack(item)));
     }
@@ -67,7 +70,7 @@ class ModuleInventoryTest extends BeforeMC {
     @ParameterizedTest
     @EnumSource(QuarryModule.Constant.class)
     void staticFilter(QuarryModule.Constant module) {
-        var inv = new ModuleInventory(5, q -> false, m -> Set.of());
+        var inv = new ModuleInventory(5, q -> false, m -> Set.of(), empty);
         var item = new Module1(module);
         assertFalse(inv.canPlaceItem(0, new ItemStack(item)));
     }
@@ -120,5 +123,16 @@ class ModuleInventoryTest extends BeforeMC {
         inv.setItem(0, new ItemStack(item));
 
         assertTrue(inv.getModules().isEmpty());
+    }
+
+    @Test
+    void onUpdate() {
+        var item = new Module1(QuarryModule.Constant.DUMMY);
+        AtomicInteger integer = new AtomicInteger(0);
+        var inv = new ModuleInventory(5, q -> true, m -> Set.of(), integer::getAndIncrement);
+        inv.setItem(0, new ItemStack(item));
+        assertEquals(1, integer.get());
+        inv.setItem(1, new ItemStack(item));
+        assertEquals(2, integer.get());
     }
 }

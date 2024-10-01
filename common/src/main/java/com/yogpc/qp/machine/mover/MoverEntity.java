@@ -95,7 +95,8 @@ public final class MoverEntity extends QpEntity implements ClientSync {
                         default -> false;
                     };
                 }
-                case 1 -> stack.is(PlatformAccess.getAccess().registerObjects().quarryBlock().get().blockItem);
+                case 1 -> stack.is(PlatformAccess.getAccess().registerObjects().quarryBlock().get().blockItem)
+                    || stack.is(PlatformAccess.getAccess().registerObjects().advQuarryBlock().get().blockItem);
                 default -> false;
             };
         }

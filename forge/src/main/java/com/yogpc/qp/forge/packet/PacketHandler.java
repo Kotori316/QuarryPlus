@@ -2,6 +2,9 @@ package com.yogpc.qp.forge.packet;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.advquarry.AdvActionActionMessage;
+import com.yogpc.qp.machine.advquarry.AdvActionSyncMessage;
+import com.yogpc.qp.machine.advquarry.AdvQuarryInitialAskMessage;
 import com.yogpc.qp.machine.marker.ChunkMarkerMessage;
 import com.yogpc.qp.machine.marker.FlexibleMarkerMessage;
 import com.yogpc.qp.machine.mover.MoverMessage;
@@ -59,6 +62,21 @@ public final class PacketHandler implements PlatformAccess.Packet {
             .codec(ChunkMarkerMessage.STREAM_CODEC)
             .consumerMainThread(PacketHandler::onReceive)
             .add()
+            // AdvActionActionMessage
+            .messageBuilder(AdvActionActionMessage.class)
+            .codec(AdvActionActionMessage.STREAM_CODEC)
+            .consumerMainThread(PacketHandler::onReceive)
+            .add()
+            // AdvActionSyncMessage
+            .messageBuilder(AdvActionSyncMessage.class)
+            .codec(AdvActionSyncMessage.STREAM_CODEC)
+            .consumerMainThread(PacketHandler::onReceive)
+            .add()
+            // AdvQuarryInitialAskMessage
+            .messageBuilder(AdvQuarryInitialAskMessage.class)
+            .codec(AdvQuarryInitialAskMessage.STREAM_CODEC)
+            .consumerMainThread(PacketHandler::onReceive)
+            .add()
         // END
         ;
 
@@ -68,8 +86,8 @@ public final class PacketHandler implements PlatformAccess.Packet {
     }
 
     private static void onReceive(OnReceiveWithLevel message, CustomPayloadEvent.Context context) {
-        PROXY.getPacketWorld(context)
-            .ifPresent(message::onReceive);
+        PROXY.getPacketPlayer(context)
+            .ifPresent(player -> message.onReceive(player.level(), player));
     }
 
     @Override
@@ -121,20 +139,12 @@ public final class PacketHandler implements PlatformAccess.Packet {
     }
 
     private static abstract class Proxy {
-        @NotNull
-        abstract Optional<Level> getPacketWorld(@NotNull CustomPayloadEvent.Context context);
 
         @NotNull
         abstract Optional<Player> getPacketPlayer(@NotNull CustomPayloadEvent.Context context);
     }
 
     private static class ProxyServer extends Proxy {
-
-        @Override
-        @NotNull
-        Optional<Level> getPacketWorld(@NotNull CustomPayloadEvent.Context context) {
-            return Optional.ofNullable(context.getSender()).map(ServerPlayer::serverLevel);
-        }
 
         @Override
         @NotNull
@@ -145,17 +155,6 @@ public final class PacketHandler implements PlatformAccess.Packet {
 
     @OnlyIn(Dist.CLIENT)
     private static class ProxyClient extends Proxy {
-
-        @Override
-        @NotNull
-        Optional<Level> getPacketWorld(@NotNull CustomPayloadEvent.Context context) {
-            var sender = context.getSender();
-            if (sender == null) {
-                return Optional.ofNullable(Minecraft.getInstance().level);
-            } else {
-                return Optional.of(sender).map(ServerPlayer::serverLevel);
-            }
-        }
 
         @Override
         @NotNull

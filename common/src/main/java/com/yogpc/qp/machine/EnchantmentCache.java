@@ -48,4 +48,11 @@ public final class EnchantmentCache {
         }
         return enchantmentsForPickaxe;
     }
+
+    @Override
+    public String toString() {
+        return "EnchantmentCache{" +
+            "enchantment=" + target +
+            '}';
+    }
 }

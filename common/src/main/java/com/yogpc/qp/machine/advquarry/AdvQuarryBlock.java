@@ -1,11 +1,16 @@
 package com.yogpc.qp.machine.advquarry;
 
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.*;
 import com.yogpc.qp.machine.marker.QuarryMarker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -22,6 +27,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -78,10 +84,26 @@ public class AdvQuarryBlock extends QpEntityBlock {
     }
 
     @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        var entity = this.<AdvQuarryEntity>getBlockEntityType().map(t -> t.getBlockEntity(level, pos)).orElse(null);
+        if (entity != null) {
+            if (!level.isClientSide()) {
+                if (entity.enabled) {
+                    PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, AdvQuarryContainer::new));
+                } else {
+                    player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
+                }
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide());
+        }
+        return super.useWithoutItem(state, level, pos, player, hitResult);
+    }
+
+    @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-        if (!level.isClientSide) {
-            if (level.getBlockEntity(pos) instanceof AdvQuarryEntity quarry) {
+        if (level.getBlockEntity(pos) instanceof AdvQuarryEntity quarry) {
+            if (!level.isClientSide) {
                 var facing = state.getValue(BlockStateProperties.FACING);
                 {
                     var markerLink = Stream.of(facing.getOpposite(), facing.getCounterClockWise(), facing.getClockWise())
@@ -99,9 +121,25 @@ public class AdvQuarryBlock extends QpEntityBlock {
                     markerLink.drops().forEach(quarry.storage::addItem);
                     markerLink.remove(level);
                 }
+                if (placer instanceof ServerPlayer serverPlayer) {
+                    quarry.workConfig = quarry.workConfig.noAutoStartConfig();
+                    PlatformAccess.getAccess().packetHandler().sendToClientPlayer(new AdvQuarryInitialAskMessage(quarry), serverPlayer);
+                }
                 quarry.setState(AdvQuarryState.WAITING, state);
             }
         }
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            // Logic from Containers.dropContentsOnDestroy()
+            if (level.getBlockEntity(pos) instanceof AdvQuarryEntity entity) {
+                Containers.dropContents(level, pos, entity.moduleInventory);
+                level.updateNeighbourForOutputSignal(pos, state.getBlock());
+            }
+        }
+        super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Override
