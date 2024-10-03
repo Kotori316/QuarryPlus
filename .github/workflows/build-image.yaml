@@ -1,0 +1,28 @@
+name: Build Image for cache
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '13 5 * * 1'
+  push:
+    branches:
+      - 1.21-cache-image
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          tags: ghcr.io/kotori316/quarry-cache:latest
+          platforms: linux/amd64
+          context: '.github/docker'
+          file: '.github/docker/Dockerfile'
