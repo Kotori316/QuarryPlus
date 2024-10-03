@@ -21,6 +21,11 @@ FROM base AS builder
 RUN git clone https://github.com/Kotori316/QuarryPlus.git -b 1.21
 WORKDIR /root/QuarryPlus
 RUN ./gradlew testClasses
+RUN <<EOF
+(./gradlew downloadAssets) || \
+    (sleep 5 && ./gradlew downloadAssets) || \
+    (sleep 5 && ./gradlew downloadAssets) || true
+EOF
 RUN ./gradlew runData
 RUN ./gradlew runCommonData
 RUN ./gradlew runGameTestServer
