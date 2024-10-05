@@ -14,6 +14,11 @@ on:
 jobs:
   assemble:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/kotori316/quarry-cache:1.21
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
       - uses: actions/checkout@v4
       - uses: gradle/actions/wrapper-validation@v4
@@ -31,6 +36,11 @@ jobs:
 
   platforms:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/kotori316/quarry-cache:1.21
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     strategy:
       fail-fast: false
       matrix:

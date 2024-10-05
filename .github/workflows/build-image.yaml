@@ -3,9 +3,6 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '13 5 * * 1'
-  push:
-    branches:
-      - 1.21-cache-image
 
 permissions:
   contents: read
