@@ -22,6 +22,15 @@
         "^com.electronwill.night-config:*"
       ],
       "enabled": false
+    },
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/kotori316/quarry-cache"
+      ],
+      "enabled": false
     }
   ]
 }
