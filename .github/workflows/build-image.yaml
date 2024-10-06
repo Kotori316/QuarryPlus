@@ -3,6 +3,10 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '13 5 * * 1'
+  push:
+    paths:
+      - ".github/workflows/build-image.yaml"
+      - ".github/docker"
 
 permissions:
   contents: read
@@ -28,3 +32,20 @@ jobs:
           platforms: linux/amd64
           context: '.github/docker'
           file: '.github/docker/Dockerfile'
+
+  delete_old:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs:
+      - build
+    steps:
+      - name: Get script
+        run: curl -LO https://raw.githubusercontent.com/Kotori316/fictional-meme/master/clean_container.py
+      - name: Install Python dependencies
+        run: python3 -m pip install requests
+      - name: Clean containers
+        run: python3 ./clean_container.py
+        env:
+          USER_NAME: Kotori316
+          PACKAGE_NAME: quarry-cache
+          TOKEN_GITHUB: ${{ secrets.GITHUB_TOKEN }}
