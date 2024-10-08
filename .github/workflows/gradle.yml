@@ -11,6 +11,10 @@ on:
     branches:
       - "1.21"
 
+permissions:
+  contents: read
+  packages: read
+
 jobs:
   assemble:
     runs-on: ubuntu-latest
