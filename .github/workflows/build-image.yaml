@@ -32,6 +32,7 @@ jobs:
           platforms: linux/amd64
           context: '.github/docker'
           file: '.github/docker/Dockerfile'
+          provenance: false
 
   delete_old:
     runs-on: ubuntu-latest
