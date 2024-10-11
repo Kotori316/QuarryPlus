@@ -22,6 +22,8 @@ public interface QuarryConfig {
 
     boolean removeBedrockOnNetherTop();
 
+    boolean enableChunkLoader();
+
     static QuarryConfig load(Path path, BooleanSupplier inDevelop) {
         try (var config = CommentedFileConfig.builder(path)
             .preserveInsertionOrder()

@@ -42,8 +42,9 @@ final class QuarryConfigLoader {
         }
         var rebornEnergyConversionCoefficient = config.<Double>get("rebornEnergyConversionCoefficient");
         var removeBedrockOnNetherTop = config.<Boolean>get("removeBedrockOnNetherTop");
+        var enableChunkLoader = config.<Boolean>get("enableChunkLoader");
 
-        return new QuarryConfigImpl(debug, noEnergy, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop);
+        return new QuarryConfigImpl(debug, noEnergy, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop, enableChunkLoader);
     }
 
     record QuarryConfigImpl(
@@ -52,7 +53,8 @@ final class QuarryConfigLoader {
         PowerMap powerMap,
         EnableMap enableMap,
         double rebornEnergyConversionCoefficient,
-        boolean removeBedrockOnNetherTop
+        boolean removeBedrockOnNetherTop,
+        boolean enableChunkLoader
     ) implements QuarryConfig {
     }
 
@@ -66,6 +68,7 @@ final class QuarryConfigLoader {
 
         defineDouble(config, specConfig, "rebornEnergyConversionCoefficient", 1d / 16d, 0d, 1e10, "[Fabric ONLY] 1E = ?FE");
         defineBoolean(config, specConfig, "removeBedrockOnNetherTop", inDevelop.getAsBoolean(), "Remove bedrock at y=127 in Nether");
+        defineBoolean(config, specConfig, "enableChunkLoader", true, "Enable Chunk Loader in machines");
 
         // powerMap.quarry.*
         defineInCodec(config, specConfig, "powerMap.quarry", PowerMap.Default.QUARRY);

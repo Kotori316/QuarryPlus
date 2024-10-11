@@ -3,6 +3,7 @@ package com.yogpc.qp.machine.misc;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -22,6 +23,9 @@ public sealed interface QuarryChunkLoader {
     }
 
     static QuarryChunkLoader of(ServerLevel level, BlockPos pos) {
+        if (!PlatformAccess.config().enableChunkLoader()) {
+            return QuarryChunkLoader.None.INSTANCE;
+        }
         if (isChunkLoaded(level, pos)) {
             return QuarryChunkLoader.None.INSTANCE;
         }
