@@ -84,6 +84,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     final ModuleInventory moduleInventory = new ModuleInventory(5, q -> true, m -> modules, this::setChanged);
     @NotNull
     QuarryChunkLoader chunkLoader = QuarryChunkLoader.None.INSTANCE;
+    @NotNull
+    ItemConverter itemConverter = defaultItemConverter();
 
     protected QuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -532,7 +534,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         if (target.getX() % 3 == 0 && target.getZ() % 3 == 0) {
             serverLevel.getEntitiesOfClass(ItemEntity.class, new AABB(target).inflate(5), Predicate.not(i -> i.getItem().isEmpty()))
                 .forEach(i -> {
-                    storage.addItem(i.getItem());
+                    itemConverter.convert(i.getItem()).forEach(storage::addItem);
                     i.kill();
                 });
             if (shouldCollectExp()) {
@@ -584,7 +586,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe);
             var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, drops, pickaxe, stateAfterBreak(serverLevel, target, state));
             if (!afterBreakEventResult.canceled()) {
-                drops.forEach(storage::addItem);
+                drops.stream().flatMap(itemConverter::convert).forEach(storage::addItem);
                 var amount = eventResult.exp().orElse(afterBreakEventResult.exp().orElse(0));
                 if (amount != 0) {
                     getExpModule().ifPresent(e -> e.addExp(amount));
@@ -760,5 +762,9 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 .set(DataComponents.ENCHANTMENTS, enchantments)
                 .build()
         );
+    }
+
+    static ItemConverter defaultItemConverter() {
+        return new ItemConverter(List.of());
     }
 }
