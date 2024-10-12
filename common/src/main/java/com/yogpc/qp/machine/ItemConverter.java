@@ -9,6 +9,7 @@ import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public record ItemConverter(List<Conversion> conversions) {
@@ -76,6 +77,20 @@ public record ItemConverter(List<Conversion> conversions) {
                 return state.is(BlockTags.BASE_STONE_OVERWORLD) || state.is(BlockTags.BASE_STONE_NETHER);
             }
             return false;
+        }
+    }
+
+    public record ToEmptyConverter(Set<MachineStorage.ItemKey> itemKeys) implements Conversion {
+
+        @Override
+        public Stream<ItemStack> convert(ItemStack stack) {
+            return Stream.empty();
+        }
+
+        @Override
+        public boolean shouldApply(ItemStack stack) {
+            var key = MachineStorage.ItemKey.of(stack);
+            return itemKeys.contains(key);
         }
     }
 }

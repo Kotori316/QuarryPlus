@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,6 +77,39 @@ class ItemConverterTest extends BeforeMC {
             Arguments.of(Items.DEEPSLATE_EMERALD_ORE.getDefaultInstance(), Items.EMERALD_ORE.getDefaultInstance()),
             Arguments.of(Items.DEEPSLATE_DIAMOND_ORE.getDefaultInstance(), Items.DIAMOND_ORE.getDefaultInstance()),
             Arguments.of(Items.DEEPSLATE_COPPER_ORE.getDefaultInstance(), Items.COPPER_ORE.getDefaultInstance())
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("stacks")
+    void noConvertToEmptyConverter(ItemStack stack) {
+        var conversion = new ItemConverter.ToEmptyConverter(Set.of(
+            MachineStorage.ItemKey.of(Items.BREAD.getDefaultInstance()),
+            MachineStorage.ItemKey.of(Items.WHEAT.getDefaultInstance())
+        ));
+        var converter = new ItemConverter(List.of(conversion));
+        assertFalse(conversion.shouldApply(stack));
+        var converted = converter.convert(stack).toList();
+        assertEquals(1, converted.size());
+        assertSame(stack, converted.getFirst());
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void convertToEmptyConverter(ItemStack stack) {
+        var conversion = new ItemConverter.ToEmptyConverter(Set.of(
+            MachineStorage.ItemKey.of(Items.BREAD.getDefaultInstance()),
+            MachineStorage.ItemKey.of(Items.WHEAT.getDefaultInstance())
+        ));
+        assertTrue(conversion.shouldApply(stack));
+        var converter = new ItemConverter(List.of(conversion));
+        assertEquals(0, converter.convert(stack).count());
+    }
+
+    static Stream<ItemStack> convertToEmptyConverter() {
+        return Stream.of(
+            Items.BREAD.getDefaultInstance(),
+            Items.WHEAT.getDefaultInstance()
         );
     }
 }
