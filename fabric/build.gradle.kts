@@ -97,3 +97,8 @@ tasks.processResources {
 ext {
     set("publishJarTaskName", "remapJar")
 }
+
+// Workaround?
+tasks.remapJar {
+    mustRunAfter("compileTestScala")
+}

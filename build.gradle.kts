@@ -7,6 +7,15 @@ plugins {
     alias(libs.plugins.github.release)
 }
 
+allprojects {
+    // Required here, as setting buildscript from plugin doesn't work
+    buildscript {
+        configurations.all {
+            resolutionStrategy.force("commons-io:commons-io:2.17.0")
+        }
+    }
+}
+
 val changelog: Provider<String> = provider {
     val time = ZonedDateTime.now(ZoneId.of("Asia/Tokyo")).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
     val fromFile = project.file(project.property("changelog_file")!!).readText()
