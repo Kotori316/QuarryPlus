@@ -7,6 +7,7 @@ import com.yogpc.qp.machine.*;
 import com.yogpc.qp.machine.exp.ExpModule;
 import com.yogpc.qp.machine.misc.BlockBreakEventResult;
 import com.yogpc.qp.machine.misc.DigMinY;
+import com.yogpc.qp.machine.misc.QuarryChunkLoader;
 import com.yogpc.qp.machine.module.ModuleInventory;
 import com.yogpc.qp.machine.module.QuarryModule;
 import com.yogpc.qp.machine.module.QuarryModuleProvider;
@@ -81,6 +82,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     Set<QuarryModule> modules = Collections.emptySet();
     @NotNull
     final ModuleInventory moduleInventory = new ModuleInventory(5, q -> true, m -> modules, this::setChanged);
+    @NotNull
+    QuarryChunkLoader chunkLoader = QuarryChunkLoader.None.INSTANCE;
 
     protected QuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -150,6 +153,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         tag.put("storage", MachineStorage.CODEC.codec().encodeStart(NbtOps.INSTANCE, storage).getOrThrow());
         tag.putLongArray("skipped", skipped.stream().mapToLong(BlockPos::asLong).toArray());
         tag.put("moduleInventory", moduleInventory.createTag(registries));
+        tag.put("chunkLoader", QuarryChunkLoader.CODEC.encodeStart(NbtOps.INSTANCE, chunkLoader).getOrThrow());
     }
 
     @Override
@@ -164,6 +168,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         storage = MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElseGet(MachineStorage::of);
         skipped = LongStream.of(tag.getLongArray("skipped")).mapToObj(BlockPos::of).collect(Collectors.toCollection(HashSet::new));
         moduleInventory.fromTag(tag.getList("moduleInventory", Tag.TAG_COMPOUND), registries);
+        chunkLoader = QuarryChunkLoader.CODEC.parse(NbtOps.INSTANCE, tag.get("chunkLoader")).result().orElse(QuarryChunkLoader.None.INSTANCE);
     }
 
     @Override
@@ -208,6 +213,14 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         updateModules();
     }
 
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        if (level instanceof ServerLevel s) {
+            this.chunkLoader.makeChunkUnLoaded(s);
+        }
+    }
+
     public void setArea(@Nullable Area area) {
         this.area = area;
         if (area != null) {
@@ -220,12 +233,21 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     void setState(QuarryState state, BlockState blockState) {
-        if (this.currentState != state) {
+        if (level != null && this.currentState != state) {
+            if (!level.isClientSide) {
+                if (!QuarryState.isWorking(currentState) && QuarryState.isWorking(state)) {
+                    // Start working
+                    this.chunkLoader = QuarryChunkLoader.of((ServerLevel) level, getBlockPos());
+                    this.chunkLoader.makeChunkLoaded((ServerLevel) level);
+                } else if (QuarryState.isWorking(currentState) && !QuarryState.isWorking(state)) {
+                    // Finish working
+                    this.chunkLoader.makeChunkUnLoaded((ServerLevel) level);
+                    this.chunkLoader = QuarryChunkLoader.None.INSTANCE;
+                }
+            }
             this.currentState = state;
             syncToClient();
-            if (level != null) {
-                level.setBlock(getBlockPos(), blockState.setValue(QpBlockProperty.WORKING, QuarryState.isWorking(state)), Block.UPDATE_ALL);
-            }
+            level.setBlock(getBlockPos(), blockState.setValue(QpBlockProperty.WORKING, QuarryState.isWorking(state)), Block.UPDATE_ALL);
             if (state == QuarryState.FINISHED) {
                 energyCounter.logUsageMap();
             }

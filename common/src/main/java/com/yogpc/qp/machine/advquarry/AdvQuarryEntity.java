@@ -6,6 +6,7 @@ import com.yogpc.qp.machine.*;
 import com.yogpc.qp.machine.exp.ExpModule;
 import com.yogpc.qp.machine.misc.BlockBreakEventResult;
 import com.yogpc.qp.machine.misc.DigMinY;
+import com.yogpc.qp.machine.misc.QuarryChunkLoader;
 import com.yogpc.qp.machine.module.ModuleInventory;
 import com.yogpc.qp.machine.module.QuarryModule;
 import com.yogpc.qp.machine.module.QuarryModuleProvider;
@@ -74,6 +75,8 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
     @NotNull
     final ModuleInventory moduleInventory = new ModuleInventory(5, AdvQuarryEntity::moduleFilter, m -> modules, this::setChanged);
     boolean searchEnergyConsumed = false;
+    @NotNull
+    QuarryChunkLoader chunkLoader = QuarryChunkLoader.None.INSTANCE;
 
     protected AdvQuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -117,6 +120,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         targetPos = current;
         storage = MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElseGet(MachineStorage::of);
         moduleInventory.fromTag(tag.getList("moduleInventory", Tag.TAG_COMPOUND), registries);
+        chunkLoader = QuarryChunkLoader.CODEC.parse(NbtOps.INSTANCE, tag.get("chunkLoader")).result().orElse(QuarryChunkLoader.None.INSTANCE);
     }
 
     @Override
@@ -129,6 +133,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         }
         tag.put("storage", MachineStorage.CODEC.codec().encodeStart(NbtOps.INSTANCE, storage).getOrThrow());
         tag.put("moduleInventory", moduleInventory.createTag(registries));
+        tag.put("chunkLoader", QuarryChunkLoader.CODEC.encodeStart(NbtOps.INSTANCE, chunkLoader).getOrThrow());
     }
 
     @Override
@@ -171,6 +176,14 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
     }
 
     @Override
+    public void setRemoved() {
+        super.setRemoved();
+        if (level instanceof ServerLevel s) {
+            this.chunkLoader.makeChunkUnLoaded(s);
+        }
+    }
+
+    @Override
     public Stream<MutableComponent> checkerLogs() {
         return Stream.concat(
             super.checkerLogs(),
@@ -196,12 +209,21 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
     }
 
     void setState(AdvQuarryState state, BlockState blockState) {
-        if (this.currentState != state) {
+        if (level != null && this.currentState != state) {
+            if (!level.isClientSide) {
+                if (!AdvQuarryState.isWorking(currentState) && AdvQuarryState.isWorking(state)) {
+                    // Start working
+                    this.chunkLoader = QuarryChunkLoader.of((ServerLevel) level, getBlockPos());
+                    this.chunkLoader.makeChunkLoaded((ServerLevel) level);
+                } else if (AdvQuarryState.isWorking(currentState) && !AdvQuarryState.isWorking(state)) {
+                    // Finish working
+                    this.chunkLoader.makeChunkUnLoaded((ServerLevel) level);
+                    this.chunkLoader = QuarryChunkLoader.None.INSTANCE;
+                }
+            }
             this.currentState = state;
             syncToClient();
-            if (level != null) {
-                level.setBlock(getBlockPos(), blockState.setValue(QpBlockProperty.WORKING, AdvQuarryState.isWorking(state)), Block.UPDATE_ALL);
-            }
+            level.setBlock(getBlockPos(), blockState.setValue(QpBlockProperty.WORKING, AdvQuarryState.isWorking(state)), Block.UPDATE_ALL);
             if (state == AdvQuarryState.FINISHED) {
                 energyCounter.logUsageMap();
             }
