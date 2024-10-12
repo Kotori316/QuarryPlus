@@ -32,10 +32,11 @@ public final class GameTestFunctions {
         );
         var fromClass = getTestFunctionStream(batchName, structureName, classes, 3);
         return Stream.of(
-            fromClass,
             AccessItemTest.accessItems(batchName, structureName),
             AccessFluidTest.empty(batchName, structureName),
-            EnableMapTest.test(batchName, structureName)
+            EnableMapTest.test(batchName, structureName),
+            ItemConverterGameTest.converterTests(batchName, structureName),
+            fromClass
         ).flatMap(Function.identity()).toList();
     }
 
@@ -47,8 +48,8 @@ public final class GameTestFunctions {
         );
         var fromClass = getTestFunctionStream(batchName, structureName, classes, 100);
         return Stream.of(
-            fromClass,
-            CheckBlockDropTest.checkDrops(batchName, structureName)
+            CheckBlockDropTest.checkDrops(batchName, structureName),
+            fromClass
         ).flatMap(Function.identity()).toList();
     }
 
