@@ -1,5 +1,6 @@
 package com.yogpc.qp.machine;
 
+import com.yogpc.qp.PlatformAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -13,6 +14,16 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public record ItemConverter(List<Conversion> conversions) {
+
+    public static ItemConverter defaultInstance() {
+        List<Conversion> conversions;
+        if (PlatformAccess.config().convertDeepslateOres()) {
+            conversions = List.of(new DeepslateOreConversion());
+        } else {
+            conversions = List.of();
+        }
+        return new ItemConverter(conversions);
+    }
 
     public interface Conversion {
         /**

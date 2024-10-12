@@ -43,8 +43,9 @@ final class QuarryConfigLoader {
         var rebornEnergyConversionCoefficient = config.<Double>get("rebornEnergyConversionCoefficient");
         var removeBedrockOnNetherTop = config.<Boolean>get("removeBedrockOnNetherTop");
         var enableChunkLoader = config.<Boolean>get("enableChunkLoader");
+        var convertDeepslateOres = config.<Boolean>get("convertDeepslateOres");
 
-        return new QuarryConfigImpl(debug, noEnergy, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop, enableChunkLoader);
+        return new QuarryConfigImpl(debug, noEnergy, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop, enableChunkLoader, convertDeepslateOres);
     }
 
     record QuarryConfigImpl(
@@ -54,7 +55,8 @@ final class QuarryConfigLoader {
         EnableMap enableMap,
         double rebornEnergyConversionCoefficient,
         boolean removeBedrockOnNetherTop,
-        boolean enableChunkLoader
+        boolean enableChunkLoader,
+        boolean convertDeepslateOres
     ) implements QuarryConfig {
     }
 
@@ -69,6 +71,7 @@ final class QuarryConfigLoader {
         defineDouble(config, specConfig, "rebornEnergyConversionCoefficient", 1d / 16d, 0d, 1e10, "[Fabric ONLY] 1E = ?FE");
         defineBoolean(config, specConfig, "removeBedrockOnNetherTop", inDevelop.getAsBoolean(), "Remove bedrock at y=127 in Nether");
         defineBoolean(config, specConfig, "enableChunkLoader", true, "Enable Chunk Loader in machines");
+        defineBoolean(config, specConfig, "convertDeepslateOres", false, "Convert Deepslate ores to normal ores");
 
         // powerMap.quarry.*
         defineInCodec(config, specConfig, "powerMap.quarry", PowerMap.Default.QUARRY);

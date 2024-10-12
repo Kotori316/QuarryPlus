@@ -765,6 +765,6 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     static ItemConverter defaultItemConverter() {
-        return new ItemConverter(List.of());
+        return ItemConverter.defaultInstance();
     }
 }
