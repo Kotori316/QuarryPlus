@@ -33,7 +33,7 @@ public final class EnergyIntegration {
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
             var received = entity.addEnergy(maxReceive * PowerEntity.ONE_FE, simulate);
-            return clamp(received);
+            return clamp(received / PowerEntity.ONE_FE);
         }
 
         @Override
