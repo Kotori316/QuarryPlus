@@ -56,7 +56,9 @@ public final class ItemConverterGameTest {
             Items.DIORITE,
             Items.ANDESITE,
             Items.TUFF,
-            Items.NETHERRACK
+            Items.NETHERRACK,
+            Items.SANDSTONE,
+            Items.RED_SANDSTONE
         ).map(Item::getDefaultInstance);
         return stacks.map(stack -> {
             var path = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();

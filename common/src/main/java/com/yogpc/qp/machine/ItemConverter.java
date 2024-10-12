@@ -69,7 +69,12 @@ public record ItemConverter(List<Conversion> conversions) {
         @Override
         public boolean shouldApply(ItemStack stack) {
             // Check item tag
-            if (stack.is(ItemTags.DIRT) || stack.is(Items.COBBLESTONE)) {
+            if (
+                stack.is(ItemTags.DIRT)
+                    || stack.is(Items.COBBLESTONE)
+                    || stack.is(Items.SANDSTONE)
+                    || stack.is(Items.RED_SANDSTONE)
+            ) {
                 return true;
             }
             if (stack.getItem() instanceof BlockItem blockItem) {
