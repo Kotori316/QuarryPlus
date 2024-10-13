@@ -22,10 +22,7 @@ import com.yogpc.qp.machine.advquarry.AdvQuarryContainer;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
 import com.yogpc.qp.machine.marker.*;
 import com.yogpc.qp.machine.misc.*;
-import com.yogpc.qp.machine.module.BedrockModuleItem;
-import com.yogpc.qp.machine.module.ModuleContainer;
-import com.yogpc.qp.machine.module.PumpModuleItem;
-import com.yogpc.qp.machine.module.RepeatTickModuleItem;
+import com.yogpc.qp.machine.module.*;
 import com.yogpc.qp.machine.mover.MoverBlock;
 import com.yogpc.qp.machine.mover.MoverContainer;
 import com.yogpc.qp.machine.mover.MoverEntity;
@@ -107,6 +104,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final DebugStorageBlock DEBUG_STORAGE_BLOCK = new DebugStorageBlock();
         public static final BlockEntityType<DebugStorageEntity> DEBUG_STORAGE_TYPE = BlockEntityType.Builder.of(DebugStorageEntity::new, DEBUG_STORAGE_BLOCK).build(DSL.emptyPartType());
         public static final MenuType<DebugStorageContainer> DEBUG_STORAGE_MENU = new ExtendedScreenHandlerType<>(DebugStorageContainer::new, BlockPos.STREAM_CODEC);
+        public static final FilterModuleItem FILTER_MODULE_ITEM = new FilterModuleItem();
 
         public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
 
@@ -134,6 +132,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerItem(BEDROCK_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
             registerItem(EXP_MODULE_ITEM, EnableMap.EnableOrNot.ALWAYS_OFF);
             registerItem(REPEAT_TICK_MODULE_ITEM, EnableMap.EnableOrNot.ALWAYS_OFF);
+            registerItem(FILTER_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_ON);
             // Misc
             registerItem(CHECKER_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
             registerItem(Y_SET_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);

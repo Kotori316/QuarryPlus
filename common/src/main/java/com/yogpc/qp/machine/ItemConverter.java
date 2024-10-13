@@ -9,8 +9,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 public record ItemConverter(List<Conversion> conversions) {
@@ -97,7 +97,7 @@ public record ItemConverter(List<Conversion> conversions) {
         }
     }
 
-    public record ToEmptyConverter(Set<MachineStorage.ItemKey> itemKeys) implements Conversion {
+    public record ToEmptyConverter(Collection<MachineStorage.ItemKey> itemKeys) implements Conversion {
 
         @Override
         public Stream<ItemStack> convert(ItemStack stack) {
