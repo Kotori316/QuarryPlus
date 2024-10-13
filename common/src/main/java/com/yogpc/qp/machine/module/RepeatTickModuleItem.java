@@ -37,7 +37,7 @@ public final class RepeatTickModuleItem extends QpItem implements QuarryModulePr
         }
     }
 
-    public static RepeatTickModule ZERO = new RepeatTickModule(0);
+    public static final RepeatTickModule ZERO = new RepeatTickModule(0);
 
     public static Optional<RepeatTickModule> getModule(Collection<QuarryModule> modules) {
         return modules.stream()
