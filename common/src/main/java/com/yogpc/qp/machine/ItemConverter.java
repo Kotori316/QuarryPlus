@@ -59,7 +59,8 @@ public record ItemConverter(List<Conversion> conversions) {
             var newId = id.withPath(s -> s.replace("deepslate_", "").replace("_deepslate", ""));
             return BuiltInRegistries.ITEM.getHolder(newId)
                 .map(h -> new ItemStack(h, stack.getCount(), stack.getComponentsPatch()))
-                .stream();
+                .map(Stream::of)
+                .orElseGet(() -> Stream.of(stack));
         }
 
         @Override
