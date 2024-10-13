@@ -163,17 +163,21 @@ public class MachineStorage {
             .toList();
     }
 
+    public static final MapCodec<ItemKey> ITEM_KEY_MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+        RecordCodecBuilder.of(ItemKey::item, "item", BuiltInRegistries.ITEM.byNameCodec()),
+        DataComponentPatch.CODEC.optionalFieldOf("patch", DataComponentPatch.EMPTY).forGetter(ItemKey::patch)
+    ).apply(i, ItemKey::new));
+
     static final MapCodec<ItemKeyCount> ITEM_KEY_COUNT_MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-        RecordCodecBuilder.of(c -> c.key.item, "item", BuiltInRegistries.ITEM.byNameCodec()),
-        DataComponentPatch.CODEC.optionalFieldOf("patch").forGetter(c -> Optional.of(c.key.patch)),
+        RecordCodecBuilder.of(ItemKeyCount::key, ITEM_KEY_MAP_CODEC),
         RecordCodecBuilder.of(ItemKeyCount::count, "count", Codec.LONG)
-    ).apply(i, (a, b, c) -> new ItemKeyCount(new ItemKey(a, b.orElse(DataComponentPatch.EMPTY)), c)));
+    ).apply(i, ItemKeyCount::new));
 
     static final MapCodec<FluidKeyCount> FLUID_KEY_COUNT_MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
         RecordCodecBuilder.of(c -> c.key.fluid, "fluid", BuiltInRegistries.FLUID.byNameCodec()),
-        DataComponentPatch.CODEC.optionalFieldOf("patch").forGetter(c -> Optional.of(c.key.patch)),
+        DataComponentPatch.CODEC.optionalFieldOf("patch", DataComponentPatch.EMPTY).forGetter(c -> c.key.patch),
         RecordCodecBuilder.of(FluidKeyCount::count, "count", Codec.LONG)
-    ).apply(i, (a, b, c) -> new FluidKeyCount(new FluidKey(a, b.orElse(DataComponentPatch.EMPTY)), c)));
+    ).apply(i, (a, b, c) -> new FluidKeyCount(new FluidKey(a, b), c)));
 
     public static final MapCodec<MachineStorage> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
         RecordCodecBuilder.of(MachineStorage::itemKeyCounts, "items", ITEM_KEY_COUNT_MAP_CODEC.codec().listOf()),
