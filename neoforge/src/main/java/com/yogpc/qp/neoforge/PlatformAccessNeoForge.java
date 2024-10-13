@@ -36,6 +36,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -128,8 +129,9 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<InstallBedrockModuleRecipe>> INSTALL_BEDROCK_MODULE_RECIPE = RECIPE_REGISTER.register(InstallBedrockModuleRecipe.NAME, () -> InstallBedrockModuleRecipe.SERIALIZER);
 
         static {
-            DATA_COMPONENT_TYPE_REGISTER.register("quarry_remove_bedrock_component", () -> QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT);
-            DATA_COMPONENT_TYPE_REGISTER.register("quarry_holding_exp_component", () -> QuarryDataComponents.HOLDING_EXP_COMPONENT);
+            for (Map.Entry<ResourceLocation, DataComponentType<?>> e : QuarryDataComponents.ALL.entrySet()) {
+                DATA_COMPONENT_TYPE_REGISTER.register(e.getKey().getPath(), e::getValue);
+            }
         }
 
         private static <T extends QpBlock> DeferredBlock<T> registerBlock(String name, Supplier<T> supplier) {
