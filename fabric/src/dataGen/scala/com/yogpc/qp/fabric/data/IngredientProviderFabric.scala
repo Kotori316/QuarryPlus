@@ -31,6 +31,8 @@ final class IngredientProviderFabric(withCondition: (RecipeOutput, Seq[ResourceC
 
   override def diamondBlock: Ingredient = Ingredient.of(ConventionalItemTags.STORAGE_BLOCKS_DIAMOND)
 
+  override def pickaxeForQuarry: Ingredient = Ingredient.of(Items.GOLDEN_PICKAXE)
+
   override def pumpModuleRecipeOutput(original: RecipeOutput): RecipeOutput = {
     val condition = ResourceConditions.not(ResourceConditions.alwaysTrue())
     withCondition(original, Seq(condition))

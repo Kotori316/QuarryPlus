@@ -32,7 +32,7 @@ final class IngredientProviderForge extends IngredientProvider {
 
   override def diamondBlock: Ingredient = Ingredient.of(Tags.Items.STORAGE_BLOCKS_DIAMOND)
 
-  override def pickaxeForQuarry: Ingredient = Ingredient.of(Items.GOLDEN_PICKAXE)
+  override def pickaxeForQuarry: Ingredient = Ingredient.of(Items.DIAMOND_PICKAXE)
 
   override def installBedrockModuleQuarryRecipeOutput(original: RecipeOutput): RecipeOutput = {
     original match {

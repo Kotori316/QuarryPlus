@@ -158,7 +158,12 @@ public final class LoadRecipeTest {
 
         var D = Items.DROPPER.getDefaultInstance();
         var R = Items.REDSTONE_BLOCK.getDefaultInstance();
-        var g = Items.GOLDEN_PICKAXE.getDefaultInstance();
+        ItemStack g;
+        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+            g = Items.GOLDEN_PICKAXE.getDefaultInstance();
+        } else {
+            g = Items.DIAMOND_PICKAXE.getDefaultInstance();
+        }
         var i = Items.IRON_INGOT.getDefaultInstance();
         var o = Items.OBSIDIAN.getDefaultInstance();
         var m = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
