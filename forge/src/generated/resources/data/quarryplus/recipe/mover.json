@@ -6,19 +6,19 @@
       "item": "minecraft:anvil"
     },
     "d": {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     "g": {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     "i": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "m": {
       "tag": "quarryplus:markers"
     },
     "o": {
-      "tag": "forge:obsidian"
+      "tag": "c:obsidians"
     }
   },
   "pattern": [

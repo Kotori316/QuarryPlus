@@ -3,10 +3,10 @@
   "category": "misc",
   "key": {
     "g": {
-      "tag": "forge:glass"
+      "tag": "c:glass_blocks"
     },
     "i": {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     "m": {
       "tag": "quarryplus:markers"

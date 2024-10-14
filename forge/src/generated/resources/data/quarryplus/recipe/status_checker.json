@@ -3,10 +3,10 @@
   "category": "misc",
   "key": {
     "g": {
-      "tag": "forge:glass"
+      "tag": "c:glass_blocks"
     },
     "i": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "m": {
       "tag": "quarryplus:markers"

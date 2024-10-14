@@ -6,19 +6,19 @@
       "item": "minecraft:dropper"
     },
     "R": {
-      "tag": "forge:storage_blocks/redstone"
+      "tag": "c:storage_blocks/redstone"
     },
     "g": {
-      "item": "minecraft:golden_pickaxe"
+      "item": "minecraft:diamond_pickaxe"
     },
     "i": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "m": {
       "tag": "quarryplus:markers"
     },
     "o": {
-      "tag": "forge:obsidian"
+      "tag": "c:obsidians"
     }
   },
   "pattern": [

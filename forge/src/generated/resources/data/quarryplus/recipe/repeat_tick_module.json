@@ -3,13 +3,13 @@
   "category": "misc",
   "key": {
     "a": {
-      "tag": "forge:gems/amethyst"
+      "tag": "c:gems/amethyst"
     },
     "m": {
       "tag": "quarryplus:markers"
     },
     "p": {
-      "tag": "forge:dusts/prismarine"
+      "item": "minecraft:prismarine_shard"
     },
     "w": {
       "item": "minecraft:lingering_potion"

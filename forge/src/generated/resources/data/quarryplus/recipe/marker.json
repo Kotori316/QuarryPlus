@@ -3,10 +3,10 @@
   "category": "misc",
   "key": {
     "g": {
-      "tag": "forge:dusts/glowstone"
+      "tag": "c:dusts/glowstone"
     },
     "l": {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     "r": {
       "item": "minecraft:redstone_torch"
