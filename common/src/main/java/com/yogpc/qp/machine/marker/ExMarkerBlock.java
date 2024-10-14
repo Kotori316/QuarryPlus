@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -18,8 +19,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.WallTorchBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -70,8 +71,8 @@ sealed abstract class ExMarkerBlock extends QpEntityBlock permits FlexibleMarker
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos currentPos, BlockPos neighborPos) {
-        return state.canSurvive(world, currentPos) ? state : Blocks.AIR.defaultBlockState();
+    public BlockState updateShape(BlockState state, LevelReader levelReader, ScheduledTickAccess scheduledTickAccess, BlockPos currentPos, Direction direction, BlockPos blockPos2, BlockState blockState2, RandomSource randomSource) {
+        return state.canSurvive(levelReader, currentPos) ? super.updateShape(state, levelReader, scheduledTickAccess, currentPos, direction, blockPos2, blockState2, randomSource) : Blocks.AIR.defaultBlockState();
     }
 
     @Override
@@ -87,7 +88,7 @@ sealed abstract class ExMarkerBlock extends QpEntityBlock permits FlexibleMarker
                     player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
                 }
             }
-            return InteractionResult.sidedSuccess(level.isClientSide());
+            return InteractionResult.SUCCESS_SERVER;
         }
         return super.useWithoutItem(state, level, pos, player, hitResult);
     }

@@ -57,7 +57,7 @@ public record ItemConverter(List<Conversion> conversions) {
         public Stream<ItemStack> convert(ItemStack stack) {
             var id = BuiltInRegistries.ITEM.getKey(stack.getItem());
             var newId = id.withPath(s -> s.replace("deepslate_", "").replace("_deepslate", ""));
-            return BuiltInRegistries.ITEM.getHolder(newId)
+            return BuiltInRegistries.ITEM.get(newId)
                 .map(h -> new ItemStack(h, stack.getCount(), stack.getComponentsPatch()))
                 .map(Stream::of)
                 .orElseGet(() -> Stream.of(stack));

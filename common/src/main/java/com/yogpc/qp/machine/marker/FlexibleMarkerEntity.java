@@ -93,8 +93,8 @@ public class FlexibleMarkerEntity extends QpEntity implements QuarryMarker, Clie
             } else if (d < 0) {
                 max = getLimited(max, offset, facing, 0);
             }
-            if (facing == Direction.UP && max.getY() >= level.getMaxBuildHeight()) {
-                max = new BlockPos(max.getX(), level.getMaxBuildHeight() - 1, max.getZ());
+            if (facing == Direction.UP && max.getY() >= level.getMaxY()) {
+                max = new BlockPos(max.getX(), level.getMaxY() - 1, max.getZ());
             }
         } else {
             min = min.relative(facing, amount);
@@ -104,8 +104,8 @@ public class FlexibleMarkerEntity extends QpEntity implements QuarryMarker, Clie
             } else if (d < 0) {
                 min = getLimited(min, offset, facing, 0);
             }
-            if (facing == Direction.DOWN && min.getY() < level.getMinBuildHeight()) {
-                min = new BlockPos(min.getX(), level.getMinBuildHeight(), min.getZ());
+            if (facing == Direction.DOWN && min.getY() < level.getMinY()) {
+                min = new BlockPos(min.getX(), level.getMinY(), min.getZ());
             }
         }
     }

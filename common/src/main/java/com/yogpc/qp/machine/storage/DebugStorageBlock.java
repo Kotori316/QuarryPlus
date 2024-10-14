@@ -38,7 +38,7 @@ public final class DebugStorageBlock extends QpEntityBlock {
             if (!level.isClientSide) {
                 PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(storage, DebugStorageContainer::new));
             }
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return InteractionResult.SUCCESS_SERVER;
         }
         return super.useWithoutItem(state, level, pos, player, hitResult);
     }

@@ -8,7 +8,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -80,13 +80,13 @@ public class GeneratorBlock extends QpEntityBlock {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (!level.isClientSide()) {
             int pre = state.getValue(BlockStateProperties.LEVEL);
             int newValue = (player.isShiftKeyDown() ? pre - 1 : pre + 1) & ((1 << 4) - 1);
             level.setBlock(pos, state.setValue(BlockStateProperties.LEVEL, newValue), Block.UPDATE_ALL);
             player.displayClientMessage(Component.literal("Change generator mode to %d(%d FE)".formatted(newValue, ENERGY[newValue] / PowerEntity.ONE_FE)), false);
         }
-        return ItemInteractionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 }

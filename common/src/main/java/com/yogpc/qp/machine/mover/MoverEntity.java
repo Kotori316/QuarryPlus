@@ -16,9 +16,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TieredItem;
-import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -90,7 +90,7 @@ public final class MoverEntity extends QpEntity implements ClientSync {
                         yield false;
                     }
                     yield switch (stack.getItem()) {
-                        case TieredItem tieredItem -> tieredItem.getTier().getUses() >= Tiers.DIAMOND.getUses();
+                        case DiggerItem ignore -> stack.getMaxDamage() >= ToolMaterial.DIAMOND.durability();
                         case BowItem ignore -> true;
                         default -> false;
                     };

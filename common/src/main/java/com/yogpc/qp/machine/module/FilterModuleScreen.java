@@ -2,6 +2,7 @@ package com.yogpc.qp.machine.module;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -24,7 +25,7 @@ public final class FilterModuleScreen extends AbstractContainerScreen<FilterModu
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         var vHeight = menu.containerRows * 18 + 17;
-        guiGraphics.blit(LOCATION, leftPos, topPos, 0, 0, this.imageWidth, vHeight);
-        guiGraphics.blit(LOCATION, leftPos, topPos + vHeight, 0, 126, this.imageWidth, 96);
+        guiGraphics.blit(RenderType::guiTextured, LOCATION, leftPos, topPos, 0, 0, this.imageWidth, vHeight, 256, 256);
+        guiGraphics.blit(RenderType::guiTextured, LOCATION, leftPos, topPos + vHeight, 0, 126, this.imageWidth, 96, 256, 256);
     }
 }

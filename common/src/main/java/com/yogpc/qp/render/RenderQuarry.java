@@ -3,7 +3,6 @@ package com.yogpc.qp.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.quarry.QuarryEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -11,6 +10,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 @SuppressWarnings("DuplicatedCode")
 public class RenderQuarry implements BlockEntityRenderer<QuarryEntity> {
@@ -33,8 +34,9 @@ public class RenderQuarry implements BlockEntityRenderer<QuarryEntity> {
 
     @Override
     public void render(QuarryEntity quarry, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
-        Minecraft.getInstance().getProfiler().push(QuarryPlus.modID);
-        Minecraft.getInstance().getProfiler().push("RenderQuarry");
+        ProfilerFiller profiler = Profiler.get();
+        profiler.push(QuarryPlus.modID);
+        profiler.push("RenderQuarry");
         matrices.pushPose();
         var pos = quarry.getBlockPos();
         matrices.translate(-pos.getX(), -pos.getY(), -pos.getZ());
@@ -48,8 +50,8 @@ public class RenderQuarry implements BlockEntityRenderer<QuarryEntity> {
         }
 
         matrices.popPose();
-        Minecraft.getInstance().getProfiler().pop();
-        Minecraft.getInstance().getProfiler().pop();
+        profiler.pop();
+        profiler.pop();
     }
 
     Buffer getBuffer(MultiBufferSource vertexConsumers, PoseStack matrices) {

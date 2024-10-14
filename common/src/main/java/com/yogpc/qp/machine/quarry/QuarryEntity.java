@@ -22,7 +22,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -372,7 +371,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     double moveHeadFactor() {
         assert level != null;
-        var efficiency = enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, level.registryAccess().asGetterLookup());
+        var efficiency = enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, level.registryAccess());
         if (efficiency >= 4) {
             return efficiency - 3;
         } else {
@@ -490,7 +489,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             setState(QuarryState.BREAK_BLOCK, getBlockState());
             return;
         }
-        var poses = area.getChainBlocks(targetPos, p -> !level.getFluidState(p).isEmpty(), level.getMaxBuildHeight());
+        var poses = area.getChainBlocks(targetPos, p -> !level.getFluidState(p).isEmpty(), level.getMaxY());
         useEnergy((long) (powerMap().breakBlockFluid() * poses.size() * ONE_FE), false, true, "removeFluid");
         var player = getQuarryFakePlayer((ServerLevel) level, targetPos);
         for (var fluidPos : poses) {
@@ -533,7 +532,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             serverLevel.getEntitiesOfClass(ItemEntity.class, new AABB(target).inflate(5), Predicate.not(i -> i.getItem().isEmpty()))
                 .forEach(i -> {
                     itemConverter.convert(i.getItem()).forEach(storage::addItem);
-                    i.kill();
+                    i.kill(serverLevel);
                 });
             if (shouldCollectExp()) {
                 var orbs = serverLevel.getEntitiesOfClass(ExperienceOrb.class, new AABB(target).inflate(5), EntitySelector.ENTITY_STILL_ALIVE);
@@ -541,7 +540,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 if (amount != 0) {
                     getExpModule().ifPresent(e -> e.addExp(amount));
                 }
-                orbs.forEach(Entity::kill);
+                orbs.forEach(e -> e.kill(serverLevel));
             }
         }
 
@@ -550,7 +549,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             // Nothing to do
             return WorkResult.SUCCESS;
         }
-        var lookup = serverLevel.registryAccess().asGetterLookup();
+        var lookup = serverLevel.registryAccess();
         var blockEntity = serverLevel.getBlockEntity(target);
         var player = getQuarryFakePlayer(serverLevel, target);
         var pickaxe = Items.NETHERITE_PICKAXE.getDefaultInstance();
@@ -615,10 +614,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     WorkResult breakBlockModuleOverride(ServerLevel level, BlockState state, BlockPos target, float hardness) {
         if (hardness < 0 && state.is(Blocks.BEDROCK) && shouldRemoveBedrock()) {
-            var worldBottom = level.getMinBuildHeight();
+            var worldBottom = level.getMinY();
             var targetY = target.getY();
             if (level.dimension().equals(Level.NETHER)) {
-                int top = PlatformAccess.config().removeBedrockOnNetherTop() ? level.getMaxBuildHeight() + 1 : 127;
+                int top = PlatformAccess.config().removeBedrockOnNetherTop() ? level.getMaxY() + 1 : 127;
                 if ((worldBottom >= targetY || targetY >= worldBottom + 5) && (122 >= targetY || targetY >= top)) {
                     return WorkResult.SKIPPED;
                 }
@@ -628,7 +627,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 }
             }
 
-            var lookup = level.registryAccess().asGetterLookup();
+            var lookup = level.registryAccess();
             var requiredEnergy = powerMap().getBreakEnergy(hardness,
                 enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, lookup),
                 0, 0, true
@@ -740,7 +739,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         if (getLevel() == null) {
             minY = 0;
         } else {
-            minY = getLevel().getMinBuildHeight();
+            minY = getLevel().getMinY();
         }
         return switch (renderMode()) {
             case "drill" -> new AABB(area.minX(), minY, area.minZ(), area.maxX(), area.maxY(), area.maxZ());

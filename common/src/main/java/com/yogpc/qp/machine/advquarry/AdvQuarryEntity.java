@@ -434,7 +434,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         if (state.isAir() || state.equals(stateAfterBreak(serverLevel, target, state))) {
             return WorkResult.SUCCESS;
         }
-        var lookup = serverLevel.registryAccess().asGetterLookup();
+        var lookup = serverLevel.registryAccess();
         var blockEntity = serverLevel.getBlockEntity(target);
         var player = getQuarryFakePlayer(serverLevel, target);
         var pickaxe = Items.NETHERITE_PICKAXE.getDefaultInstance();
@@ -490,7 +490,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         var serverLevel = (ServerLevel) level;
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(x, getBlockPos().getY() - 1, z);
 
-        var lookup = serverLevel.registryAccess().asGetterLookup();
+        var lookup = serverLevel.registryAccess();
         var player = getQuarryFakePlayer(serverLevel, mutableBlockPos);
         var pickaxe = Items.NETHERITE_PICKAXE.getDefaultInstance();
         EnchantmentHelper.setEnchantments(pickaxe, enchantmentCache.getEnchantmentsForPickaxe(getEnchantments(), lookup));
@@ -499,7 +499,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         serverLevel.getEntitiesOfClass(ItemEntity.class, aabb, Predicate.not(i -> i.getItem().isEmpty()))
             .forEach(i -> {
                 itemConverter.convert(i.getItem()).forEach(storage::addItem);
-                i.kill();
+                i.kill(serverLevel);
             });
         serverLevel.getEntitiesOfClass(FallingBlockEntity.class, aabb)
             .forEach(i -> {
@@ -510,7 +510,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
             serverLevel.getEntitiesOfClass(ExperienceOrb.class, aabb, EntitySelector.ENTITY_STILL_ALIVE)
                 .forEach(orb -> {
                     e.addExp(orb.getValue());
-                    orb.kill();
+                    orb.kill(serverLevel);
                 }));
         removeEdgeFluid(x, z, serverLevel, player);
 
@@ -711,10 +711,10 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
 
     WorkResult breakBlockModuleOverride(ServerLevel level, BlockState state, BlockPos target, float hardness) {
         if (hardness < 0 && state.is(Blocks.BEDROCK) && shouldRemoveBedrock()) {
-            var worldBottom = level.getMinBuildHeight();
+            var worldBottom = level.getMinY();
             var targetY = target.getY();
             if (level.dimension().equals(Level.NETHER)) {
-                int top = PlatformAccess.config().removeBedrockOnNetherTop() ? level.getMaxBuildHeight() + 1 : 127;
+                int top = PlatformAccess.config().removeBedrockOnNetherTop() ? level.getMaxY() + 1 : 127;
                 if ((worldBottom >= targetY || targetY >= worldBottom + 5) && (122 >= targetY || targetY >= top)) {
                     return WorkResult.SKIPPED;
                 }
@@ -724,7 +724,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                 }
             }
 
-            var lookup = level.registryAccess().asGetterLookup();
+            var lookup = level.registryAccess();
             var requiredEnergy = powerMap().getBreakEnergy(hardness,
                 enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, lookup),
                 0, 0, true

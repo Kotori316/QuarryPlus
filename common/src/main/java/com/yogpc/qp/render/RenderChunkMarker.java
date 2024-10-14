@@ -4,11 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
 import com.yogpc.qp.machine.marker.ChunkMarkerEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 import static com.yogpc.qp.render.RenderMarker.renderLink;
 
@@ -19,8 +20,9 @@ public class RenderChunkMarker implements BlockEntityRenderer<ChunkMarkerEntity>
 
     @Override
     public void render(ChunkMarkerEntity marker, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
-        Minecraft.getInstance().getProfiler().push(QuarryPlus.modID);
-        Minecraft.getInstance().getProfiler().push(ChunkMarkerBlock.NAME);
+        ProfilerFiller profiler = Profiler.get();
+        profiler.push(QuarryPlus.modID);
+        profiler.push(ChunkMarkerBlock.NAME);
 
         poseStack.pushPose();
         BlockPos markerPos = marker.getBlockPos();
@@ -28,7 +30,7 @@ public class RenderChunkMarker implements BlockEntityRenderer<ChunkMarkerEntity>
         marker.getLink().ifPresent(link -> renderLink(poseStack, bufferSource, link, ColorBox.redColor));
         poseStack.popPose();
 
-        Minecraft.getInstance().getProfiler().pop();
-        Minecraft.getInstance().getProfiler().pop();
+        profiler.pop();
+        profiler.pop();
     }
 }

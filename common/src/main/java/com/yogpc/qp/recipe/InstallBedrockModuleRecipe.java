@@ -16,29 +16,37 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import org.apache.logging.log4j.util.Lazy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Used only in fabric. Registered in all platforms.
  */
-public final class InstallBedrockModuleRecipe extends ShapelessRecipe {
+public final class InstallBedrockModuleRecipe implements CraftingRecipe {
     public static final String NAME = "install_bedrock_module_recipe";
     public static final RecipeSerializer<InstallBedrockModuleRecipe> SERIALIZER = new Serializer();
     private final QpBlock block;
+    final ItemStack result;
+    final List<Ingredient> ingredients;
+    final Lazy<PlacementInfo> placementInfo;
 
     public InstallBedrockModuleRecipe(QpBlock block) {
-        super(QuarryPlus.modID + ":" + NAME, CraftingBookCategory.MISC, resultItem(block), getIngredients(block));
         this.block = block;
+        this.ingredients = getIngredients(block);
+        this.result = resultItem(block);
+        this.placementInfo = Lazy.lazy(() -> PlacementInfo.create(this.ingredients));
     }
 
     InstallBedrockModuleRecipe(ResourceLocation targetBlockId) {
@@ -47,7 +55,7 @@ public final class InstallBedrockModuleRecipe extends ShapelessRecipe {
 
     @Override
     public boolean matches(CraftingInput input, Level level) {
-        if (!super.matches(input, level)) {
+        if (!input.stackedContents().canCraft(this, null)) {
             return false;
         }
         // Check quarry's component
@@ -65,12 +73,27 @@ public final class InstallBedrockModuleRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<InstallBedrockModuleRecipe> getSerializer() {
         return SERIALIZER;
     }
 
+    @Override
+    public PlacementInfo placementInfo() {
+        return this.placementInfo.get();
+    }
+
+    @Override
+    public CraftingBookCategory category() {
+        return CraftingBookCategory.MISC;
+    }
+
+    @Override
+    public String group() {
+        return QuarryPlus.modID + ":" + NAME;
+    }
+
     private static QpBlock fromId(ResourceLocation blockId) {
-        Block block = BuiltInRegistries.BLOCK.get(blockId);
+        Block block = BuiltInRegistries.BLOCK.getValue(blockId);
         if (block instanceof QpBlock qpBlock) {
             return qpBlock;
         }
@@ -82,7 +105,7 @@ public final class InstallBedrockModuleRecipe extends ShapelessRecipe {
     }
 
     private static @NotNull NonNullList<Ingredient> getIngredients(QpBlock block) {
-        return NonNullList.of(Ingredient.EMPTY, Ingredient.of(block), Ingredient.of(PlatformAccess.getAccess().registerObjects().bedrockModuleItem().get()));
+        return NonNullList.of(Ingredient.of(block), Ingredient.of(PlatformAccess.getAccess().registerObjects().bedrockModuleItem().get()));
     }
 
     static ItemStack resultItem(QpBlock block) {
@@ -139,15 +162,15 @@ public final class InstallBedrockModuleRecipe extends ShapelessRecipe {
         }
 
         @Override
-        public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+        public void save(RecipeOutput recipeOutput, ResourceKey<Recipe<?>> resourceKey) {
             Advancement.Builder builder = recipeOutput.advancement()
-                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
-                .rewards(AdvancementRewards.Builder.recipe(id))
+                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(resourceKey))
+                .rewards(AdvancementRewards.Builder.recipe(resourceKey))
                 .requirements(AdvancementRequirements.Strategy.OR);
             this.criteria.forEach(builder::addCriterion);
             InstallBedrockModuleRecipe recipe = new InstallBedrockModuleRecipe(block);
-            AdvancementHolder advancement = builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/"));
-            recipeOutput.accept(id, recipe, advancement);
+            AdvancementHolder advancement = builder.build(resourceKey.location().withPrefix("recipes/" + this.category.getFolderName() + "/"));
+            recipeOutput.accept(resourceKey, recipe, advancement);
         }
     }
 }

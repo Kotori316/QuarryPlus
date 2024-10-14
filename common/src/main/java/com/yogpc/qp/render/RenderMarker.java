@@ -5,11 +5,12 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.Area;
 import com.yogpc.qp.machine.marker.NormalMarkerEntity;
 import com.yogpc.qp.machine.marker.QuarryMarker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
@@ -22,8 +23,9 @@ public class RenderMarker implements BlockEntityRenderer<NormalMarkerEntity> {
 
     @Override
     public void render(NormalMarkerEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
-        Minecraft.getInstance().getProfiler().push(QuarryPlus.modID);
-        Minecraft.getInstance().getProfiler().push("RenderMarker");
+        ProfilerFiller profiler = Profiler.get();
+        profiler.push(QuarryPlus.modID);
+        profiler.push("RenderMarker");
 
         if (blockEntity.getStatus() == NormalMarkerEntity.Status.CONNECTED_MASTER) {
             var markerPos = blockEntity.getBlockPos();
@@ -33,8 +35,8 @@ public class RenderMarker implements BlockEntityRenderer<NormalMarkerEntity> {
             poseStack.popPose();
         }
 
-        Minecraft.getInstance().getProfiler().pop();
-        Minecraft.getInstance().getProfiler().pop();
+        profiler.pop();
+        profiler.pop();
     }
 
     public static void renderLink(PoseStack poseStack, MultiBufferSource bufferSource, QuarryMarker.Link link, ColorBox color) {

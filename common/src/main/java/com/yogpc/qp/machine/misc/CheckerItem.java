@@ -20,9 +20,9 @@ public abstract class CheckerItem extends QpItem {
     protected final InteractionResult outputLog(@NotNull Level level, @NotNull BlockPos pos, @Nullable Player player) {
         if (!isEnabled()) {
             if (player != null) {
-                player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getDescription()), true);
+                player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
             }
-            return InteractionResult.sidedSuccess(level.isClientSide());
+            return InteractionResult.SUCCESS_SERVER;
         }
         if (level.getBlockEntity(pos) instanceof QpEntity e) {
             if (!level.isClientSide() && player != null) {

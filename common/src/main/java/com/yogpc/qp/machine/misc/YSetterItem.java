@@ -22,9 +22,9 @@ public abstract class YSetterItem extends QpItem {
     protected final InteractionResult interact(@NotNull Level level, @NotNull BlockPos pos, @Nullable Player player) {
         if (!isEnabled()) {
             if (player != null) {
-                player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getDescription()), true);
+                player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
             }
-            return InteractionResult.sidedSuccess(level.isClientSide());
+            return InteractionResult.SUCCESS_SERVER;
         }
 
         var entity = level.getBlockEntity(pos);
@@ -36,6 +36,6 @@ public abstract class YSetterItem extends QpItem {
             // accessor.entity().syncToClient();
             PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, YSetterContainer::new));
         }
-        return InteractionResult.sidedSuccess(level.isClientSide());
+        return InteractionResult.SUCCESS_SERVER;
     }
 }

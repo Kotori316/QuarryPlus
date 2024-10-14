@@ -10,7 +10,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -36,13 +36,13 @@ public final class FilterModuleItem extends QpItem implements QuarryModuleProvid
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
+    public InteractionResult use(Level level, Player player, InteractionHand usedHand) {
         var stack = player.getItemInHand(usedHand);
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
             PlatformAccess.getAccess().openGui(serverPlayer, new GeneralScreenHandler<>(player.getOnPos(), stack.getHoverName(),
                 (syncId, inventory, pos) -> new FilterModuleContainer(syncId, inventory, stack)));
         }
-        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+        return InteractionResult.SUCCESS_SERVER;
     }
 
     @Override

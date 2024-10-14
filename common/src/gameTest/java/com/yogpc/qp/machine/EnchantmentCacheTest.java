@@ -34,7 +34,7 @@ public final class EnchantmentCacheTest {
             Enchantments.UNBREAKING, 1
         ), helper);
 
-        var lookup = helper.getLevel().registryAccess().asGetterLookup();
+        var lookup = helper.getLevel().registryAccess();
         assertEquals(3, e.getLevel(enchantments, Enchantments.EFFICIENCY, lookup));
         assertFalse(e.cache.isEmpty());
         assertTrue(e.cache.containsKey(Enchantments.EFFICIENCY));
@@ -53,7 +53,7 @@ public final class EnchantmentCacheTest {
             Enchantments.EFFICIENCY, 3,
             Enchantments.UNBREAKING, 1
         ), helper);
-        var lookup = helper.getLevel().registryAccess().asGetterLookup();
+        var lookup = helper.getLevel().registryAccess();
         var p = e.getEnchantmentsForPickaxe(enchantments, lookup);
         assertEquals(p, e.enchantmentsForPickaxe);
         assertEquals(3, p.getLevel(GameTestFunctions.getEnchantment(helper, Enchantments.EFFICIENCY)));

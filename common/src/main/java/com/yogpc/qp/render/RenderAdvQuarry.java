@@ -14,6 +14,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 public class RenderAdvQuarry implements BlockEntityRenderer<AdvQuarryEntity> {
     @SuppressWarnings("unused")
@@ -33,13 +35,14 @@ public class RenderAdvQuarry implements BlockEntityRenderer<AdvQuarryEntity> {
     @Override
     @SuppressWarnings("DuplicatedCode") // for readability.
     public void render(AdvQuarryEntity quarry, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
-        Minecraft.getInstance().getProfiler().push(QuarryPlus.modID);
+        ProfilerFiller profiler = Profiler.get();
+        profiler.push(QuarryPlus.modID);
 
         if (quarry.renderMode().equals("frame")) {
-            Minecraft.getInstance().getProfiler().push(AdvQuarryBlock.NAME);
+            profiler.push(AdvQuarryBlock.NAME);
             Area range = quarry.getArea();
             if (range != null) {
-                Minecraft.getInstance().getProfiler().push("rendering");
+                profiler.push("rendering");
                 final double d = 1d / 16d;
                 final TextureAtlasSprite sprite = Sprites.INSTANCE.getWhite();
                 final ColorBox color = new ColorBox(0xFF, 0xFF, 0, 0xFF);
@@ -71,11 +74,11 @@ public class RenderAdvQuarry implements BlockEntityRenderer<AdvQuarryEntity> {
                 if (b4)
                     Box.apply(endX, range.minY(), zMin, endX, range.minY(), zMax, d, d, zMax - zMin, false, false).render(buffer, matrices, sprite, color);
                 matrices.popPose();
-                Minecraft.getInstance().getProfiler().pop();
+                profiler.pop();
             }
-            Minecraft.getInstance().getProfiler().pop();
+            profiler.pop();
         }
 
-        Minecraft.getInstance().getProfiler().pop();
+        profiler.pop();
     }
 }

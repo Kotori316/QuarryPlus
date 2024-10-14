@@ -4,6 +4,7 @@ import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpEntityBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -11,8 +12,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -84,8 +85,8 @@ public class NormalMarkerBlock extends QpEntityBlock {
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos currentPos, BlockPos neighborPos) {
-        return state.canSurvive(world, currentPos) ? state : Blocks.AIR.defaultBlockState();
+    public BlockState updateShape(BlockState state, LevelReader levelReader, ScheduledTickAccess scheduledTickAccess, BlockPos currentPos, Direction direction, BlockPos blockPos2, BlockState blockState2, RandomSource randomSource) {
+        return state.canSurvive(levelReader, currentPos) ? super.updateShape(state, levelReader, scheduledTickAccess, currentPos, direction, blockPos2, blockState2, randomSource) : Blocks.AIR.defaultBlockState();
     }
 
     @Override
@@ -94,7 +95,7 @@ public class NormalMarkerBlock extends QpEntityBlock {
             if (!level.isClientSide()) {
                 marker.tryConnect(c -> player.displayClientMessage(c, false));
             }
-            return InteractionResult.sidedSuccess(level.isClientSide());
+            return InteractionResult.SUCCESS_SERVER;
         }
         return super.useWithoutItem(state, level, pos, player, hitResult);
     }

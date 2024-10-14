@@ -6,7 +6,7 @@ import com.yogpc.qp.machine.module.QuarryModuleProvider;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -28,7 +28,7 @@ public final class ExpModuleItem extends QpItem implements QuarryModuleProvider.
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
+    public InteractionResult use(Level level, Player player, InteractionHand usedHand) {
         var stack = player.getItemInHand(usedHand);
         if (!level.isClientSide) {
             int exp = stack.getOrDefault(QuarryDataComponents.HOLDING_EXP_COMPONENT, 0);
@@ -38,7 +38,7 @@ public final class ExpModuleItem extends QpItem implements QuarryModuleProvider.
                 stack.set(QuarryDataComponents.HOLDING_EXP_COMPONENT, 0);
             }
         }
-        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+        return InteractionResult.SUCCESS_SERVER;
     }
 
     @Override

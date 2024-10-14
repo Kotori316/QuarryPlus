@@ -74,7 +74,7 @@ public final class SoftBlock extends TransparentBlock implements InCreativeTabs 
             if (!nextCheck.isEmpty()) {
                 var server = Objects.requireNonNull(world.getServer());
                 var tickOffset = world.getRandom().nextIntBetweenInclusive(8, 30);
-                server.tell(new TickTask(server.getTickCount() + tickOffset, new ChainBreakTask(world, nextCheck, 1, b -> this.breaking = b, new HashSet<>(), Predicate.isEqual(this))));
+                server.schedule(new TickTask(server.getTickCount() + tickOffset, new ChainBreakTask(world, nextCheck, 1, b -> this.breaking = b, new HashSet<>(), Predicate.isEqual(this))));
             }
         }
     }
@@ -125,7 +125,7 @@ public final class SoftBlock extends TransparentBlock implements InCreativeTabs 
             if (!nextCheck.isEmpty()) {
                 var server = Objects.requireNonNull(level.getServer());
                 var tickOffset = level.getRandom().nextIntBetweenInclusive(8, 30);
-                server.tell(new TickTask(server.getTickCount() + tickOffset, new ChainBreakTask(level, nextCheck, totalRemoved + removed.size(), consumer, checked, continueChain)));
+                server.schedule(new TickTask(server.getTickCount() + tickOffset, new ChainBreakTask(level, nextCheck, totalRemoved + removed.size(), consumer, checked, continueChain)));
             }
         }
     }

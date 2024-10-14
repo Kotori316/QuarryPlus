@@ -30,7 +30,7 @@ public final class DigMinY {
         if (level == null) {
             return 0;
         }
-        return level.getMinBuildHeight() + 1;
+        return level.getMinY() + 1;
     }
 
     public static final MapCodec<DigMinY> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(

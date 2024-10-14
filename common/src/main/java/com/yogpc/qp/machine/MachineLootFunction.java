@@ -24,7 +24,7 @@ public final class MachineLootFunction extends LootItemConditionalFunction {
 
     @Override
     protected ItemStack run(ItemStack stack, LootContext context) {
-        var blockEntity = context.getParam(LootContextParams.BLOCK_ENTITY);
+        var blockEntity = context.getParameter(LootContextParams.BLOCK_ENTITY);
         process(stack, blockEntity);
         return stack;
     }
