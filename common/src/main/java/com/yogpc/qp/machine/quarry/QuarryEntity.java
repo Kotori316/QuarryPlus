@@ -8,10 +8,7 @@ import com.yogpc.qp.machine.exp.ExpModule;
 import com.yogpc.qp.machine.misc.BlockBreakEventResult;
 import com.yogpc.qp.machine.misc.DigMinY;
 import com.yogpc.qp.machine.misc.QuarryChunkLoader;
-import com.yogpc.qp.machine.module.ModuleInventory;
-import com.yogpc.qp.machine.module.QuarryModule;
-import com.yogpc.qp.machine.module.QuarryModuleProvider;
-import com.yogpc.qp.machine.module.RepeatTickModuleItem;
+import com.yogpc.qp.machine.module.*;
 import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -266,6 +263,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
             );
         }
+        this.itemConverter = defaultItemConverter().concat(ConverterModule.findConversions(this.modules));
     }
 
     public String renderMode() {
