@@ -6,21 +6,17 @@ import com.yogpc.qp.machine.module.{FilterModuleItem, RepeatTickModuleItem}
 import com.yogpc.qp.recipe.InstallBedrockModuleRecipe
 import com.yogpc.qp.{PlatformAccess, QuarryPlus}
 import net.minecraft.core.HolderLookup
-import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.data.PackOutput
-import net.minecraft.data.recipes.{RecipeCategory, RecipeOutput, RecipeProvider, ShapedRecipeBuilder, ShapelessRecipeBuilder}
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.item.alchemy.{PotionContents, Potions}
-import net.minecraft.world.item.crafting.Ingredient
+import net.minecraft.core.registries.{BuiltInRegistries, Registries}
+import net.minecraft.data.recipes.{RecipeCategory, RecipeOutput, RecipeProvider}
+import net.minecraft.resources.{ResourceKey, ResourceLocation}
+import net.minecraft.world.item.crafting.{Ingredient, Recipe as McRecipe}
 import net.minecraft.world.item.{Item, Items}
 
-import java.util.concurrent.CompletableFuture
-
-class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registries: CompletableFuture[HolderLookup.Provider]) extends RecipeProvider(output, registries) {
+class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeOutput, registries: HolderLookup.Provider) extends RecipeProvider(registries, recipeOutput) {
   private val ip = ingredientProvider
 
-  override def buildRecipes(recipeOutput: RecipeOutput): Unit = {
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects.markerBlock.get)
+  override def buildRecipes(): Unit = {
+    shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects.markerBlock.get)
       .define('g', ip.glowStoneDust)
       .define('l', ip.lapis)
       .define('r', Items.REDSTONE_TORCH)
@@ -30,7 +26,7 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .unlockedBy(Items.REDSTONE_TORCH)
       .save(recipeOutput)
 
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().flexibleMarkerBlock().get())
+    shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().flexibleMarkerBlock().get())
       .define('g', Items.GREEN_DYE)
       .define('m', PlatformAccess.getAccess.registerObjects.markerBlock.get)
       .pattern("ggg")
@@ -39,16 +35,16 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .unlockedBy(Items.GREEN_DYE)
       .save(recipeOutput)
 
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().flexibleMarkerBlock().get())
+    shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().flexibleMarkerBlock().get())
       .define('g', Items.GREEN_DYE)
       .define('m', PlatformAccess.getAccess.registerObjects.chunkMarkerBlock.get)
       .pattern("ggg")
       .pattern(" m ")
       .unlockedBy(PlatformAccess.getAccess.registerObjects.chunkMarkerBlock.get)
       .unlockedBy(Items.GREEN_DYE)
-      .save(recipeOutput, modLoc(FlexibleMarkerBlock.NAME + "_from_" + ChunkMarkerBlock.NAME))
+      .save(recipeOutput, modLocKey(FlexibleMarkerBlock.NAME + "_from_" + ChunkMarkerBlock.NAME))
 
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().chunkMarkerBlock().get())
+    shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().chunkMarkerBlock().get())
       .define('r', ip.redStoneDust)
       .define('m', PlatformAccess.getAccess.registerObjects.markerBlock.get)
       .pattern("rrr")
@@ -57,16 +53,16 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .unlockedBy(Items.REDSTONE)
       .save(recipeOutput)
 
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().chunkMarkerBlock().get())
+    shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().chunkMarkerBlock().get())
       .define('r', ip.redStoneDust)
       .define('m', PlatformAccess.getAccess.registerObjects.flexibleMarkerBlock.get)
       .pattern("rrr")
       .pattern(" m ")
       .unlockedBy(PlatformAccess.getAccess.registerObjects.flexibleMarkerBlock.get)
       .unlockedBy(Items.REDSTONE)
-      .save(recipeOutput, modLoc(ChunkMarkerBlock.NAME + "_from_" + FlexibleMarkerBlock.NAME))
+      .save(recipeOutput, modLocKey(ChunkMarkerBlock.NAME + "_from_" + FlexibleMarkerBlock.NAME))
 
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().moverBlock().get())
+    shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().moverBlock().get())
       .define('d', ip.diamond)
       .define('a', Items.ANVIL)
       .define('g', ip.goldIngot)
@@ -81,7 +77,7 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .unlockedBy(ip.obsidianTag)
       .save(recipeOutput)
 
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().quarryBlock().get())
+    shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().quarryBlock().get())
       .define('D', Items.DROPPER)
       .define('R', ip.redStoneBlock)
       .define('g', ip.pickaxeForQuarry)
@@ -94,7 +90,7 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .unlockedBy(ip.markerTag)
       .save(recipeOutput)
 
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, quarryItem("status_checker"))
+    shaped(RecipeCategory.MISC, quarryItem("status_checker"))
       .define('g', ip.glass)
       .define('i', ip.ironIngot)
       .define('m', ip.marker)
@@ -103,7 +99,7 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .unlockedBy(ip.markerTag)
       .save(recipeOutput)
 
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, quarryItem("y_setter"))
+    shaped(RecipeCategory.MISC, quarryItem("y_setter"))
       .define('g', ip.glass)
       .define('i', ip.lapis)
       .define('m', ip.marker)
@@ -112,7 +108,7 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .unlockedBy(ip.markerTag)
       .save(recipeOutput)
 
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, quarryItem("pump_module"))
+    shaped(RecipeCategory.MISC, quarryItem("pump_module"))
       .define('g', ip.glass)
       .define('d', Items.GREEN_DYE)
       .define('b', Items.LAVA_BUCKET)
@@ -128,7 +124,7 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
 
     val bedrockModule = quarryItem("remove_bedrock_module")
     {
-      val builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, bedrockModule)
+      val builder = shaped(RecipeCategory.MISC, bedrockModule)
       builder
         .define('o', ip.obsidian)
         .define('m', ip.marker)
@@ -150,7 +146,7 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
         .save(recipeOutput)
     }
 
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, quarryItem(ExpModuleItem.NAME))
+    shaped(RecipeCategory.MISC, quarryItem(ExpModuleItem.NAME))
       .define('h', Items.HAY_BLOCK)
       .define('e', ip.enderPearl)
       .define('G', ip.goldBlock)
@@ -163,21 +159,21 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .save(ip.expModuleRecipeOutput(recipeOutput))
 
     InstallBedrockModuleRecipe.builder(PlatformAccess.getAccess.registerObjects().quarryBlock().get())
-      .unlockedBy("has_bedrock_module", RecipeProvider.has(bedrockModule))
-      .save(ip.installBedrockModuleQuarryRecipeOutput(recipeOutput), ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "install_bedrock_module_quarry"))
+      .unlockedBy("has_bedrock_module", has(bedrockModule))
+      .save(ip.installBedrockModuleQuarryRecipeOutput(recipeOutput), ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "install_bedrock_module_quarry")))
 
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, quarryItem(RepeatTickModuleItem.NAME))
+    shaped(RecipeCategory.MISC, quarryItem(RepeatTickModuleItem.NAME))
       .define('a', ip.amethyst)
       .define('p', Items.PRISMARINE_SHARD)
       .define('m', ip.marker)
-      .define('w', Ingredient.of(PotionContents.createItemStack(Items.LINGERING_POTION, Potions.STRONG_SWIFTNESS)))
+      .define('w', Ingredient.of(Items.LINGERING_POTION))
       .pattern("apa")
       .pattern("pwp")
       .pattern("apm")
       .unlockedBy(ip.markerTag)
       .save(ip.repeatTickModuleRecipeOutput(recipeOutput))
 
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().advQuarryBlock().get())
+    shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().advQuarryBlock().get())
       .define('d', ip.diamondBlock)
       .define('e', ip.emeraldBlock)
       .define('q', PlatformAccess.getAccess.registerObjects().quarryBlock().get())
@@ -191,7 +187,7 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .save(recipeOutput)
 
     val bookIngredient = Ingredient.of(Items.BOOK, Items.ENCHANTED_BOOK, Items.WRITABLE_BOOK, Items.WRITTEN_BOOK)
-    ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, quarryItem(FilterModuleItem.NAME))
+    shapeless(RecipeCategory.MISC, quarryItem(FilterModuleItem.NAME))
       .requires(bookIngredient)
       .requires(bookIngredient)
       .requires(ip.enderPearl)
@@ -201,10 +197,14 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
   }
 
   private def quarryItem(name: String): Item = {
-    BuiltInRegistries.ITEM.get(modLoc(name))
+    BuiltInRegistries.ITEM.getValue(modLoc(name))
   }
 
   private def modLoc(name: String): ResourceLocation = {
     ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name)
+  }
+
+  private def modLocKey(name: String): ResourceKey[McRecipe[?]] = {
+    ResourceKey.create(Registries.RECIPE, modLoc(name))
   }
 }

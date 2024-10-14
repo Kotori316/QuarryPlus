@@ -1,7 +1,7 @@
 package com.yogpc.qp.data
 
 import com.yogpc.qp.QuarryPlus
-import net.minecraft.core.registries.Registries
+import net.minecraft.core.registries.{BuiltInRegistries, Registries}
 import net.minecraft.data.recipes.RecipeOutput
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.TagKey
@@ -27,7 +27,7 @@ trait IngredientProvider {
 
   def netherStar: Ingredient
 
-  def obsidian: Ingredient = Ingredient.of(obsidianTag)
+  def obsidian: Ingredient = Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(obsidianTag))
 
   def obsidianTag: TagKey[Item]
 
@@ -45,7 +45,7 @@ trait IngredientProvider {
 
   def marker: Ingredient = {
     val tag = markerTag
-    Ingredient.of(tag)
+    Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(tag))
   }
 
   def markerTag: TagKey[Item] = {
