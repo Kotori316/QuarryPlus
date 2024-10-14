@@ -3,13 +3,13 @@
   "category": "misc",
   "key": {
     "d": {
-      "tag": "forge:storage_blocks/diamond"
+      "tag": "c:storage_blocks/diamond"
     },
     "m": {
       "tag": "quarryplus:markers"
     },
     "o": {
-      "tag": "forge:obsidian"
+      "tag": "c:obsidians"
     }
   },
   "pattern": [

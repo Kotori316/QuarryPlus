@@ -3,6 +3,7 @@ package com.yogpc.qp.gametest;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryDataComponents;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
 import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
 import com.yogpc.qp.machine.module.RepeatTickModuleItem;
@@ -158,7 +159,12 @@ public final class LoadRecipeTest {
 
         var D = Items.DROPPER.getDefaultInstance();
         var R = Items.REDSTONE_BLOCK.getDefaultInstance();
-        var g = Items.GOLDEN_PICKAXE.getDefaultInstance();
+        ItemStack g;
+        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+            g = Items.GOLDEN_PICKAXE.getDefaultInstance();
+        } else {
+            g = Items.DIAMOND_PICKAXE.getDefaultInstance();
+        }
         var i = Items.IRON_INGOT.getDefaultInstance();
         var o = Items.OBSIDIAN.getDefaultInstance();
         var m = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
@@ -195,7 +201,6 @@ public final class LoadRecipeTest {
 
         helper.succeed();
     }
-
 
     public static void createYSetter(GameTestHelper helper) {
         var recipe = findRecipe(helper, "y_setter");
@@ -393,6 +398,31 @@ public final class LoadRecipeTest {
         assertTrue(recipe.matches(input, helper.getLevel()));
         var result = recipe.assemble(input, helper.getLevel().registryAccess());
         assertEquals(name, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
+        helper.succeed();
+    }
+
+    public static void createAdvQuarry(GameTestHelper helper) {
+        var recipe = findRecipe(helper, AdvQuarryBlock.NAME);
+
+        var d = Items.DIAMOND_BLOCK.getDefaultInstance();
+        var e = Items.EMERALD_BLOCK.getDefaultInstance();
+        var q = new ItemStack(PlatformAccess.getAccess().registerObjects().quarryBlock().get());
+        var i = Items.ENDER_EYE.getDefaultInstance();
+        var h = Items.DRAGON_HEAD.getDefaultInstance();
+        var s = Items.NETHER_STAR.getDefaultInstance();
+
+        var input = CraftingInput.of(3, 3, List.of(
+            d, h, d,
+            q, s, q,
+            e, i, e
+        ));
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        assertEquals(
+            PlatformAccess.getAccess().registerObjects().advQuarryBlock().get().blockItem,
+            result.getItem()
+        );
+
         helper.succeed();
     }
 }

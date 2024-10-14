@@ -3,8 +3,8 @@ package com.yogpc.qp.forge.data
 import com.yogpc.qp.data.IngredientProvider
 import net.minecraft.data.recipes.RecipeOutput
 import net.minecraft.tags.TagKey
-import net.minecraft.world.item.Item
 import net.minecraft.world.item.crafting.Ingredient
+import net.minecraft.world.item.{Item, Items}
 import net.minecraftforge.common.Tags
 import net.minecraftforge.common.crafting.conditions.FalseCondition
 
@@ -22,15 +22,17 @@ final class IngredientProviderForge extends IngredientProvider {
 
   override def goldIngot: Ingredient = Ingredient.of(Tags.Items.INGOTS_GOLD)
 
-  override def obsidianTag: TagKey[Item] = Tags.Items.OBSIDIAN
+  override def obsidianTag: TagKey[Item] = Tags.Items.OBSIDIANS
 
-  override def glass: Ingredient = Ingredient.of(Tags.Items.GLASS)
+  override def glass: Ingredient = Ingredient.of(Tags.Items.GLASS_BLOCKS)
 
   override def redStoneBlock: Ingredient = Ingredient.of(Tags.Items.STORAGE_BLOCKS_REDSTONE)
 
   override def goldBlock: Ingredient = Ingredient.of(Tags.Items.STORAGE_BLOCKS_GOLD)
 
   override def diamondBlock: Ingredient = Ingredient.of(Tags.Items.STORAGE_BLOCKS_DIAMOND)
+
+  override def pickaxeForQuarry: Ingredient = Ingredient.of(Items.DIAMOND_PICKAXE)
 
   override def installBedrockModuleQuarryRecipeOutput(original: RecipeOutput): RecipeOutput = {
     original match {
@@ -42,8 +44,6 @@ final class IngredientProviderForge extends IngredientProvider {
   override def enderPearl: Ingredient = Ingredient.of(Tags.Items.ENDER_PEARLS)
 
   override def amethyst: Ingredient = Ingredient.of(Tags.Items.GEMS_AMETHYST)
-
-  override def prismarineShard: Ingredient = Ingredient.of(Tags.Items.DUSTS_PRISMARINE)
 
   override def netherStar: Ingredient = Ingredient.of(Tags.Items.NETHER_STARS)
 

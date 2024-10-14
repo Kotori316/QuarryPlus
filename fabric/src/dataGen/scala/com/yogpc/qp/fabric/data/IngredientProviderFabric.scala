@@ -31,6 +31,8 @@ final class IngredientProviderFabric(withCondition: (RecipeOutput, Seq[ResourceC
 
   override def diamondBlock: Ingredient = Ingredient.of(ConventionalItemTags.STORAGE_BLOCKS_DIAMOND)
 
+  override def pickaxeForQuarry: Ingredient = Ingredient.of(Items.GOLDEN_PICKAXE)
+
   override def pumpModuleRecipeOutput(original: RecipeOutput): RecipeOutput = {
     val condition = ResourceConditions.not(ResourceConditions.alwaysTrue())
     withCondition(original, Seq(condition))
@@ -45,8 +47,6 @@ final class IngredientProviderFabric(withCondition: (RecipeOutput, Seq[ResourceC
   override def enderPearl: Ingredient = Ingredient.of(ConventionalItemTags.ENDER_PEARLS)
 
   override def amethyst: Ingredient = Ingredient.of(ConventionalItemTags.AMETHYST_GEMS)
-
-  override def prismarineShard: Ingredient = Ingredient.of(Items.PRISMARINE_SHARD)
 
   override def netherStar: Ingredient = Ingredient.of(Items.NETHER_STAR)
 

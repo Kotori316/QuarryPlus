@@ -5,8 +5,8 @@ import net.minecraft.core.registries.Registries
 import net.minecraft.data.recipes.RecipeOutput
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.TagKey
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.crafting.Ingredient
-import net.minecraft.world.item.{Item, Items}
 
 trait IngredientProvider {
   def glowStoneDust: Ingredient
@@ -25,8 +25,6 @@ trait IngredientProvider {
 
   def enderPearl: Ingredient
 
-  def prismarineShard: Ingredient
-
   def netherStar: Ingredient
 
   def obsidian: Ingredient = Ingredient.of(obsidianTag)
@@ -43,7 +41,7 @@ trait IngredientProvider {
 
   def emeraldBlock: Ingredient
 
-  def pickaxeForQuarry: Ingredient = Ingredient.of(Items.GOLDEN_PICKAXE)
+  def pickaxeForQuarry: Ingredient
 
   def marker: Ingredient = {
     val tag = markerTag

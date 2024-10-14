@@ -21,11 +21,11 @@
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_obsidian": {
+    "has_obsidians": {
       "conditions": {
         "items": [
           {
-            "items": "#forge:obsidian"
+            "items": "#c:obsidians"
           }
         ]
       },
@@ -43,7 +43,7 @@
       "has_the_recipe",
       "has_anvil",
       "has_markers",
-      "has_obsidian"
+      "has_obsidians"
     ]
   ],
   "rewards": {

@@ -3,10 +3,10 @@
   "category": "misc",
   "key": {
     "d": {
-      "tag": "forge:storage_blocks/diamond"
+      "tag": "c:storage_blocks/diamond"
     },
     "e": {
-      "tag": "forge:storage_blocks/emerald"
+      "tag": "c:storage_blocks/emerald"
     },
     "h": {
       "item": "minecraft:dragon_head"

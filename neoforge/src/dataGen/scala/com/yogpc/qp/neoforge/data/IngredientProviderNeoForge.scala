@@ -25,7 +25,7 @@ final class IngredientProviderNeoForge extends IngredientProvider {
 
   override def redStoneBlock: Ingredient = Ingredient.of(Tags.Items.STORAGE_BLOCKS_REDSTONE)
 
-  override def pickaxeForQuarry: Ingredient = Ingredient.of(Items.GOLDEN_PICKAXE)
+  override def pickaxeForQuarry: Ingredient = Ingredient.of(Items.DIAMOND_PICKAXE)
 
   override def redStoneDust: Ingredient = Ingredient.of(Tags.Items.DUSTS_REDSTONE)
 
@@ -40,8 +40,6 @@ final class IngredientProviderNeoForge extends IngredientProvider {
   override def enderPearl: Ingredient = Ingredient.of(Tags.Items.ENDER_PEARLS)
 
   override def amethyst: Ingredient = Ingredient.of(Tags.Items.GEMS_AMETHYST)
-
-  override def prismarineShard: Ingredient = Ingredient.of(Items.PRISMARINE_SHARD)
 
   override def netherStar: Ingredient = Ingredient.of(Tags.Items.NETHER_STARS)
 

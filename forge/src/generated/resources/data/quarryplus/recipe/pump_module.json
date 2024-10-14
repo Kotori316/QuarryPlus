@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "G": {
-      "tag": "forge:storage_blocks/gold"
+      "tag": "c:storage_blocks/gold"
     },
     "b": {
       "item": "minecraft:lava_bucket"
@@ -12,13 +12,13 @@
       "item": "minecraft:green_dye"
     },
     "g": {
-      "tag": "forge:glass"
+      "tag": "c:glass_blocks"
     },
     "m": {
       "tag": "quarryplus:markers"
     },
     "r": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     }
   },
   "pattern": [
