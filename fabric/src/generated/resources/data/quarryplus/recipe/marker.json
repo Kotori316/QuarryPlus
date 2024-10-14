@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "g": {
-      "tag": "c:dusts/glowstone"
-    },
-    "l": {
-      "tag": "c:gems/lapis"
-    },
-    "r": {
-      "item": "minecraft:redstone_torch"
-    }
+    "g": "#c:dusts/glowstone",
+    "l": "#c:gems/lapis",
+    "r": "minecraft:redstone_torch"
   },
   "pattern": [
     "glg",

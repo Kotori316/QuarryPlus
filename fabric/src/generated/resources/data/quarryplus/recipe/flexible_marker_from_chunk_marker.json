@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "g": {
-      "item": "minecraft:green_dye"
-    },
-    "m": {
-      "item": "quarryplus:chunk_marker"
-    }
+    "g": "minecraft:green_dye",
+    "m": "quarryplus:chunk_marker"
   },
   "pattern": [
     "ggg",

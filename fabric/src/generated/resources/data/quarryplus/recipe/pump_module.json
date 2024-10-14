@@ -10,24 +10,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "G": {
-      "tag": "c:storage_blocks/gold"
-    },
-    "b": {
-      "item": "minecraft:lava_bucket"
-    },
-    "d": {
-      "item": "minecraft:green_dye"
-    },
-    "g": {
-      "tag": "c:glass_blocks"
-    },
-    "m": {
-      "tag": "quarryplus:markers"
-    },
-    "r": {
-      "tag": "c:dusts/redstone"
-    }
+    "G": "#c:storage_blocks/gold",
+    "b": "minecraft:lava_bucket",
+    "d": "minecraft:green_dye",
+    "g": "#c:glass_blocks",
+    "m": "#quarryplus:markers",
+    "r": "#c:dusts/redstone"
   },
   "pattern": [
     "dgd",

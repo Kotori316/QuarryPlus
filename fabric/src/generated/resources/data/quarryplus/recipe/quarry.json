@@ -2,24 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "D": {
-      "item": "minecraft:dropper"
-    },
-    "R": {
-      "tag": "c:storage_blocks/redstone"
-    },
-    "g": {
-      "item": "minecraft:golden_pickaxe"
-    },
-    "i": {
-      "tag": "c:ingots/iron"
-    },
-    "m": {
-      "tag": "quarryplus:markers"
-    },
-    "o": {
-      "tag": "c:obsidians"
-    }
+    "D": "minecraft:dropper",
+    "R": "#c:storage_blocks/redstone",
+    "g": "minecraft:golden_pickaxe",
+    "i": "#c:ingots/iron",
+    "m": "#quarryplus:markers",
+    "o": "#c:obsidians"
   },
   "pattern": [
     "ioi",

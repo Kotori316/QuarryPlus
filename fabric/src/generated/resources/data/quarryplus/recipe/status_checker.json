@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "g": {
-      "tag": "c:glass_blocks"
-    },
-    "i": {
-      "tag": "c:ingots/iron"
-    },
-    "m": {
-      "tag": "quarryplus:markers"
-    }
+    "g": "#c:glass_blocks",
+    "i": "#c:ingots/iron",
+    "m": "#quarryplus:markers"
   },
   "pattern": [
     "ggg",

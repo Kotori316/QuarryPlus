@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "m": {
-      "item": "quarryplus:flexible_marker"
-    },
-    "r": {
-      "tag": "c:dusts/redstone"
-    }
+    "m": "quarryplus:flexible_marker",
+    "r": "#c:dusts/redstone"
   },
   "pattern": [
     "rrr",

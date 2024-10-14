@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "m": {
-      "tag": "quarryplus:markers"
-    },
-    "o": {
-      "tag": "c:obsidians"
-    }
+    "m": "#quarryplus:markers",
+    "o": "#c:obsidians"
   },
   "pattern": [
     "ooo",

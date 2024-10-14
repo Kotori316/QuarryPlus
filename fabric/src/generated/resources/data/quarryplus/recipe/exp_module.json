@@ -10,21 +10,11 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "G": {
-      "tag": "c:storage_blocks/gold"
-    },
-    "e": {
-      "tag": "c:ender_pearls"
-    },
-    "h": {
-      "item": "minecraft:hay_block"
-    },
-    "m": {
-      "tag": "quarryplus:markers"
-    },
-    "p": {
-      "item": "minecraft:potion"
-    }
+    "G": "#c:storage_blocks/gold",
+    "e": "#c:ender_pearls",
+    "h": "minecraft:hay_block",
+    "m": "#quarryplus:markers",
+    "p": "minecraft:potion"
   },
   "pattern": [
     "epe",

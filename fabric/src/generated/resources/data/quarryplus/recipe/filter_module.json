@@ -11,39 +11,19 @@
   "category": "misc",
   "ingredients": [
     [
-      {
-        "item": "minecraft:book"
-      },
-      {
-        "item": "minecraft:enchanted_book"
-      },
-      {
-        "item": "minecraft:writable_book"
-      },
-      {
-        "item": "minecraft:written_book"
-      }
+      "minecraft:book",
+      "minecraft:enchanted_book",
+      "minecraft:writable_book",
+      "minecraft:written_book"
     ],
     [
-      {
-        "item": "minecraft:book"
-      },
-      {
-        "item": "minecraft:enchanted_book"
-      },
-      {
-        "item": "minecraft:writable_book"
-      },
-      {
-        "item": "minecraft:written_book"
-      }
+      "minecraft:book",
+      "minecraft:enchanted_book",
+      "minecraft:writable_book",
+      "minecraft:written_book"
     ],
-    {
-      "tag": "c:ender_pearls"
-    },
-    {
-      "tag": "quarryplus:markers"
-    }
+    "#c:ender_pearls",
+    "#quarryplus:markers"
   ],
   "result": {
     "count": 1,

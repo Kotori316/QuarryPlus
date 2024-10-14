@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "g": {
-      "item": "minecraft:green_dye"
-    },
-    "m": {
-      "item": "quarryplus:marker"
-    }
+    "g": "minecraft:green_dye",
+    "m": "quarryplus:marker"
   },
   "pattern": [
     "ggg",
