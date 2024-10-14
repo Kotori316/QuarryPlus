@@ -168,7 +168,7 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
 
     ShapedRecipeBuilder.shaped(RecipeCategory.MISC, quarryItem(RepeatTickModuleItem.NAME))
       .define('a', ip.amethyst)
-      .define('p', ip.prismarineShard)
+      .define('p', Items.PRISMARINE_SHARD)
       .define('m', ip.marker)
       .define('w', Ingredient.of(PotionContents.createItemStack(Items.LINGERING_POTION, Potions.STRONG_SWIFTNESS)))
       .pattern("apa")

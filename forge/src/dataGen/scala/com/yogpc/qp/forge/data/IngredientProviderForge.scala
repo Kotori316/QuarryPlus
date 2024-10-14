@@ -32,6 +32,8 @@ final class IngredientProviderForge extends IngredientProvider {
 
   override def diamondBlock: Ingredient = Ingredient.of(Tags.Items.STORAGE_BLOCKS_DIAMOND)
 
+  override def pickaxeForQuarry: Ingredient = Ingredient.of(Items.GOLDEN_PICKAXE)
+
   override def installBedrockModuleQuarryRecipeOutput(original: RecipeOutput): RecipeOutput = {
     original match {
       case recipe: CollectRecipe => recipe.withCondition(Seq(FalseCondition.INSTANCE))
@@ -42,8 +44,6 @@ final class IngredientProviderForge extends IngredientProvider {
   override def enderPearl: Ingredient = Ingredient.of(Tags.Items.ENDER_PEARLS)
 
   override def amethyst: Ingredient = Ingredient.of(Tags.Items.GEMS_AMETHYST)
-
-  override def prismarineShard: Ingredient = Ingredient.of(Items.PRISMARINE_SHARD)
 
   override def netherStar: Ingredient = Ingredient.of(Tags.Items.NETHER_STARS)
 

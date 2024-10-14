@@ -25,8 +25,6 @@ trait IngredientProvider {
 
   def enderPearl: Ingredient
 
-  def prismarineShard: Ingredient
-
   def netherStar: Ingredient
 
   def obsidian: Ingredient = Ingredient.of(obsidianTag)
