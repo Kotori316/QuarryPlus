@@ -23,6 +23,7 @@ jobs:
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+      options: '--user root'
     steps:
       - uses: actions/checkout@v4
       - uses: gradle/actions/wrapper-validation@v4
@@ -37,6 +38,7 @@ jobs:
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+      options: '--user root'
     strategy:
       fail-fast: false
       matrix:
@@ -79,7 +81,6 @@ jobs:
           IGNORE_OTHER_MODS_IN_RUNTIME: true
           RUN_DATA: true
       - name: Check updated files
-        if: false
         run: git diff --exit-code
       - name: GameTest ${{ matrix.platform }}
         if: matrix.platform != 'common'

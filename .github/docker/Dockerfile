@@ -18,7 +18,9 @@ WORKDIR /root
 
 FROM base AS builder
 
-RUN git clone https://github.com/Kotori316/QuarryPlus.git -b 1.21
+ARG branch=1.21
+
+RUN git clone https://github.com/Kotori316/QuarryPlus.git -b ${branch}
 WORKDIR /root/QuarryPlus
 RUN ./gradlew testClasses
 RUN <<EOF
@@ -29,6 +31,12 @@ EOF
 RUN ./gradlew runData
 RUN ./gradlew runCommonData
 RUN ./gradlew runGameTestServer
+RUN ./gradlew --stop
+RUN <<EOF
+set -x
+ls -al /gradle-global
+ls -al /gradle-build
+EOF
 
 FROM base AS result
 
