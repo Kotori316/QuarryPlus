@@ -1,13 +1,13 @@
 package com.yogpc.qp.machine.marker;
 
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.QpBlockItem;
 import com.yogpc.qp.machine.QpEntityBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -39,7 +39,7 @@ public class NormalMarkerBlock extends QpEntityBlock {
 
     public NormalMarkerBlock() {
         super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak().lightLevel(value -> 7).noCollission(),
-            NAME, b -> new BlockItem(b, new Item.Properties()));
+            NAME, b -> new QpBlockItem(b, new Item.Properties()));
         this.registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.UP));
     }
 

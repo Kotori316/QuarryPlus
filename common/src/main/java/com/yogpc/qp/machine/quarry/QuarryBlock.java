@@ -13,7 +13,10 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -38,7 +41,7 @@ import java.util.stream.Stream;
 public abstract class QuarryBlock extends QpEntityBlock {
     public static final String NAME = "quarry";
 
-    protected QuarryBlock(Function<QpBlock, ? extends BlockItem> itemGenerator) {
+    protected QuarryBlock(Function<QpBlock, ? extends QuarryItem> itemGenerator) {
         super(Properties.of()
             .mapColor(MapColor.METAL)
             .pushReaction(PushReaction.BLOCK)

@@ -85,7 +85,7 @@ public final class GameTestFunctions {
     }
 
     public static Holder<Enchantment> getEnchantment(GameTestHelper helper, ResourceKey<Enchantment> key) {
-        var reg = helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT);
-        return reg.getHolderOrThrow(key);
+        var reg = helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+        return reg.getOrThrow(key);
     }
 }

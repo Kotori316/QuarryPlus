@@ -5,7 +5,6 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
@@ -15,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class ExpModuleItemTest {
     static ExpModuleItem item() {
-        return ((ExpModuleItem) BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, ExpModuleItem.NAME)));
+        return ((ExpModuleItem) BuiltInRegistries.ITEM.getValue(QuarryPlus.itemKey(ExpModuleItem.NAME)));
     }
 
     public static void initStack(GameTestHelper helper) {

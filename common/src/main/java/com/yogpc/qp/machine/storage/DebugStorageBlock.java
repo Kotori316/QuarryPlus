@@ -3,6 +3,7 @@ package com.yogpc.qp.machine.storage;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.QpBlockItem;
 import com.yogpc.qp.machine.QpEntityBlock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -10,7 +11,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -24,7 +24,7 @@ public final class DebugStorageBlock extends QpEntityBlock {
     public static final String NAME = "debug_storage";
 
     public DebugStorageBlock() {
-        super(Properties.of().noLootTable(), NAME, b -> new BlockItem(b, new Item.Properties()));
+        super(Properties.of().noLootTable(), NAME, b -> new QpBlockItem(b, new Item.Properties()));
     }
 
     @Override

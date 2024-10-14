@@ -2,7 +2,6 @@ package com.yogpc.qp.machine;
 
 import com.yogpc.qp.PlatformAccess;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -14,7 +13,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public abstract class QpEntityBlock extends QpBlock implements EntityBlock {
-    public QpEntityBlock(Properties properties, String name, Function<? super QpBlock, ? extends BlockItem> itemGenerator) {
+    public QpEntityBlock(Properties properties, String name, Function<? super QpBlock, ? extends QpBlockItem> itemGenerator) {
         super(properties, name, itemGenerator);
     }
 

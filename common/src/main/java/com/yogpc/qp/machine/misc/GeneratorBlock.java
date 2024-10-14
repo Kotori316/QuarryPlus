@@ -1,16 +1,12 @@
 package com.yogpc.qp.machine.misc;
 
-import com.yogpc.qp.machine.CombinedBlockEntityTicker;
-import com.yogpc.qp.machine.PowerEntity;
-import com.yogpc.qp.machine.QpBlock;
-import com.yogpc.qp.machine.QpEntityBlock;
+import com.yogpc.qp.machine.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -43,7 +39,7 @@ public class GeneratorBlock extends QpEntityBlock {
             .mapColor(MapColor.METAL)
             .pushReaction(PushReaction.BLOCK)
             .strength(1f, 1f)
-            .sound(SoundType.STONE), NAME, block -> new BlockItem(block, new Item.Properties().fireResistant()));
+            .sound(SoundType.STONE), NAME, block -> new QpBlockItem(block, new Item.Properties().fireResistant()));
         registerDefaultState(getStateDefinition().any()
             .setValue(BlockStateProperties.LEVEL, LEVEL_MAX));
     }

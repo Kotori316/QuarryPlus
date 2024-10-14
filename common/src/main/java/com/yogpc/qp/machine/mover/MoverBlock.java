@@ -4,6 +4,7 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.enchantment.QuarryPickaxeEnchantment;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.QpBlockItem;
 import com.yogpc.qp.machine.QpEntityBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -12,7 +13,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -28,7 +32,7 @@ public final class MoverBlock extends QpEntityBlock {
     public MoverBlock() {
         super(Properties.of()
             .mapColor(MapColor.METAL)
-            .pushReaction(PushReaction.BLOCK).strength(1.2f), NAME, b -> new BlockItem(b, new Item.Properties()));
+            .pushReaction(PushReaction.BLOCK).strength(1.2f), NAME, b -> new QpBlockItem(b, new Item.Properties()));
     }
 
     @Override

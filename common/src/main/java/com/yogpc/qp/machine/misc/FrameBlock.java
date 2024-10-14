@@ -1,10 +1,10 @@
 package com.yogpc.qp.machine.misc;
 
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.QpBlockItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -40,7 +40,7 @@ public class FrameBlock extends QpBlock {
             .anyMatch(p -> !world.getFluidState(p).isEmpty());
 
     public FrameBlock() {
-        super(BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(0.5f).noLootTable(), NAME, b -> new BlockItem(b, new Item.Properties()));
+        super(BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(0.5f).noLootTable(), NAME, b -> new QpBlockItem(b, new Item.Properties()));
         this.registerDefaultState(getStateDefinition().any()
             .setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false)
             .setValue(WEST, false).setValue(UP, false).setValue(DOWN, false)

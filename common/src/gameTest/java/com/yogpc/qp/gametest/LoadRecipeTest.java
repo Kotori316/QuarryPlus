@@ -9,7 +9,9 @@ import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
 import com.yogpc.qp.machine.module.FilterModuleItem;
 import com.yogpc.qp.machine.module.RepeatTickModuleItem;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -26,9 +28,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @SuppressWarnings({"unused", "DuplicatedCode"})
 public final class LoadRecipeTest {
     public static void getRecipes(GameTestHelper helper) {
-        var manager = helper.getLevel().getRecipeManager();
+        var manager = helper.getLevel().recipeAccess();
         var recipes = manager.getRecipes().stream()
-            .filter(h -> h.id().getNamespace().equals(QuarryPlus.modID))
+            .filter(h -> h.id().location().getNamespace().equals(QuarryPlus.modID))
             .toList();
 
         assertFalse(recipes.isEmpty());
@@ -36,8 +38,8 @@ public final class LoadRecipeTest {
     }
 
     private static CraftingRecipe findRecipe(GameTestHelper helper, String id) {
-        var manager = helper.getLevel().getRecipeManager();
-        var holder = manager.byKey(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, id));
+        var manager = helper.getLevel().recipeAccess();
+        var holder = manager.byKey(ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, id)));
         if (holder.isEmpty()) {
             throw new AssertionError("Recipe %s is not found".formatted(id));
         }

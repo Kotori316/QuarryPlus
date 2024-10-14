@@ -3,12 +3,11 @@ package com.yogpc.qp.machine.mover;
 import com.yogpc.qp.BeforeMC;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.PlatformAccessDelegate;
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.QpBlockItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -45,7 +44,7 @@ class MoverEntityTest extends BeforeMC {
 
     private static class DummyBlock extends QpBlock {
         public DummyBlock() {
-            super(Properties.of(), "dummy", b -> new BlockItem(b, new Item.Properties().setId(QuarryPlus.itemKey("dummy"))));
+            super(Properties.of(), "dummy", b -> new QpBlockItem(b, new Item.Properties()));
         }
 
         @Override

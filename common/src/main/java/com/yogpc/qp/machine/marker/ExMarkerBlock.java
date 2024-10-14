@@ -2,10 +2,7 @@ package com.yogpc.qp.machine.marker;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machine.GeneralScreenHandler;
-import com.yogpc.qp.machine.QpBlock;
-import com.yogpc.qp.machine.QpEntity;
-import com.yogpc.qp.machine.QpEntityBlock;
+import com.yogpc.qp.machine.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -14,7 +11,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -34,7 +30,7 @@ sealed abstract class ExMarkerBlock extends QpEntityBlock permits FlexibleMarker
     private static final VoxelShape STANDING_Shape = Shapes.box(.35, 0, .35, .65, .65, .65);
 
     public ExMarkerBlock(Properties properties, String name) {
-        super(properties, name, b -> new BlockItem(b, new Item.Properties()));
+        super(properties, name, b -> new QpBlockItem(b, new Item.Properties()));
     }
 
     @Override
