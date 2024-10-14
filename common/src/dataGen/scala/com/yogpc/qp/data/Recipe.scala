@@ -2,13 +2,13 @@ package com.yogpc.qp.data
 
 import com.yogpc.qp.machine.exp.ExpModuleItem
 import com.yogpc.qp.machine.marker.{ChunkMarkerBlock, FlexibleMarkerBlock}
-import com.yogpc.qp.machine.module.RepeatTickModuleItem
+import com.yogpc.qp.machine.module.{FilterModuleItem, RepeatTickModuleItem}
 import com.yogpc.qp.recipe.InstallBedrockModuleRecipe
 import com.yogpc.qp.{PlatformAccess, QuarryPlus}
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.data.PackOutput
-import net.minecraft.data.recipes.{RecipeCategory, RecipeOutput, RecipeProvider, ShapedRecipeBuilder}
+import net.minecraft.data.recipes.{RecipeCategory, RecipeOutput, RecipeProvider, ShapedRecipeBuilder, ShapelessRecipeBuilder}
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.alchemy.{PotionContents, Potions}
 import net.minecraft.world.item.crafting.Ingredient
@@ -189,6 +189,15 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .pattern("eie")
       .unlockedBy(PlatformAccess.getAccess.registerObjects().quarryBlock().get())
       .save(recipeOutput)
+
+    val bookIngredient = Ingredient.of(Items.BOOK, Items.ENCHANTED_BOOK, Items.WRITABLE_BOOK, Items.WRITTEN_BOOK)
+    ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, quarryItem(FilterModuleItem.NAME))
+      .requires(bookIngredient)
+      .requires(bookIngredient)
+      .requires(ip.enderPearl)
+      .requires(ip.marker)
+      .unlockedBy(ip.markerTag)
+      .save(ip.filterModuleRecipeOutput(recipeOutput))
   }
 
   private def quarryItem(name: String): Item = {

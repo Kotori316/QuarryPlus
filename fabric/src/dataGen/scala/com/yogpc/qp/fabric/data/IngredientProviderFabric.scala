@@ -44,6 +44,8 @@ final class IngredientProviderFabric(withCondition: (RecipeOutput, Seq[ResourceC
 
   override def repeatTickModuleRecipeOutput(original: RecipeOutput): RecipeOutput = pumpModuleRecipeOutput(original)
 
+  override def filterModuleRecipeOutput(original: RecipeOutput): RecipeOutput = pumpModuleRecipeOutput(original)
+
   override def enderPearl: Ingredient = Ingredient.of(ConventionalItemTags.ENDER_PEARLS)
 
   override def amethyst: Ingredient = Ingredient.of(ConventionalItemTags.AMETHYST_GEMS)

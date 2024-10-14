@@ -59,4 +59,6 @@ trait IngredientProvider {
   def installBedrockModuleQuarryRecipeOutput(original: RecipeOutput): RecipeOutput = original
 
   def repeatTickModuleRecipeOutput(original: RecipeOutput): RecipeOutput = original
+
+  def filterModuleRecipeOutput(original: RecipeOutput): RecipeOutput = original
 }

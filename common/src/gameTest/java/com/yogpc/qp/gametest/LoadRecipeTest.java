@@ -6,6 +6,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
 import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
+import com.yogpc.qp.machine.module.FilterModuleItem;
 import com.yogpc.qp.machine.module.RepeatTickModuleItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -393,6 +394,31 @@ public final class LoadRecipeTest {
             a, p, a,
             p, w, p,
             a, p, m
+        ));
+
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        assertEquals(name, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
+        helper.succeed();
+    }
+
+    public static void createFilterModule(GameTestHelper helper) {
+        var name = FilterModuleItem.NAME;
+        var recipe = findRecipeNullable(helper, name);
+        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+            assertNull(recipe, "This recipe(%s) must not be loaded in fabric".formatted(name));
+            helper.succeed();
+            return;
+        }
+        assertNotNull(recipe, "Recipe not found");
+
+        var b = Items.BOOK.getDefaultInstance();
+        var e = Items.ENCHANTED_BOOK.getDefaultInstance();
+        var p = Items.ENDER_PEARL.getDefaultInstance();
+        var m = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
+        var input = CraftingInput.of(2, 2, List.of(
+            b, e,
+            p, m
         ));
 
         assertTrue(recipe.matches(input, helper.getLevel()));
