@@ -6,7 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -17,13 +17,13 @@ import net.minecraft.world.phys.Vec3;
 
 public final class AdvQuarryBlockFabric extends AdvQuarryBlock {
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         var item = PlatformAccess.getAccess().registerObjects().bedrockModuleItem().get();
         if (stack.is(item)) {
             var entity = this.<AdvQuarryEntityFabric>getBlockEntityType().map(t -> t.getBlockEntity(level, pos)).orElse(null);
             if (entity != null && !level.isClientSide()) {
                 if (!item.isEnabled()) {
-                    player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", Component.translatable(stack.getDescriptionId())), true);
+                    player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", stack.getItemName()), true);
                 } else if (!entity.enabled) {
                     player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
                 } else {
@@ -31,7 +31,7 @@ public final class AdvQuarryBlockFabric extends AdvQuarryBlock {
                     player.displayClientMessage(Component.literal("Set removeBedrock: %s".formatted(entity.shouldRemoveBedrock)), false);
                 }
             }
-            return ItemInteractionResult.sidedSuccess(level.isClientSide());
+            return InteractionResult.SUCCESS_SERVER;
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }

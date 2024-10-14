@@ -49,7 +49,7 @@ public final class QuarryBlockFabric extends QuarryBlock {
                     player.displayClientMessage(Component.literal("Set removeBedrock: %s".formatted(entity.shouldRemoveBedrock)), false);
                 }
             }
-            return ItemInteractionResult.sidedSuccess(level.isClientSide());
+            return ItemInteractionResult.SUCCESS_SERVER;
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }

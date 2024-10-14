@@ -187,6 +187,9 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             if (item instanceof InCreativeTabs c) {
                 TAB_ITEMS.add(c);
             }
+            if (item instanceof BlockItem blockItem) {
+                blockItem.registerBlocks(Item.BY_BLOCK, blockItem);
+            }
         }
 
         @Override

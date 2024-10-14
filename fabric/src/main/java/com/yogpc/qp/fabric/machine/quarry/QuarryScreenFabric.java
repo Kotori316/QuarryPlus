@@ -28,7 +28,7 @@ public final class QuarryScreenFabric extends AbstractContainerScreen<QuarryMenu
 
     @Override
     protected void renderBg(GuiGraphics graphics, float f, int i, int j) {
-        graphics.blit(texture, leftPos, topPos, 0, 0, this.imageWidth, this.imageHeight);
+        graphics.blit(RenderType::guiTextured, texture, leftPos, topPos, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
     }
 
     @Override
