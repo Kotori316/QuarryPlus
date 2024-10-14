@@ -28,7 +28,7 @@ val releaseDebug: Boolean = (System.getenv("RELEASE_DEBUG") ?: "true").toBoolean
 base {
     group = "com.kotori316"
     archivesName.set("AdditionalEnchantedMiner-${minecraft}-${getPlatform(project)}")
-    val mcVersionSplit = minecraft.split(".").drop(1)
+    val mcVersionSplit = minecraft.split("-")[0].split(".").drop(1)
     val major = mcVersionSplit[0]
     val minor = mcVersionSplit.getOrElse(1) { _ -> "0" }
     val versionMinor: String? by project

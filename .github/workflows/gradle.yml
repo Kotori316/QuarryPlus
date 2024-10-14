@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "1.21"
+      - "1.21.2"
     tags:
       - "!*"
   pull_request:
     branches:
-      - "1.21"
+      - "1.21.2"
 
 permissions:
   contents: read
@@ -40,7 +40,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ common, fabric, forge, neoforge ]
+        platform:
+          - common
+          - fabric
+          # - forge
+          # - neoforge
     env:
       DISABLE_FORGE: ${{ matrix.platform != 'forge' }}
       DISABLE_FABRIC: ${{ matrix.platform != 'fabric' }}
