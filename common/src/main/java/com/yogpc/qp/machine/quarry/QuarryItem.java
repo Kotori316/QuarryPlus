@@ -1,10 +1,12 @@
 package com.yogpc.qp.machine.quarry;
 
+import com.yogpc.qp.machine.QpBlock;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.level.block.Block;
 
 public abstract class QuarryItem extends BlockItem {
-    protected QuarryItem(Block block) {
-        super(block, new Properties().fireResistant());
+    protected QuarryItem(QpBlock block) {
+        super(block, new Properties().fireResistant().setId(ResourceKey.create(Registries.ITEM, block.name)));
     }
 }

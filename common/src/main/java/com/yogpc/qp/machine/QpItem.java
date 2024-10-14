@@ -16,7 +16,7 @@ public abstract class QpItem extends Item implements InCreativeTabs {
     public final ResourceLocation name;
 
     public QpItem(Properties properties, String name) {
-        super(properties);
+        super(properties.setId(QuarryPlus.itemKey(name)));
         this.name = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name);
     }
 

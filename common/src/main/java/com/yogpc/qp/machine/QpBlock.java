@@ -14,7 +14,7 @@ public abstract class QpBlock extends Block implements InCreativeTabs {
     public final BlockItem blockItem;
 
     public QpBlock(Properties properties, String name, Function<? super QpBlock, ? extends BlockItem> itemGenerator) {
-        super(properties);
+        super(properties.setId(QuarryPlus.blockKey(name)));
         this.name = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name);
         this.blockItem = itemGenerator.apply(this);
     }

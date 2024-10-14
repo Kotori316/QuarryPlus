@@ -1,6 +1,7 @@
 package com.yogpc.qp.machine.module;
 
 import com.yogpc.qp.BeforeMC;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.QpItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +35,7 @@ class ModuleInventoryTest extends BeforeMC {
         private final QuarryModule module;
 
         Module1(QuarryModule module) {
-            super(new Properties());
+            super(new Properties().setId(QuarryPlus.itemKey("module1")));
             this.module = module;
         }
 
