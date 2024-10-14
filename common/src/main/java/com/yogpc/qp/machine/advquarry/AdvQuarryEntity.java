@@ -7,10 +7,7 @@ import com.yogpc.qp.machine.exp.ExpModule;
 import com.yogpc.qp.machine.misc.BlockBreakEventResult;
 import com.yogpc.qp.machine.misc.DigMinY;
 import com.yogpc.qp.machine.misc.QuarryChunkLoader;
-import com.yogpc.qp.machine.module.ModuleInventory;
-import com.yogpc.qp.machine.module.QuarryModule;
-import com.yogpc.qp.machine.module.QuarryModuleProvider;
-import com.yogpc.qp.machine.module.RepeatTickModuleItem;
+import com.yogpc.qp.machine.module.*;
 import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -77,6 +74,8 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
     boolean searchEnergyConsumed = false;
     @NotNull
     QuarryChunkLoader chunkLoader = QuarryChunkLoader.None.INSTANCE;
+    @NotNull
+    ItemConverter itemConverter = defaultItemConverter();
 
     protected AdvQuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -247,6 +246,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                 QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
             );
         }
+        this.itemConverter = defaultItemConverter().concat(ConverterModule.findConversions(this.modules));
     }
 
     protected int repeatCount() {
@@ -467,7 +467,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe);
         var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, drops, pickaxe, stateAfterBreak(serverLevel, target, state));
         if (!afterBreakEventResult.canceled()) {
-            drops.forEach(storage::addItem);
+            drops.stream().flatMap(itemConverter::convert).forEach(storage::addItem);
             var amount = eventResult.exp().orElse(afterBreakEventResult.exp().orElse(0));
             if (amount != 0) {
                 getExpModule().ifPresent(e -> e.addExp(amount));
@@ -498,12 +498,12 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         var aabb = new AABB(x - 5, digMinY.getMinY(serverLevel) - 5, z - 5, x + 5, getBlockPos().getY() - 1, z + 5);
         serverLevel.getEntitiesOfClass(ItemEntity.class, aabb, Predicate.not(i -> i.getItem().isEmpty()))
             .forEach(i -> {
-                storage.addItem(i.getItem());
+                itemConverter.convert(i.getItem()).forEach(storage::addItem);
                 i.kill();
             });
         serverLevel.getEntitiesOfClass(FallingBlockEntity.class, aabb)
             .forEach(i -> {
-                storage.addItem(new ItemStack(i.getBlockState().getBlock()));
+                itemConverter.convert(new ItemStack(i.getBlockState().getBlock())).forEach(storage::addItem);
                 i.discard();
             });
         getExpModule().ifPresent(e ->
@@ -592,7 +592,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
             var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe);
             var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, drops, pickaxe, stateAfterBreak(serverLevel, target, state));
             if (!afterBreakEventResult.canceled()) {
-                drops.forEach(storage::addItem);
+                drops.stream().flatMap(itemConverter::convert).forEach(storage::addItem);
                 var amount = resultMap.getOrDefault(target, BlockBreakEventResult.EMPTY).exp().orElse(afterBreakEventResult.exp().orElse(0));
                 exp.addAndGet(amount);
             }
@@ -756,5 +756,13 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
 
     static boolean moduleFilter(QuarryModule module) {
         return module != QuarryModule.Constant.PUMP;
+    }
+
+    static ItemConverter defaultItemConverter() {
+        if (PlatformAccess.config().removeCommonMaterialsByChunkDestroyer()) {
+            return ItemConverter.defaultInstance().concat(List.of(new ItemConverter.ChunkDestroyerConversion()));
+        } else {
+            return ItemConverter.defaultInstance();
+        }
     }
 }

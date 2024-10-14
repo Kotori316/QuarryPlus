@@ -67,7 +67,7 @@ final class StateAndModelProvider extends BlockStateProvider {
         // Items
         simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_EXP_MODULE.get(), "block/exp_pump_side");
         // simpleItem(Holder.ITEM_FILLER_MODULE);
-        // simpleItem(Holder.ITEM_FILTER_MODULE, "item/void_module");
+        simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_FILTER_MODULE.get(), "item/void_module");
         // simpleItem(Holder.ITEM_FUEL_MODULE_NORMAL);
         simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_PUMP_MODULE.get(), "block/pump_side");
         simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_BEDROCK_MODULE.get(), "item/bedrock_module");

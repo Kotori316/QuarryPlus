@@ -112,4 +112,29 @@ class ItemConverterTest extends BeforeMC {
             Items.WHEAT.getDefaultInstance()
         );
     }
+
+    @ParameterizedTest
+    @MethodSource("concatTarget")
+    void concat(ItemStack stack) {
+        var converter = new ItemConverter(List.of(
+            new ItemConverter.ToEmptyConverter(Set.of(
+                MachineStorage.ItemKey.of(Items.BREAD.getDefaultInstance())
+            )),
+            new ItemConverter.DeepslateOreConversion()));
+
+        var converted = converter.convert(stack).toList();
+        if (!converted.isEmpty()) {
+            assertNotSame(stack, converted.getFirst());
+        }
+    }
+
+    static Stream<ItemStack> concatTarget() {
+        return Stream.concat(
+            Stream.of(
+                Items.BREAD.getDefaultInstance()
+            ),
+            conversionDeepslate().map(a -> (ItemStack) a.get()[0])
+        );
+    }
+
 }

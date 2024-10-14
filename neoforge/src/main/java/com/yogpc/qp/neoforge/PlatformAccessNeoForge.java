@@ -14,10 +14,7 @@ import com.yogpc.qp.machine.advquarry.AdvQuarryContainer;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
 import com.yogpc.qp.machine.marker.*;
 import com.yogpc.qp.machine.misc.*;
-import com.yogpc.qp.machine.module.BedrockModuleItem;
-import com.yogpc.qp.machine.module.ModuleContainer;
-import com.yogpc.qp.machine.module.PumpModuleItem;
-import com.yogpc.qp.machine.module.RepeatTickModuleItem;
+import com.yogpc.qp.machine.module.*;
 import com.yogpc.qp.machine.mover.MoverBlock;
 import com.yogpc.qp.machine.mover.MoverContainer;
 import com.yogpc.qp.machine.mover.MoverEntity;
@@ -36,6 +33,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -99,6 +97,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredItem<BedrockModuleItem> ITEM_BEDROCK_MODULE = registerItem(BedrockModuleItem.NAME, BedrockModuleItem::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final DeferredItem<ExpModuleItem> ITEM_EXP_MODULE = registerItem(ExpModuleItem.NAME, ExpModuleItem::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final DeferredItem<RepeatTickModuleItem> ITEM_REPEAT_MODULE = registerItem(RepeatTickModuleItem.NAME, RepeatTickModuleItem::new, EnableMap.EnableOrNot.CONFIG_OFF);
+        public static final DeferredItem<FilterModuleItem> ITEM_FILTER_MODULE = registerItem(FilterModuleItem.NAME, FilterModuleItem::new, EnableMap.EnableOrNot.CONFIG_ON);
         // Misc
         public static final DeferredItem<CheckerItemNeoForge> ITEM_CHECKER = registerItem(CheckerItemNeoForge.NAME, CheckerItemNeoForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
         public static final DeferredItem<YSetterItemNeoForge> ITEM_Y_SET = registerItem(YSetterItemNeoForge.NAME, YSetterItemNeoForge::new, EnableMap.EnableOrNot.ALWAYS_ON);
@@ -124,12 +123,16 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredHolder<MenuType<?>, MenuType<? extends MarkerContainer>> CHUNK_MARKER_MENU_TYPE = registerMenu(MarkerContainer.CHUNK_NAME, MarkerContainer::createChunkMarkerContainer);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends DebugStorageContainer>> DEBUG_STORAGE_MENU_TYPE = registerMenu(DebugStorageContainer.NAME, DebugStorageContainer::new);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends AdvQuarryContainer>> ADV_QUARRY_MENU_TYPE = registerMenu(AdvQuarryContainer.NAME, AdvQuarryContainer::new);
+        public static final DeferredHolder<MenuType<?>, MenuType<? extends FilterModuleContainer>> FILTER_MODULE_MENU_TYPE = MENU_TYPE_REGISTER.register(FilterModuleContainer.NAME, () ->
+            IMenuTypeExtension.create((windowId, inv, data) -> new FilterModuleContainer(windowId, inv, inv.getSelected())));
+
         public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<? extends MachineLootFunction>> MACHINE_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(MachineLootFunction.NAME, () -> new LootItemFunctionType<>(MachineLootFunction.SERIALIZER));
         public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<InstallBedrockModuleRecipe>> INSTALL_BEDROCK_MODULE_RECIPE = RECIPE_REGISTER.register(InstallBedrockModuleRecipe.NAME, () -> InstallBedrockModuleRecipe.SERIALIZER);
 
         static {
-            DATA_COMPONENT_TYPE_REGISTER.register("quarry_remove_bedrock_component", () -> QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT);
-            DATA_COMPONENT_TYPE_REGISTER.register("quarry_holding_exp_component", () -> QuarryDataComponents.HOLDING_EXP_COMPONENT);
+            for (Map.Entry<ResourceLocation, DataComponentType<?>> e : QuarryDataComponents.ALL.entrySet()) {
+                DATA_COMPONENT_TYPE_REGISTER.register(e.getKey().getPath(), e::getValue);
+            }
         }
 
         private static <T extends QpBlock> DeferredBlock<T> registerBlock(String name, Supplier<T> supplier) {
@@ -273,6 +276,11 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         @Override
         public Supplier<MenuType<? extends AdvQuarryContainer>> advQuarryContainer() {
             return ADV_QUARRY_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<MenuType<? extends FilterModuleContainer>> filterModuleContainer() {
+            return FILTER_MODULE_MENU_TYPE;
         }
 
         @Override

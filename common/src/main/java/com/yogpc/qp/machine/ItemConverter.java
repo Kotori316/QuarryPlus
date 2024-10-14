@@ -1,5 +1,6 @@
 package com.yogpc.qp.machine;
 
+import com.yogpc.qp.PlatformAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -8,11 +9,21 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 public record ItemConverter(List<Conversion> conversions) {
+
+    public static ItemConverter defaultInstance() {
+        List<Conversion> conversions;
+        if (PlatformAccess.config().convertDeepslateOres()) {
+            conversions = List.of(new DeepslateOreConversion());
+        } else {
+            conversions = List.of();
+        }
+        return new ItemConverter(conversions);
+    }
 
     public interface Conversion {
         /**
@@ -48,7 +59,8 @@ public record ItemConverter(List<Conversion> conversions) {
             var newId = id.withPath(s -> s.replace("deepslate_", "").replace("_deepslate", ""));
             return BuiltInRegistries.ITEM.getHolder(newId)
                 .map(h -> new ItemStack(h, stack.getCount(), stack.getComponentsPatch()))
-                .stream();
+                .map(Stream::of)
+                .orElseGet(() -> Stream.of(stack));
         }
 
         @Override
@@ -69,7 +81,12 @@ public record ItemConverter(List<Conversion> conversions) {
         @Override
         public boolean shouldApply(ItemStack stack) {
             // Check item tag
-            if (stack.is(ItemTags.DIRT) || stack.is(Items.COBBLESTONE)) {
+            if (
+                stack.is(ItemTags.DIRT)
+                    || stack.is(Items.COBBLESTONE)
+                    || stack.is(Items.SANDSTONE)
+                    || stack.is(Items.RED_SANDSTONE)
+            ) {
                 return true;
             }
             if (stack.getItem() instanceof BlockItem blockItem) {
@@ -80,7 +97,7 @@ public record ItemConverter(List<Conversion> conversions) {
         }
     }
 
-    public record ToEmptyConverter(Set<MachineStorage.ItemKey> itemKeys) implements Conversion {
+    public record ToEmptyConverter(Collection<MachineStorage.ItemKey> itemKeys) implements Conversion {
 
         @Override
         public Stream<ItemStack> convert(ItemStack stack) {

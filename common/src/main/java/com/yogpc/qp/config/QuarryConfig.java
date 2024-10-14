@@ -24,6 +24,10 @@ public interface QuarryConfig {
 
     boolean enableChunkLoader();
 
+    boolean convertDeepslateOres();
+
+    boolean removeCommonMaterialsByChunkDestroyer();
+
     static QuarryConfig load(Path path, BooleanSupplier inDevelop) {
         try (var config = CommentedFileConfig.builder(path)
             .preserveInsertionOrder()

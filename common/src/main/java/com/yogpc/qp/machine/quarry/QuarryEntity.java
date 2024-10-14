@@ -8,10 +8,7 @@ import com.yogpc.qp.machine.exp.ExpModule;
 import com.yogpc.qp.machine.misc.BlockBreakEventResult;
 import com.yogpc.qp.machine.misc.DigMinY;
 import com.yogpc.qp.machine.misc.QuarryChunkLoader;
-import com.yogpc.qp.machine.module.ModuleInventory;
-import com.yogpc.qp.machine.module.QuarryModule;
-import com.yogpc.qp.machine.module.QuarryModuleProvider;
-import com.yogpc.qp.machine.module.RepeatTickModuleItem;
+import com.yogpc.qp.machine.module.*;
 import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -84,6 +81,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     final ModuleInventory moduleInventory = new ModuleInventory(5, q -> true, m -> modules, this::setChanged);
     @NotNull
     QuarryChunkLoader chunkLoader = QuarryChunkLoader.None.INSTANCE;
+    @NotNull
+    ItemConverter itemConverter = defaultItemConverter();
 
     protected QuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -264,6 +263,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
             );
         }
+        this.itemConverter = defaultItemConverter().concat(ConverterModule.findConversions(this.modules));
     }
 
     public String renderMode() {
@@ -532,7 +532,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         if (target.getX() % 3 == 0 && target.getZ() % 3 == 0) {
             serverLevel.getEntitiesOfClass(ItemEntity.class, new AABB(target).inflate(5), Predicate.not(i -> i.getItem().isEmpty()))
                 .forEach(i -> {
-                    storage.addItem(i.getItem());
+                    itemConverter.convert(i.getItem()).forEach(storage::addItem);
                     i.kill();
                 });
             if (shouldCollectExp()) {
@@ -584,7 +584,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe);
             var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, drops, pickaxe, stateAfterBreak(serverLevel, target, state));
             if (!afterBreakEventResult.canceled()) {
-                drops.forEach(storage::addItem);
+                drops.stream().flatMap(itemConverter::convert).forEach(storage::addItem);
                 var amount = eventResult.exp().orElse(afterBreakEventResult.exp().orElse(0));
                 if (amount != 0) {
                     getExpModule().ifPresent(e -> e.addExp(amount));
@@ -760,5 +760,9 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 .set(DataComponents.ENCHANTMENTS, enchantments)
                 .build()
         );
+    }
+
+    static ItemConverter defaultItemConverter() {
+        return ItemConverter.defaultInstance();
     }
 }

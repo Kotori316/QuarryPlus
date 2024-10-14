@@ -1,0 +1,44 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    [
+      {
+        "item": "minecraft:book"
+      },
+      {
+        "item": "minecraft:enchanted_book"
+      },
+      {
+        "item": "minecraft:writable_book"
+      },
+      {
+        "item": "minecraft:written_book"
+      }
+    ],
+    [
+      {
+        "item": "minecraft:book"
+      },
+      {
+        "item": "minecraft:enchanted_book"
+      },
+      {
+        "item": "minecraft:writable_book"
+      },
+      {
+        "item": "minecraft:written_book"
+      }
+    ],
+    {
+      "tag": "c:ender_pearls"
+    },
+    {
+      "tag": "quarryplus:markers"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "quarryplus:filter_module"
+  }
+}

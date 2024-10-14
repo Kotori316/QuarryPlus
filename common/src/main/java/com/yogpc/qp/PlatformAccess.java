@@ -16,6 +16,7 @@ import com.yogpc.qp.machine.misc.GeneratorBlock;
 import com.yogpc.qp.machine.misc.SoftBlock;
 import com.yogpc.qp.machine.misc.YSetterContainer;
 import com.yogpc.qp.machine.module.BedrockModuleItem;
+import com.yogpc.qp.machine.module.FilterModuleContainer;
 import com.yogpc.qp.machine.module.ModuleContainer;
 import com.yogpc.qp.machine.mover.MoverBlock;
 import com.yogpc.qp.machine.mover.MoverContainer;
@@ -107,6 +108,8 @@ public interface PlatformAccess {
         Supplier<MenuType<? extends DebugStorageContainer>> debugStorageContainer();
 
         Supplier<MenuType<? extends AdvQuarryContainer>> advQuarryContainer();
+
+        Supplier<MenuType<? extends FilterModuleContainer>> filterModuleContainer();
 
         Supplier<LootItemFunctionType<? extends MachineLootFunction>> machineLootFunction();
     }
