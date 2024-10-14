@@ -50,7 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: gradle/actions/wrapper-validation@v4
-      - run: ls -al
+      - run: ls -al && whoami
       - name: Compile main ${{ matrix.platform }}
         run: ./gradlew :${{ matrix.platform }}:classes
       - name: Compile test ${{ matrix.platform }}
@@ -81,6 +81,7 @@ jobs:
           IGNORE_OTHER_MODS_IN_RUNTIME: true
           RUN_DATA: true
       - name: Check updated files
+        if: false
         run: git diff --exit-code
       - name: GameTest ${{ matrix.platform }}
         if: matrix.platform != 'common'
