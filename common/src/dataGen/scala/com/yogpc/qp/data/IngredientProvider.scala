@@ -1,14 +1,15 @@
 package com.yogpc.qp.data
 
 import com.yogpc.qp.QuarryPlus
-import net.minecraft.core.registries.{BuiltInRegistries, Registries}
+import net.minecraft.core.HolderGetter
+import net.minecraft.core.registries.Registries
 import net.minecraft.data.recipes.RecipeOutput
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.TagKey
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.crafting.Ingredient
 
-trait IngredientProvider {
+trait IngredientProvider(itemRegistry: HolderGetter[Item]) {
   def glowStoneDust: Ingredient
 
   def redStoneDust: Ingredient
@@ -27,7 +28,7 @@ trait IngredientProvider {
 
   def netherStar: Ingredient
 
-  def obsidian: Ingredient = Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(obsidianTag))
+  def obsidian: Ingredient = Ingredient.of(itemRegistry.getOrThrow(obsidianTag))
 
   def obsidianTag: TagKey[Item]
 
@@ -45,7 +46,7 @@ trait IngredientProvider {
 
   def marker: Ingredient = {
     val tag = markerTag
-    Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(tag))
+    Ingredient.of(itemRegistry.getOrThrow(tag))
   }
 
   def markerTag: TagKey[Item] = {
