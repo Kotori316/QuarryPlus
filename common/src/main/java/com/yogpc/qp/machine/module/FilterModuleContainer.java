@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public final class FilterModuleContainer extends AbstractContainerMenu {
     public static final String NAME = "gui_" + FilterModuleItem.NAME;
@@ -113,6 +114,7 @@ public final class FilterModuleContainer extends AbstractContainerMenu {
                 filterModuleItem.remove(QuarryDataComponents.ITEM_KEY_LIST_COMPONENT);
             } else {
                 List<MachineStorage.ItemKey> itemKeys = getItems().stream()
+                    .filter(Predicate.not(ItemStack::isEmpty))
                     .map(MachineStorage.ItemKey::of)
                     .toList();
                 filterModuleItem.set(QuarryDataComponents.ITEM_KEY_LIST_COMPONENT, itemKeys);
