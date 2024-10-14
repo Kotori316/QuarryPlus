@@ -32,11 +32,11 @@ includeBuild("build-logic")
 include("common")
 include("dependency-check")
 if (!System.getenv("DISABLE_FORGE").toBoolean()) {
-    include("forge")
+    // include("forge")
 }
 if (!System.getenv("DISABLE_FABRIC").toBoolean()) {
     include("fabric")
 }
 if (!System.getenv("DISABLE_NEOFORGE").toBoolean()) {
-    include("neoforge")
+    // include("neoforge")
 }
