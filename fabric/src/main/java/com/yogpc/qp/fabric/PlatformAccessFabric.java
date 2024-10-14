@@ -105,6 +105,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final BlockEntityType<DebugStorageEntity> DEBUG_STORAGE_TYPE = BlockEntityType.Builder.of(DebugStorageEntity::new, DEBUG_STORAGE_BLOCK).build(DSL.emptyPartType());
         public static final MenuType<DebugStorageContainer> DEBUG_STORAGE_MENU = new ExtendedScreenHandlerType<>(DebugStorageContainer::new, BlockPos.STREAM_CODEC);
         public static final FilterModuleItem FILTER_MODULE_ITEM = new FilterModuleItem();
+        public static final MenuType<FilterModuleContainer> FILTER_MODULE_MENU = new ExtendedScreenHandlerType<>((i, inventory, pos) -> new FilterModuleContainer(i, inventory, inventory.getSelected()), BlockPos.STREAM_CODEC);
 
         public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
 
@@ -132,7 +133,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerItem(BEDROCK_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_OFF);
             registerItem(EXP_MODULE_ITEM, EnableMap.EnableOrNot.ALWAYS_OFF);
             registerItem(REPEAT_TICK_MODULE_ITEM, EnableMap.EnableOrNot.ALWAYS_OFF);
-            registerItem(FILTER_MODULE_ITEM, EnableMap.EnableOrNot.CONFIG_ON);
+            registerItem(FILTER_MODULE_ITEM, EnableMap.EnableOrNot.ALWAYS_OFF);
             // Misc
             registerItem(CHECKER_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
             registerItem(Y_SET_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
@@ -147,6 +148,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             Registry.register(BuiltInRegistries.MENU, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MarkerContainer.CHUNK_NAME), CHUNK_MARKER_MENU);
             Registry.register(BuiltInRegistries.MENU, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, DebugStorageContainer.NAME), DEBUG_STORAGE_MENU);
             Registry.register(BuiltInRegistries.MENU, AdvQuarryContainer.GUI_ID, ADV_QUARRY_MENU);
+            Registry.register(BuiltInRegistries.MENU, FilterModuleContainer.GUI_ID, FILTER_MODULE_MENU);
             Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MachineLootFunction.NAME), MACHINE_LOOT_FUNCTION);
             Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
             for (Map.Entry<ResourceLocation, DataComponentType<?>> entry : QuarryDataComponents.ALL.entrySet()) {
@@ -295,6 +297,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         @Override
         public Supplier<MenuType<? extends AdvQuarryContainer>> advQuarryContainer() {
             return Lazy.value(ADV_QUARRY_MENU);
+        }
+
+        @Override
+        public Supplier<MenuType<? extends FilterModuleContainer>> filterModuleContainer() {
+            return Lazy.value(FILTER_MODULE_MENU);
         }
 
         @Override

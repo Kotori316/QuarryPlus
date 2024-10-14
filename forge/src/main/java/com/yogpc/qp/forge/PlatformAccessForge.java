@@ -130,6 +130,8 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<MenuType<? extends MarkerContainer>> CHUNK_MARKER_MENU_TYPE = registerMenu(MarkerContainer.CHUNK_NAME, MarkerContainer::createChunkMarkerContainer);
         public static final RegistryObject<MenuType<? extends DebugStorageContainer>> DEBUG_STORAGE_MENU_TYPE = registerMenu(DebugStorageContainer.NAME, DebugStorageContainer::new);
         public static final RegistryObject<MenuType<? extends AdvQuarryContainer>> ADV_QUARRY_MENU_TYPE = registerMenu(AdvQuarryContainer.NAME, AdvQuarryContainer::new);
+        public static final RegistryObject<MenuType<? extends FilterModuleContainer>> FILTER_MODULE_MENU_TYPE = MENU_TYPE_REGISTER.register(FilterModuleContainer.NAME, () ->
+            IForgeMenuType.create((windowId, inv, data) -> new FilterModuleContainer(windowId, inv, inv.getSelected())));
 
         public static final RegistryObject<LootItemFunctionType<? extends MachineLootFunction>> MACHINE_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(MachineLootFunction.NAME, () -> new LootItemFunctionType<>(MachineLootFunction.SERIALIZER));
 
@@ -283,6 +285,11 @@ public final class PlatformAccessForge implements PlatformAccess {
         @Override
         public Supplier<MenuType<? extends AdvQuarryContainer>> advQuarryContainer() {
             return ADV_QUARRY_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<MenuType<? extends FilterModuleContainer>> filterModuleContainer() {
+            return FILTER_MODULE_MENU_TYPE;
         }
 
         @Override

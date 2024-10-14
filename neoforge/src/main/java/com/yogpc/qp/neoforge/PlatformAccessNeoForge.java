@@ -123,6 +123,9 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredHolder<MenuType<?>, MenuType<? extends MarkerContainer>> CHUNK_MARKER_MENU_TYPE = registerMenu(MarkerContainer.CHUNK_NAME, MarkerContainer::createChunkMarkerContainer);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends DebugStorageContainer>> DEBUG_STORAGE_MENU_TYPE = registerMenu(DebugStorageContainer.NAME, DebugStorageContainer::new);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends AdvQuarryContainer>> ADV_QUARRY_MENU_TYPE = registerMenu(AdvQuarryContainer.NAME, AdvQuarryContainer::new);
+        public static final DeferredHolder<MenuType<?>, MenuType<? extends FilterModuleContainer>> FILTER_MODULE_MENU_TYPE = MENU_TYPE_REGISTER.register(FilterModuleContainer.NAME, () ->
+            IMenuTypeExtension.create((windowId, inv, data) -> new FilterModuleContainer(windowId, inv, inv.getSelected())));
+
         public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<? extends MachineLootFunction>> MACHINE_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(MachineLootFunction.NAME, () -> new LootItemFunctionType<>(MachineLootFunction.SERIALIZER));
         public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<InstallBedrockModuleRecipe>> INSTALL_BEDROCK_MODULE_RECIPE = RECIPE_REGISTER.register(InstallBedrockModuleRecipe.NAME, () -> InstallBedrockModuleRecipe.SERIALIZER);
 
@@ -273,6 +276,11 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         @Override
         public Supplier<MenuType<? extends AdvQuarryContainer>> advQuarryContainer() {
             return ADV_QUARRY_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<MenuType<? extends FilterModuleContainer>> filterModuleContainer() {
+            return FILTER_MODULE_MENU_TYPE;
         }
 
         @Override

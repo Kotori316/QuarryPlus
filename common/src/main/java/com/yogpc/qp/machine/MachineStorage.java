@@ -121,7 +121,7 @@ public class MachineStorage {
     }
 
     public record ItemKey(Item item, DataComponentPatch patch) {
-        static ItemKey of(ItemStack stack) {
+        public static ItemKey of(ItemStack stack) {
             return new ItemKey(stack.getItem(), stack.getComponentsPatch());
         }
 
