@@ -59,7 +59,7 @@ public final class InstallBedrockModuleRecipe implements CraftingRecipe {
             return false;
         }
         // Check quarry's component
-        var stack = input.items().stream().filter(s -> s.getItem() == block.blockItem).findFirst().map(ItemStack::copy).orElse(ItemStack.EMPTY);
+        var stack = input.items().stream().filter(s -> s.is(block.blockItem)).findFirst().map(ItemStack::copy).orElse(ItemStack.EMPTY);
         var installed = stack.getOrDefault(QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT, Boolean.FALSE);
 
         return !installed;
@@ -67,7 +67,7 @@ public final class InstallBedrockModuleRecipe implements CraftingRecipe {
 
     @Override
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
-        var stack = input.items().stream().filter(s -> s.getItem() == block.blockItem).findFirst().map(ItemStack::copy).orElse(ItemStack.EMPTY);
+        var stack = input.items().stream().filter(s -> s.is(block.blockItem)).findFirst().map(ItemStack::copy).orElse(ItemStack.EMPTY);
         stack.set(QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT, true);
         return stack;
     }
@@ -127,6 +127,7 @@ public final class InstallBedrockModuleRecipe implements CraftingRecipe {
         }
 
         @Override
+        @Deprecated
         public StreamCodec<RegistryFriendlyByteBuf, InstallBedrockModuleRecipe> streamCodec() {
             return STREAM_CODEC;
         }

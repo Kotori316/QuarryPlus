@@ -1,16 +1,16 @@
 package com.yogpc.qp.fabric.machine.quarry;
 
 import com.yogpc.qp.QuarryDataComponents;
+import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.quarry.QuarryItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.block.Block;
 
 import java.util.List;
 
 public final class QuarryItemFabric extends QuarryItem {
-    public QuarryItemFabric(Block block) {
+    public QuarryItemFabric(QpBlock block) {
         super(block);
     }
 

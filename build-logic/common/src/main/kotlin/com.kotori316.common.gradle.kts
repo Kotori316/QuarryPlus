@@ -168,6 +168,10 @@ tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
+tasks.compileJava {
+    options.compilerArgs.add("-Xlint:deprecation")
+}
+
 tasks.named("sourcesJar", org.gradle.jvm.tasks.Jar::class) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
