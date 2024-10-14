@@ -759,6 +759,10 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
     }
 
     static ItemConverter defaultItemConverter() {
-        return ItemConverter.defaultInstance().concat(List.of(new ItemConverter.ChunkDestroyerConversion()));
+        if (PlatformAccess.config().removeCommonMaterialsByChunkDestroyer()) {
+            return ItemConverter.defaultInstance().concat(List.of(new ItemConverter.ChunkDestroyerConversion()));
+        } else {
+            return ItemConverter.defaultInstance();
+        }
     }
 }
