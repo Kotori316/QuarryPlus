@@ -2,6 +2,7 @@ package com.yogpc.qp.machine.quarry;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.gametest.GameTestFunctions;
+import com.yogpc.qp.machine.PowerEntity;
 import com.yogpc.qp.machine.module.ModuleInventoryHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -118,6 +119,8 @@ public final class PlaceQuarryTest {
         assertEquals(3, enchantments.getLevel(GameTestFunctions.getEnchantment(helper, Enchantments.EFFICIENCY)));
         assertEquals(3, enchantments.getLevel(GameTestFunctions.getEnchantment(helper, Enchantments.UNBREAKING)));
         assertEquals(0, enchantments.getLevel(GameTestFunctions.getEnchantment(helper, Enchantments.SHARPNESS)));
+
+        assertEquals(PlatformAccess.config().powerMap().quarry().maxEnergy() * 4 * PowerEntity.ONE_FE, quarry.getMaxEnergy());
 
         helper.succeed();
     }
