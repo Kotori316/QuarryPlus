@@ -16,6 +16,7 @@ class QuarryBlockTagProvider(output: PackOutput, lookupProvider: CompletableFutu
 
     tag(BlockTags.MINEABLE_WITH_PICKAXE)
       .add(holder.quarryBlock().get())
+      .add(holder.advQuarryBlock().get())
 
     tag(markerBlockTag)
       .add(holder.markerBlock().get())
