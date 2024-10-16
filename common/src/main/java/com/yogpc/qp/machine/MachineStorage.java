@@ -15,6 +15,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -327,5 +329,13 @@ public class MachineStorage {
             notifyUpdate();
         }
         return e.getKey().toStack(Math.clamp(toExtractAmount, 0, Integer.MAX_VALUE));
+    }
+
+    public static <T extends BlockEntity> BlockEntityTicker<T> pushItemTicker() {
+        return (level, blockPos, blockState, blockEntity) -> MachineStorageHolder.getHolder(blockEntity).ifPresent(h -> h.getMachineStorage(blockEntity).passItems(level, blockPos));
+    }
+
+    public static <T extends BlockEntity> BlockEntityTicker<T> pushFluidTicker() {
+        return (level, blockPos, blockState, blockEntity) -> MachineStorageHolder.getHolder(blockEntity).ifPresent(h -> h.getMachineStorage(blockEntity).passFluids(level, blockPos));
     }
 }

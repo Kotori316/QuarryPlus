@@ -78,8 +78,8 @@ public class AdvQuarryBlock extends QpEntityBlock {
         return createTickerHelper(blockEntityType, this.<AdvQuarryEntity>getBlockEntityType().orElse(null), CombinedBlockEntityTicker.of(this, level,
             PowerEntity.logTicker(),
             AdvQuarryEntity::serverTick,
-            (l, p, s, e) -> e.storage.passItems(l, p),
-            (l, p, s, e) -> e.storage.passFluids(l, p)
+            MachineStorage.pushItemTicker(),
+            MachineStorage.pushFluidTicker()
         ));
     }
 

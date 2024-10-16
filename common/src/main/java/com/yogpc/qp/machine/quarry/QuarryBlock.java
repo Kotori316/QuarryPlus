@@ -72,8 +72,8 @@ public abstract class QuarryBlock extends QpEntityBlock {
         return createTickerHelper(blockEntityType, this.<QuarryEntity>getBlockEntityType().orElse(null), CombinedBlockEntityTicker.of(this, level,
             PowerEntity.logTicker(),
             QuarryEntity::serverTick,
-            (l, p, s, e) -> e.storage.passItems(l, p),
-            (l, p, s, e) -> e.storage.passFluids(l, p)
+            MachineStorage.pushItemTicker(),
+            MachineStorage.pushFluidTicker()
         ));
     }
 
