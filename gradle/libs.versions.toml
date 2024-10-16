@@ -15,7 +15,7 @@ slp_forge = "3.5.1-build-2"
 slp_fabric = "3.1.3"
 slp_neoforge = "3.5.1-build-2"
 jei_forge = "19.8.4.110"
-jei_fabric = "19.8.4.110"
+jei_fabric = "19.21.0.246"
 jei_neoforge = "19.8.4.110"
 
 night-config = "3.7.3"
