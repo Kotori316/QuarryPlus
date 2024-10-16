@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -75,6 +76,8 @@ public abstract class PowerEntity extends QpEntity {
         this.maxEnergy = maxEnergy;
     }
 
+    public abstract void updateMaxEnergyWithEnchantment(Level level);
+
     @VisibleForTesting
     public void setTimeProvider(LongSupplier timeProvider) {
         this.timeProvider = timeProvider;
@@ -133,7 +136,7 @@ public abstract class PowerEntity extends QpEntity {
     public Stream<MutableComponent> checkerLogs() {
         return Stream.concat(
             super.checkerLogs(),
-            Stream.of(detail(ChatFormatting.AQUA, "Energy", "%d".formatted(getEnergy() / ONE_FE)))
+            Stream.of(detail(ChatFormatting.AQUA, "Energy", "%d / %d".formatted(getEnergy() / ONE_FE, getMaxEnergy() / ONE_FE)))
         );
     }
 

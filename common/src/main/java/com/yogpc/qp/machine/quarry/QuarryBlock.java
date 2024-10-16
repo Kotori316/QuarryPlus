@@ -101,6 +101,7 @@ public abstract class QuarryBlock extends QpEntityBlock {
         super.setPlacedBy(level, pos, state, placer, stack);
         if (!level.isClientSide) {
             if (level.getBlockEntity(pos) instanceof QuarryEntity quarry) {
+                quarry.updateMaxEnergyWithEnchantment(level);
                 var facing = state.getValue(BlockStateProperties.FACING);
                 {
                     var markerLink = Stream.of(facing.getOpposite(), facing.getCounterClockWise(), facing.getClockWise())
