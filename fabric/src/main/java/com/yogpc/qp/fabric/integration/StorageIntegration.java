@@ -18,13 +18,13 @@ class MachineStorageRegister {
                 MachineStorageHolder.getHolder(blockEntity)
                     .map(h -> new MachineStorageFabric.ItemStorageImpl<>(h, blockEntity))
                     .orElse(null),
-            PlatformAccessFabric.RegisterObjectsFabric.entityTypes()
+            PlatformAccessFabric.RegisterObjectsFabric.DEBUG_STORAGE_TYPE
         );
         FluidStorage.SIDED.registerForBlockEntities((blockEntity, context) ->
                 MachineStorageHolder.getHolder(blockEntity)
                     .map(h -> new MachineStorageFabric.FluidStorageImpl<>(h, blockEntity))
                     .orElse(null),
-            PlatformAccessFabric.RegisterObjectsFabric.entityTypes()
+            PlatformAccessFabric.RegisterObjectsFabric.DEBUG_STORAGE_TYPE
         );
     }
 }

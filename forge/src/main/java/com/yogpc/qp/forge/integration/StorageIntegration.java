@@ -1,6 +1,7 @@
 package com.yogpc.qp.forge.integration;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.forge.PlatformAccessForge;
 import com.yogpc.qp.machine.MachineStorageHolder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -12,7 +13,9 @@ public final class StorageIntegration {
 
     @SubscribeEvent
     public static void attachCapabilities(AttachCapabilitiesEvent<BlockEntity> event) {
-        MachineStorageHolder.getHolder(event.getObject())
-            .ifPresent(h -> event.addCapability(MACHINE_STORAGE, new MachineStorageHandler<>(h, event.getObject())));
+        if (event.getObject().getType() == PlatformAccessForge.RegisterObjectsForge.DEBUG_STORAGE_TYPE.get()) {
+            MachineStorageHolder.getHolder(event.getObject())
+                .ifPresent(h -> event.addCapability(MACHINE_STORAGE, new MachineStorageHandler<>(h, event.getObject())));
+        }
     }
 }
