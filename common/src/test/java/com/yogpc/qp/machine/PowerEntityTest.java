@@ -30,6 +30,11 @@ class PowerEntityTest extends BeforeMC {
         protected String getMachineName(BlockEntityType<?> type) {
             return "test";
         }
+
+        @Override
+        public boolean isValidBlockState(BlockState blockState) {
+            return true;
+        }
     }
 
     @BeforeEach
