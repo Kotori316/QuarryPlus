@@ -27,7 +27,7 @@ final class MiningForge implements PlatformAccess.Mining {
     public BlockBreakEventResult checkBreakEvent(QpEntity miningEntity, Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity) {
         var breakEvent = new BlockEvent.BreakEvent(level, target, state, fakePlayer);
         MinecraftForge.EVENT_BUS.post(breakEvent);
-        return new BlockBreakEventResult(breakEvent.isCanceled(), OptionalInt.of(breakEvent.getExpToDrop()));
+        return new BlockBreakEventResult(breakEvent.isCanceled(), OptionalInt.of(breakEvent.getExpToDrop()), List.of());
     }
 
     @Override
@@ -38,7 +38,7 @@ final class MiningForge implements PlatformAccess.Mining {
         };
         level.setBlock(target, newState, updateFlag);
         // Forge doesn't have after break event
-        return BlockBreakEventResult.EMPTY;
+        return BlockBreakEventResult.empty(drops);
     }
 
     @Override

@@ -30,7 +30,7 @@ final class MiningFabric implements PlatformAccess.Mining {
             PlayerBlockBreakEvents.CANCELED.invoker().onBlockBreakCanceled(level, fakePlayer, target, state, blockEntity);
             return BlockBreakEventResult.CANCELED;
         }
-        return new BlockBreakEventResult(false, OptionalInt.of(0));
+        return new BlockBreakEventResult(false, OptionalInt.of(0), List.of());
     }
 
     @Override
@@ -42,7 +42,7 @@ final class MiningFabric implements PlatformAccess.Mining {
         };
         level.setBlock(target, newState, updateFlag);
         PlayerBlockBreakEvents.AFTER.invoker().afterBlockBreak(level, fakePlayer, target, state, blockEntity);
-        return BlockBreakEventResult.EMPTY;
+        return BlockBreakEventResult.empty(drops);
     }
 
     @Override

@@ -587,10 +587,9 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         );
         if (useEnergy(requiredEnergy, true, getMaxEnergy() < requiredEnergy, "breakBlock") == requiredEnergy) {
             useEnergy(requiredEnergy, false, getMaxEnergy() < requiredEnergy, "breakBlock");
-            var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe);
-            var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, drops, pickaxe, stateAfterBreak(serverLevel, target, state));
+            var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe), pickaxe, stateAfterBreak(serverLevel, target, state));
             if (!afterBreakEventResult.canceled()) {
-                drops.stream().flatMap(itemConverter::convert).forEach(storage::addItem);
+                afterBreakEventResult.drops().stream().flatMap(itemConverter::convert).forEach(storage::addItem);
                 var amount = eventResult.exp().orElse(afterBreakEventResult.exp().orElse(0));
                 if (amount != 0) {
                     getExpModule().ifPresent(e -> e.addExp(amount));

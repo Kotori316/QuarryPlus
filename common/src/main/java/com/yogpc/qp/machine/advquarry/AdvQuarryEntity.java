@@ -470,10 +470,9 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         );
 
         useEnergy(requiredEnergy, false, true, "breakBlock");
-        var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe);
-        var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, drops, pickaxe, stateAfterBreak(serverLevel, target, state));
+        var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe), pickaxe, stateAfterBreak(serverLevel, target, state));
         if (!afterBreakEventResult.canceled()) {
-            drops.stream().flatMap(itemConverter::convert).forEach(storage::addItem);
+            afterBreakEventResult.drops().stream().flatMap(itemConverter::convert).forEach(storage::addItem);
             var amount = eventResult.exp().orElse(afterBreakEventResult.exp().orElse(0));
             if (amount != 0) {
                 getExpModule().ifPresent(e -> e.addExp(amount));
@@ -595,10 +594,9 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
             var state = statePair.getValue();
             var target = statePair.getKey();
             var blockEntity = serverLevel.getBlockEntity(target);
-            var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe);
-            var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, drops, pickaxe, stateAfterBreak(serverLevel, target, state));
+            var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe), pickaxe, stateAfterBreak(serverLevel, target, state));
             if (!afterBreakEventResult.canceled()) {
-                drops.stream().flatMap(itemConverter::convert).forEach(storage::addItem);
+                afterBreakEventResult.drops().stream().flatMap(itemConverter::convert).forEach(storage::addItem);
                 var amount = resultMap.getOrDefault(target, BlockBreakEventResult.EMPTY).exp().orElse(afterBreakEventResult.exp().orElse(0));
                 exp.addAndGet(amount);
             }
