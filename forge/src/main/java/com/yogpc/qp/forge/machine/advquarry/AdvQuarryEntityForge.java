@@ -35,7 +35,7 @@ public final class AdvQuarryEntityForge extends AdvQuarryEntity {
 
     @Override
     protected BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe, BlockState newState) {
-        level.setBlock(target, newState, Block.UPDATE_ALL);
+        level.setBlock(target, newState, Block.UPDATE_CLIENTS);
         // Forge doesn't have after break event
         return BlockBreakEventResult.EMPTY;
     }

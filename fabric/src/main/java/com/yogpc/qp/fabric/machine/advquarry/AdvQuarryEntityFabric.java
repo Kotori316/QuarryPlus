@@ -77,7 +77,7 @@ public final class AdvQuarryEntityFabric extends AdvQuarryEntity implements ExpM
     @Override
     protected BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe, BlockState newState) {
         state.spawnAfterBreak((ServerLevel) level, target, pickaxe, true);
-        level.setBlock(target, newState, Block.UPDATE_ALL);
+        level.setBlock(target, newState, Block.UPDATE_CLIENTS);
         PlayerBlockBreakEvents.AFTER.invoker().afterBlockBreak(level, fakePlayer, target, state, blockEntity);
         return BlockBreakEventResult.EMPTY;
     }

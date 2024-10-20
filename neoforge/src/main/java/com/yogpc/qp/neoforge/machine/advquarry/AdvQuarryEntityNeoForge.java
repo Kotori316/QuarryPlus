@@ -41,7 +41,7 @@ public final class AdvQuarryEntityNeoForge extends AdvQuarryEntity {
         // Just use BlockDropsEvent to check exp
         var dropEvent = new BlockDropsEvent((ServerLevel) level, target, state, blockEntity, new ArrayList<>(), fakePlayer, pickaxe);
         NeoForge.EVENT_BUS.post(dropEvent);
-        level.setBlock(target, newState, Block.UPDATE_ALL);
+        level.setBlock(target, newState, Block.UPDATE_CLIENTS);
         OptionalInt exp = dropEvent.isCanceled() ? OptionalInt.empty() : OptionalInt.of(dropEvent.getDroppedExperience());
         return new BlockBreakEventResult(dropEvent.isCanceled(), exp);
     }
