@@ -12,7 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-public final class TransferFabric implements PlatformAccess.Transfer {
+final class TransferFabric implements PlatformAccess.Transfer {
     @Override
     public ItemStack transferItem(Level level, BlockPos pos, ItemStack stack, Direction side, boolean simulate) {
         if (stack.isEmpty()) return stack;

@@ -117,6 +117,11 @@ public class PlatformAccessDelegate implements PlatformAccess {
         access.openGui(player, handler);
     }
 
+    @Override
+    public Mining mining() {
+        return access.mining();
+    }
+
     public static PlatformAccess createVanilla() {
         return new VanillaImpl();
     }
@@ -171,6 +176,11 @@ public class PlatformAccessDelegate implements PlatformAccess {
 
         @Override
         public <T extends AbstractContainerMenu> void openGui(ServerPlayer player, GeneralScreenHandler<T> handler) {
+        }
+
+        @Override
+        public Mining mining() {
+            return null;
         }
     }
 }

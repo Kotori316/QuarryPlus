@@ -70,6 +70,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
     private final Lazy<PacketHandler> packetHandlerLazy = Lazy.lazy(PacketHandler::new);
     private final Lazy<TransferFabric> transferLazy = Lazy.lazy(TransferFabric::new);
     private final ConfigHolder configLazy = new ConfigHolder(this::modified);
+    private final Lazy<Mining> miningLazy = Lazy.lazy(MiningFabric::new);
 
     public static final class RegisterObjectsFabric implements RegisterObjects {
         public static final QuarryBlockFabric QUARRY_BLOCK = new QuarryBlockFabric();
@@ -366,6 +367,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
     @Override
     public <T extends AbstractContainerMenu> void openGui(ServerPlayer player, GeneralScreenHandler<T> handler) {
         player.openMenu(new ExtendedGeneralScreenHandler<>(handler));
+    }
+
+    @Override
+    public Mining mining() {
+        return miningLazy.get();
     }
 
     @Override

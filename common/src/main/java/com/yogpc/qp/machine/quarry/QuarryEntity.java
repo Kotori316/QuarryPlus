@@ -612,12 +612,16 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         }
     }
 
-    protected abstract BlockBreakEventResult checkBreakEvent(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity);
+    protected final BlockBreakEventResult checkBreakEvent(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity) {
+        return PlatformAccess.getAccess().mining().checkBreakEvent(this, level, fakePlayer, state, target, blockEntity);
+    }
 
     /**
      * In this method, you must replace/remove the target block
      */
-    protected abstract BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe, BlockState newState);
+    protected final BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe, BlockState newState) {
+        return PlatformAccess.getAccess().mining().afterBreak(this, level, fakePlayer, state, target, blockEntity, drops, pickaxe, newState);
+    }
 
     WorkResult breakBlockModuleOverride(ServerLevel level, BlockState state, BlockPos target, float hardness) {
         if (hardness < 0 && state.is(Blocks.BEDROCK) && shouldRemoveBedrock()) {
@@ -646,7 +650,9 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         return WorkResult.SKIPPED;
     }
 
-    protected abstract ServerPlayer getQuarryFakePlayer(ServerLevel level, BlockPos target);
+    protected final ServerPlayer getQuarryFakePlayer(ServerLevel level, BlockPos target) {
+        return PlatformAccess.getAccess().mining().getQuarryFakePlayer(this, level, target);
+    }
 
     protected boolean shouldRemoveFluid() {
         return modules.contains(QuarryModule.Constant.PUMP);

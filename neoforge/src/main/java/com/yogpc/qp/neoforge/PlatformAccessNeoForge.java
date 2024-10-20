@@ -66,6 +66,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
     private final ConfigHolder configLazy = new ConfigHolder(() ->
         QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment)
     );
+    private final Lazy<Mining> miningLazy = Lazy.lazy(MiningNeoForge::new);
 
     public static class RegisterObjectsNeoForge implements PlatformAccess.RegisterObjects {
         private static final DeferredRegister.Blocks BLOCK_REGISTER = DeferredRegister.createBlocks(QuarryPlus.modID);
@@ -341,6 +342,11 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
     @Override
     public <T extends AbstractContainerMenu> void openGui(ServerPlayer player, GeneralScreenHandler<T> handler) {
         player.openMenu(handler, handler.pos());
+    }
+
+    @Override
+    public Mining mining() {
+        return miningLazy.get();
     }
 
     @SubscribeEvent
