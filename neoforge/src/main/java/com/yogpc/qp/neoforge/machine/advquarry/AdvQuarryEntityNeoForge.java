@@ -19,6 +19,7 @@ import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
 
@@ -38,7 +39,7 @@ public final class AdvQuarryEntityNeoForge extends AdvQuarryEntity {
     @Override
     protected BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe, BlockState newState) {
         // Just use BlockDropsEvent to check exp
-        var dropEvent = new BlockDropsEvent((ServerLevel) level, target, state, blockEntity, List.of(), fakePlayer, pickaxe);
+        var dropEvent = new BlockDropsEvent((ServerLevel) level, target, state, blockEntity, new ArrayList<>(), fakePlayer, pickaxe);
         NeoForge.EVENT_BUS.post(dropEvent);
         level.setBlock(target, newState, Block.UPDATE_ALL);
         OptionalInt exp = dropEvent.isCanceled() ? OptionalInt.empty() : OptionalInt.of(dropEvent.getDroppedExperience());
