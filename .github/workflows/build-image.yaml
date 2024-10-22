@@ -6,7 +6,7 @@ on:
   push:
     paths:
       - ".github/workflows/build-image.yaml"
-      - ".github/docker"
+      - ".github/docker/**"
     branches:
       - "1.21.2"
 

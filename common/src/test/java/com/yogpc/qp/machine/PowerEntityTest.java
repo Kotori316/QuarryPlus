@@ -5,6 +5,7 @@ import com.yogpc.qp.BeforeMC;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.PlatformAccessDelegate;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,8 +23,17 @@ class PowerEntityTest extends BeforeMC {
         }
 
         @Override
+        public void updateMaxEnergyWithEnchantment(Level level) {
+        }
+
+        @Override
         protected String getMachineName(BlockEntityType<?> type) {
             return "test";
+        }
+
+        @Override
+        public boolean isValidBlockState(BlockState blockState) {
+            return true;
         }
     }
 

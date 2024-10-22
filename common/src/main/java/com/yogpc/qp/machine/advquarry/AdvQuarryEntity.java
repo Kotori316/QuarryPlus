@@ -199,6 +199,12 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         );
     }
 
+    @Override
+    public final void updateMaxEnergyWithEnchantment(Level level) {
+        var efficiency = enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, level.registryAccess().asGetterLookup());
+        setMaxEnergy((long) (powerMap().maxEnergy() * ONE_FE * (1 + efficiency)));
+    }
+
     public void setArea(@Nullable Area area) {
         this.area = area;
     }
@@ -464,10 +470,9 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         );
 
         useEnergy(requiredEnergy, false, true, "breakBlock");
-        var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe);
-        var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, drops, pickaxe, stateAfterBreak(serverLevel, target, state));
+        var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe), pickaxe, stateAfterBreak(serverLevel, target, state));
         if (!afterBreakEventResult.canceled()) {
-            drops.stream().flatMap(itemConverter::convert).forEach(storage::addItem);
+            afterBreakEventResult.drops().stream().flatMap(itemConverter::convert).forEach(storage::addItem);
             var amount = eventResult.exp().orElse(afterBreakEventResult.exp().orElse(0));
             if (amount != 0) {
                 getExpModule().ifPresent(e -> e.addExp(amount));
@@ -589,10 +594,9 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
             var state = statePair.getValue();
             var target = statePair.getKey();
             var blockEntity = serverLevel.getBlockEntity(target);
-            var drops = Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe);
-            var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, drops, pickaxe, stateAfterBreak(serverLevel, target, state));
+            var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe), pickaxe, stateAfterBreak(serverLevel, target, state));
             if (!afterBreakEventResult.canceled()) {
-                drops.stream().flatMap(itemConverter::convert).forEach(storage::addItem);
+                afterBreakEventResult.drops().stream().flatMap(itemConverter::convert).forEach(storage::addItem);
                 var amount = resultMap.getOrDefault(target, BlockBreakEventResult.EMPTY).exp().orElse(afterBreakEventResult.exp().orElse(0));
                 exp.addAndGet(amount);
             }
@@ -636,7 +640,9 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         return flagRemoved ? WorkResult.SUCCESS : WorkResult.SKIPPED;
     }
 
-    protected abstract ServerPlayer getQuarryFakePlayer(ServerLevel level, BlockPos target);
+    protected final ServerPlayer getQuarryFakePlayer(ServerLevel level, BlockPos target) {
+        return PlatformAccess.getAccess().mining().getQuarryFakePlayer(this, level, target);
+    }
 
     protected BlockState stateAfterBreak(Level level, BlockPos pos, BlockState before) {
         return Blocks.AIR.defaultBlockState();
@@ -702,12 +708,16 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         }
     }
 
-    protected abstract BlockBreakEventResult checkBreakEvent(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity);
+    protected final BlockBreakEventResult checkBreakEvent(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity) {
+        return PlatformAccess.getAccess().mining().checkBreakEvent(this, level, fakePlayer, state, target, blockEntity);
+    }
 
     /**
      * In this method, you must replace/remove the target block
      */
-    protected abstract BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe, BlockState newState);
+    protected final BlockBreakEventResult afterBreak(Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe, BlockState newState) {
+        return PlatformAccess.getAccess().mining().afterBreak(this, level, fakePlayer, state, target, blockEntity, drops, pickaxe, newState);
+    }
 
     WorkResult breakBlockModuleOverride(ServerLevel level, BlockState state, BlockPos target, float hardness) {
         if (hardness < 0 && state.is(Blocks.BEDROCK) && shouldRemoveBedrock()) {

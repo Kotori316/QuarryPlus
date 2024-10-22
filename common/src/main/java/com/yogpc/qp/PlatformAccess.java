@@ -5,16 +5,14 @@ import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.QpEntity;
 import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import com.yogpc.qp.machine.advquarry.AdvQuarryContainer;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
 import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
 import com.yogpc.qp.machine.marker.MarkerContainer;
 import com.yogpc.qp.machine.marker.NormalMarkerBlock;
-import com.yogpc.qp.machine.misc.FrameBlock;
-import com.yogpc.qp.machine.misc.GeneratorBlock;
-import com.yogpc.qp.machine.misc.SoftBlock;
-import com.yogpc.qp.machine.misc.YSetterContainer;
+import com.yogpc.qp.machine.misc.*;
 import com.yogpc.qp.machine.module.BedrockModuleItem;
 import com.yogpc.qp.machine.module.FilterModuleContainer;
 import com.yogpc.qp.machine.module.ModuleContainer;
@@ -28,14 +26,18 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -146,6 +148,16 @@ public interface PlatformAccess {
     Component getFluidName(FluidStackLike stack);
 
     <T extends AbstractContainerMenu> void openGui(ServerPlayer player, GeneralScreenHandler<T> handler);
+
+    interface Mining {
+        BlockBreakEventResult checkBreakEvent(QpEntity miningEntity, Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity);
+
+        BlockBreakEventResult afterBreak(QpEntity miningEntity, Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity, List<ItemStack> drops, ItemStack pickaxe, BlockState newState);
+
+        ServerPlayer getQuarryFakePlayer(QpEntity miningEntity, ServerLevel level, BlockPos target);
+    }
+
+    Mining mining();
 }
 
 class PlatformAccessHolder {
