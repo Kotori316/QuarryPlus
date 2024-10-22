@@ -14,6 +14,9 @@ permissions:
   contents: read
   packages: write
 
+env:
+  branch: "1.21.2"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,11 +33,13 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ghcr.io/kotori316/quarry-cache:1.21.2
+          tags: ghcr.io/kotori316/quarry-cache:${{ env.branch }}
           platforms: linux/amd64
           context: '.github/docker'
           file: '.github/docker/Dockerfile'
           provenance: false
+          build-args: |
+            branch=${{ env.branch }}
 
   delete_old:
     runs-on: ubuntu-latest
