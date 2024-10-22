@@ -28,10 +28,10 @@ RUN <<EOF
     (sleep 5 && ./gradlew downloadAssets) || \
     (sleep 5 && ./gradlew downloadAssets) || true
 EOF
-RUN ./gradlew runData
-RUN ./gradlew runCommonData
-RUN ./gradlew runGameTestServer
-RUN ./gradlew --stop
+RUN ./gradlew runData || true
+RUN ./gradlew runCommonData || true
+RUN ./gradlew runGameTestServer || true
+RUN ./gradlew --stop || true
 RUN <<EOF
 set -x
 ls -al /gradle-global
