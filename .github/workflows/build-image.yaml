@@ -8,7 +8,7 @@ on:
       - ".github/workflows/build-image.yaml"
       - ".github/docker"
     branches:
-      - "1.21"
+      - "1.21.2"
 
 permissions:
   contents: read
@@ -30,7 +30,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ghcr.io/kotori316/quarry-cache:1.21
+          tags: ghcr.io/kotori316/quarry-cache:1.21.2
           platforms: linux/amd64
           context: '.github/docker'
           file: '.github/docker/Dockerfile'
