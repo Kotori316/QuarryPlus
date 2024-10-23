@@ -1,10 +1,10 @@
 package com.yogpc.qp.neoforge.machine.quarry;
 
+import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.quarry.QuarryItem;
-import net.minecraft.world.level.block.Block;
 
 public final class QuarryItemNeoForge extends QuarryItem {
-    public QuarryItemNeoForge(Block block) {
+    public QuarryItemNeoForge(QpBlock block) {
         super(block);
     }
 }

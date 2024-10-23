@@ -1,6 +1,5 @@
 package com.yogpc.qp.neoforge;
 
-import com.mojang.datafixers.DSL;
 import com.yogpc.qp.*;
 import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.EnableMap;
@@ -157,7 +156,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         @SuppressWarnings("unchecked")
         @SafeVarargs
         private static <T extends QpBlock, U extends BlockEntity> DeferredHolder<BlockEntityType<?>, BlockEntityType<U>> registerBlockEntity(String name, DeferredBlock<T> block, BlockEntityType.BlockEntitySupplier<U> factory, EnableMap.EnableOrNot enableOrNot, T... dummy) {
-            var entityType = BLOCK_ENTITY_REGISTER.register(name, () -> BlockEntityType.Builder.of(factory, block.get()).build(DSL.emptyPartType()));
+            var entityType = BLOCK_ENTITY_REGISTER.register(name, () -> new BlockEntityType<>(factory, block.get()));
             BLOCK_ENTITY_TYPES.put((Class<? extends QpBlock>) dummy.getClass().componentType(), (Supplier<BlockEntityType<?>>) (Object) entityType);
             ENABLE_MAP.put(name, enableOrNot);
             return entityType;

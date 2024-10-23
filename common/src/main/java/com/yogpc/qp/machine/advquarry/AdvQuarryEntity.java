@@ -201,7 +201,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
 
     @Override
     public final void updateMaxEnergyWithEnchantment(Level level) {
-        var efficiency = enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, level.registryAccess().asGetterLookup());
+        var efficiency = enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, level.registryAccess());
         setMaxEnergy((long) (powerMap().maxEnergy() * ONE_FE * (1 + efficiency)));
     }
 
