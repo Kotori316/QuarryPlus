@@ -11,14 +11,14 @@ allprojects {
     // Required here, as setting buildscript from plugin doesn't work
     buildscript {
         configurations.all {
-            resolutionStrategy.force("commons-io:commons-io:2.17.0")
+            resolutionStrategy.force("commons-io:commons-io:2.18.0")
         }
     }
 }
 
 buildscript {
     configurations.all {
-        resolutionStrategy.force("commons-io:commons-io:2.17.0")
+        resolutionStrategy.force("commons-io:commons-io:2.18.0")
     }
 }
 
