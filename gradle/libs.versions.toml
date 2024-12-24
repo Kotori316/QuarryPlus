@@ -1,6 +1,6 @@
 [versions]
 minecraft = "1.21.4"
-forge = "1.21.4-54.0.6"
+forge = "1.21.4-54.0.12"
 fabric_api = "0.112.0+1.21.4"
 fabric_loader = "0.16.9"
 neoforge = "21.4.27-beta"
