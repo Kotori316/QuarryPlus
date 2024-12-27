@@ -6,245 +6,254 @@ import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpBlockProperty;
 import com.yogpc.qp.machine.QpItem;
 import com.yogpc.qp.neoforge.PlatformAccessNeoForge;
-import net.minecraft.client.data.models.model.ItemModelUtils;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.blockstates.*;
+import net.minecraft.client.data.models.model.*;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.CachedOutput;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
-final class StateAndModelProvider extends BlockStateProvider {
-    private final PackOutput.PathProvider itemInfoPathProvider;
-    private final Map<ResourceLocation, ClientItem> clientItemMap = new HashMap<>();
-    StateAndModelProvider(DataGenerator gen, ExistingFileHelper exFileHelper) {
-        super(gen.getPackOutput(), QuarryPlus.modID, exFileHelper);
-        this.itemInfoPathProvider = gen.getPackOutput().createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
+final class StateAndModelProvider extends ModelProvider {
+    StateAndModelProvider(PackOutput output) {
+        super(output, QuarryPlus.modID);
     }
 
     private ResourceLocation blockTexture(String name) {
-        return modLoc("block/" + name);
+        return modLocation("block/" + name);
     }
 
     @Override
-    public ResourceLocation blockTexture(Block block) {
-        ResourceLocation name = Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(block), "Block %s isn't registered.".formatted(block));
-        return name.withPrefix("block/");
-    }
-
-    @Override
-    protected void registerStatesAndModels() {
+    protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
         var holder = PlatformAccess.getAccess().registerObjects();
         // Blocks
-        frame();
-        dummyBlocks();
-        placer();
-        mining_well();
-        markers();
-        waterloggedMarkers();
-        // simpleBlockAndItemCubeAll(Holder.BLOCK_BOOK_MOVER);
-        // simpleBlockAndItemCubeAll(Holder.BLOCK_WORKBENCH);
-        // simpleBlockAndItemCubeAll(Holder.BLOCK_CONTROLLER);
-        simpleBlockAndItemCubeAll(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_REMOTE_PLACER.get());
-        simpleBlockAndItemCubeAll(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_DEBUG_STORAGE.get());
-        // workBlockAndItem(Holder.BLOCK_ADV_PUMP);
-        // workBlockAndItem(Holder.BLOCK_EXP_PUMP);
-        simpleBlockAndItemCubeBottomTop(holder.moverBlock().get(), blockTexture(holder.moverBlock().get()), blockTexture("mover_top"), blockTexture("mover_bottom"));
-        // simpleBlockAndItemCubeBottomTop(Holder.BLOCK_PUMP, blockTexture("pump_side"), blockTexture("pump_top"), blockTexture("pump_bottom"));
-        // simpleBlockAndItemCubeBottomTop(Holder.BLOCK_REPLACER, blockTexture("replacer_side"), blockTexture("replacer_top"), blockTexture("replacer_bottom"));
-        // simpleBlockAndItemCubeBottomTop(Holder.BLOCK_FILLER, blockTexture("filler_side"), blockTexture("filler_top"), blockTexture("filler_top"));
-        simpleBlockAndItemCubeBottomTop(holder.generatorBlock().get(), blockTexture("replacer_bottom"), blockTexture("pump_bottom"), blockTexture("adv_pump_bottom"));
-        workDirectionalBlockAndItem(holder.quarryBlock().get(), "quarryplus");
-        workDirectionalBlockAndItem(holder.advQuarryBlock().get());
-        // workDirectionalBlockAndItem(Holder.BLOCK_MINI_QUARRY);
-        // workDirectionalBlockAndItem(Holder.BLOCK_SOLID_FUEL_QUARRY);
+        frame(blockModels, itemModels);
+        dummyBlocks(blockModels, itemModels);
+        placer(blockModels);
+        mining_well(blockModels, itemModels);
+        markers(blockModels, itemModels);
+        waterloggedMarkers(blockModels, itemModels);
+        // simpleBlockAndItemCubeAll(blockModels, itemModels,Holder.BLOCK_BOOK_MOVER);
+        // simpleBlockAndItemCubeAll(blockModels, itemModels,Holder.BLOCK_WORKBENCH);
+        // simpleBlockAndItemCubeAll(blockModels, itemModels,Holder.BLOCK_CONTROLLER);
+        simpleBlockAndItemCubeAll(blockModels, PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_REMOTE_PLACER.get());
+        simpleBlockAndItemCubeAll(blockModels, PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_DEBUG_STORAGE.get());
+        // workBlockAndItem(blockModels, itemModels, Holder.BLOCK_ADV_PUMP);
+        // workBlockAndItem(blockModels, itemModels, Holder.BLOCK_EXP_PUMP);
+        simpleBlockAndItemCubeBottomTop(blockModels, holder.moverBlock().get(), blockTexture(holder.moverBlock().get().name.getPath()), blockTexture("mover_top"), blockTexture("mover_bottom"));
+        // simpleBlockAndItemCubeBottomTop(blockModels, itemModels, Holder.BLOCK_PUMP, blockTexture("pump_side"), blockTexture("pump_top"), blockTexture("pump_bottom"));
+        // simpleBlockAndItemCubeBottomTop(blockModels, itemModels, Holder.BLOCK_REPLACER, blockTexture("replacer_side"), blockTexture("replacer_top"), blockTexture("replacer_bottom"));
+        // simpleBlockAndItemCubeBottomTop(blockModels, itemModels, Holder.BLOCK_FILLER, blockTexture("filler_side"), blockTexture("filler_top"), blockTexture("filler_top"));
+        simpleBlockAndItemCubeBottomTop(blockModels, holder.generatorBlock().get(), blockTexture("replacer_bottom"), blockTexture("pump_bottom"), blockTexture("adv_pump_bottom"));
+        workDirectionalBlockAndItem(blockModels, holder.quarryBlock().get());
+        workDirectionalBlockAndItem(blockModels, holder.advQuarryBlock().get());
+        // workDirectionalBlockAndItem(blockModels, itemModels,Holder.BLOCK_MINI_QUARRY);
+        // workDirectionalBlockAndItem(blockModels, itemModels,Holder.BLOCK_SOLID_FUEL_QUARRY);
 
         // Items
-        simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_EXP_MODULE.get(), "block/exp_pump_side");
-        // simpleItem(Holder.ITEM_FILLER_MODULE);
-        simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_FILTER_MODULE.get(), "item/void_module");
-        // simpleItem(Holder.ITEM_FUEL_MODULE_NORMAL);
-        simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_PUMP_MODULE.get(), "block/pump_side");
-        simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_BEDROCK_MODULE.get(), "item/bedrock_module");
-        // simpleItem(Holder.ITEM_REPLACER_MODULE, "block/replacer_side");
-        simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_CHECKER.get());
-        simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_Y_SET.get());
-        simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_REPEAT_MODULE.get());
+        simpleItem(itemModels, PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_EXP_MODULE.get(), "block/exp_pump_side");
+        // simpleItem(blockModels, itemModels,Holder.ITEM_FILLER_MODULE);
+        simpleItem(itemModels, PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_FILTER_MODULE.get(), "item/void_module");
+        // simpleItem(blockModels, itemModels,Holder.ITEM_FUEL_MODULE_NORMAL);
+        simpleItem(itemModels, PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_PUMP_MODULE.get(), "block/pump_side");
+        simpleItem(itemModels, PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_BEDROCK_MODULE.get(), "item/bedrock_module");
+        // simpleItem(blockModels, itemModels,Holder.ITEM_REPLACER_MODULE, "block/replacer_side");
+        simpleItem(itemModels, PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_CHECKER.get());
+        simpleItem(itemModels, PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_Y_SET.get());
+        simpleItem(itemModels, PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_REPEAT_MODULE.get());
     }
 
-    void frame() {
-        var center = models().getBuilder("block/frame_post")
+    void frame(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+        var centerTemplate = ExtendedModelTemplateBuilder.builder()
             .renderType(renderTypeName(RenderType.cutout()))
-            .texture("texture", blockTexture("frame"))
-            .texture("particle", blockTexture("frame"))
-            .element().from(4.0f, 4.0f, 4.0f).to(12.0f, 12.0f, 12.0f)
-            .allFaces((direction, faceBuilder) -> faceBuilder.uvs(4, 4, 12, 12).texture("#texture"))
-            .end();
-        var side = models().getBuilder("block/frame_side")
+            .element(b ->
+                b.from(4.0f, 4.0f, 4.0f).to(12.0f, 12.0f, 12.0f)
+                    .allFaces((direction, faceBuilder) -> faceBuilder.uvs(4, 4, 12, 12).texture(TextureSlot.TEXTURE))
+            )
+            .requiredTextureSlot(TextureSlot.TEXTURE)
+            .requiredTextureSlot(TextureSlot.PARTICLE)
+            .build();
+        var center = centerTemplate.create(modLocation("block/frame_post"),
+            new TextureMapping()
+                .put(TextureSlot.TEXTURE, blockTexture("frame"))
+                .put(TextureSlot.PARTICLE, blockTexture("frame")),
+            blockModels.modelOutput
+        );
+        var sideTemplate = ExtendedModelTemplateBuilder.builder()
             .renderType(renderTypeName(RenderType.cutout()))
-            .texture("texture", blockTexture("frame"))
-            .texture("particle", blockTexture("frame"))
-            .element().from(4, 4, 0).to(12, 12, 4)
-            .face(Direction.DOWN).uvs(4, 0, 12, 4).texture("#texture").end()
-            .face(Direction.UP).uvs(4, 0, 12, 4).texture("#texture").end()
-            .face(Direction.SOUTH).uvs(4, 4, 12, 12).texture("#texture").cullface(Direction.SOUTH).end()
-            .face(Direction.WEST).uvs(0, 4, 4, 12).texture("#texture").end()
-            .face(Direction.EAST).uvs(0, 4, 4, 12).texture("#texture").end()
-            .end();
+            .element(b -> b.from(4, 4, 0).to(12, 12, 4)
+                .face(Direction.DOWN, f -> f.uvs(4, 0, 12, 4).texture(TextureSlot.TEXTURE))
+                .face(Direction.UP, f -> f.uvs(4, 0, 12, 4).texture(TextureSlot.TEXTURE))
+                .face(Direction.SOUTH, f -> f.uvs(4, 4, 12, 12).texture(TextureSlot.TEXTURE).cullface(Direction.SOUTH))
+                .face(Direction.WEST, f -> f.uvs(0, 4, 4, 12).texture(TextureSlot.TEXTURE))
+                .face(Direction.EAST, f -> f.uvs(0, 4, 4, 12).texture(TextureSlot.TEXTURE))
+            )
+            .requiredTextureSlot(TextureSlot.TEXTURE)
+            .requiredTextureSlot(TextureSlot.PARTICLE)
+            .build();
+        var side = sideTemplate.create(modLocation("block/frame_side"),
+            new TextureMapping()
+                .put(TextureSlot.TEXTURE, blockTexture("frame"))
+                .put(TextureSlot.PARTICLE, blockTexture("frame")),
+            blockModels.modelOutput);
 
         var block = PlatformAccess.getAccess().registerObjects().frameBlock().get();
-        getMultipartBuilder(block).part()
-            .modelFile(center).addModel().end().part()
-            .modelFile(side).uvLock(true).addModel().condition(BlockStateProperties.NORTH, true).end().part()
-            .modelFile(side).uvLock(true).rotationY(90).addModel().condition(BlockStateProperties.EAST, true).end().part()
-            .modelFile(side).uvLock(true).rotationY(180).addModel().condition(BlockStateProperties.SOUTH, true).end().part()
-            .modelFile(side).uvLock(true).rotationY(270).addModel().condition(BlockStateProperties.WEST, true).end().part()
-            .modelFile(side).uvLock(true).rotationX(270).addModel().condition(BlockStateProperties.UP, true).end().part()
-            .modelFile(side).uvLock(true).rotationX(90).addModel().condition(BlockStateProperties.DOWN, true).end()
-        ;
-        itemModels().withExistingParent("item/frame", "block/block")
-            .transforms()
-            .transform(ItemDisplayContext.GUI).translation(0, 0, 0).scale(0.8f).end()
-            .transform(ItemDisplayContext.FIXED).translation(0, 0, 0).scale(0.8f).rotation(0, 90, 0).end()
-            .end()
-            .texture("texture", blockTexture("frame"))
-            .texture("particle", blockTexture("frame"))
-            .element().from(4, 0, 4).to(12, 12, 12)
-            .allFaces((direction, faceBuilder) -> faceBuilder.uvs(4.0f, 4.0f, 12.0f, direction.getAxis() == Direction.Axis.Y ? 12.0f : 16.0f).texture("#texture"))
-        ;
-        addClientItem(block.name, modLoc("item/frame"));
+        blockModels.blockStateOutput.accept(
+            MultiPartGenerator.multiPart(block)
+                .with(Variant.variant().with(VariantProperties.MODEL, center))
+                .with(Condition.condition().term(BlockStateProperties.NORTH, true), Variant.variant().with(VariantProperties.MODEL, side).with(VariantProperties.UV_LOCK, true))
+                .with(Condition.condition().term(BlockStateProperties.EAST, true), Variant.variant().with(VariantProperties.MODEL, side).with(VariantProperties.UV_LOCK, true).with(VariantProperties.Y_ROT, VariantProperties.Rotation.R90))
+                .with(Condition.condition().term(BlockStateProperties.SOUTH, true), Variant.variant().with(VariantProperties.MODEL, side).with(VariantProperties.UV_LOCK, true).with(VariantProperties.Y_ROT, VariantProperties.Rotation.R180))
+                .with(Condition.condition().term(BlockStateProperties.WEST, true), Variant.variant().with(VariantProperties.MODEL, side).with(VariantProperties.UV_LOCK, true).with(VariantProperties.Y_ROT, VariantProperties.Rotation.R270))
+                .with(Condition.condition().term(BlockStateProperties.UP, true), Variant.variant().with(VariantProperties.MODEL, side).with(VariantProperties.UV_LOCK, true).with(VariantProperties.X_ROT, VariantProperties.Rotation.R270))
+                .with(Condition.condition().term(BlockStateProperties.DOWN, true), Variant.variant().with(VariantProperties.MODEL, side).with(VariantProperties.UV_LOCK, true).with(VariantProperties.X_ROT, VariantProperties.Rotation.R90))
+        );
+
+        var itemTemplate = ExtendedModelTemplateBuilder.builder()
+            .parent(mcLocation("block/block"))
+            .transform(ItemDisplayContext.GUI, b -> b.translation(0, 0, 0).scale(0.8f))
+            .transform(ItemDisplayContext.FIXED, b -> b.translation(0, 0, 0).scale(0.8f).rotation(0, 90, 0))
+            .requiredTextureSlot(TextureSlot.TEXTURE)
+            .requiredTextureSlot(TextureSlot.PARTICLE)
+            .element(b -> b.from(4, 0, 4).to(12, 12, 12)
+                .allFaces((direction, faceBuilder) -> faceBuilder.uvs(4.0f, 4.0f, 12.0f, direction.getAxis() == Direction.Axis.Y ? 12.0f : 16.0f).texture(TextureSlot.TEXTURE)))
+            .build();
+        var item = itemTemplate.create(modLocation("item/frame"),
+            new TextureMapping()
+                .put(TextureSlot.TEXTURE, blockTexture("frame"))
+                .put(TextureSlot.PARTICLE, blockTexture("frame")),
+            itemModels.modelOutput);
+        itemModels.itemModelOutput.accept(block.asItem(), ItemModelUtils.plainModel(item));
     }
 
-    void dummyBlocks() {
-        var dummyReplacerModel = models().withExistingParent("block/dummy_replacer", ResourceLocation.fromNamespaceAndPath("minecraft", "block/glass")).renderType(renderTypeName(RenderType.translucent()));
-        itemModels().withExistingParent("item/dummy_replacer", ResourceLocation.fromNamespaceAndPath("minecraft", "block/glass"));
-        var dummyBlockModel = models().cubeAll("block/dummy_block", blockTexture("dummy_block")).renderType(renderTypeName(RenderType.translucent()));
+    void dummyBlocks(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+       /* var dummyReplacerTemplate = ExtendedModelTemplateBuilder.builder()
+            .parent(mcLocation("block/glass"))
+            .renderType(renderTypeName(RenderType.translucent()))
+            .build();
+        var dummyReplacerModel = dummyReplacerTemplate.create(modLocation("block/dummy_replacer"), new TextureMapping(), blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_.get(), dummyReplacerModel));
+        blockModels.registerSimpleItemModel(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_.get(), dummyReplacerModel);*/
 
-        simpleBlock(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get(), dummyBlockModel);
-        simpleBlockItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get(), dummyBlockModel);
-        addClientItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get().location, modLoc("block/dummy_block"));
-        // simpleBlock(Holder.BLOCK_DUMMY_REPLACER, dummyReplacerModel);
+        var dummyBlockTemplate = ModelTemplates.CUBE_ALL.extend().renderType(renderTypeName(RenderType.translucent())).build();
+        var dummyBlockModel = dummyBlockTemplate.create(modLocation("block/dummy_block"), TextureMapping.cube(blockTexture("dummy_block")), blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get(), dummyBlockModel));
+        blockModels.registerSimpleItemModel(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get(), dummyBlockModel);
     }
 
-    void simpleBlockAndItemCubeAll(QpBlock block) {
-        var model = cubeAll(block);
-        simpleBlock(block, model);
-        simpleBlockItem(block, model);
-        addClientItem(block.name, block.name.withPrefix("block/"));
+    void simpleBlockAndItemCubeAll(BlockModelGenerators blockModels, QpBlock block) {
+        blockModels.createTrivialCube(block);
     }
 
-    void simpleBlockAndItemCubeBottomTop(QpBlock block, ResourceLocation side, ResourceLocation top, ResourceLocation bottom) {
+    void simpleBlockAndItemCubeBottomTop(BlockModelGenerators blockModels, QpBlock block, ResourceLocation side, ResourceLocation top, ResourceLocation bottom) {
+        var model = ModelTemplates.CUBE_BOTTOM_TOP.create(block,
+            new TextureMapping()
+                .put(TextureSlot.SIDE, side)
+                .put(TextureSlot.BOTTOM, bottom)
+                .put(TextureSlot.TOP, top),
+            blockModels.modelOutput
+        );
+        blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(block, model));
+        blockModels.registerSimpleItemModel(block, model);
+    }
+
+    void workBlockAndItem(BlockModelGenerators blockModels, QpBlock block) {
         var basePath = block.name.getPath();
-        var model = models().cubeBottomTop("block/" + basePath, side, bottom, top);
-        simpleBlock(block, model);
-        simpleBlockItem(block, model);
-        addClientItem(block.name, modLoc("block/" + basePath));
+        var normalModel = TexturedModel.CUBE_TOP_BOTTOM.create(block, blockModels.modelOutput);
+        var workingModel = TexturedModel.CUBE_TOP_BOTTOM.updateTexture(m -> m.put(TextureSlot.TOP, blockTexture(basePath + "_top_w"))).create(block, blockModels.modelOutput);
+
+        var workingProperty = PropertyDispatch.properties(BlockStateProperties.FACING, QpBlockProperty.WORKING)
+            .generate((direction, working) -> {
+                if (working) {
+                    return Variant.variant().with(VariantProperties.MODEL, workingModel);
+                } else {
+                    return Variant.variant().with(VariantProperties.MODEL, normalModel);
+                }
+            });
+        var builder = MultiVariantGenerator.multiVariant(block).with(workingProperty);
+        blockModels.blockStateOutput.accept(builder);
+        blockModels.registerSimpleItemModel(block, normalModel);
     }
 
-    void workBlockAndItem(QpBlock block) {
+    static Variant rotate(Direction direction, Variant v) {
+        var rotX = rotationFromValue(Math.floorMod(direction.getStepY() * -90, 360));
+        var rotY = rotationFromValue(direction.getAxis() == Direction.Axis.Y ? 0 : Math.floorMod(((int) direction.toYRot()) + 180, 360));
+        if (rotX != VariantProperties.Rotation.R0) {
+            v.with(VariantProperties.X_ROT, rotX);
+        }
+        if (rotY != VariantProperties.Rotation.R0) {
+            v.with(VariantProperties.Y_ROT, rotY);
+        }
+        return v;
+    }
+
+    void workDirectionalBlockAndItem(BlockModelGenerators blockModels, QpBlock block) {
         var basePath = block.name.getPath();
-        var normalModel = models().cubeBottomTop("block/" + basePath,
-            blockTexture(basePath + "_side"),
-            blockTexture(basePath + "_bottom"),
-            blockTexture(basePath + "_top")
+        var blockTexture = TextureMapping.getBlockTexture(block);
+        var normalModel = TexturedModel.ORIENTABLE.updateTexture(m -> m.put(TextureSlot.SIDE, blockTexture).put(TextureSlot.BOTTOM, blockTexture)).create(block, blockModels.modelOutput);
+        var workingModel = TexturedModel.ORIENTABLE.updateTexture(m -> m.put(TextureSlot.SIDE, blockTexture).put(TextureSlot.BOTTOM, blockTexture).put(TextureSlot.TOP, blockTexture(basePath + "_top_bb"))).createWithSuffix(block, "_working", blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(
+            MultiVariantGenerator.multiVariant(block)
+                .with(PropertyDispatch.properties(BlockStateProperties.FACING, QpBlockProperty.WORKING)
+                    .generate(((direction, working) -> {
+                        var model = working ? workingModel : normalModel;
+                        var v = Variant.variant().with(VariantProperties.MODEL, model);
+                        return rotate(direction, v);
+                    })))
         );
-        var workingModel = models().cubeBottomTop("block/" + basePath + "_working",
-            blockTexture(basePath + "_side"),
-            blockTexture(basePath + "_bottom"),
-            blockTexture(basePath + "_top_w")
+        blockModels.registerSimpleItemModel(block, normalModel);
+    }
+
+    static VariantProperties.Rotation rotationFromValue(int rot) {
+        return switch (rot) {
+            case 90 -> VariantProperties.Rotation.R90;
+            case 180 -> VariantProperties.Rotation.R180;
+            case 270 -> VariantProperties.Rotation.R270;
+            default -> VariantProperties.Rotation.R0;
+        };
+    }
+
+    void simpleItem(ItemModelGenerators itemModels, QpItem item) {
+        itemModels.generateFlatItem(item, ModelTemplates.FLAT_ITEM);
+    }
+
+    void simpleItem(ItemModelGenerators itemModels, QpItem item, String texture) {
+        simpleItem(itemModels, item, modLocation(texture));
+    }
+
+    void simpleItem(ItemModelGenerators itemModels, QpItem item, ResourceLocation texture) {
+        itemModels.itemModelOutput.accept(
+            item,
+            ItemModelUtils.plainModel(ModelTemplates.FLAT_ITEM.create(item, TextureMapping.layer0(texture), itemModels.modelOutput))
         );
-        var builder = getVariantBuilder(block);
-        builder.setModels(builder.partialState().with(QpBlockProperty.WORKING, true), new ConfiguredModel(workingModel));
-        builder.setModels(builder.partialState().with(QpBlockProperty.WORKING, false), new ConfiguredModel(normalModel));
-        simpleBlockItem(block, normalModel);
-        addClientItem(block.name, modLoc("block/" + basePath));
     }
 
-    void workDirectionalBlockAndItem(QpBlock block) {
-        workDirectionalBlockAndItem(block, block.name.getPath());
-    }
-
-    void workDirectionalBlockAndItem(QpBlock block, String modelName) {
-        var basePath = block.name.getPath();
-        var normalModel = models().orientableWithBottom("block/" + modelName,
-            blockTexture(block),
-            blockTexture(basePath + "_front"),
-            blockTexture(block),
-            blockTexture(basePath + "_top")
-        );
-        var workingModel = models().orientableWithBottom("block/" + modelName + "_working",
-            blockTexture(block),
-            blockTexture(basePath + "_front"),
-            blockTexture(block),
-            blockTexture(basePath + "_top_bb")
-        );
-        getVariantBuilder(block).forAllStates(blockState -> {
-            var model = blockState.getValue(QpBlockProperty.WORKING) ? workingModel : normalModel;
-            var direction = blockState.getValue(BlockStateProperties.FACING);
-            return ConfiguredModel.builder()
-                .modelFile(model)
-                .rotationX(Math.floorMod(direction.getStepY() * -90, 360))
-                .rotationY(direction.getAxis() == Direction.Axis.Y ? 0 : Math.floorMod(((int) direction.toYRot()) + 180, 360))
-                .build();
-        });
-        simpleBlockItem(block, normalModel);
-        addClientItem(block.name, modLoc("block/" + modelName));
-    }
-
-    void simpleItem(QpItem item) {
-        itemModels().basicItem(item.name);
-        addClientItem(item.name, item.name.withPrefix("item/"));
-    }
-
-    void simpleItem(QpItem item, String texture) {
-        simpleItem(item, modLoc(texture));
-    }
-
-    void simpleItem(QpItem item, ResourceLocation texture) {
-        itemModels().getBuilder("item/" + item.name.getPath())
-            .parent(new ModelFile.UncheckedModelFile("item/generated"))
-            .texture("layer0", texture);
-        addClientItem(item.name, item.name.withPrefix("item/"));
-    }
-
-    void placer() {
+    void placer(BlockModelGenerators blockModels) {
         QpBlock block = PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_PLACER.get();
-        var basePath = block.name.getPath();
-        var model = models().orientableWithBottom("block/" + basePath,
-            blockTexture("plus_stone_side"),
-            blockTexture("placer_front_horizontal"),
-            blockTexture("plus_stone_top"),
-            blockTexture("placer_front_vertical"));
-        getVariantBuilder(block).forAllStatesExcept(blockState -> {
-            var direction = blockState.getValue(BlockStateProperties.FACING);
-            return ConfiguredModel.builder()
-                .modelFile(model)
-                .rotationX(Math.floorMod(direction.getStepY() * -90, 360))
-                .rotationY(direction.getAxis() == Direction.Axis.Y ? 0 : Math.floorMod(((int) direction.toYRot()) + 180, 360))
-                .build();
-        }, BlockStateProperties.TRIGGERED);
-        simpleBlockItem(block, model);
-        addClientItem(block.name, modLoc("block/" + basePath));
+        var model = ModelTemplates.CUBE_ORIENTABLE_TOP_BOTTOM.create(block, new TextureMapping()
+                .put(TextureSlot.SIDE, blockTexture("plus_stone_side"))
+                .put(TextureSlot.FRONT, blockTexture("placer_front_horizontal"))
+                .put(TextureSlot.TOP, blockTexture("placer_front_vertical"))
+                .put(TextureSlot.BOTTOM, blockTexture("plus_stone_top"))
+            , blockModels.modelOutput
+        );
+        blockModels.blockStateOutput.accept(
+            MultiVariantGenerator.multiVariant(block).with(PropertyDispatch.property(BlockStateProperties.FACING).generate(direction ->
+                rotate(direction, Variant.variant().with(VariantProperties.MODEL, model))
+            ))
+        );
+        blockModels.registerSimpleItemModel(block, model);
     }
 
-    void mining_well() {
+    void mining_well(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
         /*QpBlock block = Holder.BLOCK_MINING_WELL;
         var basePath = block.name.getPath();
         var normalModel = models().cube("block/" + basePath,
@@ -275,98 +284,91 @@ final class StateAndModelProvider extends BlockStateProvider {
         simpleBlockItem(block, normalModel);*/
     }
 
-    void markers() {
+    void markers(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
         QpBlock markerBlock = PlatformAccess.getAccess().registerObjects().markerBlock().get();
-        var model = models().getBuilder("block/marker_post")
-            .texture("texture", blockTexture(markerBlock))
-            .texture("particle", blockTexture(markerBlock))
-            .element()
+        var model = ExtendedModelTemplateBuilder.builder()
             // Pole
-            .from(7.0f, 0.0f, 7.0f).to(9.0f, 10.0f, 9.0f)
-            .allFaces((direction, faceBuilder) -> {
-                if (direction == Direction.UP) {
-                    faceBuilder.texture("#texture").uvs(7.0f, 7.0f, 9.0f, 9.0f);
-                } else if (direction == Direction.DOWN) {
-                    faceBuilder.texture("#texture").uvs(0.0f, 0.0f, 2.0f, 2.0f).cullface(Direction.DOWN);
-                } else {
-                    faceBuilder.texture("#texture").uvs(7.0f, 6.0f, 9.0f, 16.0f);
-                }
-            })
-            .end()
+            .element(b -> b.from(7.0f, 0.0f, 7.0f).to(9.0f, 10.0f, 9.0f)
+                .allFaces((direction, faceBuilder) -> {
+                    if (direction == Direction.UP) {
+                        faceBuilder.texture(TextureSlot.TEXTURE).uvs(7.0f, 7.0f, 9.0f, 9.0f);
+                    } else if (direction == Direction.DOWN) {
+                        faceBuilder.texture(TextureSlot.TEXTURE).uvs(0.0f, 0.0f, 2.0f, 2.0f).cullface(Direction.DOWN);
+                    } else {
+                        faceBuilder.texture(TextureSlot.TEXTURE).uvs(7.0f, 6.0f, 9.0f, 16.0f);
+                    }
+                }))
             // North
-            .element()
-            .from(7.0f, 7.0f, 6.0f).to(9.0f, 9.0f, 7.0f)
-            .allFaces((direction, faceBuilder) -> {
-                switch (direction.getAxis()) {
-                    case X -> faceBuilder.texture("#texture").uvs(6.0f, 7.0f, 7.0f, 9.0f);
-                    case Y -> faceBuilder.texture("#texture").uvs(7.0f, 6.0f, 9.0f, 7.0f);
-                    case Z -> faceBuilder.texture("#texture").uvs(7.0f, 7.0f, 9.0f, 9.0f);
-                }
-                if (direction == Direction.SOUTH) faceBuilder.cullface(Direction.SOUTH);
-            })
-            .end()
+            .element(b -> b.from(7.0f, 7.0f, 6.0f).to(9.0f, 9.0f, 7.0f)
+                .allFaces((direction, faceBuilder) -> {
+                    switch (direction.getAxis()) {
+                        case X -> faceBuilder.texture(TextureSlot.TEXTURE).uvs(6.0f, 7.0f, 7.0f, 9.0f);
+                        case Y -> faceBuilder.texture(TextureSlot.TEXTURE).uvs(7.0f, 6.0f, 9.0f, 7.0f);
+                        case Z -> faceBuilder.texture(TextureSlot.TEXTURE).uvs(7.0f, 7.0f, 9.0f, 9.0f);
+                    }
+                    if (direction == Direction.SOUTH) faceBuilder.cullface(Direction.SOUTH);
+                }))
             // South
-            .element()
-            .from(7.0f, 7.0f, 9.0f).to(9.0f, 9.0f, 10.0f)
-            .allFaces((direction, faceBuilder) -> {
-                switch (direction.getAxis()) {
-                    case X -> faceBuilder.texture("#texture").uvs(6.0f, 7.0f, 7.0f, 9.0f);
-                    case Y -> faceBuilder.texture("#texture").uvs(7.0f, 6.0f, 9.0f, 7.0f);
-                    case Z -> faceBuilder.texture("#texture").uvs(7.0f, 7.0f, 9.0f, 9.0f);
-                }
-                if (direction == Direction.NORTH) faceBuilder.cullface(Direction.NORTH);
-            })
-            .end()
+            .element(b -> b.from(7.0f, 7.0f, 9.0f).to(9.0f, 9.0f, 10.0f)
+                .allFaces((direction, faceBuilder) -> {
+                    switch (direction.getAxis()) {
+                        case X -> faceBuilder.texture(TextureSlot.TEXTURE).uvs(6.0f, 7.0f, 7.0f, 9.0f);
+                        case Y -> faceBuilder.texture(TextureSlot.TEXTURE).uvs(7.0f, 6.0f, 9.0f, 7.0f);
+                        case Z -> faceBuilder.texture(TextureSlot.TEXTURE).uvs(7.0f, 7.0f, 9.0f, 9.0f);
+                    }
+                    if (direction == Direction.NORTH) faceBuilder.cullface(Direction.NORTH);
+                }))
             // West
-            .element()
-            .from(6.0f, 7.0f, 7.0f).to(7.0f, 9.0f, 9.0f)
-            .allFaces((direction, faceBuilder) -> {
-                switch (direction.getAxis()) {
-                    case X -> faceBuilder.texture("#texture").uvs(7.0f, 7.0f, 9.0f, 9.0f);
-                    case Y, Z -> faceBuilder.texture("#texture").uvs(6.0f, 7.0f, 7.0f, 9.0f);
-                }
-                if (direction == Direction.EAST) faceBuilder.cullface(Direction.EAST);
-            })
-            .end()
+            .element(b -> b.from(6.0f, 7.0f, 7.0f).to(7.0f, 9.0f, 9.0f)
+                .allFaces((direction, faceBuilder) -> {
+                    switch (direction.getAxis()) {
+                        case X -> faceBuilder.texture(TextureSlot.TEXTURE).uvs(7.0f, 7.0f, 9.0f, 9.0f);
+                        case Y, Z -> faceBuilder.texture(TextureSlot.TEXTURE).uvs(6.0f, 7.0f, 7.0f, 9.0f);
+                    }
+                    if (direction == Direction.EAST) faceBuilder.cullface(Direction.EAST);
+                }))
             // East
-            .element()
-            .from(9.0f, 7.0f, 7.0f).to(10.0f, 9.0f, 9.0f)
-            .allFaces((direction, faceBuilder) -> {
-                switch (direction.getAxis()) {
-                    case X -> faceBuilder.texture("#texture").uvs(7.0f, 7.0f, 9.0f, 9.0f);
-                    case Y, Z -> faceBuilder.texture("#texture").uvs(6.0f, 7.0f, 7.0f, 9.0f);
-                }
-                if (direction == Direction.WEST) faceBuilder.cullface(Direction.WEST);
-            })
-            .end();
+            .element(b -> b.from(9.0f, 7.0f, 7.0f).to(10.0f, 9.0f, 9.0f)
+                .allFaces((direction, faceBuilder) -> {
+                    switch (direction.getAxis()) {
+                        case X -> faceBuilder.texture(TextureSlot.TEXTURE).uvs(7.0f, 7.0f, 9.0f, 9.0f);
+                        case Y, Z -> faceBuilder.texture(TextureSlot.TEXTURE).uvs(6.0f, 7.0f, 7.0f, 9.0f);
+                    }
+                    if (direction == Direction.WEST) faceBuilder.cullface(Direction.WEST);
+                }))
+            .requiredTextureSlot(TextureSlot.TEXTURE)
+            .requiredTextureSlot(TextureSlot.PARTICLE)
+            .build()
+            .create(modLocation("block/marker_post"), new TextureMapping().put(TextureSlot.TEXTURE, blockTexture(markerBlock.name.getPath())).copySlot(TextureSlot.TEXTURE, TextureSlot.PARTICLE), blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(MultiVariantGenerator.multiVariant(markerBlock, Variant.variant().with(VariantProperties.MODEL, model))
+            .with(blockModels.createColumnWithFacing()));
 
-        directionalBlock(markerBlock, model);
-        itemModels().getBuilder(markerBlock.name.getPath())
-            .parent(new ModelFile.UncheckedModelFile("item/generated"))
-            .texture("layer0", ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "item/" + markerBlock.name.getPath() + "_item"));
-        addClientItem(markerBlock.name, markerBlock.name.withPrefix("item/"));
+        var itemModel = ModelTemplates.FLAT_ITEM.create(markerBlock.asItem(), TextureMapping.layer0(TextureMapping.getItemTexture(markerBlock.asItem(), "_item")), itemModels.modelOutput);
+        itemModels.itemModelOutput.accept(markerBlock.asItem(), ItemModelUtils.plainModel(itemModel));
+
         for (QpBlock marker : List.<QpBlock>of(PlatformAccess.getAccess().registerObjects().flexibleMarkerBlock().get(), PlatformAccess.getAccess().registerObjects().chunkMarkerBlock().get())) {
-            var baseName = marker.name.getPath();
-            var m = models().withExistingParent("block/" + baseName, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "block/marker_post"))
-                .texture("texture", blockTexture(marker))
-                .texture("particle", blockTexture(marker));
-            simpleBlock(marker, m);
-            itemModels().getBuilder(baseName)
-                .parent(new ModelFile.UncheckedModelFile("item/generated"))
-                .texture("layer0", ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "item/" + baseName + "_item"));
-            addClientItem(marker.name, marker.name.withPrefix("item/"));
+            var m = ExtendedModelTemplateBuilder.builder()
+                .parent(model)
+                .requiredTextureSlot(TextureSlot.TEXTURE)
+                .requiredTextureSlot(TextureSlot.PARTICLE)
+                .build()
+                .create(marker, new TextureMapping().put(TextureSlot.TEXTURE, TextureMapping.getBlockTexture(marker)).copySlot(TextureSlot.TEXTURE, TextureSlot.PARTICLE), blockModels.modelOutput);
+            blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(marker, m));
+
+            var i = ModelTemplates.FLAT_ITEM.create(marker.asItem(), TextureMapping.layer0(TextureMapping.getItemTexture(marker.asItem(), "_item")), itemModels.modelOutput);
+            itemModels.itemModelOutput.accept(marker.asItem(), ItemModelUtils.plainModel(i));
         }
     }
 
-    void waterloggedMarkers() {
-        models().withExistingParent("block/waterlogged_marker_common", "block/block")
+    void waterloggedMarkers(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+        /*models().withExistingParent("block/waterlogged_marker_common", "block/block")
             // Center
             .element()
             .from(6, 4, 6).to(10, 12, 10)
             .allFaces((direction, faceBuilder) -> {
                 switch (direction) {
-                    case UP, DOWN -> faceBuilder.texture("#texture").uvs(7, 6, 8, 7);
-                    default -> faceBuilder.texture("#texture").uvs(7, 7, 9, 9);
+                    case UP, DOWN -> faceBuilder.texture(TextureSlot.TEXTURE).uvs(7, 6, 8, 7);
+                    default -> faceBuilder.texture(TextureSlot.TEXTURE).uvs(7, 7, 9, 9);
                 }
             })
             .end()
@@ -376,9 +378,9 @@ final class StateAndModelProvider extends BlockStateProvider {
             .rotation().angle(0).axis(Direction.Axis.Y).origin(8, 8, 8).end()
             .allFaces((direction, faceBuilder) -> {
                 if (direction == Direction.NORTH) {
-                    faceBuilder.texture("#texture").uvs(7, 6, 8, 7);
+                    faceBuilder.texture(TextureSlot.TEXTURE).uvs(7, 6, 8, 7);
                 } else {
-                    faceBuilder.texture("#texture").uvs(7, 7, 9, 9);
+                    faceBuilder.texture(TextureSlot.TEXTURE).uvs(7, 7, 9, 9);
                 }
             })
             .end()
@@ -388,9 +390,9 @@ final class StateAndModelProvider extends BlockStateProvider {
             .rotation().angle(0).axis(Direction.Axis.Y).origin(8, 8, 8).end()
             .allFaces((direction, faceBuilder) -> {
                 if (direction == Direction.SOUTH) {
-                    faceBuilder.texture("#texture").uvs(7, 6, 8, 7);
+                    faceBuilder.texture(TextureSlot.TEXTURE).uvs(7, 6, 8, 7);
                 } else {
-                    faceBuilder.texture("#texture").uvs(7, 7, 9, 9);
+                    faceBuilder.texture(TextureSlot.TEXTURE).uvs(7, 7, 9, 9);
                 }
             })
             .end()
@@ -400,9 +402,9 @@ final class StateAndModelProvider extends BlockStateProvider {
             .rotation().angle(0).axis(Direction.Axis.Y).origin(8, 8, 8).end()
             .allFaces((direction, faceBuilder) -> {
                 if (direction == Direction.WEST) {
-                    faceBuilder.texture("#texture").uvs(7, 6, 8, 7);
+                    faceBuilder.texture(TextureSlot.TEXTURE).uvs(7, 6, 8, 7);
                 } else {
-                    faceBuilder.texture("#texture").uvs(7, 7, 9, 9);
+                    faceBuilder.texture(TextureSlot.TEXTURE).uvs(7, 7, 9, 9);
                 }
             })
             .end()
@@ -412,9 +414,9 @@ final class StateAndModelProvider extends BlockStateProvider {
             .rotation().angle(0).axis(Direction.Axis.Y).origin(8, 8, 8).end()
             .allFaces((direction, faceBuilder) -> {
                 if (direction == Direction.EAST) {
-                    faceBuilder.texture("#texture").uvs(7, 6, 8, 7);
+                    faceBuilder.texture(TextureSlot.TEXTURE).uvs(7, 6, 8, 7);
                 } else {
-                    faceBuilder.texture("#texture").uvs(7, 7, 9, 9);
+                    faceBuilder.texture(TextureSlot.TEXTURE).uvs(7, 7, 9, 9);
                 }
             })
             .end();
@@ -427,7 +429,7 @@ final class StateAndModelProvider extends BlockStateProvider {
             simpleBlock(marker, m);
             simpleBlockItem(marker, m);
             addClientItem(marker.name, marker.name.withPrefix("item/"));
-        }
+        }*/
     }
 
     private static String renderTypeName(RenderStateShard type) {
@@ -438,21 +440,5 @@ final class StateAndModelProvider extends BlockStateProvider {
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void addClientItem(ResourceLocation key, ResourceLocation base) {
-        var unbaked = ItemModelUtils.plainModel(base);
-        clientItemMap.put(
-            key,
-            new ClientItem(unbaked, ClientItem.Properties.DEFAULT)
-        );
-    }
-
-    @Override
-    public CompletableFuture<?> run(CachedOutput cache) {
-        var parent = super.run(cache);
-        return parent.thenCompose(v ->
-            DataProvider.saveAll(cache, ClientItem.CODEC, itemInfoPathProvider, clientItemMap)
-        );
     }
 }
