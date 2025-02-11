@@ -10,6 +10,7 @@ import com.yogpc.qp.packet.ClientSyncMessage;
 import com.yogpc.qp.packet.PacketHandler;
 import com.yogpc.qp.utils.CacheEntry;
 import com.yogpc.qp.utils.MapMulti;
+import com.yogpc.qp.utils.QuarryChunkLoadUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -140,10 +141,20 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         if (level != null && !level.isClientSide) {
             this.init = true;
             updateModules();
+            updateChunkLoadTicket(null);
+        }
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        if (level != null && !level.isClientSide) {
+            QuarryChunkLoadUtil.removeChunkLoadTicket((ServerLevel) level, area);
         }
     }
 
     public void setArea(@Nullable Area area) {
+        var pre = this.area;
         this.area = area;
         if (shouldLogQuarryWork()) {
             QuarryPlus.LOGGER.debug(MARKER, "{}({}) Area changed to {}.", getClass().getSimpleName(), getBlockPos(), area);
@@ -153,6 +164,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
             headY = area.minY();
             headZ = area.maxZ();
         }
+        updateChunkLoadTicket(pre);
     }
 
     @Nullable
@@ -189,6 +201,7 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         if (quarry.hasEnoughEnergy()) {
             if (quarry.init) {
                 quarry.updateModules();
+                quarry.updateChunkLoadTicket(null);
                 quarry.init = false;
             }
             for (int i = 0; i < quarry.getRepeatWorkCount(); i++) {
@@ -381,6 +394,17 @@ public class TileQuarry extends PowerTile implements CheckerLog, MachineStorage.
         Set<QuarryModule> itemModules = Set.copyOf(moduleInventory.getModules());
         this.modules = Sets.union(blockModules, itemModules);
         this.itemConverter = createConverter();
+    }
+
+    void updateChunkLoadTicket(@Nullable Area pre) {
+        if (level != null && !level.isClientSide) {
+            if (pre != null) {
+                QuarryChunkLoadUtil.removeChunkLoadTicket((ServerLevel) level, pre);
+            }
+            if (area != null) {
+                QuarryChunkLoadUtil.makeChunkLoadedForMining((ServerLevel) level, area);
+            }
+        }
     }
 
     BlockState getReplacementState() {

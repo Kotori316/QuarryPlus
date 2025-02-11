@@ -65,11 +65,13 @@ public class QuarryChunkLoadUtil {
     static final int TICKET_LEVEL = 33;
 
     public static void makeChunkLoadedForMining(ServerLevel level, Area area) {
+        LOGGER.debug("Make custom chunk load ticket for {}", area);
         var distanceManager = level.getChunkSource().chunkMap.getDistanceManager();
         operateForChunks(area, pos -> distanceManager.addTicket(QUARRY_PLUS_MINING, pos, TICKET_LEVEL, pos));
     }
 
     public static void removeChunkLoadTicket(ServerLevel level, Area area) {
+        LOGGER.debug("Remove custom chunk load ticket for {}", area);
         var distanceManager = level.getChunkSource().chunkMap.getDistanceManager();
         operateForChunks(area, pos -> distanceManager.removeTicket(QUARRY_PLUS_MINING, pos, TICKET_LEVEL, pos));
     }
