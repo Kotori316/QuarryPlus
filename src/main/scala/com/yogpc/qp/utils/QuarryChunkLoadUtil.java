@@ -5,7 +5,6 @@ import com.yogpc.qp.machines.Area;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -17,8 +16,12 @@ import java.util.function.Consumer;
 public class QuarryChunkLoadUtil {
     private static final Logger LOGGER = QuarryPlus.getLogger(QuarryChunkLoadUtil.class);
 
+    private static boolean isChunkLoadDisabled() {
+        return QuarryPlus.config == null || !QuarryPlus.config.common.enableChunkLoader.get();
+    }
+
     public static boolean isChunkLoaded(Level world, BlockPos pos) {
-        if (QuarryPlus.config != null && !QuarryPlus.config.common.enableChunkLoader.get()) return false;
+        if (isChunkLoadDisabled()) return false;
         if (world instanceof ServerLevel serverWorld) {
             var key = new ChunkPos(pos).toLong();
             return serverWorld.getForcedChunks().contains(key);
@@ -31,7 +34,7 @@ public class QuarryChunkLoadUtil {
      * @return whether the chunk is already loaded.
      */
     public static boolean makeChunkLoaded(Level world, BlockPos pos, boolean machineEnabled) {
-        if (QuarryPlus.config != null && !QuarryPlus.config.common.enableChunkLoader.get()) return false;
+        if (isChunkLoadDisabled()) return false;
         if (!machineEnabled) return false;
         if (world instanceof ServerLevel serverWorld) {
             var chunkLoaded = isChunkLoaded(world, pos);
@@ -48,7 +51,7 @@ public class QuarryChunkLoadUtil {
     }
 
     public static void makeChunkUnloaded(Level world, BlockPos pos, boolean preLoaded) {
-        if (QuarryPlus.config != null && !QuarryPlus.config.common.enableChunkLoader.get()) return;
+        if (isChunkLoadDisabled()) return;
         LOGGER.debug("Asked to unload chunk at {}. preLoaded={}", pos, preLoaded);
         if (!preLoaded && world instanceof ServerLevel serverWorld) {
             serverWorld.setChunkForced(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()), false);
@@ -65,12 +68,14 @@ public class QuarryChunkLoadUtil {
     static final int TICKET_LEVEL = 33;
 
     public static void makeChunkLoadedForMining(ServerLevel level, Area area) {
+        if (isChunkLoadDisabled()) return;
         LOGGER.debug("Make custom chunk load ticket for {}", area);
         var distanceManager = level.getChunkSource().chunkMap.getDistanceManager();
         operateForChunks(area, pos -> distanceManager.addTicket(QUARRY_PLUS_MINING, pos, TICKET_LEVEL, pos));
     }
 
     public static void removeChunkLoadTicket(ServerLevel level, Area area) {
+        if (isChunkLoadDisabled()) return;
         LOGGER.debug("Remove custom chunk load ticket for {}", area);
         var distanceManager = level.getChunkSource().chunkMap.getDistanceManager();
         operateForChunks(area, pos -> distanceManager.removeTicket(QUARRY_PLUS_MINING, pos, TICKET_LEVEL, pos));
