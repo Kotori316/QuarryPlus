@@ -1,10 +1,8 @@
 ## Version LATEST for 1.20.1
 
-* Create custom player mode
-* Load head in server
-* Allow multi void modules. Close #470
-* Fix #460
-* Fix #441
+* Improve CHunk loading of QuarryPlus
+* Add `zh_tw.json`
+* Update forge
 
 ## Version for 1.20.1
 
@@ -32,6 +30,11 @@
   * Related to https://github.com/Kotori316/QuarryPlus/issues/371
 * Change render of Quarry Plus
 * Improvement of REI integration
+* Create custom player mode
+* Load head in server
+* Allow multi void modules. Close #470
+* Fix #460
+* Fix #441
 
 ## Version 1192.2.3
 
