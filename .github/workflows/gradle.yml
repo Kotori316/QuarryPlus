@@ -28,10 +28,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       - run: chmod +x ./gradlew
-      - uses: gradle/gradle-build-action@v3
-        with:
-          cache-read-only: false
-          gradle-home-cache-cleanup: true
       - name: Enable daemon
         run: sed -i -e 's/org.gradle.daemon=false/org.gradle.daemon=true/' gradle.properties
       - name: Compile 1

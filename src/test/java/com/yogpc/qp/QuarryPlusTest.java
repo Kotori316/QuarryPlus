@@ -8,8 +8,6 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import com.kotori316.testutil.MCTestInitializer;
-
 public final class QuarryPlusTest implements BeforeAllCallback {
 
     @Override
