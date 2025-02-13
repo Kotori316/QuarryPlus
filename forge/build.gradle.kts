@@ -1,7 +1,6 @@
 plugins {
     id("com.kotori316.common")
     alias(libs.plugins.forge.gradle)
-    alias(libs.plugins.forge.parchment)
     alias(libs.plugins.forge.mixin)
     id("com.kotori316.publish")
     id("com.kotori316.gt")
@@ -52,8 +51,8 @@ sourceSets {
 minecraft {
     mappings(
         mapOf(
-            "channel" to "parchment",
-            "version" to "${project.property("parchment.minecraft")}-${project.property("parchment.mapping")}-${libs.versions.minecraft.get()}",
+            "channel" to "official",
+            "version" to libs.versions.minecraft.get(),
         )
     )
     reobf = false
