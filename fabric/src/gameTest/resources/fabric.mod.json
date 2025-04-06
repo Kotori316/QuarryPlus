@@ -6,6 +6,11 @@
   "license": "All rights reserved",
   "entrypoints": {
     "fabric-gametest": [
+      "com.yogpc.qp.fabric.EnchantmentTest",
+      "com.yogpc.qp.fabric.LoadTest"
+    ],
+    "main": [
+      "com.yogpc.qp.fabric.LoadTest"
     ]
   },
   "mixins": [

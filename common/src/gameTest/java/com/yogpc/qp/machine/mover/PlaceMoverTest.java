@@ -22,13 +22,13 @@ public final class PlaceMoverTest {
     public static void place(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().moverBlock().get());
         assertInstanceOf(MoverBlock.class, helper.getBlockState(base).getBlock());
-        assertInstanceOf(MoverEntity.class, helper.getBlockEntity(base));
+        assertInstanceOf(MoverEntity.class, helper.getBlockEntity(base, MoverEntity.class));
         helper.succeed();
     }
 
     public static void setItem(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().moverBlock().get());
-        MoverEntity mover = helper.getBlockEntity(base);
+        MoverEntity mover = helper.getBlockEntity(base, MoverEntity.class);
 
         var stack = new ItemStack(Items.DIAMOND_PICKAXE);
         stack.enchant(getEnchantment(helper, Enchantments.EFFICIENCY), 4);
@@ -42,7 +42,7 @@ public final class PlaceMoverTest {
 
     public static void move(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().moverBlock().get());
-        MoverEntity mover = helper.getBlockEntity(base);
+        MoverEntity mover = helper.getBlockEntity(base, MoverEntity.class);
 
         var stack = new ItemStack(Items.DIAMOND_PICKAXE);
         var quarry = new ItemStack(PlatformAccess.getAccess().registerObjects().quarryBlock().get());
@@ -59,7 +59,7 @@ public final class PlaceMoverTest {
 
     public static void moveLast(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().moverBlock().get());
-        MoverEntity mover = helper.getBlockEntity(base);
+        MoverEntity mover = helper.getBlockEntity(base, MoverEntity.class);
 
         var stack = new ItemStack(Items.DIAMOND_PICKAXE);
         var quarry = new ItemStack(PlatformAccess.getAccess().registerObjects().quarryBlock().get());
@@ -77,7 +77,7 @@ public final class PlaceMoverTest {
 
     public static void drop(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().moverBlock().get());
-        MoverEntity mover = helper.getBlockEntity(base);
+        MoverEntity mover = helper.getBlockEntity(base, MoverEntity.class);
         var stack = new ItemStack(Items.DIAMOND_PICKAXE);
         var quarry = new ItemStack(PlatformAccess.getAccess().registerObjects().quarryBlock().get());
         var enchantment = getEnchantment(helper, Enchantments.EFFICIENCY);
@@ -94,7 +94,7 @@ public final class PlaceMoverTest {
 
     public static void moveFromEnchantedBook(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().moverBlock().get());
-        MoverEntity mover = helper.getBlockEntity(base);
+        MoverEntity mover = helper.getBlockEntity(base, MoverEntity.class);
 
         var enchantment = getEnchantment(helper, Enchantments.EFFICIENCY);
         var stack = EnchantmentHelper.createBook(new EnchantmentInstance(enchantment, 1));

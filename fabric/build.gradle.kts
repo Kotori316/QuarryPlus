@@ -70,7 +70,7 @@ dependencies {
 
     modImplementation(libs.teamreborn.energy)
     // modLocalRuntime(libs.jei.fabric)
-    modLocalRuntime(libs.du.fabric) {
+    modImplementation(libs.du.fabric) {
         isTransitive = false
     }
     modLocalRuntime(libs.slp.fabric)

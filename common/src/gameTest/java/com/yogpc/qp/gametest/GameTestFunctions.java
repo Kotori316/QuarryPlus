@@ -1,6 +1,8 @@
 package com.yogpc.qp.gametest;
 
 import com.google.common.base.CaseFormat;
+import com.kotori316.testutil.common.TestFunction;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.DebugStorageTest;
 import com.yogpc.qp.machine.advquarry.PlaceAdvQuarryTest;
 import com.yogpc.qp.machine.mover.PlaceMoverTest;
@@ -10,7 +12,6 @@ import com.yogpc.qp.machine.quarry.PlaceQuarryTest;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.enchantment.Enchantment;
 import org.jetbrains.annotations.NotNull;
@@ -70,7 +71,7 @@ public final class GameTestFunctions {
             .filter(m -> m.getReturnType() == void.class)
             .peek(m -> m.setAccessible(true))
             .map(m ->
-                new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, "%s_%s".formatted(m.getDeclaringClass().getSimpleName(), m.getName())), structureName, maxTicks, 0, true, g -> {
+                TestFunction.createWithStructure(QuarryPlus.modID, batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, "%s_%s".formatted(m.getDeclaringClass().getSimpleName(), m.getName())), structureName, g -> {
                     try {
                         m.invoke(null, g);
                     } catch (ReflectiveOperationException | AssertionError e) {

@@ -63,6 +63,7 @@ dependencies {
     "gameTestImplementation"(project.sourceSets.main.get().output)
     "gameTestImplementation"(platform(libs.junit))
     "gameTestImplementation"(libs.jupiter)
+    "gameTestImplementation"(libs.du.common)
 }
 
 tasks.register("runGameTestServer")

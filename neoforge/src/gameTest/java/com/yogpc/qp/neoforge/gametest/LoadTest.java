@@ -7,7 +7,6 @@ import com.yogpc.qp.neoforge.PlatformAccessNeoForge;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 

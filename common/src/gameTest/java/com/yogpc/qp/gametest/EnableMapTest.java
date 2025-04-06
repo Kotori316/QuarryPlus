@@ -1,13 +1,14 @@
 package com.yogpc.qp.gametest;
 
 import com.google.common.base.CaseFormat;
+import com.kotori316.testutil.common.TestFunction;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.machine.QpItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
@@ -37,12 +38,12 @@ public final class EnableMapTest {
 
         return Stream.concat(blockEntityTypes, items).map(e -> {
             var name = "EnableMapTest_%s".formatted(e.getPath());
-            return new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, 5, 0, true, GameTestFunctions.wrapper(g -> {
+            return TestFunction.createWithStructure(QuarryPlus.modID, batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, g -> {
                 if (!PlatformAccess.getAccess().registerObjects().defaultEnableSetting().containsKey(e.getPath())) {
-                    g.fail("%s is not configured".formatted(e.getPath()));
+                    g.fail(Component.literal("%s is not configured".formatted(e.getPath())));
                 }
                 g.succeed();
-            }));
+            });
         });
     }
 
@@ -54,7 +55,7 @@ public final class EnableMapTest {
         return blockEntityTypes.map(e -> {
             var name = "EnableMapTestHasValidBlock_%s".formatted(e.getKey().location().getPath());
             var b = e.getValue();
-            return new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, 100, 0, true, GameTestFunctions.wrapper(g -> {
+            return TestFunction.createWithStructure(QuarryPlus.modID, batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, g -> {
                 try {
                     var field = BlockEntityType.class.getDeclaredField("validBlocks");
                     field.setAccessible(true);
@@ -64,7 +65,7 @@ public final class EnableMapTest {
                 } catch (ReflectiveOperationException exception) {
                     throw new RuntimeException(exception);
                 }
-            }));
+            });
         });
     }
 

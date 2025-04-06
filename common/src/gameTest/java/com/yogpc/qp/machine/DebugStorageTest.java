@@ -21,13 +21,13 @@ public final class DebugStorageTest {
     public static void place(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().debugStorageBlock().get());
         assertInstanceOf(DebugStorageBlock.class, helper.getBlockState(base).getBlock());
-        assertInstanceOf(DebugStorageEntity.class, helper.getBlockEntity(base));
+        assertInstanceOf(DebugStorageEntity.class, helper.getBlockEntity(base, DebugStorageEntity.class));
         helper.succeed();
     }
 
     public static void firstEmpty(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().debugStorageBlock().get());
-        DebugStorageEntity entity = helper.getBlockEntity(base);
+        DebugStorageEntity entity = helper.getBlockEntity(base, DebugStorageEntity.class);
         assertAll(
             () -> assertTrue(entity.enabled),
             () -> assertTrue(getStorage(entity).items.isEmpty()),
@@ -40,7 +40,7 @@ public final class DebugStorageTest {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().debugStorageBlock().get());
         PlatformAccess.getAccess().transfer().transferItem(helper.getLevel(), helper.absolutePos(base), new ItemStack(Items.APPLE, 3), Direction.UP, false);
 
-        DebugStorageEntity entity = helper.getBlockEntity(base);
+        DebugStorageEntity entity = helper.getBlockEntity(base, DebugStorageEntity.class);
         var storage = getStorage(entity);
         assertAll(
             () -> assertEquals(3, storage.items.getLong(MachineStorage.ItemKey.of(new ItemStack(Items.APPLE)))),
@@ -55,7 +55,7 @@ public final class DebugStorageTest {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().debugStorageBlock().get());
         PlatformAccess.getAccess().transfer().transferFluid(helper.getLevel(), helper.absolutePos(base), new FluidStackLike(Fluids.WATER, MachineStorage.ONE_BUCKET * 4, DataComponentPatch.EMPTY), Direction.UP, false);
 
-        DebugStorageEntity entity = helper.getBlockEntity(base);
+        DebugStorageEntity entity = helper.getBlockEntity(base, DebugStorageEntity.class);
         var storage = getStorage(entity);
         assertAll(
             () -> assertEquals(0, storage.items.getLong(MachineStorage.ItemKey.of(new ItemStack(Items.APPLE)))),

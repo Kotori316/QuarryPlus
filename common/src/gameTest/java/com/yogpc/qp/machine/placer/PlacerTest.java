@@ -1,13 +1,14 @@
 package com.yogpc.qp.machine.placer;
 
 import com.google.common.base.CaseFormat;
+import com.kotori316.testutil.common.TestFunction;
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.gametest.GameTestFunctions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -41,7 +42,7 @@ public final class PlacerTest {
     static void placePlacerBlock(GameTestHelper helper) {
         helper.setBlock(placerPos, PlatformAccess.getAccess().registerObjects().placerBlock().get());
         helper.assertBlockPresent(PlatformAccess.getAccess().registerObjects().placerBlock().get(), placerPos);
-        BlockEntity entity = helper.getBlockEntity(placerPos);
+        BlockEntity entity = helper.getBlockEntity(placerPos, PlacerEntity.class);
         assertInstanceOf(PlacerEntity.class, entity);
         helper.succeed();
     }
@@ -54,7 +55,7 @@ public final class PlacerTest {
                     var blockName = BuiltInRegistries.BLOCK.getKey(b);
                     var name = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, "PlacerTest_removeBlock_%s_%s_%s".formatted(
                         direction.name().toLowerCase(Locale.ROOT), r.name().toLowerCase(Locale.ROOT), blockName.getPath()));
-                    return new TestFunction(batchName, name, structureName, r, 20, 0, true, g -> removeBlock(g, direction, b));
+                    return TestFunction.createWithStructure(QuarryPlus.modID, batchName, name, structureName, g -> placeBlock1(g, direction, b));
                 }));
         }
 
@@ -65,12 +66,12 @@ public final class PlacerTest {
                 .thenExecuteAfter(1, () -> helper.setBlock(placerPos, placerBlock.defaultBlockState().setValue(BlockStateProperties.FACING, direction)))
                 .thenExecuteAfter(1, () -> helper.setBlock(stonePos, block))
                 .thenExecuteAfter(1, () -> {
-                    BlockEntity entity = helper.getBlockEntity(placerPos);
+                    BlockEntity entity = helper.getBlockEntity(placerPos, PlacerEntity.class);
                     assertInstanceOf(PlacerEntity.class, entity).breakBlock();
                 })
                 .thenExecuteAfter(1, () -> helper.assertBlockNotPresent(block, stonePos))
                 .thenExecuteAfter(1, () -> {
-                    PlacerEntity placer = helper.getBlockEntity(placerPos);
+                    PlacerEntity placer = helper.getBlockEntity(placerPos, PlacerEntity.class);
                     assertEquals(1, placer.countItem(block.asItem()), "Placer should contain removed item");
                 })
                 .thenSucceed();
@@ -83,7 +84,7 @@ public final class PlacerTest {
                     var blockName = BuiltInRegistries.BLOCK.getKey(b);
                     var name = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, "PlacerTest_placeBlock1_%s_%s_%s".formatted(
                         direction.name().toLowerCase(Locale.ROOT), r.name().toLowerCase(Locale.ROOT), blockName.getPath()));
-                    return new TestFunction(batchName, name, structureName, r, 20, 0, true, g -> placeBlock1(g, direction, b));
+                    return TestFunction.createWithStructure(QuarryPlus.modID, batchName, name, structureName, g -> placeBlock1(g, direction, b));
                 }));
         }
 
@@ -93,16 +94,16 @@ public final class PlacerTest {
             helper.startSequence()
                 .thenExecuteAfter(1, () -> helper.setBlock(placerPos, placerBlock.defaultBlockState().setValue(BlockStateProperties.FACING, direction)))
                 .thenExecuteAfter(1, () -> {
-                    PlacerEntity placer = helper.getBlockEntity(placerPos);
+                    PlacerEntity placer = helper.getBlockEntity(placerPos, PlacerEntity.class);
                     placer.setItem(0, new ItemStack(block));
                 })
                 .thenExecuteAfter(1, () -> {
-                    PlacerEntity placer = helper.getBlockEntity(placerPos);
+                    PlacerEntity placer = helper.getBlockEntity(placerPos, PlacerEntity.class);
                     placer.placeBlock();
                 })
                 .thenExecuteAfter(1, () -> helper.assertBlockPresent(block, stonePos))
                 .thenExecuteAfter(1, () -> {
-                    PlacerEntity placer = helper.getBlockEntity(placerPos);
+                    PlacerEntity placer = helper.getBlockEntity(placerPos, PlacerEntity.class);
                     assertEquals(0, placer.countItem(block.asItem()), "Placer must not contain placed item");
                 })
                 .thenSucceed();
@@ -111,7 +112,7 @@ public final class PlacerTest {
         static void notPlaceMode(GameTestHelper helper) {
             var placerBlock = PlatformAccess.getAccess().registerObjects().placerBlock().get();
             helper.setBlock(placerPos, placerBlock.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.NORTH));
-            PlacerEntity tile = helper.getBlockEntity(placerPos);
+            PlacerEntity tile = helper.getBlockEntity(placerPos, PlacerEntity.class);
             tile.redstoneMode = AbstractPlacerTile.RedStoneMode.PULSE_BREAK_ONLY;
             helper.startSequence()
                 .thenExecuteAfter(1, () -> tile.setItem(0, new ItemStack(Blocks.STONE)))
@@ -124,7 +125,7 @@ public final class PlacerTest {
             var placerBlock = PlatformAccess.getAccess().registerObjects().placerBlock().get();
             helper.setBlock(placerPos, placerBlock.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.NORTH));
             helper.setBlock(placerPos.relative(Direction.NORTH), Blocks.STONE);
-            PlacerEntity tile = helper.getBlockEntity(placerPos);
+            PlacerEntity tile = helper.getBlockEntity(placerPos, PlacerEntity.class);
             tile.redstoneMode = AbstractPlacerTile.RedStoneMode.PULSE_PLACE_ONLY;
             helper.startSequence()
                 .thenExecuteAfter(1, tile::breakBlock)
@@ -137,7 +138,7 @@ public final class PlacerTest {
             var placerBlock = PlatformAccess.getAccess().registerObjects().placerBlock().get();
             helper.setBlock(placerPos, placerBlock.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.UP));
             helper.setBlock(waterPos, Blocks.WATER);
-            PlacerEntity tile = helper.getBlockEntity(placerPos);
+            PlacerEntity tile = helper.getBlockEntity(placerPos, PlacerEntity.class);
 
             helper.startSequence()
                 .thenExecuteAfter(1, () -> tile.setItem(0, new ItemStack(Blocks.STONE)))
@@ -152,7 +153,7 @@ public final class PlacerTest {
             var placerBlock = PlatformAccess.getAccess().registerObjects().placerBlock().get();
             helper.setBlock(placerPos, placerBlock.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.UP));
             helper.setBlock(blockPos, Blocks.DIAMOND_BLOCK);
-            PlacerEntity tile = helper.getBlockEntity(placerPos);
+            PlacerEntity tile = helper.getBlockEntity(placerPos, PlacerEntity.class);
 
             helper.startSequence()
                 .thenExecuteAfter(1, () -> tile.setItem(0, new ItemStack(Blocks.STONE)))
@@ -168,7 +169,7 @@ public final class PlacerTest {
             var stonePos = placerPos.relative(Direction.NORTH);
             var placerBlock = PlatformAccess.getAccess().registerObjects().placerBlock().get();
             helper.setBlock(placerPos, placerBlock.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.NORTH));
-            PlacerEntity tile = helper.getBlockEntity(placerPos);
+            PlacerEntity tile = helper.getBlockEntity(placerPos, PlacerEntity.class);
 
             helper.startSequence()
                 .thenExecuteAfter(1, () -> tile.setItem(0, new ItemStack(Blocks.STONE)))
@@ -182,7 +183,7 @@ public final class PlacerTest {
             var placerBlock = PlatformAccess.getAccess().registerObjects().placerBlock().get();
             helper.setBlock(placerPos, placerBlock.defaultBlockState().setValue(BlockStateProperties.FACING, Direction.NORTH));
             helper.setBlock(stonePos, Blocks.STONE);
-            PlacerEntity tile = helper.getBlockEntity(placerPos);
+            PlacerEntity tile = helper.getBlockEntity(placerPos, PlacerEntity.class);
 
             helper.startSequence()
                 .thenExecuteAfter(1, () -> helper.setBlock(placerPos.relative(Direction.EAST), Blocks.REDSTONE_BLOCK))

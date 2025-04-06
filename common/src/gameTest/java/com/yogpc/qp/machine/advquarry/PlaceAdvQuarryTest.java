@@ -19,7 +19,7 @@ public final class PlaceAdvQuarryTest {
     public static void place(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().advQuarryBlock().get());
         assertInstanceOf(AdvQuarryBlock.class, helper.getBlockState(base).getBlock());
-        assertInstanceOf(AdvQuarryEntity.class, helper.getBlockEntity(base));
+        assertInstanceOf(AdvQuarryEntity.class, helper.getBlockEntity(base, AdvQuarryEntity.class));
         helper.succeed();
     }
 
@@ -31,7 +31,7 @@ public final class PlaceAdvQuarryTest {
         helper.placeAt(player, stack, base.below(), Direction.UP);
         helper.assertBlockPresent(PlatformAccess.getAccess().registerObjects().advQuarryBlock().get(), base);
 
-        AdvQuarryEntity advQuarryEntity = helper.getBlockEntity(base);
+        AdvQuarryEntity advQuarryEntity = helper.getBlockEntity(base, AdvQuarryEntity.class);
         assertTrue(advQuarryEntity.getEnchantments().isEmpty());
         assertEquals(PowerEntity.ONE_FE * PlatformAccess.config().powerMap().advQuarry().maxEnergy(), advQuarryEntity.getMaxEnergy());
         helper.succeed();
@@ -45,7 +45,7 @@ public final class PlaceAdvQuarryTest {
         player.setItemInHand(InteractionHand.MAIN_HAND, stack);
         helper.placeAt(player, stack, base.below(), Direction.UP);
 
-        AdvQuarryEntity advQuarryEntity = helper.getBlockEntity(base);
+        AdvQuarryEntity advQuarryEntity = helper.getBlockEntity(base, AdvQuarryEntity.class);
         assertFalse(advQuarryEntity.getEnchantments().isEmpty());
         assertEquals(3 * PowerEntity.ONE_FE * PlatformAccess.config().powerMap().advQuarry().maxEnergy(), advQuarryEntity.getMaxEnergy());
         helper.succeed();

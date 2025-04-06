@@ -1,9 +1,10 @@
 package com.yogpc.qp.gametest;
 
 import com.google.common.base.CaseFormat;
+import com.kotori316.testutil.common.TestFunction;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.ItemConverter;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -33,7 +34,7 @@ public final class ItemConverterGameTest {
         return keep.map(stack -> {
             var path = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
             var name = "noConversionChunkDestroyer_%s".formatted(path);
-            return new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, 5, 0, true, GameTestFunctions.wrapper(g -> {
+            return TestFunction.createWithStructure(QuarryPlus.modID, batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, g -> {
                 var converter = new ItemConverter.ChunkDestroyerConversion();
                 assertFalse(converter.shouldApply(stack));
                 var conversion = new ItemConverter(List.of(converter));
@@ -41,7 +42,7 @@ public final class ItemConverterGameTest {
                 assertEquals(1, converted.size());
                 assertSame(stack, converted.getFirst());
                 g.succeed();
-            }));
+            });
         });
     }
 
@@ -63,14 +64,14 @@ public final class ItemConverterGameTest {
         return stacks.map(stack -> {
             var path = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
             var name = "conversionChunkDestroyer_%s".formatted(path);
-            return new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, 5, 0, true, GameTestFunctions.wrapper(g -> {
+            return TestFunction.createWithStructure(QuarryPlus.modID, batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, g -> {
                 var converter = new ItemConverter.ChunkDestroyerConversion();
                 assertTrue(converter.shouldApply(stack));
                 var conversion = new ItemConverter(List.of(converter));
                 var count = conversion.convert(stack).count();
                 assertEquals(0, count);
                 g.succeed();
-            }));
+            });
         });
     }
 }

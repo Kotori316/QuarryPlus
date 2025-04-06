@@ -1,8 +1,9 @@
 package com.yogpc.qp.gametest;
 
 import com.google.common.base.CaseFormat;
+import com.kotori316.testutil.common.TestFunction;
 import com.yogpc.qp.PlatformAccess;
-import net.minecraft.gametest.framework.TestFunction;
+import com.yogpc.qp.QuarryPlus;
 import net.minecraft.world.item.CreativeModeTab;
 
 import java.util.function.Supplier;
@@ -17,11 +18,11 @@ public final class AccessItemTest {
 
         return items.map(Supplier::get).map(i -> {
             var name = "AccessItemTest%s".formatted(i.getClass().getSimpleName());
-            return new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, 100, 0, true, GameTestFunctions.wrapper(g -> {
+            return TestFunction.createWithStructure(QuarryPlus.modID, batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, g -> {
                 var parameter = new CreativeModeTab.ItemDisplayParameters(g.getLevel().enabledFeatures(), false, g.getLevel().registryAccess());
                 assertAll(i.creativeTabItem(parameter).map(t -> () -> assertFalse(t.isEmpty())));
                 g.succeed();
-            }));
+            });
         });
     }
 }

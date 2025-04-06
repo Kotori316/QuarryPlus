@@ -19,7 +19,7 @@ public final class MachineStorageTest {
     public static void debugStorage(GameTestHelper helper) {
         var pos = BlockPos.ZERO.above();
         helper.setBlock(pos, PlatformAccess.getAccess().registerObjects().debugStorageBlock().get());
-        BlockEntity blockEntity = helper.getBlockEntity(pos);
+        BlockEntity blockEntity = helper.getBlockEntity(pos, BlockEntity.class);
         var holder = MachineStorageHolder.getHolder(blockEntity);
         assertTrue(holder.isPresent());
         helper.succeed();
@@ -28,7 +28,7 @@ public final class MachineStorageTest {
     public static void quarry(GameTestHelper helper) {
         var pos = BlockPos.ZERO.above();
         helper.setBlock(pos, PlatformAccess.getAccess().registerObjects().quarryBlock().get());
-        BlockEntity blockEntity = helper.getBlockEntity(pos);
+        BlockEntity blockEntity = helper.getBlockEntity(pos, BlockEntity.class);
         var holder = MachineStorageHolder.getHolder(blockEntity);
         assertTrue(holder.isPresent());
         helper.succeed();
@@ -37,7 +37,7 @@ public final class MachineStorageTest {
     public static void advQuarry(GameTestHelper helper) {
         var pos = BlockPos.ZERO.above();
         helper.setBlock(pos, PlatformAccess.getAccess().registerObjects().advQuarryBlock().get());
-        BlockEntity blockEntity = helper.getBlockEntity(pos);
+        BlockEntity blockEntity = helper.getBlockEntity(pos, BlockEntity.class);
         var holder = MachineStorageHolder.getHolder(blockEntity);
         assertTrue(holder.isPresent());
         helper.succeed();

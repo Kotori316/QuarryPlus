@@ -1,11 +1,12 @@
 package com.yogpc.qp.machine.placer;
 
 import com.google.common.base.CaseFormat;
+import com.kotori316.testutil.common.TestFunction;
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -38,7 +39,7 @@ public final class RemotePlacerTest {
                 var blockName = BuiltInRegistries.BLOCK.getKey(b);
                 var name = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, "RemotePlacerTest_removeBlock_%s_%s".formatted(
                     r.name().toLowerCase(Locale.ROOT), blockName.getPath()));
-                return new TestFunction(batchName, name, structureName, r, 20, 0, true, g -> removeBlock(g, b));
+                return TestFunction.createWithStructure(QuarryPlus.modID, batchName, name, structureName, g -> removeBlock(g, b));
             });
         }
 
@@ -48,16 +49,16 @@ public final class RemotePlacerTest {
                 .thenExecuteAfter(1, () -> helper.setBlock(placerPos, placerBlock))
                 .thenExecuteAfter(1, () -> helper.setBlock(targetPos, block))
                 .thenExecuteAfter(1, () -> {
-                    BlockEntity entity = helper.getBlockEntity(placerPos);
+                    BlockEntity entity = helper.getBlockEntity(placerPos, RemotePlacerEntity.class);
                     assertInstanceOf(RemotePlacerEntity.class, entity).targetPos = helper.absolutePos(RemotePlacerTest.targetPos);
                 })
                 .thenExecuteAfter(1, () -> {
-                    RemotePlacerEntity placer = helper.getBlockEntity(placerPos);
+                    RemotePlacerEntity placer = helper.getBlockEntity(placerPos, RemotePlacerEntity.class);
                     placer.breakBlock();
                 })
                 .thenExecuteAfter(1, () -> helper.assertBlockNotPresent(block, targetPos))
                 .thenExecuteAfter(1, () -> {
-                    RemotePlacerEntity placer = helper.getBlockEntity(placerPos);
+                    RemotePlacerEntity placer = helper.getBlockEntity(placerPos, RemotePlacerEntity.class);
                     assertEquals(1, placer.countItem(block.asItem()), "Placer should contain removed item");
                 })
                 .thenSucceed();
@@ -69,7 +70,7 @@ public final class RemotePlacerTest {
                 var blockName = BuiltInRegistries.BLOCK.getKey(b);
                 var name = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, "RemotePlacerTest_placeBlock1_%s_%s".formatted(
                     r.name().toLowerCase(Locale.ROOT), blockName.getPath()));
-                return new TestFunction(batchName, name, structureName, r, 20, 0, true, g -> placeBlock1(g, b));
+                return TestFunction.createWithStructure(QuarryPlus.modID, batchName, name, structureName, g -> placeBlock1(g, b));
             });
         }
 
@@ -78,20 +79,20 @@ public final class RemotePlacerTest {
             helper.startSequence()
                 .thenExecuteAfter(1, () -> helper.setBlock(placerPos, placerBlock))
                 .thenExecuteAfter(1, () -> {
-                    BlockEntity entity = helper.getBlockEntity(placerPos);
+                    BlockEntity entity = helper.getBlockEntity(placerPos, RemotePlacerEntity.class);
                     assertInstanceOf(RemotePlacerEntity.class, entity).targetPos = helper.absolutePos(RemotePlacerTest.targetPos);
                 })
                 .thenExecuteAfter(1, () -> {
-                    RemotePlacerEntity placer = helper.getBlockEntity(placerPos);
+                    RemotePlacerEntity placer = helper.getBlockEntity(placerPos, RemotePlacerEntity.class);
                     placer.setItem(0, new ItemStack(block));
                 })
                 .thenExecuteAfter(1, () -> {
-                    RemotePlacerEntity placer = helper.getBlockEntity(placerPos);
+                    RemotePlacerEntity placer = helper.getBlockEntity(placerPos, RemotePlacerEntity.class);
                     placer.placeBlock();
                 })
                 .thenExecuteAfter(1, () -> helper.assertBlockPresent(block, RemotePlacerTest.targetPos))
                 .thenExecuteAfter(1, () -> {
-                    RemotePlacerEntity placer = helper.getBlockEntity(placerPos);
+                    RemotePlacerEntity placer = helper.getBlockEntity(placerPos, RemotePlacerEntity.class);
                     assertEquals(0, placer.countItem(block.asItem()), "Placer must not contain placed item");
                 })
                 .thenSucceed();

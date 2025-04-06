@@ -1,13 +1,13 @@
 package com.yogpc.qp.gametest;
 
 import com.google.common.base.CaseFormat;
+import com.kotori316.testutil.common.TestFunction;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.misc.FrameBlock;
 import com.yogpc.qp.machine.misc.SoftBlock;
 import com.yogpc.qp.machine.storage.DebugStorageBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.level.block.Block;
 
 import java.util.Set;
@@ -29,7 +29,7 @@ public final class CheckBlockDropTest {
         return blocks.map(e -> {
             var b = e.getValue();
             var name = "CheckBlockDrop%s".formatted(b.getClass().getSimpleName());
-            return new TestFunction(batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, 100, 0, true, GameTestFunctions.wrapper(g -> {
+            return TestFunction.createWithStructure(QuarryPlus.modID, batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, g -> {
                 var pos = BlockPos.ZERO.above();
                 g.setBlock(pos, b);
                 assertInstanceOf(b.getClass(), g.getBlockState(pos).getBlock());
@@ -40,7 +40,7 @@ public final class CheckBlockDropTest {
                     assertFalse(drops.isEmpty(), "Drop item is empty for %s".formatted(e.getKey()));
                 }
                 g.succeed();
-            }));
+            });
         });
     }
 }

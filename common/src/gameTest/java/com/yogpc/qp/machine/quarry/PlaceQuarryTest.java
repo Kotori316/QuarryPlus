@@ -22,13 +22,13 @@ public final class PlaceQuarryTest {
     public static void place(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().quarryBlock().get());
         assertInstanceOf(QuarryBlock.class, helper.getBlockState(base).getBlock());
-        assertInstanceOf(QuarryEntity.class, helper.getBlockEntity(base));
+        assertInstanceOf(QuarryEntity.class, helper.getBlockEntity(base, QuarryEntity.class));
         helper.succeed();
     }
 
     public static void checkDropNormal(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().quarryBlock().get());
-        var drop = Block.getDrops(helper.getBlockState(base), helper.getLevel(), helper.absolutePos(base), helper.getBlockEntity(base));
+        var drop = Block.getDrops(helper.getBlockState(base), helper.getLevel(), helper.absolutePos(base), helper.getBlockEntity(base, QuarryEntity.class));
         assertFalse(drop.isEmpty());
         var quarryStack = drop.getFirst();
         assertInstanceOf(QuarryItem.class, quarryStack.getItem());
@@ -40,9 +40,9 @@ public final class PlaceQuarryTest {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().quarryBlock().get());
         var mutable = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
         mutable.set(GameTestFunctions.getEnchantment(helper, Enchantments.EFFICIENCY), 3);
-        helper.<QuarryEntity>getBlockEntity(base).setEnchantments(mutable.toImmutable());
+        helper.getBlockEntity(base, QuarryEntity.class).setEnchantments(mutable.toImmutable());
 
-        var drop = Block.getDrops(helper.getBlockState(base), helper.getLevel(), helper.absolutePos(base), helper.getBlockEntity(base));
+        var drop = Block.getDrops(helper.getBlockState(base), helper.getLevel(), helper.absolutePos(base), helper.getBlockEntity(base, QuarryEntity.class));
         assertFalse(drop.isEmpty());
         var quarryStack = drop.getFirst();
         assertInstanceOf(QuarryItem.class, quarryStack.getItem());
@@ -57,9 +57,9 @@ public final class PlaceQuarryTest {
         var mutable = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
         mutable.set(GameTestFunctions.getEnchantment(helper, Enchantments.EFFICIENCY), 5);
         mutable.set(GameTestFunctions.getEnchantment(helper, Enchantments.UNBREAKING), 3);
-        helper.<QuarryEntity>getBlockEntity(base).setEnchantments(mutable.toImmutable());
+        helper.getBlockEntity(base, QuarryEntity.class).setEnchantments(mutable.toImmutable());
 
-        var drop = Block.getDrops(helper.getBlockState(base), helper.getLevel(), helper.absolutePos(base), helper.getBlockEntity(base));
+        var drop = Block.getDrops(helper.getBlockState(base), helper.getLevel(), helper.absolutePos(base), helper.getBlockEntity(base, QuarryEntity.class));
         var quarryStack = drop.getFirst();
         assertInstanceOf(QuarryItem.class, quarryStack.getItem());
         assertTrue(quarryStack.isEnchanted());
@@ -71,7 +71,7 @@ public final class PlaceQuarryTest {
 
     public static void saveEnchantment(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().quarryBlock().get());
-        QuarryEntity quarry = helper.getBlockEntity(base);
+        QuarryEntity quarry = helper.getBlockEntity(base, QuarryEntity.class);
 
         var mutable = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
         mutable.set(GameTestFunctions.getEnchantment(helper, Enchantments.EFFICIENCY), 5);
@@ -97,7 +97,7 @@ public final class PlaceQuarryTest {
         helper.placeAt(player, stack, base.below(), Direction.UP);
         helper.assertBlockPresent(PlatformAccess.getAccess().registerObjects().quarryBlock().get(), base);
 
-        QuarryEntity quarry = helper.getBlockEntity(base);
+        QuarryEntity quarry = helper.getBlockEntity(base, QuarryEntity.class);
         var enchantments = quarry.getEnchantments();
         assertTrue(enchantments.isEmpty());
         helper.succeed();
@@ -113,7 +113,7 @@ public final class PlaceQuarryTest {
         helper.placeAt(player, stack, base.below(), Direction.UP);
         helper.assertBlockPresent(PlatformAccess.getAccess().registerObjects().quarryBlock().get(), base);
 
-        QuarryEntity quarry = helper.getBlockEntity(base);
+        QuarryEntity quarry = helper.getBlockEntity(base, QuarryEntity.class);
         var enchantments = quarry.getEnchantments();
         assertFalse(enchantments.isEmpty());
         assertEquals(3, enchantments.getLevel(GameTestFunctions.getEnchantment(helper, Enchantments.EFFICIENCY)));
@@ -127,7 +127,7 @@ public final class PlaceQuarryTest {
 
     public static void accessModuleInventory(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().quarryBlock().get());
-        QuarryEntity quarry = helper.getBlockEntity(base);
+        QuarryEntity quarry = helper.getBlockEntity(base, QuarryEntity.class);
         var moduleInv = ModuleInventoryHolder.getFromObject(quarry);
         assertTrue(moduleInv.isPresent());
         assertTrue(moduleInv.get().getModules().isEmpty());

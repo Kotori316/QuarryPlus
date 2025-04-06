@@ -7,7 +7,6 @@ import com.yogpc.qp.gametest.GameTestFunctions;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraftforge.gametest.GameTestHolder;
 
 import java.util.List;
