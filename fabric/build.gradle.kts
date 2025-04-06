@@ -19,6 +19,7 @@ loom {
             runDir = "Minecraft"
             programArgs("--username", "Kotori")
             property("fabric-tag-conventions-v2.missingTagTranslationWarning", "VERBOSE")
+            source(sourceSets["gameTest"])
         }
         getByName("server") {
             configName = "Server"

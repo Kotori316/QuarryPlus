@@ -34,8 +34,8 @@ public final class LoadTest implements ModInitializer {
     @Override
     public void onInitialize() {
         var tests = Stream.of(
-            GameTestFunctions.createTestFunctionsNoPlace(QuarryPlus.modID + ":test", "fabric-gametest-api-v1:empty").stream(),
-            GameTestFunctions.createTestFunctionsPlace(QuarryPlus.modID + ":test", "fabric-gametest-api-v1:empty").stream()
+            GameTestFunctions.createTestFunctionsNoPlace(QuarryPlus.modID + ":test", "minecraft:empty").stream(),
+            GameTestFunctions.createTestFunctionsPlace(QuarryPlus.modID + ":test", "quarryplus:empty").stream()
         ).flatMap(Function.identity());
         tests.forEach(TestFunctionRegister::registerTestFunction);
         TestFunctionRegister.addFunctionsToRegistry(QuarryPlus.modID, TestFunctionRegister::vanillaTestFunctionRegister);
