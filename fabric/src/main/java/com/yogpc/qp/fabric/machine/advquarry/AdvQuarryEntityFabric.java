@@ -6,6 +6,7 @@ import com.yogpc.qp.machine.advquarry.AdvQuarryEntity;
 import com.yogpc.qp.machine.exp.ExpModule;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,14 +32,14 @@ public final class AdvQuarryEntityFabric extends AdvQuarryEntity implements ExpM
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        shouldRemoveBedrock = tag.getBoolean("shouldRemoveBedrock");
-        collectedExp = tag.getInt("collectedExp");
+        shouldRemoveBedrock = tag.getBooleanOr("shouldRemoveBedrock", shouldRemoveBedrock);
+        collectedExp = tag.getIntOr("collectedExp", collectedExp);
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
-        super.applyImplicitComponents(componentInput);
-        shouldRemoveBedrock = componentInput.getOrDefault(QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT, Boolean.FALSE);
+    protected void applyImplicitComponents(DataComponentGetter dataComponentGetter) {
+        super.applyImplicitComponents(dataComponentGetter);
+        shouldRemoveBedrock = dataComponentGetter.getOrDefault(QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT, Boolean.FALSE);
     }
 
     @Override

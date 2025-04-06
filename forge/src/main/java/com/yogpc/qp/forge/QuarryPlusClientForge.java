@@ -47,7 +47,7 @@ public final class QuarryPlusClientForge {
         QuarryPlus.LOGGER.info("Initialize Client finished");
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("removal")
     private static void setRenderLayer() {
         // Loading from JSON is now broken in Forge?
         ItemBlockRenderTypes.setRenderLayer(PlatformAccessForge.RegisterObjectsForge.BLOCK_FRAME.get(), RenderType.cutout());

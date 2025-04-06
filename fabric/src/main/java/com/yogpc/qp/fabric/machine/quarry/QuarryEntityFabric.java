@@ -6,6 +6,7 @@ import com.yogpc.qp.machine.exp.ExpModule;
 import com.yogpc.qp.machine.quarry.QuarryEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
@@ -35,15 +36,15 @@ public final class QuarryEntityFabric extends QuarryEntity implements ExpModule 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        shouldRemoveFluid = tag.getBoolean("shouldRemoveFluid");
-        shouldRemoveBedrock = tag.getBoolean("shouldRemoveBedrock");
-        collectedExp = tag.getInt("collectedExp");
+        shouldRemoveFluid = tag.getBooleanOr("shouldRemoveFluid", shouldRemoveFluid);
+        shouldRemoveBedrock = tag.getBooleanOr("shouldRemoveBedrock", shouldRemoveBedrock);
+        collectedExp = tag.getIntOr("collectedExp", collectedExp);
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
-        super.applyImplicitComponents(componentInput);
-        shouldRemoveBedrock = componentInput.getOrDefault(QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT, Boolean.FALSE);
+    protected void applyImplicitComponents(DataComponentGetter dataComponentGetter) {
+        super.applyImplicitComponents(dataComponentGetter);
+        shouldRemoveBedrock = dataComponentGetter.getOrDefault(QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT, Boolean.FALSE);
     }
 
     @Override

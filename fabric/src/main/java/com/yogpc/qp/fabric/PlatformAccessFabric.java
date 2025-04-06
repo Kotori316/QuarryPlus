@@ -107,7 +107,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final BlockEntityType<DebugStorageEntity> DEBUG_STORAGE_TYPE = FabricBlockEntityTypeBuilder.create(DebugStorageEntity::new, DEBUG_STORAGE_BLOCK).build();
         public static final MenuType<DebugStorageContainer> DEBUG_STORAGE_MENU = new ExtendedScreenHandlerType<>(DebugStorageContainer::new, BlockPos.STREAM_CODEC);
         public static final FilterModuleItem FILTER_MODULE_ITEM = new FilterModuleItem();
-        public static final MenuType<FilterModuleContainer> FILTER_MODULE_MENU = new ExtendedScreenHandlerType<>((i, inventory, pos) -> new FilterModuleContainer(i, inventory, inventory.getSelected()), BlockPos.STREAM_CODEC);
+        public static final MenuType<FilterModuleContainer> FILTER_MODULE_MENU = new ExtendedScreenHandlerType<>((i, inventory, pos) -> new FilterModuleContainer(i, inventory, inventory.getSelectedItem()), BlockPos.STREAM_CODEC);
         public static final PlacerBlock PLACER_BLOCK = new PlacerBlock();
         public static final BlockEntityType<PlacerEntity> PLACER_ENTITY_TYPE = FabricBlockEntityTypeBuilder.create(PlacerEntity::new, PLACER_BLOCK).build();
         public static final MenuType<PlacerContainer> PLACER_MENU_TYPE = new ExtendedScreenHandlerType<>(PlacerContainer::createPlacerContainer, BlockPos.STREAM_CODEC);

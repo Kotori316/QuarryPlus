@@ -136,7 +136,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<MenuType<? extends DebugStorageContainer>> DEBUG_STORAGE_MENU_TYPE = registerMenu(DebugStorageContainer.NAME, DebugStorageContainer::new);
         public static final RegistryObject<MenuType<? extends AdvQuarryContainer>> ADV_QUARRY_MENU_TYPE = registerMenu(AdvQuarryContainer.NAME, AdvQuarryContainer::new);
         public static final RegistryObject<MenuType<? extends FilterModuleContainer>> FILTER_MODULE_MENU_TYPE = MENU_TYPE_REGISTER.register(FilterModuleContainer.NAME, () ->
-            IForgeMenuType.create((windowId, inv, data) -> new FilterModuleContainer(windowId, inv, inv.getSelected())));
+            IForgeMenuType.create((windowId, inv, data) -> new FilterModuleContainer(windowId, inv, inv.getSelectedItem())));
         public static final RegistryObject<MenuType<? extends PlacerContainer>> PLACER_MENU_TYPE = registerMenu(PlacerContainer.PLACER_GUI_NAME, PlacerContainer::createPlacerContainer);
         public static final RegistryObject<MenuType<? extends PlacerContainer>> REMOTE_PLACER_MENU_TYPE = registerMenu(PlacerContainer.REMOTE_PLACER_GUI_NAME, PlacerContainer::createRemotePlacerContainer);
 
