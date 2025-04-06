@@ -12,6 +12,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.phys.Vec3;
 
 @SuppressWarnings("DuplicatedCode")
 public class RenderQuarry implements BlockEntityRenderer<QuarryEntity> {
@@ -33,7 +34,7 @@ public class RenderQuarry implements BlockEntityRenderer<QuarryEntity> {
     }
 
     @Override
-    public void render(QuarryEntity quarry, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
+    public void render(QuarryEntity quarry, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay, Vec3 vec3) {
         ProfilerFiller profiler = Profiler.get();
         profiler.push(QuarryPlus.modID);
         profiler.push("RenderQuarry");

@@ -47,11 +47,11 @@ public class ChunkMarkerEntity extends QpEntity implements QuarryMarker, ClientS
 
     @Override
     public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        xDirection = Direction.AxisDirection.valueOf(tag.getString("xDirection"));
-        zDirection = Direction.AxisDirection.valueOf(tag.getString("zDirection"));
-        size = tag.getInt("size");
-        minY = tag.getInt("minY");
-        maxY = tag.getInt("maxY");
+        xDirection = tag.getString("xDirection").map(Direction.AxisDirection::valueOf).orElse(xDirection);
+        zDirection = tag.getString("zDirection").map(Direction.AxisDirection::valueOf).orElse(zDirection);
+        size = tag.getIntOr("size", size);
+        minY = tag.getIntOr("minY", minY);
+        maxY = tag.getIntOr("maxY", maxY);
     }
 
     @Override

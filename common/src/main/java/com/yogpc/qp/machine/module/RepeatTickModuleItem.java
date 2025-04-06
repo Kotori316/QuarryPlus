@@ -6,11 +6,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public final class RepeatTickModuleItem extends QpItem implements QuarryModuleProvider.Item {
     public static final String NAME = "repeat_tick_module";
@@ -25,9 +26,9 @@ public final class RepeatTickModuleItem extends QpItem implements QuarryModulePr
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-        tooltipComponents.add(Component.translatable("quarryplus.tooltip.repeat_tick_module"));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> consumer, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipDisplay, consumer, tooltipFlag);
+        consumer.accept(Component.translatable("quarryplus.tooltip.repeat_tick_module"));
     }
 
     public record RepeatTickModule(int stackSize) implements QuarryModule {

@@ -4,6 +4,7 @@ import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpBlockItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -74,16 +75,14 @@ public class FrameBlock extends QpBlock {
     private boolean breaking = false;
 
     @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
-        if (state.getBlock() != newState.getBlock()) {
-            if (!breaking) {
-                breaking = true;
-                if (!HAS_NEIGHBOUR_LIQUID.test(world, pos)) {
-                    breakChain(world, pos);
-                }
-                breaking = false;
+    protected void affectNeighborsAfterRemoval(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, boolean bl) {
+        super.affectNeighborsAfterRemoval(blockState, serverLevel, blockPos, bl);
+        if (!breaking) {
+            breaking = true;
+            if (!HAS_NEIGHBOUR_LIQUID.test(serverLevel, blockPos)) {
+                breakChain(serverLevel, blockPos);
             }
-            super.onRemove(state, world, pos, newState, moved);
+            breaking = false;
         }
     }
 

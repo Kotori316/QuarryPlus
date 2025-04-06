@@ -136,7 +136,7 @@ public final class FilterModuleContainer extends AbstractContainerMenu {
 
         @Override
         public boolean mayPickup(Player player) {
-            return this.getContainerSlot() != player.getInventory().selected;
+            return this.getContainerSlot() != player.getInventory().getSelectedSlot();
         }
     }
 }

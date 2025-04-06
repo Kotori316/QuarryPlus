@@ -9,8 +9,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -146,15 +146,11 @@ public abstract class QuarryBlock extends QpEntityBlock {
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
-            // Logic from Containers.dropContentsOnDestroy()
-            if (level.getBlockEntity(pos) instanceof QuarryEntity entity) {
-                Containers.dropContents(level, pos, entity.moduleInventory);
-                level.updateNeighbourForOutputSignal(pos, state.getBlock());
-            }
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean isMoving) {
+        super.affectNeighborsAfterRemoval(state, level, pos, isMoving);
+        if (level.getBlockEntity(pos) instanceof QuarryEntity) {
+            level.updateNeighbourForOutputSignal(pos, state.getBlock());
         }
-        super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Override

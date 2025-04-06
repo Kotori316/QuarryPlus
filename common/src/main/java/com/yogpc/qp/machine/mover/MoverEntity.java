@@ -7,6 +7,7 @@ import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -14,8 +15,12 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -41,7 +46,7 @@ public final class MoverEntity extends QpEntity implements ClientSync {
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        inventory.fromTag(tag.getList("inventory", Tag.TAG_COMPOUND), registries);
+        inventory.fromTag(tag.getListOrEmpty("inventory"), registries);
         super.loadAdditional(tag, registries);
     }
 
@@ -54,9 +59,10 @@ public final class MoverEntity extends QpEntity implements ClientSync {
     @Override
     public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
         var enchantmentRegistry = registries.lookupOrThrow(Registries.ENCHANTMENT);
-        movableEnchantments = tag.getList("enchantments", Tag.TAG_STRING)
+        movableEnchantments = tag.getListOrEmpty("enchantments")
             .stream()
-            .map(Tag::getAsString)
+            .map(Tag::asString)
+            .flatMap(Optional::stream)
             .map(s -> ResourceKey.create(Registries.ENCHANTMENT, ResourceLocation.parse(s)))
             .<Holder<Enchantment>>map(enchantmentRegistry::getOrThrow)
             .toList();
@@ -75,6 +81,13 @@ public final class MoverEntity extends QpEntity implements ClientSync {
         return tag;
     }
 
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState blockState) {
+        if (level != null) {
+            Containers.dropContents(level, pos, inventory);
+        }
+    }
+
     private static class Inventory extends SimpleContainer {
         public Inventory(int size) {
             super(size);
@@ -90,12 +103,11 @@ public final class MoverEntity extends QpEntity implements ClientSync {
                     if (!stack.isEnchanted()) {
                         yield false;
                     }
-                    yield switch (stack.getItem()) {
-                        case DiggerItem ignore -> stack.getMaxDamage() >= ToolMaterial.DIAMOND.durability();
-                        case SwordItem ignore -> stack.getMaxDamage() >= ToolMaterial.DIAMOND.durability();
-                        case BowItem ignore -> true;
-                        default -> false;
-                    };
+                    // TODO fix logic
+                    if (stack.getItem() instanceof BowItem) {
+                        yield true;
+                    }
+                    yield stack.has(DataComponents.TOOL) && stack.getMaxDamage() >= ToolMaterial.DIAMOND.durability();
                 }
                 case 1 -> stack.is(PlatformAccess.getAccess().registerObjects().quarryBlock().get().blockItem)
                     || stack.is(PlatformAccess.getAccess().registerObjects().advQuarryBlock().get().blockItem);

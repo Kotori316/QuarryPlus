@@ -9,8 +9,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 public abstract class QpItem extends Item implements InCreativeTabs {
     public final ResourceLocation name;
@@ -24,11 +25,12 @@ public abstract class QpItem extends Item implements InCreativeTabs {
         return PlatformAccess.config().enableMap().enabled(name.getPath());
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> consumer, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipDisplay, consumer, tooltipFlag);
         if (!isEnabled()) {
-            tooltipComponents.add(
+            consumer.accept(
                 Component.translatable("quarryplus.chat.disable_item_message").withStyle(ChatFormatting.RED)
             );
         }

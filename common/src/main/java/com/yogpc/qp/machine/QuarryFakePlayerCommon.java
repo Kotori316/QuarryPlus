@@ -154,7 +154,6 @@ public final class QuarryFakePlayerCommon {
             @Override public void ackBlockChangesUpTo(int sequence) { }
             @Override public void handleChatCommand(ServerboundChatCommandPacket packet) { }
             @Override public void handleChatAck(ServerboundChatAckPacket packet) { }
-            @Override public void addPendingMessage(PlayerChatMessage message) { }
             @Override public void sendPlayerChatMessage(PlayerChatMessage message, ChatType.Bound boundChatType) { }
             @Override public void sendDisguisedChatMessage(Component content, ChatType.Bound boundChatType) { }
             @Override public void handleChatSessionUpdate(ServerboundChatSessionUpdatePacket packet) { }

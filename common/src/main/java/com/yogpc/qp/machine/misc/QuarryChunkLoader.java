@@ -17,7 +17,7 @@ public sealed interface QuarryChunkLoader {
 
     static boolean isChunkLoaded(ServerLevel level, BlockPos pos) {
         var chunkPos = new ChunkPos(pos);
-        var result = level.getForcedChunks().contains(chunkPos.toLong());
+        var result = level.getForceLoadedChunks().contains(chunkPos.toLong());
         QuarryPlus.LOGGER.info(MARKER, "Check state of chunk loading x={}, z={}, loaded={}", chunkPos.x, chunkPos.z, result);
         return result;
     }

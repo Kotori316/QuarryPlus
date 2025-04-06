@@ -15,11 +15,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public final class FilterModuleItem extends QpItem implements QuarryModuleProvider.Item {
@@ -46,10 +48,10 @@ public final class FilterModuleItem extends QpItem implements QuarryModuleProvid
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-        tooltipComponents.add(Component.translatable("quarryplus.tooltip.filter_module_1"));
-        tooltipComponents.add(Component.translatable("quarryplus.tooltip.filter_module_2"));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> consumer, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipDisplay, consumer, tooltipFlag);
+        consumer.accept(Component.translatable("quarryplus.tooltip.filter_module_1"));
+        consumer.accept(Component.translatable("quarryplus.tooltip.filter_module_2"));
 
         var itemList = stack.get(QuarryDataComponents.ITEM_KEY_LIST_COMPONENT);
         if (itemList != null && !itemList.isEmpty()) {
@@ -60,12 +62,12 @@ public final class FilterModuleItem extends QpItem implements QuarryModuleProvid
                     .map(BuiltInRegistries.ITEM::getKey)
                     .map("  %s"::formatted)
                     .map(Component::literal)
-                    .forEach(tooltipComponents::add);
+                    .forEach(consumer);
             } else {
                 var first = Component.literal("  %s".formatted(BuiltInRegistries.ITEM.getKey(itemList.getFirst().item())));
-                tooltipComponents.add(first);
+                consumer.accept(first);
                 if (itemList.size() > 1) {
-                    tooltipComponents.add(Component.literal("  ...(%s)".formatted(itemList.size() - 1)));
+                    consumer.accept(Component.literal("  ...(%s)".formatted(itemList.size() - 1)));
                 }
             }
         }

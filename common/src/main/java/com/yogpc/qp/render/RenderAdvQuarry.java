@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.phys.Vec3;
 
 public class RenderAdvQuarry implements BlockEntityRenderer<AdvQuarryEntity> {
     @SuppressWarnings("unused")
@@ -34,7 +35,7 @@ public class RenderAdvQuarry implements BlockEntityRenderer<AdvQuarryEntity> {
 
     @Override
     @SuppressWarnings("DuplicatedCode") // for readability.
-    public void render(AdvQuarryEntity quarry, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
+    public void render(AdvQuarryEntity quarry, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay, Vec3 vec3) {
         ProfilerFiller profiler = Profiler.get();
         profiler.push(QuarryPlus.modID);
 

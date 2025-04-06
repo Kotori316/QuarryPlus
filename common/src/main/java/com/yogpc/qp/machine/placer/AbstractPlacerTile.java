@@ -9,7 +9,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
@@ -70,13 +69,13 @@ public abstract class AbstractPlacerTile extends QpEntity
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         fromClientTag(tag, registries);
-        container.fromTag(tag.getList("container", Tag.TAG_COMPOUND), registries);
+        container.fromTag(tag.getListOrEmpty("container"), registries);
     }
 
     @Override
     public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        lastPlacedIndex = tag.getInt("lastPlacedIndex");
-        redstoneMode = RedStoneMode.valueOf(tag.getString("mode"));
+        lastPlacedIndex = tag.getIntOr("lastPlacedIndex", 0);
+        redstoneMode = tag.getString("mode").map(RedStoneMode::valueOf).orElse(RedStoneMode.PULSE);
     }
 
     @Override

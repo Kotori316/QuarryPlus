@@ -9,8 +9,8 @@ import com.yogpc.qp.machine.QpEntityBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
@@ -51,15 +51,11 @@ public final class MoverBlock extends QpEntityBlock {
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
-            // Logic from Containers.dropContentsOnDestroy()
-            if (level.getBlockEntity(pos) instanceof MoverEntity entity) {
-                Containers.dropContents(level, pos, entity.inventory);
-                level.updateNeighbourForOutputSignal(pos, state.getBlock());
-            }
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean isMoving) {
+        super.affectNeighborsAfterRemoval(state, level, pos, isMoving);
+        if (level.getBlockEntity(pos) instanceof MoverEntity) {
+            level.updateNeighbourForOutputSignal(pos, state.getBlock());
         }
-        super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Override

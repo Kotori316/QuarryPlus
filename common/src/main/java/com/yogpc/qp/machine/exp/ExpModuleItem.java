@@ -10,10 +10,11 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 public final class ExpModuleItem extends QpItem implements QuarryModuleProvider.Item {
     public static final String NAME = "exp_module";
@@ -42,11 +43,11 @@ public final class ExpModuleItem extends QpItem implements QuarryModuleProvider.
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> consumer, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipDisplay, consumer, tooltipFlag);
         int exp = stack.getOrDefault(QuarryDataComponents.HOLDING_EXP_COMPONENT, 0);
         if (exp > 0) {
-            tooltipComponents.add(
+            consumer.accept(
                 Component.empty()
                     .append(Component.literal("Exp: "))
                     .append(Component.literal(String.valueOf(exp)).withStyle(ChatFormatting.AQUA))

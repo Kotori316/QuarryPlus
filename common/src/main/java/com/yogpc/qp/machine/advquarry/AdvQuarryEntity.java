@@ -16,10 +16,10 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -118,7 +118,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         targetIterator = createTargetIterator(currentState, area, current, workConfig);
         targetPos = current;
         storage = MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElseGet(MachineStorage::of);
-        moduleInventory.fromTag(tag.getList("moduleInventory", Tag.TAG_COMPOUND), registries);
+        moduleInventory.fromTag(tag.getListOrEmpty("moduleInventory"), registries);
         chunkLoader = QuarryChunkLoader.CODEC.parse(NbtOps.INSTANCE, tag.get("chunkLoader")).result().orElse(QuarryChunkLoader.None.INSTANCE);
     }
 
@@ -137,7 +137,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
 
     @Override
     public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        currentState = AdvQuarryState.valueOf(tag.getString("state"));
+        currentState = tag.getString("state").map(AdvQuarryState::valueOf).orElse(AdvQuarryState.FINISHED);
         area = Area.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("area")).result().orElse(null);
         digMinY = DigMinY.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("digMinY")).result().orElseGet(DigMinY::new);
     }
@@ -153,16 +153,6 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
-        super.applyImplicitComponents(componentInput);
-    }
-
-    @Override
-    protected void collectImplicitComponents(DataComponentMap.Builder components) {
-        super.collectImplicitComponents(components);
-    }
-
-    @Override
     public void setChanged() {
         super.setChanged();
         updateModules();
@@ -173,6 +163,13 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         super.setRemoved();
         if (level instanceof ServerLevel s) {
             this.chunkLoader.makeChunkUnLoaded(s);
+        }
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState blockState) {
+        if (level != null) {
+            Containers.dropContents(level, pos, moduleInventory);
         }
     }
 

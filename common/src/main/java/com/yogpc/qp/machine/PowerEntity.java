@@ -45,8 +45,8 @@ public abstract class PowerEntity extends QpEntity {
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        energy = tag.getLong("energy");
-        setMaxEnergy(tag.getLong("maxEnergy"));
+        energy = tag.getLongOr("energy", 0);
+        setMaxEnergy(tag.getLongOr("maxEnergy", 0));
     }
 
     /*

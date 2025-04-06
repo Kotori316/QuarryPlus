@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.TickTask;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
@@ -51,14 +52,12 @@ public final class SoftBlock extends TransparentBlock implements InCreativeTabs 
     private boolean breaking = false;
 
     @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
-        if (state.getBlock() != newState.getBlock()) {
-            if (!breaking) {
-                breaking = true;
-                breakChain(world, pos);
-                breaking = false;
-            }
-            super.onRemove(state, world, pos, newState, moved);
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean isMoving) {
+        super.affectNeighborsAfterRemoval(state, level, pos, isMoving);
+        if (!breaking) {
+            breaking = true;
+            breakChain(level, pos);
+            breaking = false;
         }
     }
 

@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.phys.Vec3;
 
 import static com.yogpc.qp.render.RenderMarker.renderLink;
 
@@ -19,7 +20,7 @@ public class RenderChunkMarker implements BlockEntityRenderer<ChunkMarkerEntity>
     }
 
     @Override
-    public void render(ChunkMarkerEntity marker, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+    public void render(ChunkMarkerEntity marker, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int light, int overlay, Vec3 vec3) {
         ProfilerFiller profiler = Profiler.get();
         profiler.push(QuarryPlus.modID);
         profiler.push(ChunkMarkerBlock.NAME);

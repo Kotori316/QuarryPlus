@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class RenderMarker implements BlockEntityRenderer<NormalMarkerEntity> {
     }
 
     @Override
-    public void render(NormalMarkerEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+    public void render(NormalMarkerEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int light, int overlay, Vec3 vec3) {
         ProfilerFiller profiler = Profiler.get();
         profiler.push(QuarryPlus.modID);
         profiler.push("RenderMarker");

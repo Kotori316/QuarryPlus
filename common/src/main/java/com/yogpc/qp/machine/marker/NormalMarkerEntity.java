@@ -139,7 +139,7 @@ public class NormalMarkerEntity extends QpEntity implements QuarryMarker, Client
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        var status = Status.valueOf(tag.getString("status"));
+        var status = tag.getString("status").map(Status::valueOf).orElse(Status.NOT_CONNECTED);
         if (status == Status.RS_POWERED) {
             this.status = status;
         } else {
@@ -149,7 +149,7 @@ public class NormalMarkerEntity extends QpEntity implements QuarryMarker, Client
 
     @Override
     public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        status = Status.valueOf(tag.getString("status"));
+        status = tag.getString("status").map(Status::valueOf).orElse(Status.NOT_CONNECTED);
         link = Link.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("link")).result().orElse(null);
     }
 

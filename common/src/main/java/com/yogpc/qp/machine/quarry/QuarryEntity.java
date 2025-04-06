@@ -17,10 +17,10 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -164,8 +164,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         targetIterator = createTargetIterator(currentState, area, current);
         targetPos = current;
         storage = MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElseGet(MachineStorage::of);
-        skipped = LongStream.of(tag.getLongArray("skipped")).mapToObj(BlockPos::of).collect(Collectors.toCollection(HashSet::new));
-        moduleInventory.fromTag(tag.getList("moduleInventory", Tag.TAG_COMPOUND), registries);
+        skipped = tag.getLongArray("skipped").stream().flatMapToLong(LongStream::of).mapToObj(BlockPos::of).collect(Collectors.toCollection(HashSet::new));
+        moduleInventory.fromTag(tag.getListOrEmpty("moduleInventory"), registries);
         chunkLoader = QuarryChunkLoader.CODEC.parse(NbtOps.INSTANCE, tag.get("chunkLoader")).result().orElse(QuarryChunkLoader.None.INSTANCE);
     }
 
@@ -184,19 +184,9 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
         // Set head as targetHead to move drill smoothly
         Vec3.CODEC.parse(NbtOps.INSTANCE, tag.get("head")).ifSuccess(v -> this.targetHead = v);
-        currentState = QuarryState.valueOf(tag.getString("state"));
+        currentState = tag.getString("state").map(QuarryState::valueOf).orElse(QuarryState.FINISHED);
         area = Area.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("area")).result().orElse(null);
         digMinY = DigMinY.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("digMinY")).result().orElseGet(DigMinY::new);
-    }
-
-    @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
-        super.applyImplicitComponents(componentInput);
-    }
-
-    @Override
-    protected void collectImplicitComponents(DataComponentMap.Builder components) {
-        super.collectImplicitComponents(components);
     }
 
     @Override
@@ -210,6 +200,13 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         super.setRemoved();
         if (level instanceof ServerLevel s) {
             this.chunkLoader.makeChunkUnLoaded(s);
+        }
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState blockState) {
+        if (level != null) {
+            Containers.dropContents(level, pos, moduleInventory);
         }
     }
 

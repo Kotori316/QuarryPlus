@@ -23,7 +23,7 @@ public class RenderFlexibleMarker implements BlockEntityRenderer<FlexibleMarkerE
     }
 
     @Override
-    public void render(FlexibleMarkerEntity marker, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+    public void render(FlexibleMarkerEntity marker, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int light, int overlay, Vec3 vec3) {
         ProfilerFiller profiler = Profiler.get();
         profiler.push(QuarryPlus.modID);
         profiler.push(FlexibleMarkerBlock.NAME);
