@@ -1,32 +1,28 @@
 package com.yogpc.qp.forge.gametest;
 
 import com.yogpc.qp.PlatformAccess;
-import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.PowerEntity;
 import com.yogpc.qp.machine.quarry.QuarryEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.GameTest;
 import org.apache.commons.lang3.tuple.Pair;
 
-import static com.yogpc.qp.forge.gametest.LoadTest.STRUCTURE;
 import static org.junit.jupiter.api.Assertions.*;
 
-@GameTestHolder(QuarryPlus.modID)
 public final class MachineEnergyHandlerTest {
     private static Pair<QuarryEntity, IEnergyStorage> getHandler(GameTestHelper helper, BlockPos pos) {
         helper.setBlock(pos, PlatformAccess.getAccess().registerObjects().quarryBlock().get());
-        QuarryEntity quarry = helper.getBlockEntity(pos);
+        QuarryEntity quarry = helper.getBlockEntity(pos, QuarryEntity.class);
 
         var handler = assertDoesNotThrow(() -> quarry.getCapability(ForgeCapabilities.ENERGY).orElseThrow(AssertionError::new));
         assertNotNull(handler);
         return Pair.of(quarry, handler);
     }
 
-    @GameTest(template = STRUCTURE)
+    @GameTest()
     public void loadHandler(GameTestHelper helper) {
         var pos = BlockPos.ZERO.above();
         var pair = getHandler(helper, pos);
@@ -43,7 +39,7 @@ public final class MachineEnergyHandlerTest {
         helper.succeed();
     }
 
-    @GameTest(template = STRUCTURE)
+    @GameTest()
     public void insertThanMax(GameTestHelper helper) {
         var pos = BlockPos.ZERO.above();
         var pair = getHandler(helper, pos);
@@ -68,7 +64,7 @@ public final class MachineEnergyHandlerTest {
         helper.succeed();
     }
 
-    @GameTest(template = STRUCTURE)
+    @GameTest()
     public void insertThanMax2(GameTestHelper helper) {
         var pos = BlockPos.ZERO.above();
         var pair = getHandler(helper, pos);

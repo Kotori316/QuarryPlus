@@ -82,6 +82,8 @@ minecraft {
 
         create("gameTestServer") {
             property("forge.enabledGameTestNamespaces", modId)
+            property("forge.enableGameTest", "true")
+            property("forge.gameTestServer", "true")
             workingDirectory(project.file("game-test"))
             property("bsl.debug", "true")
             jvmArgs("-ea")
