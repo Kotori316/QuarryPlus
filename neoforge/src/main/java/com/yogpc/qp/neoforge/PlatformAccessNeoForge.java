@@ -54,7 +54,10 @@ import net.neoforged.neoforge.registries.*;
 import org.apache.logging.log4j.util.Lazy;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -81,7 +84,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         static final List<DeferredRegister<?>> REGISTER_LIST = List.of(
             BLOCK_REGISTER, ITEM_REGISTER, BLOCK_ENTITY_REGISTER, RECIPE_REGISTER, INGREDIENT_REGISTER, CREATIVE_TAB_REGISTER, LOOT_TYPE_REGISTER, DATA_COMPONENT_TYPE_REGISTER, MENU_TYPE_REGISTER
         );
-        private static final List<Supplier<? extends InCreativeTabs>> TAB_ITEMS = new ArrayList<>();
+        private static final Map<ResourceLocation, Supplier<? extends InCreativeTabs>> TAB_ITEMS = new HashMap<>();
         private static final Map<String, EnableMap.EnableOrNot> ENABLE_MAP = new HashMap<>();
 
         // Machine
@@ -149,13 +152,13 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         private static <T extends Block & InCreativeTabs> DeferredBlock<T> registerBlock(String name, Supplier<T> supplier, Function<T, ? extends BlockItem> itemGetter) {
             var block = BLOCK_REGISTER.register(name, supplier);
             ITEM_REGISTER.register(name, () -> itemGetter.apply(block.get()));
-            TAB_ITEMS.add(block);
+            TAB_ITEMS.put(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name), block);
             return block;
         }
 
         private static <T extends Item & InCreativeTabs> DeferredItem<T> registerItem(String name, Supplier<T> supplier, EnableMap.EnableOrNot enableOrNot) {
             var item = ITEM_REGISTER.register(name, supplier);
-            TAB_ITEMS.add(item);
+            TAB_ITEMS.put(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name), item);
             ENABLE_MAP.put(name, enableOrNot);
             return item;
         }
@@ -256,8 +259,8 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         }
 
         @Override
-        public Stream<Supplier<? extends InCreativeTabs>> allItems() {
-            return TAB_ITEMS.stream();
+        public Stream<Map.Entry<ResourceLocation, Supplier<? extends InCreativeTabs>>> allItems() {
+            return TAB_ITEMS.entrySet().stream();
         }
 
         @Override

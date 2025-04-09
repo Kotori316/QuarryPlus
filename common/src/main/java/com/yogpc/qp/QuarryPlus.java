@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.Block;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.function.Supplier;
 
 public final class QuarryPlus {
@@ -23,6 +24,7 @@ public final class QuarryPlus {
             .title(Component.translatable("itemGroup.%s".formatted(modID)))
             .displayItems((itemDisplayParameters, output) -> {
                 PlatformAccess.getAccess().registerObjects().allItems()
+                    .map(Map.Entry::getValue)
                     .map(Supplier::get)
                     .flatMap(inCreativeTabs -> inCreativeTabs.creativeTabItem(itemDisplayParameters))
                     .forEach(output::accept);

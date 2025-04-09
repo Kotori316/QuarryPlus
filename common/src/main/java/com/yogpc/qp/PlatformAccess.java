@@ -29,6 +29,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -102,7 +103,7 @@ public interface PlatformAccess {
 
         Supplier<? extends BedrockModuleItem> bedrockModuleItem();
 
-        Stream<Supplier<? extends InCreativeTabs>> allItems();
+        Stream<Map.Entry<ResourceLocation, Supplier<? extends InCreativeTabs>>> allItems();
 
         Supplier<MenuType<? extends YSetterContainer>> ySetterContainer();
 

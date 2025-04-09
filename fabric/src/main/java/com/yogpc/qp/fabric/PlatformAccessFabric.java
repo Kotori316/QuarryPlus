@@ -58,10 +58,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.util.Lazy;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -117,7 +120,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
 
         public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
 
-        private static final List<InCreativeTabs> TAB_ITEMS = new ArrayList<>();
+        private static final Map<ResourceLocation, InCreativeTabs> TAB_ITEMS = new HashMap<>();
         public static final CreativeModeTab TAB = QuarryPlus.buildCreativeModeTab(FabricItemGroup.builder()).build();
         private static final Map<Class<? extends QpBlock>, BlockEntityType<?>> BLOCK_ENTITY_TYPES = new HashMap<>();
         private static final Map<String, EnableMap.EnableOrNot> ENABLE_MAP = new HashMap<>();
@@ -182,7 +185,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         private static <T extends Block & InCreativeTabs> void registerBlockItem(T block, ResourceLocation name, Function<T, ? extends BlockItem> itemGetter) {
             Registry.register(BuiltInRegistries.BLOCK, name, block);
             registerItem(itemGetter.apply(block), name);
-            TAB_ITEMS.add(block);
+            TAB_ITEMS.put(name, block);
         }
 
         private static void registerItem(QpItem item, EnableMap.EnableOrNot enable) {
@@ -193,7 +196,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         private static void registerItem(Item item, ResourceLocation name) {
             Registry.register(BuiltInRegistries.ITEM, name, item);
             if (item instanceof InCreativeTabs c) {
-                TAB_ITEMS.add(c);
+                TAB_ITEMS.put(name, c);
             }
             if (item instanceof BlockItem blockItem) {
                 blockItem.registerBlocks(Item.BY_BLOCK, blockItem);
@@ -281,8 +284,8 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         }
 
         @Override
-        public Stream<Supplier<? extends InCreativeTabs>> allItems() {
-            return TAB_ITEMS.stream().map(t -> () -> t);
+        public Stream<Map.Entry<ResourceLocation, Supplier<? extends InCreativeTabs>>> allItems() {
+            return TAB_ITEMS.entrySet().stream().map(t -> Pair.of(t.getKey(), t::getValue));
         }
 
         @Override
