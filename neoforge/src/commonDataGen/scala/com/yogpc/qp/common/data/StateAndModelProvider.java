@@ -1,5 +1,6 @@
 package com.yogpc.qp.common.data;
 
+import com.mojang.math.Quadrant;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.QpBlock;
@@ -9,10 +10,13 @@ import com.yogpc.qp.neoforge.PlatformAccessNeoForge;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
-import net.minecraft.client.data.models.blockstates.*;
+import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
+import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
+import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.*;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.Variant;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -108,13 +112,13 @@ final class StateAndModelProvider extends ModelProvider {
         var block = PlatformAccess.getAccess().registerObjects().frameBlock().get();
         blockModels.blockStateOutput.accept(
             MultiPartGenerator.multiPart(block)
-                .with(Variant.variant().with(VariantProperties.MODEL, center))
-                .with(Condition.condition().term(BlockStateProperties.NORTH, true), Variant.variant().with(VariantProperties.MODEL, side).with(VariantProperties.UV_LOCK, true))
-                .with(Condition.condition().term(BlockStateProperties.EAST, true), Variant.variant().with(VariantProperties.MODEL, side).with(VariantProperties.UV_LOCK, true).with(VariantProperties.Y_ROT, VariantProperties.Rotation.R90))
-                .with(Condition.condition().term(BlockStateProperties.SOUTH, true), Variant.variant().with(VariantProperties.MODEL, side).with(VariantProperties.UV_LOCK, true).with(VariantProperties.Y_ROT, VariantProperties.Rotation.R180))
-                .with(Condition.condition().term(BlockStateProperties.WEST, true), Variant.variant().with(VariantProperties.MODEL, side).with(VariantProperties.UV_LOCK, true).with(VariantProperties.Y_ROT, VariantProperties.Rotation.R270))
-                .with(Condition.condition().term(BlockStateProperties.UP, true), Variant.variant().with(VariantProperties.MODEL, side).with(VariantProperties.UV_LOCK, true).with(VariantProperties.X_ROT, VariantProperties.Rotation.R270))
-                .with(Condition.condition().term(BlockStateProperties.DOWN, true), Variant.variant().with(VariantProperties.MODEL, side).with(VariantProperties.UV_LOCK, true).with(VariantProperties.X_ROT, VariantProperties.Rotation.R90))
+                .with(BlockModelGenerators.plainVariant(center))
+                .with(BlockModelGenerators.condition().term(BlockStateProperties.NORTH, true), BlockModelGenerators.variant(BlockModelGenerators.plainModel(side).withUvLock(true)))
+                .with(BlockModelGenerators.condition().term(BlockStateProperties.EAST, true), BlockModelGenerators.variant(BlockModelGenerators.plainModel(side).withUvLock(true).withYRot(Quadrant.R90)))
+                .with(BlockModelGenerators.condition().term(BlockStateProperties.SOUTH, true), BlockModelGenerators.variant(BlockModelGenerators.plainModel(side).withUvLock(true).withYRot(Quadrant.R180)))
+                .with(BlockModelGenerators.condition().term(BlockStateProperties.WEST, true), BlockModelGenerators.variant(BlockModelGenerators.plainModel(side).withUvLock(true).withYRot(Quadrant.R270)))
+                .with(BlockModelGenerators.condition().term(BlockStateProperties.UP, true), BlockModelGenerators.variant(BlockModelGenerators.plainModel(side).withUvLock(true).withXRot(Quadrant.R270)))
+                .with(BlockModelGenerators.condition().term(BlockStateProperties.DOWN, true), BlockModelGenerators.variant(BlockModelGenerators.plainModel(side).withUvLock(true).withXRot(Quadrant.R90)))
         );
 
         var itemTemplate = ExtendedModelTemplateBuilder.builder()
@@ -145,7 +149,7 @@ final class StateAndModelProvider extends ModelProvider {
 
         var dummyBlockTemplate = ModelTemplates.CUBE_ALL.extend().renderType(renderTypeName(RenderType.translucent())).build();
         var dummyBlockModel = dummyBlockTemplate.create(modLocation("block/dummy_block"), TextureMapping.cube(blockTexture("dummy_block")), blockModels.modelOutput);
-        blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get(), dummyBlockModel));
+        blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get(), BlockModelGenerators.plainVariant(dummyBlockModel)));
         blockModels.registerSimpleItemModel(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get(), dummyBlockModel);
     }
 
@@ -161,7 +165,7 @@ final class StateAndModelProvider extends ModelProvider {
                 .put(TextureSlot.TOP, top),
             blockModels.modelOutput
         );
-        blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(block, model));
+        blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(block, BlockModelGenerators.plainVariant(model)));
         blockModels.registerSimpleItemModel(block, model);
     }
 
@@ -170,15 +174,15 @@ final class StateAndModelProvider extends ModelProvider {
         var normalModel = TexturedModel.CUBE_TOP_BOTTOM.create(block, blockModels.modelOutput);
         var workingModel = TexturedModel.CUBE_TOP_BOTTOM.updateTexture(m -> m.put(TextureSlot.TOP, blockTexture(basePath + "_top_w"))).create(block, blockModels.modelOutput);
 
-        var workingProperty = PropertyDispatch.properties(BlockStateProperties.FACING, QpBlockProperty.WORKING)
+        var workingProperty = PropertyDispatch.initial(BlockStateProperties.FACING, QpBlockProperty.WORKING)
             .generate((direction, working) -> {
                 if (working) {
-                    return Variant.variant().with(VariantProperties.MODEL, workingModel);
+                    return BlockModelGenerators.plainVariant(workingModel);
                 } else {
-                    return Variant.variant().with(VariantProperties.MODEL, normalModel);
+                    return BlockModelGenerators.plainVariant(normalModel);
                 }
             });
-        var builder = MultiVariantGenerator.multiVariant(block).with(workingProperty);
+        var builder = MultiVariantGenerator.dispatch(block).with(workingProperty);
         blockModels.blockStateOutput.accept(builder);
         blockModels.registerSimpleItemModel(block, normalModel);
     }
@@ -186,11 +190,11 @@ final class StateAndModelProvider extends ModelProvider {
     static Variant rotate(Direction direction, Variant v) {
         var rotX = rotationFromValue(Math.floorMod(direction.getStepY() * -90, 360));
         var rotY = rotationFromValue(direction.getAxis() == Direction.Axis.Y ? 0 : Math.floorMod(((int) direction.toYRot()) + 180, 360));
-        if (rotX != VariantProperties.Rotation.R0) {
-            v.with(VariantProperties.X_ROT, rotX);
+        if (rotX != Quadrant.R0) {
+            v = v.withXRot(rotX);
         }
-        if (rotY != VariantProperties.Rotation.R0) {
-            v.with(VariantProperties.Y_ROT, rotY);
+        if (rotY != Quadrant.R0) {
+            v = v.withYRot(rotY);
         }
         return v;
     }
@@ -201,23 +205,23 @@ final class StateAndModelProvider extends ModelProvider {
         var normalModel = TexturedModel.ORIENTABLE.updateTexture(m -> m.put(TextureSlot.SIDE, blockTexture).put(TextureSlot.BOTTOM, blockTexture)).create(block, blockModels.modelOutput);
         var workingModel = TexturedModel.ORIENTABLE.updateTexture(m -> m.put(TextureSlot.SIDE, blockTexture).put(TextureSlot.BOTTOM, blockTexture).put(TextureSlot.TOP, blockTexture(basePath + "_top_bb"))).createWithSuffix(block, "_working", blockModels.modelOutput);
         blockModels.blockStateOutput.accept(
-            MultiVariantGenerator.multiVariant(block)
-                .with(PropertyDispatch.properties(BlockStateProperties.FACING, QpBlockProperty.WORKING)
+            MultiVariantGenerator.dispatch(block)
+                .with(PropertyDispatch.initial(BlockStateProperties.FACING, QpBlockProperty.WORKING)
                     .generate(((direction, working) -> {
                         var model = working ? workingModel : normalModel;
-                        var v = Variant.variant().with(VariantProperties.MODEL, model);
-                        return rotate(direction, v);
+                        var v = BlockModelGenerators.plainVariant(model);
+                        return v.with(variant -> rotate(direction, variant));
                     })))
         );
         blockModels.registerSimpleItemModel(block, normalModel);
     }
 
-    static VariantProperties.Rotation rotationFromValue(int rot) {
+    static Quadrant rotationFromValue(int rot) {
         return switch (rot) {
-            case 90 -> VariantProperties.Rotation.R90;
-            case 180 -> VariantProperties.Rotation.R180;
-            case 270 -> VariantProperties.Rotation.R270;
-            default -> VariantProperties.Rotation.R0;
+            case 90 -> Quadrant.R90;
+            case 180 -> Quadrant.R180;
+            case 270 -> Quadrant.R270;
+            default -> Quadrant.R0;
         };
     }
 
@@ -246,8 +250,8 @@ final class StateAndModelProvider extends ModelProvider {
             , blockModels.modelOutput
         );
         blockModels.blockStateOutput.accept(
-            MultiVariantGenerator.multiVariant(block).with(PropertyDispatch.property(BlockStateProperties.FACING).generate(direction ->
-                rotate(direction, Variant.variant().with(VariantProperties.MODEL, model))
+            MultiVariantGenerator.dispatch(block).with(PropertyDispatch.initial(BlockStateProperties.FACING).generate(direction ->
+                BlockModelGenerators.plainVariant(model).with(v -> rotate(direction, v))
             ))
         );
         blockModels.registerSimpleItemModel(block, model);
@@ -340,8 +344,8 @@ final class StateAndModelProvider extends ModelProvider {
             .requiredTextureSlot(TextureSlot.PARTICLE)
             .build()
             .create(modLocation("block/marker_post"), new TextureMapping().put(TextureSlot.TEXTURE, blockTexture(markerBlock.name.getPath())).copySlot(TextureSlot.TEXTURE, TextureSlot.PARTICLE), blockModels.modelOutput);
-        blockModels.blockStateOutput.accept(MultiVariantGenerator.multiVariant(markerBlock, Variant.variant().with(VariantProperties.MODEL, model))
-            .with(blockModels.createColumnWithFacing()));
+        blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(markerBlock, BlockModelGenerators.plainVariant(model))
+            .with(BlockModelGenerators.ROTATIONS_COLUMN_WITH_FACING));
 
         var itemModel = ModelTemplates.FLAT_ITEM.create(markerBlock.asItem(), TextureMapping.layer0(TextureMapping.getItemTexture(markerBlock.asItem(), "_item")), itemModels.modelOutput);
         itemModels.itemModelOutput.accept(markerBlock.asItem(), ItemModelUtils.plainModel(itemModel));
@@ -353,7 +357,7 @@ final class StateAndModelProvider extends ModelProvider {
                 .requiredTextureSlot(TextureSlot.PARTICLE)
                 .build()
                 .create(marker, new TextureMapping().put(TextureSlot.TEXTURE, TextureMapping.getBlockTexture(marker)).copySlot(TextureSlot.TEXTURE, TextureSlot.PARTICLE), blockModels.modelOutput);
-            blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(marker, m));
+            blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(marker, BlockModelGenerators.plainVariant(m)));
 
             var i = ModelTemplates.FLAT_ITEM.create(marker.asItem(), TextureMapping.layer0(TextureMapping.getItemTexture(marker.asItem(), "_item")), itemModels.modelOutput);
             itemModels.itemModelOutput.accept(marker.asItem(), ItemModelUtils.plainModel(i));
