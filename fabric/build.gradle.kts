@@ -79,7 +79,8 @@ dependencies {
 
     testImplementation(libs.fabric.junit)
     testImplementation(platform(libs.junit))
-    testImplementation(libs.jupiter)
+    testImplementation(libs.jupiter.core)
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(project(":common"))
     testImplementation(project.project(":common").sourceSets.test.get().output)
 }

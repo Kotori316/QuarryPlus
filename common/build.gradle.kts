@@ -57,12 +57,13 @@ dependencies {
     testRuntimeOnly(libs.config.toml)
 
     testImplementation(platform(libs.junit))
-    testImplementation(libs.jupiter)
+    testImplementation(libs.jupiter.core)
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(libs.bundles.mockito)
 
     "gameTestImplementation"(project.sourceSets.main.get().output)
     "gameTestImplementation"(platform(libs.junit))
-    "gameTestImplementation"(libs.jupiter)
+    "gameTestImplementation"(libs.jupiter.core)
 }
 
 tasks.register("runGameTestServer")

@@ -128,7 +128,7 @@ dependencies {
     implementation("net.sf.jopt-simple:jopt-simple:5.0.4") { version { strictly("5.0.4") } }
 
     "runGameRuntimeOnly"(platform(libs.junit))
-    "runGameRuntimeOnly"(libs.jupiter)
+    "runGameRuntimeOnly"(libs.jupiter.core)
 }
 
 mixin {

@@ -116,7 +116,7 @@ dependencies {
     localRuntime(libs.jei.neoforge)
 
     gameTestRuntime(platform(libs.junit))
-    gameTestRuntime(libs.jupiter)
+    gameTestRuntime(libs.jupiter.core)
 }
 
 // Share with common
