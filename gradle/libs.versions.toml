@@ -41,7 +41,7 @@ scala = { group = "org.scala-lang", name = "scala3-library_3", version.ref = "sc
 du_common = { group = "com.kotori316", name = "debug-utility-common", version.ref = "du" }
 # JUnit
 junit = { group = "org.junit", name = "junit-bom", version.ref = "jupiter_api" }
-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
+jupiter_core = { group = "org.junit.jupiter", name = "junit-jupiter" }
 # mockito
 mockito_core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito_core" }
 mockito_inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito_inline" }

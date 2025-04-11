@@ -35,5 +35,5 @@ dependencies {
     "gameTestImplementation"(project.sourceSets.main.get().output)
     "gameTestImplementation"(project.project(":common").sourceSets["gameTest"].output)
     "gameTestImplementation"(platform(catalog.findLibrary("junit").get().get()))
-    "gameTestImplementation"(catalog.findLibrary("jupiter").get().get())
+    "gameTestImplementation"(catalog.findLibrary("jupiter_core").get().get())
 }
