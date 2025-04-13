@@ -166,7 +166,7 @@ class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeO
       .define('a', ip.amethyst)
       .define('p', Items.PRISMARINE_SHARD)
       .define('m', ip.marker)
-      .define('w', Ingredient.of(Items.LINGERING_POTION))
+      .define('w', Ingredient.of(Items.DRAGON_BREATH))
       .pattern("apa")
       .pattern("pwp")
       .pattern("apm")
