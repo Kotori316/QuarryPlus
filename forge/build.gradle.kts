@@ -80,7 +80,7 @@ minecraft {
             }
         }
 
-        create("gameTestServer") {
+        /*create("gameTestServer") {
             property("forge.enabledGameTestNamespaces", modId)
             property("forge.enableGameTest", "true")
             property("forge.gameTestServer", "true")
@@ -92,7 +92,7 @@ minecraft {
                     source(sourceSets["runGame"])
                 }
             }
-        }
+        }*/
 
         create("data") {
             workingDirectory(project.file("run-server"))
