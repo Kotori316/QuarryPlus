@@ -10,7 +10,6 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.data.PackOutput
 import net.minecraft.data.recipes.{RecipeCategory, RecipeOutput, RecipeProvider, ShapedRecipeBuilder, ShapelessRecipeBuilder}
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.item.alchemy.{PotionContents, Potions}
 import net.minecraft.world.item.crafting.Ingredient
 import net.minecraft.world.item.{Item, Items}
 
@@ -170,7 +169,7 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .define('a', ip.amethyst)
       .define('p', Items.PRISMARINE_SHARD)
       .define('m', ip.marker)
-      .define('w', Ingredient.of(PotionContents.createItemStack(Items.LINGERING_POTION, Potions.STRONG_SWIFTNESS)))
+      .define('w', Items.DRAGON_BREATH)
       .pattern("apa")
       .pattern("pwp")
       .pattern("apm")
