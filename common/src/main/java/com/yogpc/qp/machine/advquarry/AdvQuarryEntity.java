@@ -790,6 +790,6 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
     }
 
     protected boolean shouldRemoveMinecarts() {
-        return true;
+        return PlatformAccess.config().removeMinecartWithChest();
     }
 }

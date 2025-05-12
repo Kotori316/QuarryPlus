@@ -695,7 +695,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     protected boolean shouldRemoveMinecarts() {
-        return true;
+        return PlatformAccess.config().removeMinecartWithChest();
     }
 
     void removeFluidAt(@NotNull Level level, BlockPos pos, ServerPlayer player, BlockState newState) {

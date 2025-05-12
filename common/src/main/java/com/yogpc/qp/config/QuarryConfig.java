@@ -30,6 +30,8 @@ public interface QuarryConfig {
 
     boolean customPlayer();
 
+    boolean removeMinecartWithChest();
+
     static QuarryConfig load(Path path, BooleanSupplier inDevelop) {
         try (var config = CommentedFileConfig.builder(path)
             .preserveInsertionOrder()
