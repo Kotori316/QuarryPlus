@@ -25,6 +25,7 @@ import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.vehicle.MinecartChest;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -47,6 +48,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync {
@@ -508,6 +510,17 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                     e.addExp(orb.getValue());
                     orb.kill(serverLevel);
                 }));
+        if (shouldRemoveMinecarts()) {
+            serverLevel.getEntitiesOfClass(MinecartChest.class, aabb)
+                .forEach(chest -> {
+                    IntStream.range(0, chest.getContainerSize())
+                        .mapToObj(chest::getItem)
+                        .flatMap(itemConverter::convert)
+                        .forEach(storage::addItem);
+                    chest.clearContent();
+                    chest.kill();
+                });
+        }
         removeEdgeFluid(x, z, serverLevel, player);
 
         // Search blocks
@@ -765,5 +778,9 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         } else {
             return ItemConverter.defaultInstance();
         }
+    }
+
+    protected boolean shouldRemoveMinecarts() {
+        return PlatformAccess.config().removeMinecartWithChest();
     }
 }

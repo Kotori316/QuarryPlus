@@ -25,6 +25,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.vehicle.MinecartChest;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -49,6 +50,7 @@ import org.slf4j.MarkerFactory;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
@@ -542,6 +544,17 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 }
                 orbs.forEach(e -> e.kill(serverLevel));
             }
+            if (shouldRemoveMinecarts()) {
+                var minecarts = serverLevel.getEntitiesOfClass(MinecartChest.class, new AABB(target).inflate(5), EntitySelector.ENTITY_STILL_ALIVE);
+                minecarts.stream()
+                    .flatMap(c -> IntStream.range(0, c.getContainerSize()).mapToObj(c::getItem))
+                    .flatMap(itemConverter::convert)
+                    .forEach(storage::addItem);
+                minecarts.forEach(c -> {
+                    c.clearContent(); // remove items in inventory as they are already added to storage
+                    c.kill();
+                });
+            }
         }
 
         var state = serverLevel.getBlockState(target);
@@ -669,6 +682,10 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     protected int repeatCount() {
         var repeatTickModule = RepeatTickModuleItem.getModule(modules).orElse(RepeatTickModuleItem.ZERO);
         return repeatTickModule.stackSize() + 1;
+    }
+
+    protected boolean shouldRemoveMinecarts() {
+        return PlatformAccess.config().removeMinecartWithChest();
     }
 
     void removeFluidAt(@NotNull Level level, BlockPos pos, ServerPlayer player, BlockState newState) {
