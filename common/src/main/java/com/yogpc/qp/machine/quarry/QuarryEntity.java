@@ -552,7 +552,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                     .forEach(storage::addItem);
                 minecarts.forEach(c -> {
                     c.clearContent(); // remove items in inventory as they are already added to storage
-                    c.kill();
+                    c.kill(serverLevel);
                 });
             }
         }

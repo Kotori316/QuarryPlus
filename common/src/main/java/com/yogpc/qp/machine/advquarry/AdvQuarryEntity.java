@@ -518,7 +518,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                         .flatMap(itemConverter::convert)
                         .forEach(storage::addItem);
                     chest.clearContent();
-                    chest.kill();
+                    chest.kill(serverLevel);
                 });
         }
         removeEdgeFluid(x, z, serverLevel, player);
