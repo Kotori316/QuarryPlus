@@ -1,6 +1,7 @@
 package com.yogpc.qp.machine.misc;
 
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.machine.advquarry.AdvQuarryEntity;
 import com.yogpc.qp.machine.quarry.QuarryEntity;
 import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.YSetterMessage;
@@ -10,6 +11,7 @@ public record YAccessor<T extends BlockEntity & ClientSync>(DigMinY digMinY, T e
     public static YAccessor<?> get(BlockEntity blockEntity) {
         return switch (blockEntity) {
             case QuarryEntity q -> new YAccessor<>(q.digMinY, q);
+            case AdvQuarryEntity q -> new YAccessor<>(q.digMinY, q);
             case null, default -> null;
         };
     }
