@@ -26,7 +26,7 @@ public final class FilterModuleItem extends QpItem implements QuarryModuleProvid
     public static final String NAME = ConverterModule.FilterModule.NAME;
 
     public FilterModuleItem() {
-        super(new Properties(), NAME);
+        super(new Properties().stacksTo(1), NAME);
     }
 
     @Override
