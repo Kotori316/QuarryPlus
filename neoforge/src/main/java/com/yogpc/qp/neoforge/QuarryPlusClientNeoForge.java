@@ -24,7 +24,7 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 public final class QuarryPlusClientNeoForge {
     @SubscribeEvent
     public static void clientInit(FMLClientSetupEvent event) {
-        QuarryPlus.LOGGER.info("Initialize Client({})", event.description());
+        QuarryPlus.LOGGER.info("Initialize Client");
         BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.QUARRY_ENTITY_TYPE.get(), RenderQuarryNeoForge::new);
         BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.MARKER_ENTITY_TYPE.get(), RenderMarkerNeoForge::new);
         BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.FLEXIBLE_MARKER_ENTITY_TYPE.get(), RenderFlexibleMarkerNeoForge::new);
