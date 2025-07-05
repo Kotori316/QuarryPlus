@@ -1,19 +1,19 @@
 [versions]
-minecraft = "1.21.5"
-forge = "1.21.5-55.0.23"
-fabric_api = "0.128.1+1.21.5"
+minecraft = "1.21.7"
+forge = "1.21.7-57.0.2"
+fabric_api = "0.128.2+1.21.7"
 fabric_loader = "0.16.14"
-neoforge = "21.5.81"
+neoforge = "21.7.4-beta"
 fabric_version_checker = "2.5.0"
 
-du = "21.5.3"
+du = "21.6.99-SNAPSHOT"
 
-scala = "3.6.2"
+scala = "3.7.1"
 
 teamreborn_energy = "4.1.0"
-slp_forge = "3.6.2-build-0"
-slp_fabric = "3.1.6"
-slp_neoforge = "3.6.2-build-0"
+slp_forge = "3.7.1-build-2"
+slp_fabric = "3.1.8"
+slp_neoforge = "3.7.1-build-2"
 jei_forge = "19.21.2.313"
 jei_fabric = "19.21.2.313"
 jei_neoforge = "19.21.2.313"
