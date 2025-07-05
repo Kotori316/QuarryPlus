@@ -16,7 +16,7 @@ object QuarryDataGenerator {
   }
 }
 
-@EventBusSubscriber(modid = QuarryPlus.modID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = QuarryPlus.modID)
 class QuarryDataGenerator {
 
 }

@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
@@ -27,7 +28,7 @@ public final class ClientSyncMessage implements CustomPacketPayload, OnReceiveWi
     public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "client_sync_message");
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientSyncMessage.class);
     public static final CustomPacketPayload.Type<ClientSyncMessage> TYPE = new Type<>(NAME);
-    public static final StreamCodec<FriendlyByteBuf, ClientSyncMessage> STREAM_CODEC = CustomPacketPayload.codec(
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientSyncMessage> STREAM_CODEC = CustomPacketPayload.codec(
         ClientSyncMessage::write, ClientSyncMessage::new
     );
 

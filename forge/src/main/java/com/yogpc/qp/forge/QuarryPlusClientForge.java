@@ -14,15 +14,15 @@ import com.yogpc.qp.machine.storage.DebugStorageScreen;
 import com.yogpc.qp.render.*;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraftforge.eventbus.api.bus.BusGroup;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 public final class QuarryPlusClientForge {
-    static void registerClientBus(IEventBus modBus) {
-        modBus.register(QuarryPlusClientForge.class);
+    static void registerClientBus(BusGroup modBus) {
+        FMLClientSetupEvent.getBus(modBus).addListener(QuarryPlusClientForge::clientInit);
     }
 
     @SubscribeEvent
@@ -47,10 +47,8 @@ public final class QuarryPlusClientForge {
         QuarryPlus.LOGGER.info("Initialize Client finished");
     }
 
-    @SuppressWarnings("removal")
     private static void setRenderLayer() {
-        // Loading from JSON is now broken in Forge?
-        ItemBlockRenderTypes.setRenderLayer(PlatformAccessForge.RegisterObjectsForge.BLOCK_FRAME.get(), RenderType.cutout());
-        ItemBlockRenderTypes.setRenderLayer(PlatformAccessForge.RegisterObjectsForge.BLOCK_SOFT.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(PlatformAccessForge.RegisterObjectsForge.BLOCK_FRAME.get(), ChunkSectionLayer.CUTOUT);
+        ItemBlockRenderTypes.setRenderLayer(PlatformAccessForge.RegisterObjectsForge.BLOCK_SOFT.get(), ChunkSectionLayer.CUTOUT);
     }
 }

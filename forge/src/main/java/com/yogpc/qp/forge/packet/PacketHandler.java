@@ -38,52 +38,28 @@ public final class PacketHandler implements PlatformAccess.Packet {
             .networkProtocolVersion(PROTOCOL)
             .acceptedVersions(Channel.VersionTest.exact(PROTOCOL))
             .simpleChannel()
+            .play()
+            .bidirectional()
             // ClientSyncMessage
-            .messageBuilder(ClientSyncMessage.class)
-            .codec(ClientSyncMessage.STREAM_CODEC)
-            .consumerMainThread(PacketHandler::onReceive)
-            .add()
+            .addMain(ClientSyncMessage.class, ClientSyncMessage.STREAM_CODEC, PacketHandler::onReceive)
             // YSetterMessage
-            .messageBuilder(YSetterMessage.class)
-            .codec(YSetterMessage.STREAM_CODEC)
-            .consumerMainThread(PacketHandler::onReceive)
-            .add()
+            .addMain(YSetterMessage.class, YSetterMessage.STREAM_CODEC, PacketHandler::onReceive)
             // MoverMessage
-            .messageBuilder(MoverMessage.class)
-            .codec(MoverMessage.STREAM_CODEC)
-            .consumerMainThread(PacketHandler::onReceive)
-            .add()
+            .addMain(MoverMessage.class, MoverMessage.STREAM_CODEC, PacketHandler::onReceive)
             // FlexibleMarkerMessage
-            .messageBuilder(FlexibleMarkerMessage.class)
-            .codec(FlexibleMarkerMessage.STREAM_CODEC)
-            .consumerMainThread(PacketHandler::onReceive)
-            .add()
+            .addMain(FlexibleMarkerMessage.class, FlexibleMarkerMessage.STREAM_CODEC, PacketHandler::onReceive)
             // ChunkMarkerMessage
-            .messageBuilder(ChunkMarkerMessage.class)
-            .codec(ChunkMarkerMessage.STREAM_CODEC)
-            .consumerMainThread(PacketHandler::onReceive)
-            .add()
+            .addMain(ChunkMarkerMessage.class, ChunkMarkerMessage.STREAM_CODEC, PacketHandler::onReceive)
             // AdvActionActionMessage
-            .messageBuilder(AdvActionActionMessage.class)
-            .codec(AdvActionActionMessage.STREAM_CODEC)
-            .consumerMainThread(PacketHandler::onReceive)
-            .add()
+            .addMain(AdvActionActionMessage.class, AdvActionActionMessage.STREAM_CODEC, PacketHandler::onReceive)
             // AdvActionSyncMessage
-            .messageBuilder(AdvActionSyncMessage.class)
-            .codec(AdvActionSyncMessage.STREAM_CODEC)
-            .consumerMainThread(PacketHandler::onReceive)
-            .add()
+            .addMain(AdvActionSyncMessage.class, AdvActionSyncMessage.STREAM_CODEC, PacketHandler::onReceive)
             // AdvQuarryInitialAskMessage
-            .messageBuilder(AdvQuarryInitialAskMessage.class)
-            .codec(AdvQuarryInitialAskMessage.STREAM_CODEC)
-            .consumerMainThread(PacketHandler::onReceive)
-            .add()
+            .addMain(AdvQuarryInitialAskMessage.class, AdvQuarryInitialAskMessage.STREAM_CODEC, PacketHandler::onReceive)
             // RemotePlacerMessage
-            .messageBuilder(RemotePlacerMessage.class)
-            .codec(RemotePlacerMessage.STREAM_CODEC)
-            .consumerMainThread(PacketHandler::onReceive)
-            .add()
-        // END
+            .addMain(RemotePlacerMessage.class, RemotePlacerMessage.STREAM_CODEC, PacketHandler::onReceive)
+            // END
+            .build()
         ;
 
     private static final Proxy PROXY = ProxyProvider.getInstance();

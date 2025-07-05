@@ -7,26 +7,28 @@ import com.yogpc.qp.forge.integration.StorageIntegration;
 import com.yogpc.qp.forge.packet.PacketHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 @Mod(QuarryPlus.modID)
 public final class QuarryPlusForge {
-    public QuarryPlusForge(IEventBus modBus) {
+    public QuarryPlusForge(FMLJavaModLoadingContext context) {
         QuarryPlus.LOGGER.info("Initialize Common");
-        PlatformAccessForge.RegisterObjectsForge.REGISTER_LIST.forEach(r -> r.register(modBus));
+        PlatformAccessForge.RegisterObjectsForge.REGISTER_LIST.forEach(r -> r.register(context.getModBusGroup()));
         PacketHandler.init();
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            callClient(modBus);
+            callClient(context.getModBusGroup());
         }
-        MinecraftForge.EVENT_BUS.register(EnergyIntegration.class);
-        MinecraftForge.EVENT_BUS.register(StorageIntegration.class);
+        AttachCapabilitiesEvent.BlockEntities.BUS.addListener(EnergyIntegration::attachCapabilities);
+        AttachCapabilitiesEvent.BlockEntities.BUS.addListener(StorageIntegration::attachCapabilities);
         MinecraftForge.EVENT_BUS.register(PlatformAccess.getAccess());
         QuarryPlus.LOGGER.info("Initialize Common finished");
     }
 
-    private static void callClient(IEventBus modBus) {
+    private static void callClient(BusGroup modBus) {
         QuarryPlusClientForge.registerClientBus(modBus);
     }
 }

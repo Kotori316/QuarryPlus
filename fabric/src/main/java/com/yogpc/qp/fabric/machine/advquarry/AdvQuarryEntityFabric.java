@@ -8,6 +8,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -23,15 +25,15 @@ public final class AdvQuarryEntityFabric extends AdvQuarryEntity implements ExpM
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        tag.putBoolean("shouldRemoveBedrock", shouldRemoveBedrock);
-        tag.putInt("collectedExp", collectedExp);
+        output.putBoolean("shouldRemoveBedrock", shouldRemoveBedrock);
+        output.putInt("collectedExp", collectedExp);
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        shouldRemoveBedrock = tag.getBooleanOr("shouldRemoveBedrock", shouldRemoveBedrock);
-        collectedExp = tag.getIntOr("collectedExp", collectedExp);
+        shouldRemoveBedrock = input.getBooleanOr("shouldRemoveBedrock", shouldRemoveBedrock);
+        collectedExp = input.getIntOr("collectedExp", collectedExp);
     }
 
     @Override

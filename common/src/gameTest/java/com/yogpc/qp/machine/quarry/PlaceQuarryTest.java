@@ -7,12 +7,14 @@ import com.yogpc.qp.machine.module.ModuleInventoryHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.TagValueInput;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -79,7 +81,7 @@ public final class PlaceQuarryTest {
         quarry.setEnchantments(mutable.toImmutable());
 
         var saved = quarry.saveWithFullMetadata(helper.getLevel().registryAccess());
-        quarry.loadWithComponents(saved, helper.getLevel().registryAccess());
+        quarry.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, helper.getLevel().registryAccess(), saved));
 
         var enchantments = quarry.getEnchantments();
         assertEquals(5, enchantments.getLevel(GameTestFunctions.getEnchantment(helper, Enchantments.EFFICIENCY)));

@@ -5,6 +5,7 @@ import com.yogpc.qp.machine.misc.YAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
@@ -21,7 +22,7 @@ import java.util.Objects;
 public final class YSetterMessage implements CustomPacketPayload, OnReceiveWithLevel {
     public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "y_set_message");
     public static final CustomPacketPayload.Type<YSetterMessage> TYPE = new Type<>(NAME);
-    public static final StreamCodec<FriendlyByteBuf, YSetterMessage> STREAM_CODEC = CustomPacketPayload.codec(
+    public static final StreamCodec<RegistryFriendlyByteBuf, YSetterMessage> STREAM_CODEC = CustomPacketPayload.codec(
         YSetterMessage::write, YSetterMessage::new
     );
 

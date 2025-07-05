@@ -6,6 +6,7 @@ import com.yogpc.qp.packet.OnReceiveWithLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
@@ -23,7 +24,7 @@ import java.util.Objects;
 public final class AdvActionSyncMessage implements CustomPacketPayload, OnReceiveWithLevel {
     public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "adv_action_sync_message");
     public static final CustomPacketPayload.Type<AdvActionSyncMessage> TYPE = new Type<>(NAME);
-    public static final StreamCodec<FriendlyByteBuf, AdvActionSyncMessage> STREAM_CODEC = CustomPacketPayload.codec(
+    public static final StreamCodec<RegistryFriendlyByteBuf, AdvActionSyncMessage> STREAM_CODEC = CustomPacketPayload.codec(
         AdvActionSyncMessage::write, AdvActionSyncMessage::new
     );
     private final BlockPos pos;

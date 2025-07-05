@@ -22,6 +22,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -111,7 +112,7 @@ public final class PacketHandler implements PlatformAccess.Packet {
 
     @Override
     public void sendToServer(@NotNull CustomPacketPayload message) {
-        PacketDistributor.sendToServer(message);
+        ClientPacketDistributor.sendToServer(message);
     }
 
     private static class ProxyProvider {
