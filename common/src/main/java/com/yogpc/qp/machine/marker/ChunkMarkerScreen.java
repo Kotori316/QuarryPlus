@@ -7,9 +7,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,19 +40,19 @@ public final class ChunkMarkerScreen extends AbstractContainerScreen<MarkerConta
     protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
         int pX = leftPos;
         int pY = topPos;
-        graphics.blit(RenderType::guiTextured, LOCATION, pX, pY, 0, 0, imageWidth, imageHeight, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, pX, pY, 0, 0, imageWidth, imageHeight, 256, 256);
     }
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         super.renderLabels(graphics, mouseX, mouseY);
-        graphics.drawString(font, "Size", (this.imageWidth - font.width("Size")) / 2, 6, 0x404040, false);
+        graphics.drawString(font, "Size", (this.imageWidth - font.width("Size")) / 2, 6, ARGB.opaque(0x404040), false);
         String sizeText = Integer.toString(marker.size / CHUNK);
-        graphics.drawString(font, sizeText, (this.imageWidth - font.width(sizeText)) / 2, 15 + 23, 0x404040, false);
+        graphics.drawString(font, sizeText, (this.imageWidth - font.width(sizeText)) / 2, 15 + 23, ARGB.opaque(0x404040), false);
         String yMaxText = Integer.toString(marker.maxY);
         String yMinText = Integer.toString(marker.minY);
-        graphics.drawString(font, yMaxText, (this.imageWidth - font.width(yMaxText)) / 2 + 10 + BUTTON_WIDTH, 15 + 23, 0x404040, false);
-        graphics.drawString(font, yMinText, (this.imageWidth - font.width(yMinText)) / 2 - 10 - BUTTON_WIDTH, 15 + 23, 0x404040, false);
+        graphics.drawString(font, yMaxText, (this.imageWidth - font.width(yMaxText)) / 2 + 10 + BUTTON_WIDTH, 15 + 23, ARGB.opaque(0x404040), false);
+        graphics.drawString(font, yMinText, (this.imageWidth - font.width(yMinText)) / 2 - 10 - BUTTON_WIDTH, 15 + 23, ARGB.opaque(0x404040), false);
     }
 
     @Override

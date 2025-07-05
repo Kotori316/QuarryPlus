@@ -5,10 +5,8 @@ import com.yogpc.qp.fabric.PlatformAccessFabric;
 import com.yogpc.qp.machine.exp.ExpModule;
 import com.yogpc.qp.machine.quarry.QuarryEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,16 +24,16 @@ public final class QuarryEntityFabric extends QuarryEntity implements ExpModule 
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
         tag.putBoolean("shouldRemoveFluid", shouldRemoveFluid);
         tag.putBoolean("shouldRemoveBedrock", shouldRemoveBedrock);
         tag.putInt("collectedExp", collectedExp);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
         shouldRemoveFluid = tag.getBooleanOr("shouldRemoveFluid", shouldRemoveFluid);
         shouldRemoveBedrock = tag.getBooleanOr("shouldRemoveBedrock", shouldRemoveBedrock);
         collectedExp = tag.getIntOr("collectedExp", collectedExp);

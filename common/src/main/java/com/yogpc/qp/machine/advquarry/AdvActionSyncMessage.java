@@ -57,11 +57,11 @@ public final class AdvActionSyncMessage implements CustomPacketPayload, OnReceiv
         this.dim = buffer.readResourceKey(Registries.DIMENSION);
         boolean shouldAreaLoad = buffer.readBoolean();
         if (shouldAreaLoad) {
-            this.area = buffer.readJsonWithCodec(Area.CODEC.codec());
+            this.area = buffer.readLenientJsonWithCodec(Area.CODEC.codec());
         } else {
             this.area = null;
         }
-        this.workConfig = buffer.readJsonWithCodec(WorkConfig.CODEC.codec());
+        this.workConfig = buffer.readLenientJsonWithCodec(WorkConfig.CODEC.codec());
         this.syncArea = buffer.readBoolean();
     }
 

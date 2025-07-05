@@ -3,13 +3,13 @@ package com.yogpc.qp.machine;
 import com.yogpc.qp.PlatformAccess;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Objects;
@@ -36,17 +36,17 @@ public abstract class PowerEntity extends QpEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.putLong("energy", energy);
-        tag.putLong("maxEnergy", maxEnergy);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putLong("energy", energy);
+        output.putLong("maxEnergy", maxEnergy);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        energy = tag.getLongOr("energy", 0);
-        setMaxEnergy(tag.getLongOr("maxEnergy", 0));
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        energy = input.getLongOr("energy", 0);
+        setMaxEnergy(input.getLongOr("maxEnergy", 0));
     }
 
     /*

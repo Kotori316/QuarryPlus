@@ -7,12 +7,11 @@ import com.yogpc.qp.packet.ClientSync;
 import com.yogpc.qp.packet.ClientSyncMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -29,26 +28,26 @@ public final class DebugStorageEntity extends QpEntity implements ClientSync {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        toClientTag(tag, registries);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        toClientTag(output);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        fromClientTag(tag, registries);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        fromClientTag(input);
     }
 
     @Override
-    public CompoundTag toClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.put("storage", MachineStorage.CODEC.codec().encodeStart(NbtOps.INSTANCE, storage).getOrThrow());
-        return tag;
+    public ValueOutput toClientTag(ValueOutput output) {
+        output.store("storage", MachineStorage.CODEC.codec(), storage);
+        return output;
     }
 
     @Override
-    public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        setStorage(MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElseGet(MachineStorage::of));
+    public void fromClientTag(ValueInput input) {
+        setStorage(input.read("storage", MachineStorage.CODEC.codec()).orElseGet(MachineStorage::of));
     }
 
     void setStorage(MachineStorage storage) {

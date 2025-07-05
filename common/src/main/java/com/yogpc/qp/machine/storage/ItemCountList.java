@@ -6,9 +6,13 @@ import com.yogpc.qp.machine.MachineStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow> {
@@ -55,7 +59,9 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
         if (isMouseOver(mouseX, mouseY)) {
             var hovered = getHovered();
             if (hovered != null) {
-                guiGraphics.renderTooltip(minecraft.font, hovered.stack, mouseX, mouseY);
+                var stack = hovered.stack;
+                var component = stack.getStyledHoverName();
+                guiGraphics.renderTooltip(minecraft.font, List.of(ClientTooltipComponent.create(component.getVisualOrderText())), mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, stack.get(DataComponents.TOOLTIP_STYLE));
             }
         }
     }

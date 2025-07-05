@@ -9,10 +9,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.ChunkPos;
 
@@ -43,7 +44,7 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryContainer>
     protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
         int pX = leftPos;
         int pY = topPos;
-        graphics.blit(RenderType::guiTextured, LOCATION, pX, pY, 0, 0, imageWidth, imageHeight, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, pX, pY, 0, 0, imageWidth, imageHeight, 256, 256);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryContainer>
         if (range != null) {
             var chunkPos = new ChunkPos(getMenu().quarry.getBlockPos());
             for (MovablePosition movablePosition : movablePositions) {
-                graphics.drawString(this.font, String.valueOf(movablePosition.distance(chunkPos, range) / 16), movablePosition.baseX, movablePosition.baseY, 0x404040, false);
+                graphics.drawString(this.font, String.valueOf(movablePosition.distance(chunkPos, range) / 16), movablePosition.baseX, movablePosition.baseY, ARGB.opaque(0x404040), false);
             }
         }
     }

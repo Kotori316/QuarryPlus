@@ -5,10 +5,8 @@ import com.yogpc.qp.fabric.PlatformAccessFabric;
 import com.yogpc.qp.machine.advquarry.AdvQuarryEntity;
 import com.yogpc.qp.machine.exp.ExpModule;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,15 +21,15 @@ public final class AdvQuarryEntityFabric extends AdvQuarryEntity implements ExpM
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
         tag.putBoolean("shouldRemoveBedrock", shouldRemoveBedrock);
         tag.putInt("collectedExp", collectedExp);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
         shouldRemoveBedrock = tag.getBooleanOr("shouldRemoveBedrock", shouldRemoveBedrock);
         collectedExp = tag.getIntOr("collectedExp", collectedExp);
     }

@@ -10,9 +10,6 @@ import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
@@ -20,6 +17,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -131,15 +130,15 @@ public class NormalMarkerEntity extends QpEntity implements QuarryMarker, Client
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.putString("status", status.name());
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput output) {
+        output.putString("status", status.name());
+        super.saveAdditional(output);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        var status = tag.getString("status").map(Status::valueOf).orElse(Status.NOT_CONNECTED);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        var status = input.getString("status").map(Status::valueOf).orElse(Status.NOT_CONNECTED);
         if (status == Status.RS_POWERED) {
             this.status = status;
         } else {
@@ -148,18 +147,18 @@ public class NormalMarkerEntity extends QpEntity implements QuarryMarker, Client
     }
 
     @Override
-    public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        status = tag.getString("status").map(Status::valueOf).orElse(Status.NOT_CONNECTED);
-        link = Link.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("link")).result().orElse(null);
+    public void fromClientTag(ValueInput input) {
+        status = input.getString("status").map(Status::valueOf).orElse(Status.NOT_CONNECTED);
+        link = input.read("link", Link.CODEC.codec()).orElse(null);
     }
 
     @Override
-    public CompoundTag toClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.putString("status", status.name());
+    public ValueOutput toClientTag(ValueOutput output) {
+        output.putString("status", status.name());
         if (link != null) {
-            tag.put("link", Link.CODEC.codec().encodeStart(NbtOps.INSTANCE, link).getOrThrow());
+            output.store("link", Link.CODEC.codec(), link);
         }
-        return tag;
+        return output;
     }
 
     @Override

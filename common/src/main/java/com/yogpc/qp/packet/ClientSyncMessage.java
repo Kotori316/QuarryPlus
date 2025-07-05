@@ -9,9 +9,14 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
@@ -20,6 +25,7 @@ import java.util.Objects;
  */
 public final class ClientSyncMessage implements CustomPacketPayload, OnReceiveWithLevel {
     public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "client_sync_message");
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientSyncMessage.class);
     public static final CustomPacketPayload.Type<ClientSyncMessage> TYPE = new Type<>(NAME);
     public static final StreamCodec<FriendlyByteBuf, ClientSyncMessage> STREAM_CODEC = CustomPacketPayload.codec(
         ClientSyncMessage::write, ClientSyncMessage::new
@@ -38,7 +44,11 @@ public final class ClientSyncMessage implements CustomPacketPayload, OnReceiveWi
     public <T extends BlockEntity & ClientSync> ClientSyncMessage(T t) {
         this.pos = t.getBlockPos();
         this.dim = Objects.requireNonNull(t.getLevel()).dimension();
-        this.tag = t.toClientTag(new CompoundTag(), Objects.requireNonNull(t.getLevel()).registryAccess());
+        try (var reporter = new ProblemReporter.ScopedCollector(t.problemPath(), LOGGER)) {
+            var out = TagValueOutput.createWithContext(reporter, t.getLevel().registryAccess());
+            t.toClientTag(out);
+            this.tag = out.buildResult();
+        }
     }
 
     ClientSyncMessage(FriendlyByteBuf buffer) {
@@ -59,7 +69,10 @@ public final class ClientSyncMessage implements CustomPacketPayload, OnReceiveWi
         }
         var entity = level.getBlockEntity(pos);
         if (entity instanceof ClientSync clientSync) {
-            clientSync.fromClientTag(tag, level.registryAccess());
+            try (var reporter = new ProblemReporter.ScopedCollector(entity.problemPath(), LOGGER)) {
+                var input = TagValueInput.create(reporter, level.registryAccess(), tag);
+                clientSync.fromClientTag(input);
+            }
         }
     }
 
