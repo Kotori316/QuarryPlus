@@ -1,5 +1,6 @@
 package com.yogpc.qp.machine.marker;
 
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.Area;
 import com.yogpc.qp.machine.QpEntity;
 import com.yogpc.qp.packet.ClientSync;
@@ -110,8 +111,8 @@ public class FlexibleMarkerEntity extends QpEntity implements QuarryMarker, Clie
         }
     }
 
-    private int getMaxRange() {
-        return NormalMarkerEntity.MAX_SEARCH;
+    int getMaxRange() {
+        return PlatformAccess.config().flexibleMarkerRange();
     }
 
     public enum Movable {

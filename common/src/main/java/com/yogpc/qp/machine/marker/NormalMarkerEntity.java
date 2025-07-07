@@ -34,7 +34,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class NormalMarkerEntity extends QpEntity implements QuarryMarker, ClientSync {
-    public static final int MAX_SEARCH = 256;
     @NotNull
     private Status status = Status.NOT_CONNECTED;
     @Nullable
@@ -43,6 +42,10 @@ public class NormalMarkerEntity extends QpEntity implements QuarryMarker, Client
     public NormalMarkerEntity(BlockPos pos, BlockState blockState) {
         super(PlatformAccess.getAccess().registerObjects().getBlockEntityType((QpBlock) blockState.getBlock()).orElseThrow(),
             pos, blockState);
+    }
+
+    int maxSearch() {
+        return PlatformAccess.config().markerPlusRange();
     }
 
     void tryConnect(Consumer<Component> messageSender) {
@@ -59,7 +62,7 @@ public class NormalMarkerEntity extends QpEntity implements QuarryMarker, Client
         var zMarker = getMarker(level, getBlockPos(), this.getType(), Direction.Axis.Z);
         var xzMarker = xMarker.flatMap(e -> getMarker(level, e.getBlockPos(), e.getType(), Direction.Axis.Z));
         var zxMarker = zMarker.flatMap(e -> getMarker(level, e.getBlockPos(), e.getType(), Direction.Axis.X));
-        var yMarker = IntStream.range(1, MAX_SEARCH)
+        var yMarker = IntStream.range(1, maxSearch())
             .flatMap(i -> IntStream.of(i, -i))
             .filter(y -> !level.isOutsideBuildHeight(y))
             .boxed()
@@ -100,8 +103,8 @@ public class NormalMarkerEntity extends QpEntity implements QuarryMarker, Client
         }, () -> messageSender.accept(Component.literal("Marker tried to establish connection, but failed")));
     }
 
-    static Optional<NormalMarkerEntity> getMarker(Level level, BlockPos pos, BlockEntityType<?> type, Direction.Axis axis) {
-        return IntStream.range(1, MAX_SEARCH)
+    Optional<NormalMarkerEntity> getMarker(Level level, BlockPos pos, BlockEntityType<?> type, Direction.Axis axis) {
+        return IntStream.range(1, maxSearch())
             .flatMap(i -> IntStream.of(i, -i))
             .mapToObj(d -> pos.relative(axis, d))
             .flatMap(p -> level.getBlockEntity(p, type).stream())
