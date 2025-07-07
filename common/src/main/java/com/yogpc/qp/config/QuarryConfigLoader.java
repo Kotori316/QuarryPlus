@@ -47,8 +47,10 @@ final class QuarryConfigLoader {
         var removeCommonMaterialsByChunkDestroyer = config.<Boolean>get("removeCommonMaterialsByChunkDestroyer");
         var customPlayer = config.<Boolean>get("customPlayer");
         var removeMinecartWithChest = config.<Boolean>get("removeMinecartWithChest");
+        var markerPlusRange = config.<Integer>get("markerPlusRange");
+        var flexibleMarkerRange = config.<Integer>get("flexibleMarkerRange");
 
-        return new QuarryConfigImpl(debug, noEnergy, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop, enableChunkLoader, convertDeepslateOres, removeCommonMaterialsByChunkDestroyer, customPlayer, removeMinecartWithChest);
+        return new QuarryConfigImpl(debug, noEnergy, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop, enableChunkLoader, convertDeepslateOres, removeCommonMaterialsByChunkDestroyer, customPlayer, removeMinecartWithChest, markerPlusRange, flexibleMarkerRange);
     }
 
     record QuarryConfigImpl(
@@ -62,7 +64,9 @@ final class QuarryConfigLoader {
         boolean convertDeepslateOres,
         boolean removeCommonMaterialsByChunkDestroyer,
         boolean customPlayer,
-        boolean removeMinecartWithChest
+        boolean removeMinecartWithChest,
+        int markerPlusRange,
+        int flexibleMarkerRange
     ) implements QuarryConfig {
     }
 
@@ -81,6 +85,8 @@ final class QuarryConfigLoader {
         defineBoolean(config, specConfig, "removeCommonMaterialsByChunkDestroyer", true, "Remove common materials(Base blocks in Over world and the Nether) obtained by Chunk Destroyer");
         defineBoolean(config, specConfig, "customPlayer", false, "Enable Custom player mode");
         defineBoolean(config, specConfig, "removeMinecartWithChest", true, "Remove Minecart with Chest when processing blocks");
+        defineInt(config, specConfig, "markerPlusRange", 256, 8, 1 << 20, "Range of Marker Plus");
+        defineInt(config, specConfig, "flexibleMarkerRange", 256, 16, 1 << 24, "Range of Flexible Marker");
 
         // powerMap.quarry.*
         defineInCodec(config, specConfig, "powerMap.quarry", PowerMap.Default.QUARRY);
@@ -101,6 +107,11 @@ final class QuarryConfigLoader {
     static void defineDouble(ConfigSpec spec, CommentedConfig commentMap, String key, double defaultValue, double min, double max, String comment) {
         spec.defineInRange(key, defaultValue, min, max);
         commentMap.setComment(key, "%s. Default: %f, Min: %.1f, Max: %.1f".formatted(comment, defaultValue, min, max));
+    }
+
+    static void defineInt(ConfigSpec spec, CommentedConfig commentMap, String key, int defaultValue, int min, int max, String comment) {
+        spec.defineInRange(key, defaultValue, min, max);
+        commentMap.setComment(key, "%s. Default: %d, Min: %d, Max: %d".formatted(comment, defaultValue, min, max));
     }
 
     static <T extends Record> void defineInCodec(ConfigSpec spec, CommentedConfig commentMap, String prefix, T instance) {
