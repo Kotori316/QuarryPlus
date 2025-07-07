@@ -15,7 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.Result;
 import net.minecraftforge.event.level.BlockEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,9 +25,9 @@ import java.util.OptionalInt;
 final class MiningForge implements PlatformAccess.Mining {
     @Override
     public BlockBreakEventResult checkBreakEvent(QpEntity miningEntity, Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity) {
-        var breakEvent = new BlockEvent.BreakEvent(level, target, state, fakePlayer);
-        MinecraftForge.EVENT_BUS.post(breakEvent);
-        return new BlockBreakEventResult(breakEvent.isCanceled(), OptionalInt.of(breakEvent.getExpToDrop()), List.of());
+        var breakEvent = new BlockEvent.BreakEvent(level, target, state, fakePlayer, Result.ALLOW);
+        var canceled = BlockEvent.BreakEvent.BUS.post(breakEvent);
+        return new BlockBreakEventResult(canceled, OptionalInt.of(breakEvent.getExpToDrop()), List.of());
     }
 
     @Override

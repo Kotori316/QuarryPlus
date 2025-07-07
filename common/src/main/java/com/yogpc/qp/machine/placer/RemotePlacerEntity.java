@@ -2,10 +2,9 @@ package com.yogpc.qp.machine.placer;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 
 public final class RemotePlacerEntity extends AbstractPlacerTile {
@@ -30,14 +29,14 @@ public final class RemotePlacerEntity extends AbstractPlacerTile {
     }
 
     @Override
-    public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        super.fromClientTag(tag, registries);
-        targetPos = BlockPos.CODEC.parse(NbtOps.INSTANCE, tag.get(KEY_TARGET)).getOrThrow();
+    public void fromClientTag(ValueInput input) {
+        super.fromClientTag(input);
+        targetPos = input.read(KEY_TARGET, BlockPos.CODEC).orElseThrow();
     }
 
     @Override
-    public CompoundTag toClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.put(KEY_TARGET, BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, targetPos).getOrThrow());
-        return super.toClientTag(tag, registries);
+    public ValueOutput toClientTag(ValueOutput output) {
+        output.store(KEY_TARGET, BlockPos.CODEC, targetPos);
+        return super.toClientTag(output);
     }
 }

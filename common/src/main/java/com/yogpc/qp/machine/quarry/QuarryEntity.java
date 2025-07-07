@@ -1,6 +1,7 @@
 package com.yogpc.qp.machine.quarry;
 
 import com.google.common.collect.Sets;
+import com.mojang.serialization.Codec;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.*;
@@ -12,11 +13,8 @@ import com.yogpc.qp.machine.module.*;
 import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,6 +37,8 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -144,51 +144,51 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        toClientTag(tag, registries);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        toClientTag(output);
         if (targetIterator != null && targetIterator.getLastReturned() != null) {
-            tag.put("targetPos", BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, targetIterator.getLastReturned()).getOrThrow());
+            output.store("targetPos", BlockPos.CODEC, targetIterator.getLastReturned());
         }
-        tag.put("storage", MachineStorage.CODEC.codec().encodeStart(NbtOps.INSTANCE, storage).getOrThrow());
-        tag.putLongArray("skipped", skipped.stream().mapToLong(BlockPos::asLong).toArray());
-        tag.put("moduleInventory", moduleInventory.createTag(registries));
-        tag.put("chunkLoader", QuarryChunkLoader.CODEC.encodeStart(NbtOps.INSTANCE, chunkLoader).getOrThrow());
+        output.store("storage", MachineStorage.CODEC.codec(), storage);
+        output.store("skipped", Codec.LONG_STREAM, skipped.stream().mapToLong(BlockPos::asLong));
+        moduleInventory.storeAsItemList(output.list("moduleInventory", ItemStack.CODEC));
+        output.store("chunkLoader", QuarryChunkLoader.CODEC, chunkLoader);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        fromClientTag(tag, registries);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        fromClientTag(input);
         // In server, head must be loaded from nbt
-        Vec3.CODEC.parse(NbtOps.INSTANCE, tag.get("head")).ifSuccess(v -> this.head = v);
-        var current = BlockPos.CODEC.parse(NbtOps.INSTANCE, tag.get("targetPos")).result().orElse(null);
+        input.read("head", Vec3.CODEC).ifPresent(v -> this.head = v);
+        var current = input.read("targetPos", BlockPos.CODEC).orElse(null);
         targetIterator = createTargetIterator(currentState, area, current);
         targetPos = current;
-        storage = MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElseGet(MachineStorage::of);
-        skipped = tag.getLongArray("skipped").stream().flatMapToLong(LongStream::of).mapToObj(BlockPos::of).collect(Collectors.toCollection(HashSet::new));
-        moduleInventory.fromTag(tag.getListOrEmpty("moduleInventory"), registries);
-        chunkLoader = QuarryChunkLoader.CODEC.parse(NbtOps.INSTANCE, tag.get("chunkLoader")).result().orElse(QuarryChunkLoader.None.INSTANCE);
+        storage = input.read("storage", MachineStorage.CODEC.codec()).orElseGet(MachineStorage::of);
+        skipped = input.read("skipped", Codec.LONG_STREAM).orElse(LongStream.empty()).mapToObj(BlockPos::of).collect(Collectors.toCollection(HashSet::new));
+        moduleInventory.fromItemList(input.listOrEmpty("moduleInventory", ItemStack.CODEC));
+        chunkLoader = input.read("chunkLoader", QuarryChunkLoader.CODEC).orElse(QuarryChunkLoader.None.INSTANCE);
     }
 
     @Override
-    public CompoundTag toClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.put("head", Vec3.CODEC.encodeStart(NbtOps.INSTANCE, this.head).getOrThrow());
-        tag.putString("state", currentState.name());
+    public ValueOutput toClientTag(ValueOutput output) {
+        output.store("head", Vec3.CODEC, this.head);
+        output.putString("state", currentState.name());
         if (area != null) {
-            tag.put("area", Area.CODEC.codec().encodeStart(NbtOps.INSTANCE, this.area).getOrThrow());
+            output.store("area", Area.CODEC.codec(), area);
         }
-        tag.put("digMinY", DigMinY.CODEC.codec().encodeStart(NbtOps.INSTANCE, digMinY).getOrThrow());
-        return tag;
+        output.store("digMinY", DigMinY.CODEC.codec(), digMinY);
+        return output;
     }
 
     @Override
-    public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
+    public void fromClientTag(ValueInput input) {
         // Set head as targetHead to move drill smoothly
-        Vec3.CODEC.parse(NbtOps.INSTANCE, tag.get("head")).ifSuccess(v -> this.targetHead = v);
-        currentState = tag.getString("state").map(QuarryState::valueOf).orElse(QuarryState.FINISHED);
-        area = Area.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("area")).result().orElse(null);
-        digMinY = DigMinY.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("digMinY")).result().orElseGet(DigMinY::new);
+        input.read("head", Vec3.CODEC).ifPresent(v -> this.head = v);
+        currentState = input.getString("state").map(QuarryState::valueOf).orElse(QuarryState.FINISHED);
+        area = input.read("area", Area.CODEC.codec()).orElse(null);
+        digMinY = input.read("digMinY", DigMinY.CODEC.codec()).orElseGet(DigMinY::new);
     }
 
     @Override

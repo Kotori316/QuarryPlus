@@ -5,6 +5,7 @@ import com.yogpc.qp.packet.OnReceiveWithLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
@@ -20,7 +21,7 @@ import java.util.Objects;
 public final class ChunkMarkerMessage implements CustomPacketPayload, OnReceiveWithLevel {
     public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "chunk_marker_message");
     public static final CustomPacketPayload.Type<ChunkMarkerMessage> TYPE = new Type<>(NAME);
-    public static final StreamCodec<FriendlyByteBuf, ChunkMarkerMessage> STREAM_CODEC = CustomPacketPayload.codec(
+    public static final StreamCodec<RegistryFriendlyByteBuf, ChunkMarkerMessage> STREAM_CODEC = CustomPacketPayload.codec(
         ChunkMarkerMessage::write, ChunkMarkerMessage::new
     );
 

@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-@EventBusSubscriber(modid = QuarryPlus.modID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = QuarryPlus.modID)
 public final class LoadTest {
     static {
         QuarryPlus.LOGGER.info("Loading GameTest for NeoForge");

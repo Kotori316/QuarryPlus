@@ -6,12 +6,12 @@ import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,34 +34,34 @@ public class ChunkMarkerEntity extends QpEntity implements QuarryMarker, ClientS
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        fromClientTag(tag, registries);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        fromClientTag(input);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        toClientTag(tag, registries);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        toClientTag(output);
     }
 
     @Override
-    public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        xDirection = tag.getString("xDirection").map(Direction.AxisDirection::valueOf).orElse(xDirection);
-        zDirection = tag.getString("zDirection").map(Direction.AxisDirection::valueOf).orElse(zDirection);
-        size = tag.getIntOr("size", size);
-        minY = tag.getIntOr("minY", minY);
-        maxY = tag.getIntOr("maxY", maxY);
+    public void fromClientTag(ValueInput input) {
+        xDirection = input.getString("xDirection").map(Direction.AxisDirection::valueOf).orElse(xDirection);
+        zDirection = input.getString("zDirection").map(Direction.AxisDirection::valueOf).orElse(zDirection);
+        size = input.getIntOr("size", size);
+        minY = input.getIntOr("minY", minY);
+        maxY = input.getIntOr("maxY", maxY);
     }
 
     @Override
-    public CompoundTag toClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.putString("xDirection", xDirection.name());
-        tag.putString("zDirection", zDirection.name());
-        tag.putInt("size", size);
-        tag.putInt("minY", minY);
-        tag.putInt("maxY", maxY);
-        return tag;
+    public ValueOutput toClientTag(ValueOutput output) {
+        output.putString("xDirection", xDirection.name());
+        output.putString("zDirection", zDirection.name());
+        output.putInt("size", size);
+        output.putInt("minY", minY);
+        output.putInt("maxY", maxY);
+        return output;
     }
 
     @Override

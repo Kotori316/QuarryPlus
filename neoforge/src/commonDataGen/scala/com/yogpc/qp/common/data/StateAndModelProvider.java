@@ -147,7 +147,7 @@ final class StateAndModelProvider extends ModelProvider {
         blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_.get(), dummyReplacerModel));
         blockModels.registerSimpleItemModel(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_.get(), dummyReplacerModel);*/
 
-        var dummyBlockTemplate = ModelTemplates.CUBE_ALL.extend().renderType(renderTypeName(RenderType.translucent())).build();
+        var dummyBlockTemplate = ModelTemplates.CUBE_ALL.extend().renderType("translucent").build();
         var dummyBlockModel = dummyBlockTemplate.create(modLocation("block/dummy_block"), TextureMapping.cube(blockTexture("dummy_block")), blockModels.modelOutput);
         blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get(), BlockModelGenerators.plainVariant(dummyBlockModel)));
         blockModels.registerSimpleItemModel(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get(), dummyBlockModel);

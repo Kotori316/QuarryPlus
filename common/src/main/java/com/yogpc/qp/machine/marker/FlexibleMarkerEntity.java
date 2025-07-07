@@ -7,13 +7,12 @@ import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,30 +36,30 @@ public class FlexibleMarkerEntity extends QpEntity implements QuarryMarker, Clie
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        toClientTag(tag, registries);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        toClientTag(output);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        fromClientTag(tag, registries);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        fromClientTag(input);
     }
 
     @Override
-    public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        min = BlockPos.CODEC.parse(NbtOps.INSTANCE, tag.get("min")).getOrThrow();
-        max = BlockPos.CODEC.parse(NbtOps.INSTANCE, tag.get("max")).getOrThrow();
-        direction = Direction.CODEC.parse(NbtOps.INSTANCE, tag.get("direction")).getOrThrow();
+    public void fromClientTag(ValueInput input) {
+        min = input.read("min", BlockPos.CODEC).orElseThrow();
+        max = input.read("max", BlockPos.CODEC).orElseThrow();
+        direction = input.read("direction", Direction.CODEC).orElseThrow();
     }
 
     @Override
-    public CompoundTag toClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.put("min", BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, min).getOrThrow());
-        tag.put("max", BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, max).getOrThrow());
-        tag.put("direction", Direction.CODEC.encodeStart(NbtOps.INSTANCE, direction).getOrThrow());
-        return tag;
+    public ValueOutput toClientTag(ValueOutput output) {
+        output.store("min", BlockPos.CODEC, min);
+        output.store("max", BlockPos.CODEC, max);
+        output.store("direction", Direction.CODEC, direction);
+        return output;
     }
 
     @Override

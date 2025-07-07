@@ -6,9 +6,7 @@ import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
@@ -24,6 +22,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -59,30 +59,30 @@ public abstract class AbstractPlacerTile extends QpEntity
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        toClientTag(tag, registries);
-        tag.put("container", container.createTag(registries));
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        toClientTag(output);
+        container.storeAsItemList(output.list("container", ItemStack.CODEC));
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        fromClientTag(tag, registries);
-        container.fromTag(tag.getListOrEmpty("container"), registries);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        fromClientTag(input);
+        container.fromItemList(input.listOrEmpty("container", ItemStack.CODEC));
     }
 
     @Override
-    public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        lastPlacedIndex = tag.getIntOr("lastPlacedIndex", 0);
-        redstoneMode = tag.getString("mode").map(RedStoneMode::valueOf).orElse(RedStoneMode.PULSE);
+    public void fromClientTag(ValueInput input) {
+        lastPlacedIndex = input.getIntOr("lastPlacedIndex", 0);
+        redstoneMode = input.getString("mode").map(RedStoneMode::valueOf).orElse(RedStoneMode.PULSE);
     }
 
     @Override
-    public CompoundTag toClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.putInt("lastPlacedIndex", lastPlacedIndex);
-        tag.putString("mode", redstoneMode.name());
-        return tag;
+    public ValueOutput toClientTag(ValueOutput output) {
+        output.putInt("lastPlacedIndex", lastPlacedIndex);
+        output.putString("mode", redstoneMode.name());
+        return output;
     }
 
     protected abstract BlockPos getTargetPos();

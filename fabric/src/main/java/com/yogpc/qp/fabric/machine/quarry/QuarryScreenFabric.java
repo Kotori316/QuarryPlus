@@ -8,9 +8,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
 
 public final class QuarryScreenFabric extends AbstractContainerScreen<QuarryMenuFabric> {
@@ -29,7 +30,7 @@ public final class QuarryScreenFabric extends AbstractContainerScreen<QuarryMenu
 
     @Override
     protected void renderBg(GuiGraphics graphics, float f, int i, int j) {
-        graphics.blit(RenderType::guiTextured, texture, leftPos, topPos, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, leftPos, topPos, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
     }
 
     @Override
@@ -44,7 +45,7 @@ public final class QuarryScreenFabric extends AbstractContainerScreen<QuarryMenu
         {
             var message = bedrockMessage(this.menu.quarry.shouldRemoveBedrock);
             var widget = new StringWidgetNoShadow(leftPos + 8, topPos + 35, font.width(message), 10, message, font);
-            widget.setColor(0x404040);
+            widget.setColor(ARGB.opaque(0x404040));
             widget.setTooltip(bedrockMessageTooltip(this.menu.quarry.shouldRemoveBedrock));
             addRenderableWidget(widget);
         }

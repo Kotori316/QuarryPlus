@@ -16,7 +16,7 @@ import java.util.Collections
 import scala.annotation.static
 import scala.jdk.javaapi.CollectionConverters
 
-@EventBusSubscriber(modid = QuarryPlus.modID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = QuarryPlus.modID)
 class QuarryDataCommonGenerator {
 }
 
@@ -34,11 +34,11 @@ object QuarryDataCommonGenerator {
     event.addProvider(StateAndModelProvider(event.getGenerator.getPackOutput))
     event.addProvider(QuarrySpriteSourceProvider(event.getGenerator.getPackOutput, event.getLookupProvider))
     event.addProvider(PackMetadataGenerator(event.getGenerator.getPackOutput)
-      .add(PackMetadataSection.TYPE, PackMetadataSection(Component.literal("QuarryPlus Resource"), DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES)))
+      .add(PackMetadataSection.TYPE, PackMetadataSection(Component.literal("QuarryPlus Resource"), DetectedVersion.BUILT_IN.packVersion(PackType.CLIENT_RESOURCES)))
     )
 
     val blockTag = QuarryBlockTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider)
-    val itemTag = QuarryItemTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider, blockTag.contentsGetter())
+    val itemTag = QuarryItemTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider)
     event.addProvider(blockTag)
     event.addProvider(itemTag)
     event.addProvider(QuarryEnchantmentTagProvider(event.getGenerator.getPackOutput, enchantmentProvider))

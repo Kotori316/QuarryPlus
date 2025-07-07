@@ -1,14 +1,14 @@
 package com.yogpc.qp.packet;
 
 import com.yogpc.qp.PlatformAccess;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public interface ClientSync {
-    void fromClientTag(CompoundTag tag, HolderLookup.Provider registries);
+    void fromClientTag(ValueInput input);
 
-    CompoundTag toClientTag(CompoundTag tag, HolderLookup.Provider registries);
+    ValueOutput toClientTag(ValueOutput output);
 
     @SuppressWarnings("unchecked") // Checked. Safe
     default <T extends BlockEntity & ClientSync> void syncToClient() {

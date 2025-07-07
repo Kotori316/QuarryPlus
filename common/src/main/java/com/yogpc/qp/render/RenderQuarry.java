@@ -24,7 +24,7 @@ public class RenderQuarry implements BlockEntityRenderer<QuarryEntity> {
     }
 
     @Override
-    public boolean shouldRenderOffScreen(QuarryEntity blockEntity) {
+    public boolean shouldRenderOffScreen() {
         return true;
     }
 

@@ -6,6 +6,7 @@ import com.yogpc.qp.packet.OnReceiveWithLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
@@ -21,7 +22,7 @@ import java.util.Objects;
 public final class AdvQuarryInitialAskMessage implements CustomPacketPayload, OnReceiveWithLevel {
     public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "adv_quarry_initial_ask_message");
     public static final CustomPacketPayload.Type<AdvQuarryInitialAskMessage> TYPE = new Type<>(NAME);
-    public static final StreamCodec<FriendlyByteBuf, AdvQuarryInitialAskMessage> STREAM_CODEC = CustomPacketPayload.codec(
+    public static final StreamCodec<RegistryFriendlyByteBuf, AdvQuarryInitialAskMessage> STREAM_CODEC = CustomPacketPayload.codec(
         AdvQuarryInitialAskMessage::write, AdvQuarryInitialAskMessage::new
     );
     private final BlockPos pos;

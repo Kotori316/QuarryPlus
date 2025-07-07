@@ -5,6 +5,7 @@ import com.yogpc.qp.packet.OnReceiveWithLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
@@ -17,7 +18,7 @@ import java.util.Objects;
 public final class FlexibleMarkerMessage implements CustomPacketPayload, OnReceiveWithLevel {
     public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "flexible_marker_message");
     public static final CustomPacketPayload.Type<FlexibleMarkerMessage> TYPE = new Type<>(NAME);
-    public static final StreamCodec<FriendlyByteBuf, FlexibleMarkerMessage> STREAM_CODEC = CustomPacketPayload.codec(
+    public static final StreamCodec<RegistryFriendlyByteBuf, FlexibleMarkerMessage> STREAM_CODEC = CustomPacketPayload.codec(
         FlexibleMarkerMessage::write, FlexibleMarkerMessage::new
     );
     private final BlockPos pos;

@@ -6,9 +6,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
 
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public final class FlexibleMarkerScreen extends AbstractContainerScreen<MarkerCo
     protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
         int pX = leftPos;
         int pY = topPos;
-        graphics.blit(RenderType::guiTextured, LOCATION, pX, pY, 0, 0, imageWidth, imageHeight, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, pX, pY, 0, 0, imageWidth, imageHeight, 256, 256);
     }
 
     @Override
@@ -84,14 +85,14 @@ public final class FlexibleMarkerScreen extends AbstractContainerScreen<MarkerCo
                 // Label
                 var text = Component.translatable(movablePosition.movable.transName);
                 var textLength = font.width(text);
-                guiGraphics.drawString(font, text, movablePosition.baseX - textLength / 2, movablePosition.baseY, 0x404040, false);
+                guiGraphics.drawString(font, text, movablePosition.baseX - textLength / 2, movablePosition.baseY, ARGB.opaque(0x404040), false);
             }
             {
                 // distance
                 int distance = movablePosition.movable.distanceFromOrigin(marker.getBlockPos(), marker.min, marker.max, marker.direction);
                 var text = String.valueOf(distance);
                 var textLength = font.width(text);
-                guiGraphics.drawString(font, text, movablePosition.baseX - textLength / 2, movablePosition.baseY + heightOffset, 0x404040, false);
+                guiGraphics.drawString(font, text, movablePosition.baseX - textLength / 2, movablePosition.baseY + heightOffset, ARGB.opaque(0x404040), false);
             }
         }
     }

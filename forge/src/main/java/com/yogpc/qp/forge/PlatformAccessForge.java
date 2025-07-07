@@ -52,7 +52,6 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.crafting.ingredients.IIngredientSerializer;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.event.server.ServerStoppedEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -384,7 +383,10 @@ public final class PlatformAccessForge implements PlatformAccess {
         return miningLazy.get();
     }
 
-    @SubscribeEvent
+    {
+        ServerStoppedEvent.BUS.addListener(this::onWorldUnload);
+    }
+
     public void onWorldUnload(ServerStoppedEvent event) {
         configLazy.reset();
     }

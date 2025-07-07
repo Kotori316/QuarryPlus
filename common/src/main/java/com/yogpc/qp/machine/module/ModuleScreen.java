@@ -3,9 +3,10 @@ package com.yogpc.qp.machine.module;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
 
 public final class ModuleScreen extends AbstractContainerScreen<ModuleContainer> {
@@ -25,15 +26,15 @@ public final class ModuleScreen extends AbstractContainerScreen<ModuleContainer>
     protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
         int pX = leftPos;
         int pY = topPos;
-        graphics.blit(RenderType::guiTextured, LOCATION, pX, pY, 0, 0, imageWidth, imageHeight, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, pX, pY, 0, 0, imageWidth, imageHeight, 256, 256);
     }
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         super.renderLabels(graphics, mouseX, mouseY);
-        graphics.drawString(font, "Modules", this.titleLabelX, this.titleLabelY + 10, 0x404040, false);
+        graphics.drawString(font, "Modules", this.titleLabelX, this.titleLabelY + 10, ARGB.opaque(0x404040), false);
         if (getMenu().yAccessor != null) {
-            graphics.drawString(font, "Y: " + getMenu().yAccessor.getDigMinY(), 120, this.titleLabelY, 0x404040, false);
+            graphics.drawString(font, "Y: " + getMenu().yAccessor.getDigMinY(), 120, this.titleLabelY, ARGB.opaque(0x404040), false);
         }
     }
 }

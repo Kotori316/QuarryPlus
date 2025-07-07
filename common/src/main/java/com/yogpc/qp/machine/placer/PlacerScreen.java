@@ -3,9 +3,10 @@ package com.yogpc.qp.machine.placer;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
 
 public final class PlacerScreen extends AbstractContainerScreen<PlacerContainer> {
@@ -24,7 +25,7 @@ public final class PlacerScreen extends AbstractContainerScreen<PlacerContainer>
 
     @Override
     protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
-        graphics.blit(RenderType::guiTextured, LOCATION, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
         {
             // red = 176, 0;  start = 61, 16;
             int oneBox = 18;
@@ -32,7 +33,7 @@ public final class PlacerScreen extends AbstractContainerScreen<PlacerContainer>
             int y = 16 + (getMenu().tile.getLastPlacedIndex() / 3) * oneBox;
             int pX = leftPos + x;
             int pY = topPos + y;
-            graphics.blit(RenderType::guiTextured, LOCATION, pX, pY, 176, 0, oneBox, oneBox, 256, 256);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, pX, pY, 176, 0, oneBox, oneBox, 256, 256);
         }
     }
 
@@ -47,13 +48,13 @@ public final class PlacerScreen extends AbstractContainerScreen<PlacerContainer>
         AbstractPlacerTile.RedStoneMode mode = this.getMenu().tile.redstoneMode;
         String pA = "Pulse";
         int x = 116;
-        graphics.drawString(font, pA, x, 6, 0x404040, false);
+        graphics.drawString(font, pA, x, 6, ARGB.opaque(0x404040), false);
         String rs = "";
-        graphics.drawString(font, rs, x, 18, 0x404040, false);
+        graphics.drawString(font, rs, x, 18, ARGB.opaque(0x404040), false);
         String only;
         if (mode.canBreak() && !mode.canPlace()) only = "Break Only";
         else if (mode.canPlace() && !mode.canBreak()) only = "Place Only";
         else only = "";
-        graphics.drawString(font, only, x, 30, 0x404040, false);
+        graphics.drawString(font, only, x, 30, ARGB.opaque(0x404040), false);
     }
 }

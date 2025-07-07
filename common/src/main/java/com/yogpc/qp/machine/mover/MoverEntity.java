@@ -6,15 +6,7 @@ import com.yogpc.qp.machine.QpEntity;
 import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.BowItem;
@@ -25,15 +17,15 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public final class MoverEntity extends QpEntity implements ClientSync {
     final SimpleContainer inventory = new Inventory(2);
@@ -45,40 +37,30 @@ public final class MoverEntity extends QpEntity implements ClientSync {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        inventory.fromTag(tag.getListOrEmpty("inventory"), registries);
-        super.loadAdditional(tag, registries);
+    protected void loadAdditional(ValueInput input) {
+        inventory.fromItemList(input.listOrEmpty("inventory", ItemStack.CODEC));
+        super.loadAdditional(input);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.put("inventory", inventory.createTag(registries));
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        inventory.storeAsItemList(output.list("inventory", ItemStack.CODEC));
     }
 
     @Override
-    public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        var enchantmentRegistry = registries.lookupOrThrow(Registries.ENCHANTMENT);
-        movableEnchantments = tag.getListOrEmpty("enchantments")
-            .stream()
-            .map(Tag::asString)
-            .flatMap(Optional::stream)
-            .map(s -> ResourceKey.create(Registries.ENCHANTMENT, ResourceLocation.parse(s)))
-            .<Holder<Enchantment>>map(enchantmentRegistry::getOrThrow)
-            .toList();
+    public void fromClientTag(ValueInput input) {
+        movableEnchantments = input.listOrEmpty("enchantments", Enchantment.CODEC)
+            .stream().toList();
     }
 
     @Override
-    public CompoundTag toClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        var list = movableEnchantments.stream()
-            .map(Holder::unwrapKey)
-            .flatMap(Optional::stream)
-            .map(ResourceKey::location)
-            .map(ResourceLocation::toString)
-            .map(StringTag::valueOf)
-            .collect(Collectors.toCollection(ListTag::new));
-        tag.put("enchantments", list);
-        return tag;
+    public ValueOutput toClientTag(ValueOutput output) {
+        {
+            var enchantmentList = output.list("enchantments", Enchantment.CODEC);
+            movableEnchantments.forEach(enchantmentList::add);
+        }
+        return output;
     }
 
     @Override
