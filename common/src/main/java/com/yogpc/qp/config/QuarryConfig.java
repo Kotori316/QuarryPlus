@@ -32,6 +32,10 @@ public interface QuarryConfig {
 
     boolean removeMinecartWithChest();
 
+    int markerPlusRange();
+
+    int flexibleMarkerRange();
+
     static QuarryConfig load(Path path, BooleanSupplier inDevelop) {
         try (var config = CommentedFileConfig.builder(path)
             .preserveInsertionOrder()
