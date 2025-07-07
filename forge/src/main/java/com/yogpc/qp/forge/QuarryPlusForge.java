@@ -1,12 +1,10 @@
 package com.yogpc.qp.forge;
 
-import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.forge.integration.EnergyIntegration;
 import com.yogpc.qp.forge.integration.StorageIntegration;
 import com.yogpc.qp.forge.packet.PacketHandler;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.fml.common.Mod;
@@ -24,7 +22,6 @@ public final class QuarryPlusForge {
         }
         AttachCapabilitiesEvent.BlockEntities.BUS.addListener(EnergyIntegration::attachCapabilities);
         AttachCapabilitiesEvent.BlockEntities.BUS.addListener(StorageIntegration::attachCapabilities);
-        MinecraftForge.EVENT_BUS.register(PlatformAccess.getAccess());
         QuarryPlus.LOGGER.info("Initialize Common finished");
     }
 

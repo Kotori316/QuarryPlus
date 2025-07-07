@@ -2,7 +2,7 @@ package com.yogpc.qp.forge.data
 
 import com.yogpc.qp.QuarryPlus
 import net.minecraftforge.data.event.GatherDataEvent
-import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
 
 import scala.annotation.static
