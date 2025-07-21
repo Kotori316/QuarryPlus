@@ -20,7 +20,7 @@ jei_neoforge = "19.22.0.315"
 
 night-config = "3.7.3"
 
-jupiter_api = "5.13.3"
+jupiter_api = "5.13.4"
 mockito_core = "5.18.0"
 mockito_inline = "5.2.0"
 
