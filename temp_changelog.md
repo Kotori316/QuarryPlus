@@ -1,8 +1,7 @@
 ## Version LATEST for 1.20.1
 
-* Improve CHunk loading of QuarryPlus
-* Add `zh_tw.json`
 * Update forge
+* Reduce logging spam in some cases
 
 ## Version for 1.20.1
 
@@ -35,6 +34,8 @@
 * Allow multi void modules. Close #470
 * Fix #460
 * Fix #441
+* Improve CHunk loading of QuarryPlus
+* Add `zh_tw.json`
 
 ## Version 1192.2.3
 
