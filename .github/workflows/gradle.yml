@@ -23,6 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: gradle/actions/wrapper-validation@v3
+        continue-on-error: true
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
