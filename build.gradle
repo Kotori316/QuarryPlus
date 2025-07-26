@@ -19,6 +19,7 @@ plugins {
     id("maven-publish")
     id("signing")
     id("scala")
+    id("idea")
     id("net.minecraftforge.gradle") version("[6.0,6.2)")
     id("org.parchmentmc.librarian.forgegradle") version("1.+")
     id("com.github.breadmoirai.github-release") version("2.4.1")
@@ -201,6 +202,16 @@ repositories {
         content {
             includeModule("com.teamcofh", "cofh_core")
             includeModule("com.teamcofh", "ensorcellation")
+        }
+    }
+
+    maven {
+        name = "Kotori316"
+        url = uri("https://maven.kotori316.com/")
+        content {
+            includeGroup("com.kotori316")
+            includeModule("org.typelevel", "cats-core_3")
+            includeModule("org.typelevel", "cats-kernel_3")
         }
     }
 
@@ -599,4 +610,11 @@ tasks.register("checkReleaseVersion", CallVersionCheckFunctionTask.class) {
     modName ="quarryplus"
     version = project.version.toString()
     failIfExists = true
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
 }

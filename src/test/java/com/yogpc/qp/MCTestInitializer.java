@@ -34,6 +34,7 @@ import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.forgespi.locating.ForgeFeature;
 import net.minecraftforge.forgespi.locating.IModFile;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -75,20 +76,23 @@ public final class MCTestInitializer implements BeforeAllCallback {
     }
 
     public static synchronized void setUp(String modId, Runnable additional) {
-        if (!INITIALIZED.getAndSet(true)) {
-            resolveInfoCmpError();
-            SharedConstants.tryDetectVersion();
-            changeDist();
-            setHandler();
-            Bootstrap.bootStrap();
-            unfreezeGameData();
-            ModLoadingContext.get().setActiveContainer(new MCTestInitializer.DummyModContainer(modId));
-            registerRecipes();
-            mockCapability();
-            mockRegistries();
-            setFluidType();
-            setLanguage(modId);
-            additional.run();
+        try (MockedStatic<NetworkHooks> mocked = Mockito.mockStatic(NetworkHooks.class)) {
+            mocked.when(NetworkHooks::init).then(a -> null);
+            if (!INITIALIZED.getAndSet(true)) {
+                resolveInfoCmpError();
+                SharedConstants.tryDetectVersion();
+                changeDist();
+                setHandler();
+                Bootstrap.bootStrap();
+                unfreezeGameData();
+                ModLoadingContext.get().setActiveContainer(new MCTestInitializer.DummyModContainer(modId));
+                registerRecipes();
+                mockCapability();
+                mockRegistries();
+                setFluidType();
+                setLanguage(modId);
+                additional.run();
+            }
         }
     }
 
