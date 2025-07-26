@@ -20,6 +20,8 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.security.SecureClassLoader;
 import java.time.Duration;
@@ -41,9 +43,8 @@ public final class TraceQuarryWork {
 
     static {
         enabled = QuarryPlus.config.common.logAllQuarryWork.get();
-        CONTEXT = Configurator.initialize("quarryplus-config", new DummyLoader(),
-            URI.create(Objects.requireNonNull(TraceQuarryWork.class.getResource("/quarry-log4j2.xml")).toString())
-        );
+        var resource = URI.create(Objects.requireNonNull(TraceQuarryWork.class.getResource("/quarry-log4j2.xml")).toString());
+        CONTEXT = Configurator.initialize("quarryplus-config", new DummyLoader(), resource);
         Logger t;
         if (CONTEXT != null) {
             // temporal variable to set level, as org.apache.logging.log4j.Logger doesn't provide setters.
@@ -55,6 +56,13 @@ public final class TraceQuarryWork {
         } else {
             // I don't know what is happening, but I should care this case
             t = QuarryPlus.LOGGER;
+            try (var stream = new InputStreamReader(Objects.requireNonNull(TraceQuarryWork.class.getResourceAsStream("/quarry-log4j2.xml")));
+                 var reader = new BufferedReader(stream)) {
+                var text = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+                QuarryPlus.LOGGER.error("Log context for QuarryPlus is not initialized. Quarry work tracing will not be available. resource: {}, log-config: {}", resource, text);
+            } catch (Exception e) {
+                QuarryPlus.LOGGER.error("Log context for QuarryPlus is not initialized. Quarry work tracing will not be available. Failed to read quarry-log4j2.xml", e);
+            }
         }
         LOGGER = t;
         WARNING_MARKER = MarkerManager.getMarker("QUARRY_WARNING");
