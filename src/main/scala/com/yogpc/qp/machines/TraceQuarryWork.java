@@ -101,6 +101,15 @@ public final class TraceQuarryWork {
     private static final Marker MARKER_BLOCK_REMOVE_FAILED = MarkerManager.getMarker("blockRemoveFailed");
 
     public static void blockRemoveFailed(PowerTile tile, BlockPos pos, BlockPos targetPos, BlockState state, BreakResult breakResult, Object... additional) {
+        if (breakResult == BreakResult.NOT_ENOUGH_ENERGY) {
+            // Log only once in 10 minutes if this is not enough energy to avoid spam. https://github.com/Kotori316/QuarryPlus/issues/1102
+            var key = header(tile, pos);
+            if (knownKeys.getIfPresent(key) == null) {
+                knownKeys.put(key, key);
+                LOGGER.info(MARKER_BLOCK_REMOVE_FAILED, "{} ({},{},{}) {} {} {}", key, targetPos.getX(), targetPos.getY(), targetPos.getZ(), breakResult, state, additional);
+            }
+            return;
+        }
         LOGGER.info(MARKER_BLOCK_REMOVE_FAILED, "{} ({},{},{}) {} {} {}", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), breakResult, state, additional);
     }
 
