@@ -53,13 +53,14 @@ public final class TraceQuarryWork {
                 l.setLevel(Level.WARN);
             }
             t = l;
+            QuarryPlus.LOGGER.info("Successfully initialized log context for QuarryPlus. resource: '{}'", resource);
         } else {
             // I don't know what is happening, but I should care this case
             t = QuarryPlus.LOGGER;
             try (var stream = new InputStreamReader(Objects.requireNonNull(TraceQuarryWork.class.getResourceAsStream("/quarry-log4j2.xml")));
                  var reader = new BufferedReader(stream)) {
                 var text = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-                QuarryPlus.LOGGER.error("Log context for QuarryPlus is not initialized. Quarry work tracing will not be available. resource: {}, log-config: {}", resource, text);
+                QuarryPlus.LOGGER.error("Log context for QuarryPlus is not initialized. Quarry work tracing will not be available. resource: '{}', log-config: '{}'", resource, text);
             } catch (Exception e) {
                 QuarryPlus.LOGGER.error("Log context for QuarryPlus is not initialized. Quarry work tracing will not be available. Failed to read quarry-log4j2.xml", e);
             }
