@@ -12,7 +12,7 @@ public final class FilterModuleScreen extends AbstractContainerScreen<FilterModu
 
     public FilterModuleScreen(FilterModuleMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
-        this.containerRows = 2;
+        this.containerRows = pMenu.rows;
         this.imageHeight = 114 + this.containerRows * 18;
         this.inventoryLabelY = this.imageHeight - 94;
     }

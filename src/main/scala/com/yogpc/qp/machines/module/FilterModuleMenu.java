@@ -17,11 +17,12 @@ public final class FilterModuleMenu extends AbstractContainerMenu {
     public static final String GUI_ID = QuarryPlus.modID + ":gui_" + FilterModuleItem.NAME;
     private final ModuleContainer container;
     private final int allSlots;
+    final int rows;
 
     public FilterModuleMenu(int pContainerId, Player player, ItemStack filterModuleItem) {
         super(Holder.FILTER_MODULE_MENU_TYPE, pContainerId);
-        this.container = new ModuleContainer(filterModuleItem);
-        final int rows = 2;
+        this.rows = 2;
+        this.container = new ModuleContainer(filterModuleItem, rows);
         this.allSlots = rows * 9;
         int i = (rows - 4) * 18;
 
@@ -84,8 +85,8 @@ public final class FilterModuleMenu extends AbstractContainerMenu {
     private static class ModuleContainer extends SimpleContainer {
         private final ItemStack filterModuleItem;
 
-        public ModuleContainer(ItemStack filterModuleItem) {
-            super(18);
+        public ModuleContainer(ItemStack filterModuleItem, int rows) {
+            super(rows * 9);
             this.filterModuleItem = filterModuleItem;
             FilterModule.getFromTag(Optional.ofNullable(filterModuleItem.getTag())
                     .map(t -> t.getList(FilterModuleItem.KEY_ITEMS, Tag.TAG_COMPOUND)).orElse(null))
