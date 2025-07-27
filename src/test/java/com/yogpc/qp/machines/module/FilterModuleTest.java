@@ -1,9 +1,5 @@
 package com.yogpc.qp.machines.module;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
-
 import com.yogpc.qp.machines.ItemKey;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.Item;
@@ -12,10 +8,11 @@ import net.minecraft.world.item.Items;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class FilterModuleTest {
     @Test
@@ -34,6 +31,35 @@ class FilterModuleTest {
     void instance() {
         var module = new FilterModule(List.of(new ItemKey(Items.BEDROCK, null)));
         assertEquals(List.of(new ItemKey(Items.BEDROCK, null)), module.getItemKeys());
+    }
+
+    @Test
+    void instance20() {
+        var itemKeys = List.of(
+            new ItemKey(Items.STONE, null),
+            new ItemKey(Items.GRANITE, null),
+            new ItemKey(Items.POLISHED_GRANITE, null),
+            new ItemKey(Items.DIORITE, null),
+            new ItemKey(Items.POLISHED_DIORITE, null),
+            new ItemKey(Items.ANDESITE, null),
+            new ItemKey(Items.POLISHED_ANDESITE, null),
+            new ItemKey(Items.DEEPSLATE, null),
+            new ItemKey(Items.COBBLED_DEEPSLATE, null),
+            new ItemKey(Items.POLISHED_DEEPSLATE, null),
+            new ItemKey(Items.CALCITE, null),
+            new ItemKey(Items.TUFF, null),
+            new ItemKey(Items.DRIPSTONE_BLOCK, null),
+            new ItemKey(Items.GRASS_BLOCK, null),
+            new ItemKey(Items.DIRT, null),
+            new ItemKey(Items.COARSE_DIRT, null),
+            new ItemKey(Items.PODZOL, null),
+            new ItemKey(Items.ROOTED_DIRT, null),
+            new ItemKey(Items.MUD, null),
+            new ItemKey(Items.CRIMSON_NYLIUM, null)
+        );
+        assertEquals(20, itemKeys.size());
+        var module = new FilterModule(itemKeys);
+        assertEquals(itemKeys, module.getItemKeys());
     }
 
     @Nested

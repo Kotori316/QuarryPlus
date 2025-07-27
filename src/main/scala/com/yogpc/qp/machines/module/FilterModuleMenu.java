@@ -21,7 +21,7 @@ public final class FilterModuleMenu extends AbstractContainerMenu {
 
     public FilterModuleMenu(int pContainerId, Player player, ItemStack filterModuleItem) {
         super(Holder.FILTER_MODULE_MENU_TYPE, pContainerId);
-        this.rows = 2;
+        this.rows = FilterModuleItem.getRowsFromStack(filterModuleItem);
         this.container = new ModuleContainer(filterModuleItem, rows);
         this.allSlots = rows * 9;
         int i = (rows - 4) * 18;

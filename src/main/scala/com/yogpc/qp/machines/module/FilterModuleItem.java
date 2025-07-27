@@ -26,6 +26,7 @@ import java.util.Optional;
 public final class FilterModuleItem extends QPItem implements QuarryModuleProvider.Item {
     public static final String NAME = "filter_module";
     public static final String KEY_ITEMS = "filter_items";
+    public static final String KEY_ITEM_ROWS = "filter_items_rows";
 
     public FilterModuleItem() {
         super(new ResourceLocation(QuarryPlus.modID, NAME), new Properties().stacksTo(1));
@@ -64,6 +65,12 @@ public final class FilterModuleItem extends QPItem implements QuarryModuleProvid
         keys.map(s -> "  " + s)
             .map(Component::literal)
             .forEach(tooltips::add);
+    }
+
+    static int getRowsFromStack(ItemStack stack) {
+        return Optional.ofNullable(stack.getTag())
+            .map(t -> t.getInt(KEY_ITEM_ROWS))
+            .orElse(2);
     }
 
     private record InteractionObject(ItemStack stack) implements MenuProvider {
