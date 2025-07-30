@@ -1,14 +1,21 @@
 package com.yogpc.qp.machines.module;
 
+import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.TestCraftingContainer;
 import com.yogpc.qp.machines.ItemKey;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -118,6 +125,72 @@ class FilterModuleTest {
             var listTag = FilterModule.getFromItemKeys(keys.stream());
             var fromTag = FilterModule.getFromTag(listTag);
             assertEquals(Set.copyOf(keys), Set.copyOf(fromTag));
+        }
+    }
+
+    @Nested
+    class RecipeTest {
+        @Test
+        void expandRecipeMatch() {
+            var recipe = new FilterModuleExpandRecipe(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "test_expand_recipe"), CraftingBookCategory.MISC, Items.STONE);
+            assertTrue(recipe.matches(new TestCraftingContainer(List.of(
+                "ccc",
+                "cmc",
+                "ccc"
+            ), Map.of('c', Items.CHEST.getDefaultInstance(), 'm', Items.STONE.getDefaultInstance())), null));
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {0, 1, 2, 3, 4})
+        void expandRecipeMatch2(int rows) {
+            var recipe = new FilterModuleExpandRecipe(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "test_expand_recipe"), CraftingBookCategory.MISC, Items.STONE);
+            var stone = Items.STONE.getDefaultInstance();
+            stone.getOrCreateTag().putInt(FilterModuleItem.KEY_ITEM_ROWS, rows);
+            assertTrue(recipe.matches(new TestCraftingContainer(List.of(
+                "ccc",
+                "cmc",
+                "ccc"
+            ), Map.of('c', Items.CHEST.getDefaultInstance(), 'm', stone)), null));
+        }
+
+        @Test
+        void expandRecipeNoMatch1() {
+            var recipe = new FilterModuleExpandRecipe(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "test_expand_recipe"), CraftingBookCategory.MISC, Items.STONE);
+            assertFalse(recipe.matches(new TestCraftingContainer(List.of(
+                "ccc",
+                "cmc",
+                "ccc"
+            ), Map.of('c', Items.CHEST.getDefaultInstance(), 'm', Items.COBBLESTONE.getDefaultInstance())), null));
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {5, 6})
+        void expandRecipeNoMatch2(int rows) {
+            var recipe = new FilterModuleExpandRecipe(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "test_expand_recipe"), CraftingBookCategory.MISC, Items.STONE);
+            var stone = Items.STONE.getDefaultInstance();
+            stone.getOrCreateTag().putInt(FilterModuleItem.KEY_ITEM_ROWS, rows);
+            assertFalse(recipe.matches(new TestCraftingContainer(List.of(
+                "ccc",
+                "cmc",
+                "ccc"
+            ), Map.of('c', Items.CHEST.getDefaultInstance(), 'm', stone)), null));
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {0, 1, 2, 3, 4})
+        void assemble(int rows) {
+            var recipe = new FilterModuleExpandRecipe(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "test_expand_recipe"), CraftingBookCategory.MISC, Items.STONE);
+            var stone = Items.STONE.getDefaultInstance();
+            stone.getOrCreateTag().putInt(FilterModuleItem.KEY_ITEM_ROWS, rows);
+            var container = new TestCraftingContainer(List.of(
+                "ccc",
+                "cmc",
+                "ccc"
+            ), Map.of('c', Items.CHEST.getDefaultInstance(), 'm', stone));
+            var result = recipe.assemble(container, null);
+            assertTrue(result.is(Items.STONE));
+            var row = FilterModuleItem.getRowsFromStack(result);
+            assertEquals(rows + 2, row);
         }
     }
 

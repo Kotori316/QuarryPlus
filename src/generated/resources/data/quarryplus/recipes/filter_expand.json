@@ -1,0 +1,10 @@
+{
+  "type": "quarryplus:filter_module_expand_recipe",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "quarryplus:machine_enabled",
+      "value": "filler_module"
+    }
+  ]
+}

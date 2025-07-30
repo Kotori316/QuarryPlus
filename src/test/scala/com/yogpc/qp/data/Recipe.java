@@ -21,10 +21,7 @@ import com.yogpc.qp.machines.quarry.QuarryBlock;
 import com.yogpc.qp.machines.quarry.SFQuarryBlock;
 import com.yogpc.qp.machines.workbench.*;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -387,6 +384,11 @@ class Recipe extends QuarryDataProvider {
                 ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Holder.ITEM_FILLER_MODULE)
                     .requires(Holder.BLOCK_FILLER)
                     .group(MODULE_RECIPE_GROUP), null
+            ).addCondition(new EnableCondition(FillerModuleItem.NAME)));
+        list.add(
+            // Filler Module Expand Recipe
+            RecipeSerializeHelper.by(
+                SpecialRecipeBuilder.special(FilterModuleExpandRecipe.SERIALIZER), location("filter_expand")
             ).addCondition(new EnableCondition(FillerModuleItem.NAME)));
         list.add(
             // Remote Placer

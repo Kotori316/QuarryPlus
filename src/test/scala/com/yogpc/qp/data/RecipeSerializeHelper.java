@@ -1,19 +1,20 @@
 package com.yogpc.qp.data;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-
 import com.google.gson.JsonElement;
 import com.yogpc.qp.utils.MapMulti;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.data.recipes.SpecialRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 record RecipeSerializeHelper(
     FinishedRecipe recipe,
@@ -46,6 +47,12 @@ record RecipeSerializeHelper(
 
     static RecipeSerializeHelper by(FinishedRecipe recipe) {
         return new RecipeSerializeHelper(recipe, Collections.emptyList(), null);
+    }
+
+    static RecipeSerializeHelper by(SpecialRecipeBuilder c, ResourceLocation saveName) {
+        AtomicReference<FinishedRecipe> reference = new AtomicReference<>();
+        c.save(reference::set, saveName.toString());
+        return new RecipeSerializeHelper(reference.get(), Collections.emptyList(), null);
     }
 
     static FinishedRecipe getConsumeValue(RecipeBuilder c) {

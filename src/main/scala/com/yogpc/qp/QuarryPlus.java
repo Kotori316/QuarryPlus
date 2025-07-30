@@ -2,6 +2,7 @@ package com.yogpc.qp;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.yogpc.qp.machines.TraceQuarryWork;
+import com.yogpc.qp.machines.module.FilterModuleExpandRecipe;
 import com.yogpc.qp.machines.workbench.EnableCondition;
 import com.yogpc.qp.machines.workbench.EnchantmentIngredient;
 import com.yogpc.qp.machines.workbench.QuarryDebugCondition;
@@ -121,6 +122,7 @@ public class QuarryPlus {
 
         public static void registerRecipe(RegisterEvent.RegisterHelper<RecipeSerializer<?>> helper) {
             helper.register(WorkbenchRecipe.recipeLocation, WorkbenchRecipe.SERIALIZER);
+            helper.register(FilterModuleExpandRecipe.LOCATION, FilterModuleExpandRecipe.SERIALIZER);
             CraftingHelper.register(new ResourceLocation(modID, EnchantmentIngredient.NAME), EnchantmentIngredient.Serializer.INSTANCE);
             CraftingHelper.register(new EnableCondition.Serializer());
             CraftingHelper.register(new QuarryDebugCondition.Serializer());
