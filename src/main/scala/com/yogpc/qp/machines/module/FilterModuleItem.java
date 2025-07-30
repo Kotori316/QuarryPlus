@@ -55,16 +55,27 @@ public final class FilterModuleItem extends QPItem implements QuarryModuleProvid
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level pLevel, List<Component> tooltips, TooltipFlag pIsAdvanced) {
         super.appendHoverText(stack, pLevel, tooltips, pIsAdvanced);
+        var rows = getRowsFromStack(stack);
         tooltips.add(Component.translatable("quarryplus.tooltip.filter_module_1"));
         tooltips.add(Component.translatable("quarryplus.tooltip.filter_module_2"));
-        var keys = FilterModule.getFromTag(Optional.ofNullable(stack.getTag())
-                .map(t -> t.getList(KEY_ITEMS, Tag.TAG_COMPOUND)).orElse(null))
+        tooltips.add(Component.literal("Rows: %d".formatted(rows)));
+        var keyList = FilterModule.getFromTag(
+            Optional.ofNullable(stack.getTag())
+                .map(t -> t.getList(KEY_ITEMS, Tag.TAG_COMPOUND))
+                .orElse(null)
+        );
+        var limitCount = 5;
+        keyList
             .stream()
+            .limit(limitCount)
             .map(ItemKey::getId)
-            .map(ResourceLocation::toString);
-        keys.map(s -> "  " + s)
+            .map(ResourceLocation::toString)
+            .map(s -> "  " + s)
             .map(Component::literal)
             .forEach(tooltips::add);
+        if (keyList.size() > limitCount) {
+            tooltips.add(Component.literal("  ..."));
+        }
     }
 
     static int getRowsFromStack(ItemStack stack) {
