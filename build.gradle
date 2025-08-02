@@ -607,9 +607,17 @@ tasks.register("registerVersion", CallVersionFunctionTask.class) {
 tasks.register("checkReleaseVersion", CallVersionCheckFunctionTask.class) {
     gameVersion = project.findProperty("minecraftVersion") as String
     platform = "forge"
-    modName ="quarryplus"
+    modName = "quarryplus"
     version = project.version.toString()
     failIfExists = true
+}
+
+afterEvaluate {
+    tasks.githubRelease.dependsOn(
+            tasks.jar,
+            tasks.srcJar,
+            tasks.deobfJar,
+    )
 }
 
 idea {
