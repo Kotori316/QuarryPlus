@@ -3,7 +3,7 @@ minecraft = "1.21.8"
 forge = "1.21.8-58.0.2"
 fabric_api = "0.130.0+1.21.8"
 fabric_loader = "0.17.0"
-neoforge = "21.8.21"
+neoforge = "21.8.23"
 fabric_version_checker = "2.5.0"
 
 du = "21.6.99-SNAPSHOT"
