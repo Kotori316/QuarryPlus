@@ -29,7 +29,7 @@ public final class FilterModuleContainer extends AbstractContainerMenu {
         super(PlatformAccess.getAccess().registerObjects().filterModuleContainer().get(), id);
         var player = inventory.player;
         this.container = new ContainerInv(filterModuleItem);
-        this.containerRows = 2;
+        this.containerRows = FilterModuleItem.getRowsFromStack(filterModuleItem);
         this.allSlots = containerRows * 9;
         int i = (containerRows - 4) * 18;
 
@@ -93,7 +93,7 @@ public final class FilterModuleContainer extends AbstractContainerMenu {
         private final ItemStack filterModuleItem;
 
         public ContainerInv(ItemStack filterModuleItem) {
-            super(18);
+            super(FilterModuleItem.getRowsFromStack(filterModuleItem) * 9);
             this.filterModuleItem = filterModuleItem;
             Optional.ofNullable(filterModuleItem.get(QuarryDataComponents.ITEM_KEY_LIST_COMPONENT))
                 .stream()

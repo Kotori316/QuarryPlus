@@ -70,4 +70,8 @@ public final class FilterModuleItem extends QpItem implements QuarryModuleProvid
             }
         }
     }
+
+    public static int getRowsFromStack(ItemStack stack) {
+        return stack.getOrDefault(QuarryDataComponents.FILTER_MODULE_ROWS_COMPONENT, 2);
+    }
 }

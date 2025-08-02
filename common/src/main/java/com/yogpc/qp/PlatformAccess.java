@@ -15,6 +15,7 @@ import com.yogpc.qp.machine.marker.NormalMarkerBlock;
 import com.yogpc.qp.machine.misc.*;
 import com.yogpc.qp.machine.module.BedrockModuleItem;
 import com.yogpc.qp.machine.module.FilterModuleContainer;
+import com.yogpc.qp.machine.module.FilterModuleItem;
 import com.yogpc.qp.machine.module.ModuleContainer;
 import com.yogpc.qp.machine.mover.MoverBlock;
 import com.yogpc.qp.machine.mover.MoverContainer;
@@ -101,6 +102,8 @@ public interface PlatformAccess {
         Map<String, EnableMap.EnableOrNot> defaultEnableSetting();
 
         Supplier<? extends BedrockModuleItem> bedrockModuleItem();
+
+        Supplier<? extends FilterModuleItem> filterModuleItem();
 
         Stream<Supplier<? extends InCreativeTabs>> allItems();
 
