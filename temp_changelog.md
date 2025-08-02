@@ -1,7 +1,6 @@
 ## Version LATEST for 1.20.1
 
-* Update forge
-* Reduce logging spam in some cases
+* Allow Void Module to be expand its storage by crafting with 8 chests surrounding the module in Crafting table.
 
 ## Version for 1.20.1
 
@@ -36,6 +35,7 @@
 * Fix #441
 * Improve CHunk loading of QuarryPlus
 * Add `zh_tw.json`
+* Reduce logging spam in some cases
 
 ## Version 1192.2.3
 
