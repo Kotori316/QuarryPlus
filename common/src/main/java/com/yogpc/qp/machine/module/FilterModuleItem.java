@@ -48,8 +48,10 @@ public final class FilterModuleItem extends QpItem implements QuarryModuleProvid
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        var rows = getRowsFromStack(stack);
         tooltipComponents.add(Component.translatable("quarryplus.tooltip.filter_module_1"));
         tooltipComponents.add(Component.translatable("quarryplus.tooltip.filter_module_2"));
+        tooltipComponents.add(Component.literal("Rows: %d".formatted(rows)));
 
         var itemList = stack.get(QuarryDataComponents.ITEM_KEY_LIST_COMPONENT);
         if (itemList != null && !itemList.isEmpty()) {
