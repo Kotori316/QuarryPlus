@@ -124,7 +124,7 @@ public final class FilterModuleContainer extends AbstractContainerMenu {
         @Override
         public boolean canPlaceItem(int pIndex, ItemStack pStack) {
             // Not to allow to put same item twice
-            return this.countItem(pStack.getItem()) == 0;
+            return this.countItem(pStack.getItem()) == 0 && !pStack.is(filterModuleItem.getItem());
         }
     }
 
