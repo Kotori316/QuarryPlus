@@ -19,8 +19,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -125,7 +123,6 @@ public final class PacketHandler implements PlatformAccess.Packet {
         }
 
         private static class ClientSupplier {
-            @OnlyIn(Dist.CLIENT)
             Proxy get() {
                 return new ProxyClient();
             }
@@ -153,7 +150,6 @@ public final class PacketHandler implements PlatformAccess.Packet {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static class ProxyClient extends Proxy {
 
         @Override
