@@ -1,6 +1,6 @@
 ## Version LATEST for 1.20.1
 
-* Allow Void Module to be expand its storage by crafting with 8 chests surrounding the module in Crafting table.
+* Fix crash of Filler when placing slubs [#1138](https://github.com/Kotori316/QuarryPlus/issues/1138)
 
 ## Version for 1.20.1
 
@@ -36,6 +36,7 @@
 * Improve CHunk loading of QuarryPlus
 * Add `zh_tw.json`
 * Reduce logging spam in some cases
+* Allow Void Module to be expand its storage by crafting with 8 chests surrounding the module in Crafting table.
 
 ## Version 1192.2.3
 
