@@ -6,7 +6,10 @@ import com.yogpc.qp.machine.MachineStorage;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.Set;
@@ -45,5 +48,24 @@ class FilterModuleItemTest extends BeforeMC {
         stack.set(QuarryDataComponents.ITEM_KEY_LIST_COMPONENT, List.of(apple, goldenApple));
         var module = filterModuleItem.getModule(stack);
         assertEquals(new ConverterModule.FilterModule(Set.of(apple, goldenApple)), module);
+    }
+
+    @Nested
+    class Row {
+        @Test
+        void notSet() {
+            var stack = new ItemStack(filterModuleItem);
+            var row = FilterModuleItem.getRowsFromStack(stack);
+            assertEquals(2, row);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1, 2, 4, 6})
+        void set(int expected) {
+            var stack = new ItemStack(filterModuleItem);
+            stack.set(QuarryDataComponents.FILTER_MODULE_ROWS_COMPONENT, expected);
+            var row = FilterModuleItem.getRowsFromStack(stack);
+            assertEquals(expected, row);
+        }
     }
 }

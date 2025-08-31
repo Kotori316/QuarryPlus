@@ -3,7 +3,7 @@ package com.yogpc.qp.data
 import com.yogpc.qp.machine.exp.ExpModuleItem
 import com.yogpc.qp.machine.marker.{ChunkMarkerBlock, FlexibleMarkerBlock}
 import com.yogpc.qp.machine.module.{FilterModuleItem, RepeatTickModuleItem}
-import com.yogpc.qp.recipe.InstallBedrockModuleRecipe
+import com.yogpc.qp.recipe.{FilterModuleExpandRecipe, InstallBedrockModuleRecipe}
 import com.yogpc.qp.{PlatformAccess, QuarryPlus}
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.{BuiltInRegistries, Registries}
@@ -187,13 +187,18 @@ class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeO
       .save(recipeOutput)
 
     val bookIngredient = Ingredient.of(Items.BOOK, Items.ENCHANTED_BOOK, Items.WRITABLE_BOOK, Items.WRITTEN_BOOK)
-    shapeless(RecipeCategory.MISC, quarryItem(FilterModuleItem.NAME))
+    val filterModule = quarryItem(FilterModuleItem.NAME)
+    shapeless(RecipeCategory.MISC, filterModule)
       .requires(bookIngredient)
       .requires(bookIngredient)
       .requires(ip.enderPearl)
       .requires(ip.marker)
       .unlockedBy(ip.markerTag)
       .save(ip.filterModuleRecipeOutput(recipeOutput))
+
+    FilterModuleExpandRecipe.builder()
+      .unlockedBy("has_filter_module", RecipeProvider.has(filterModule))
+      .save(ip.filterModuleRecipeOutput(recipeOutput), FilterModuleExpandRecipe.LOCATION)
 
     shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().placerBlock().get())
       .define('D', Items.DISPENSER)

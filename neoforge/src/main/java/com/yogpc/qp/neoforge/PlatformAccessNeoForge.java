@@ -28,6 +28,7 @@ import com.yogpc.qp.neoforge.machine.misc.YSetterItemNeoForge;
 import com.yogpc.qp.neoforge.machine.quarry.QuarryBlockNeoForge;
 import com.yogpc.qp.neoforge.machine.quarry.QuarryEntityNeoForge;
 import com.yogpc.qp.neoforge.packet.PacketHandler;
+import com.yogpc.qp.recipe.FilterModuleExpandRecipe;
 import com.yogpc.qp.recipe.InstallBedrockModuleRecipe;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -138,6 +139,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
 
         public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<? extends MachineLootFunction>> MACHINE_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(MachineLootFunction.NAME, () -> new LootItemFunctionType<>(MachineLootFunction.SERIALIZER));
         public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<InstallBedrockModuleRecipe>> INSTALL_BEDROCK_MODULE_RECIPE = RECIPE_REGISTER.register(InstallBedrockModuleRecipe.NAME, () -> InstallBedrockModuleRecipe.SERIALIZER);
+        public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<FilterModuleExpandRecipe>> FILTER_MODULE_EXPAND_RECIPE = RECIPE_REGISTER.register(FilterModuleExpandRecipe.LOCATION.getPath(), () -> FilterModuleExpandRecipe.SERIALIZER);
 
         static {
             for (Map.Entry<ResourceLocation, DataComponentType<?>> e : QuarryDataComponents.ALL.entrySet()) {
@@ -256,6 +258,11 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         @Override
         public Supplier<? extends BedrockModuleItem> bedrockModuleItem() {
             return ITEM_BEDROCK_MODULE;
+        }
+
+        @Override
+        public Supplier<? extends FilterModuleItem> filterModuleItem() {
+            return ITEM_FILTER_MODULE;
         }
 
         @Override

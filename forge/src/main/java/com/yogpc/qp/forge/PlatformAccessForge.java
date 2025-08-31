@@ -34,6 +34,7 @@ import com.yogpc.qp.machine.quarry.QuarryBlock;
 import com.yogpc.qp.machine.storage.DebugStorageBlock;
 import com.yogpc.qp.machine.storage.DebugStorageContainer;
 import com.yogpc.qp.machine.storage.DebugStorageEntity;
+import com.yogpc.qp.recipe.FilterModuleExpandRecipe;
 import com.yogpc.qp.recipe.InstallBedrockModuleRecipe;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -143,6 +144,7 @@ public final class PlatformAccessForge implements PlatformAccess {
 
         public static final RegistryObject<CreativeModeTab> CREATIVE_MODE_TAB = CREATIVE_TAB_REGISTER.register(QuarryPlus.modID, () -> QuarryPlus.buildCreativeModeTab(CreativeModeTab.builder()).build());
         public static final RegistryObject<RecipeSerializer<InstallBedrockModuleRecipe>> INSTALL_BEDROCK_MODULE_RECIPE = RECIPE_REGISTER.register(InstallBedrockModuleRecipe.NAME, () -> InstallBedrockModuleRecipe.SERIALIZER);
+        public static final RegistryObject<RecipeSerializer<FilterModuleExpandRecipe>> FILTER_MODULE_EXPAND_RECIPE = RECIPE_REGISTER.register(FilterModuleExpandRecipe.LOCATION.getPath(), () -> FilterModuleExpandRecipe.SERIALIZER);
 
         static {
             for (Map.Entry<ResourceLocation, DataComponentType<?>> e : QuarryDataComponents.ALL.entrySet()) {
@@ -261,6 +263,11 @@ public final class PlatformAccessForge implements PlatformAccess {
         @Override
         public Supplier<? extends BedrockModuleItem> bedrockModuleItem() {
             return ITEM_BEDROCK_MODULE;
+        }
+
+        @Override
+        public Supplier<? extends FilterModuleItem> filterModuleItem() {
+            return ITEM_FILTER_MODULE;
         }
 
         @Override

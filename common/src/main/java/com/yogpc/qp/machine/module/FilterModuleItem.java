@@ -50,8 +50,10 @@ public final class FilterModuleItem extends QpItem implements QuarryModuleProvid
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> consumer, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipDisplay, consumer, tooltipFlag);
+        var rows = getRowsFromStack(stack);
         consumer.accept(Component.translatable("quarryplus.tooltip.filter_module_1"));
         consumer.accept(Component.translatable("quarryplus.tooltip.filter_module_2"));
+        consumer.accept(Component.literal("Rows: %d".formatted(rows)));
 
         var itemList = stack.get(QuarryDataComponents.ITEM_KEY_LIST_COMPONENT);
         if (itemList != null && !itemList.isEmpty()) {
@@ -71,5 +73,9 @@ public final class FilterModuleItem extends QpItem implements QuarryModuleProvid
                 }
             }
         }
+    }
+
+    public static int getRowsFromStack(ItemStack stack) {
+        return stack.getOrDefault(QuarryDataComponents.FILTER_MODULE_ROWS_COMPONENT, 2);
     }
 }

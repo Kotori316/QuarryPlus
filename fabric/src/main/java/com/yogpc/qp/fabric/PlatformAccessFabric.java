@@ -30,6 +30,7 @@ import com.yogpc.qp.machine.quarry.QuarryBlock;
 import com.yogpc.qp.machine.storage.DebugStorageBlock;
 import com.yogpc.qp.machine.storage.DebugStorageContainer;
 import com.yogpc.qp.machine.storage.DebugStorageEntity;
+import com.yogpc.qp.recipe.FilterModuleExpandRecipe;
 import com.yogpc.qp.recipe.InstallBedrockModuleRecipe;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -166,6 +167,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
                 Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, entry.getKey(), entry.getValue());
             }
             Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, InstallBedrockModuleRecipe.NAME), InstallBedrockModuleRecipe.SERIALIZER);
+            Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, FilterModuleExpandRecipe.LOCATION, FilterModuleExpandRecipe.SERIALIZER);
         }
 
         private static void registerEntityBlock(QpBlock block, BlockEntityType<?> entityType, EnableMap.EnableOrNot enable) {
@@ -281,6 +283,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         @Override
         public Supplier<? extends BedrockModuleItem> bedrockModuleItem() {
             return Lazy.value(BEDROCK_MODULE_ITEM);
+        }
+
+        @Override
+        public Supplier<? extends FilterModuleItem> filterModuleItem() {
+            return Lazy.value(FILTER_MODULE_ITEM);
         }
 
         @Override
