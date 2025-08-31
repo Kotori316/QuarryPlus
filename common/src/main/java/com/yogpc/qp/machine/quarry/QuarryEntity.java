@@ -185,7 +185,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     @Override
     public void fromClientTag(ValueInput input) {
         // Set head as targetHead to move drill smoothly
-        input.read("head", Vec3.CODEC).ifPresent(v -> this.head = v);
+        input.read("head", Vec3.CODEC).ifPresent(v -> this.targetHead = v);
         currentState = input.getString("state").map(QuarryState::valueOf).orElse(QuarryState.FINISHED);
         area = input.read("area", Area.CODEC.codec()).orElse(null);
         digMinY = input.read("digMinY", DigMinY.CODEC.codec()).orElseGet(DigMinY::new);
