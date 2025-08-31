@@ -52,4 +52,12 @@ public final class DebugStorageScreen extends AbstractContainerScreen<DebugStora
         }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
+            return true;
+        }
+        return this.getChildAt(mouseX, mouseY).filter(listener -> listener.mouseScrolled(mouseX, mouseY, scrollX, scrollY)).isPresent();
+    }
 }

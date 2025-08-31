@@ -10,6 +10,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -98,8 +99,8 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
             final int textWidth = minecraft.font.width(text);
             final int textX = left + 20;
             final int textY = top + 4;
-            guiGraphics.drawString(minecraft.font, text, textX, textY, 0xFFFFFF);
-            guiGraphics.drawString(minecraft.font, count + unit, textX + textWidth + 8, textY, 0xFFFFFF, true);
+            guiGraphics.drawString(minecraft.font, text, textX, textY, ARGB.opaque(0xFFFFFF));
+            guiGraphics.drawString(minecraft.font, count + unit, textX + textWidth + 8, textY, ARGB.opaque(0xFFFFFF), true);
         }
     }
 }
