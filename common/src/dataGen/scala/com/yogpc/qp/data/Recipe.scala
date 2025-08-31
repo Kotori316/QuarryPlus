@@ -197,8 +197,8 @@ class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeO
       .save(ip.filterModuleRecipeOutput(recipeOutput))
 
     FilterModuleExpandRecipe.builder()
-      .unlockedBy("has_filter_module", RecipeProvider.has(filterModule))
-      .save(ip.filterModuleRecipeOutput(recipeOutput), FilterModuleExpandRecipe.LOCATION)
+      .unlockedBy("has_filter_module", has(filterModule))
+      .save(ip.filterModuleRecipeOutput(recipeOutput), FilterModuleExpandRecipe.LOCATION.toString)
 
     shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().placerBlock().get())
       .define('D', Items.DISPENSER)

@@ -7,10 +7,10 @@ import com.yogpc.qp.machine.module.FilterModuleItem;
 import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -22,17 +22,17 @@ import org.jetbrains.annotations.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class FilterModuleExpandRecipe extends ShapelessRecipe {
+public final class FilterModuleExpandRecipe extends ShapedRecipe {
     static final int MAX_ROWS = 6;
     static final int ROW_INCREMENT = 2;
 
     public static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "filter_module_expand_recipe");
-    public static final RecipeSerializer<FilterModuleExpandRecipe> SERIALIZER = new SimpleCraftingRecipeSerializer<>(FilterModuleExpandRecipe::new);
+    public static final RecipeSerializer<FilterModuleExpandRecipe> SERIALIZER = new CustomRecipe.Serializer<>(FilterModuleExpandRecipe::new);
 
     private final Item moduleItem;
 
     public FilterModuleExpandRecipe(Item moduleItem, CraftingBookCategory category) {
-        super(LOCATION.toString(), category, new ItemStack(moduleItem), createIngredients(moduleItem));
+        super(LOCATION.toString(), category, createPattern(moduleItem), new ItemStack(moduleItem), true);
         this.moduleItem = moduleItem;
     }
 
@@ -40,13 +40,15 @@ public final class FilterModuleExpandRecipe extends ShapelessRecipe {
         this(PlatformAccess.getAccess().registerObjects().filterModuleItem().get(), category);
     }
 
-    static NonNullList<Ingredient> createIngredients(Item moduleItem) {
-        var chest = Ingredient.of(Items.CHEST);
-        var module = Ingredient.of(moduleItem);
-        return NonNullList.of(Ingredient.EMPTY,
-            chest, chest, chest,
-            chest, module, chest,
-            chest, chest, chest
+    static ShapedRecipePattern createPattern(Item moduleItem) {
+        return ShapedRecipePattern.of(
+            Map.of(
+                'c', Ingredient.of(Items.CHEST),
+                'm', Ingredient.of(moduleItem)
+            ),
+            "ccc",
+            "cmc",
+            "ccc"
         );
     }
 
@@ -77,7 +79,7 @@ public final class FilterModuleExpandRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<FilterModuleExpandRecipe> getSerializer() {
         return SERIALIZER;
     }
 
@@ -113,14 +115,14 @@ public final class FilterModuleExpandRecipe extends ShapelessRecipe {
         }
 
         @Override
-        public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+        public void save(RecipeOutput recipeOutput, ResourceKey<Recipe<?>> id) {
             Advancement.Builder builder = recipeOutput.advancement()
                 .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
                 .rewards(AdvancementRewards.Builder.recipe(id))
                 .requirements(AdvancementRequirements.Strategy.OR);
             this.criteria.forEach(builder::addCriterion);
             FilterModuleExpandRecipe recipe = new FilterModuleExpandRecipe(CraftingBookCategory.MISC);
-            AdvancementHolder advancement = builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/"));
+            AdvancementHolder advancement = builder.build(id.location().withPrefix("recipes/" + this.category.getFolderName() + "/"));
             recipeOutput.accept(id, recipe, advancement);
         }
     }
