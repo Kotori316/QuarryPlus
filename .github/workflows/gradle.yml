@@ -24,7 +24,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-      - uses: gradle/actions/wrapper-validation@v4
+      - uses: gradle/actions/wrapper-validation@v5
       - run: chmod +x ./gradlew
       - run: ./gradlew assemble --scan
       - run: ./gradlew data checkReleaseVersion --no-parallel
@@ -49,7 +49,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-      - uses: gradle/actions/wrapper-validation@v4
+      - uses: gradle/actions/wrapper-validation@v5
       - run: ls -al && whoami
       - name: Compile main ${{ matrix.platform }}
         run: ./gradlew :${{ matrix.platform }}:classes
