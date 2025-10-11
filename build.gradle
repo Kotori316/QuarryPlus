@@ -348,7 +348,7 @@ task signJar(dependsOn: 'reobfJar') {
                 alias: project.findProperty('jarSign.keyAlias') ?: "",
                 keystore: project.findProperty('jarSign.keyLocation') ?: "",
                 storepass: project.findProperty('jarSign.storePass') ?: "",
-                sigalg: "SHA1withRSA",
+                sigalg: "Ed25519",
                 digestalg: "SHA-256",
                 tsaurl: "http://timestamp.digicert.com"
         )
