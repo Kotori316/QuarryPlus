@@ -1,15 +1,12 @@
 package com.yogpc.qp.machines.filler;
 
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machines.PowerTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -18,10 +15,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public final class FillerAction {
     private static final Logger LOGGER = QuarryPlus.getLogger(FillerAction.class);
@@ -48,7 +51,7 @@ public final class FillerAction {
                 this.iterator = null;
             } else {
                 if (powerSource.useEnergy(energy, PowerTile.Reason.FILLER, false)) {
-                    var context = new DirectionalPlaceContext(level, targetPos, Direction.DOWN, blockStack, Direction.UP);
+                    var context = createContext(level, targetPos, blockStack);
                     var state = getStateFromItem((BlockItem) blockStack.getItem(), context);
                     if (state != null) {
                         level.setBlock(targetPos, state, Block.UPDATE_ALL);
@@ -106,8 +109,11 @@ public final class FillerAction {
     private static Predicate<BlockPos> predicate(Level level, ItemStack stack) {
         if (stack.getItem() instanceof BlockItem blockItem) {
             return pos -> {
-                var context = new DirectionalPlaceContext(level, pos, Direction.DOWN, stack, Direction.UP);
+                var context = createContext(level, pos, stack);
                 var state = getStateFromItem(blockItem, context);
+                if (!context.getClickedPos().equals(pos)) {
+                    return false;
+                }
                 if (!context.canPlace() || state == null) {
                     return false;
                 } else {
@@ -132,8 +138,13 @@ public final class FillerAction {
         };
     }
 
+    static BlockPlaceContext createContext(Level level, BlockPos pos, ItemStack stack) {
+        return new BlockPlaceContext(level, null, InteractionHand.MAIN_HAND, stack,
+            new BlockHitResult(Vec3.atBottomCenterOf(pos), Direction.UP, pos, false));
+    }
+
     @Nullable
-    private static BlockState getStateFromItem(BlockItem blockItem, DirectionalPlaceContext context) {
+    private static BlockState getStateFromItem(BlockItem blockItem, BlockPlaceContext context) {
         try {
             return (BlockState) ObfuscationReflectionHelper.findMethod(BlockItem.class, "m_5965_", BlockPlaceContext.class)
                 .invoke(blockItem, context);
