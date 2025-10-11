@@ -1,3 +1,7 @@
+## Version 18.25
+
+* Fix an error of filler. Related to #456, #1138
+
 ## Version 18.23
 
 * Fix a bug of item duplication
