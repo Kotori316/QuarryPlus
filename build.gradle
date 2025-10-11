@@ -163,6 +163,14 @@ processResources {
 }
 
 repositories {
+    maven {
+        name = "Minecraft-Manually"
+        url = uri("https://libraries.minecraft.net/")
+        content {
+            includeGroup("org.lwjgl")
+            includeGroup("com.mojang")
+        }
+    }
     /*maven {
         // location of a maven mirror for JEI files, as a fallback
         name = "ModMaven-k-4u.nl"
@@ -179,11 +187,18 @@ repositories {
     }
 
     maven {
-        name = "FTB NEW"
+        name = "saps"
         url = "https://maven.saps.dev/releases"
         content {
-            includeGroup("dev.ftb.mods")
             includeGroup("dev.latvian.mods")
+        }
+    }
+
+    maven {
+        name = "FTB"
+        url = "https://maven.ftb.dev/releases"
+        content {
+            includeGroup("dev.ftb.mods")
         }
     }
 
@@ -196,13 +211,20 @@ repositories {
     }
 
     maven {
-        name = "Azure-SLP"
-        url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
+        name = "Kotori316"
+        url = uri("https://maven.kotori316.com")
         content {
             it.includeVersion("com.kotori316", "ScalableCatsForce".toLowerCase(), project.slpVersion as String)
             it.includeVersion("com.kotori316", "test_utility", project.testUtilVersion as String)
             it.includeVersion("org.typelevel", "cats-core_2.13", project.catsVersion as String)
             it.includeVersion("org.typelevel", "cats-kernel_2.13", project.catsVersion as String)
+        }
+    }
+    maven {
+        name = "Kotori316-old"
+        url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
+        content {
+            includeVersion("com.kotori316", "test_utility", project.testUtilVersion as String)
         }
     }
     mavenLocal()
