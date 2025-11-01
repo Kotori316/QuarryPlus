@@ -29,7 +29,7 @@ plugin_publish_all = "1.+"
 plugin_github_release = "2.5.2"
 plugin_idea_ext = "1.3"
 
-plugin_fabric_loom = "1.12.3"
+plugin_fabric_loom = "1.12.5"
 plugin_forge_gradle = "[6.0,6.2)"
 plugin_forge_parchment = "1.+"
 plugin_forge_mixin = "0.7.+"
