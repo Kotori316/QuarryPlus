@@ -36,6 +36,6 @@ public abstract class YSetterItem extends QpItem {
             // accessor.entity().syncToClient();
             PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, YSetterContainer::new));
         }
-        return InteractionResult.SUCCESS_SERVER;
+        return InteractionResult.SUCCESS;
     }
 }
