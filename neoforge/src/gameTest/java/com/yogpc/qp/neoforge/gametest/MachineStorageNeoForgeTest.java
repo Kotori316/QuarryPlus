@@ -1,10 +1,12 @@
 package com.yogpc.qp.neoforge.gametest;
 
 import com.kotori316.testutil.common.TestFunction;
+import com.yogpc.qp.FluidStackLike;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.MachineStorageHolder;
 import com.yogpc.qp.neoforge.machine.MachineStorageNeoForge;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -21,7 +23,9 @@ public final class MachineStorageNeoForgeTest {
         var instance = new MachineStorageNeoForgeTest();
         return List.of(
             TestFunction.create(QuarryPlus.modID, "loadHandler", instance::loadHandler),
-            TestFunction.create(QuarryPlus.modID, "fluidContent", instance::fluidContent)
+            TestFunction.create(QuarryPlus.modID, "fluidContent", instance::fluidContent),
+            TestFunction.create(QuarryPlus.modID, "conversionEmpty", instance::conversionEmpty),
+            TestFunction.create(QuarryPlus.modID, "conversion", instance::conversion)
         );
     }
 
@@ -45,6 +49,24 @@ public final class MachineStorageNeoForgeTest {
         assertEquals(Fluids.WATER, fluid.getFluid());
         assertEquals(FluidType.BUCKET_VOLUME, handler.getAmountAsLong(0));
 
+        helper.succeed();
+    }
+
+    public void conversionEmpty(GameTestHelper helper) {
+        var common = FluidStackLike.EMPTY;
+        var forge = MachineStorageNeoForge.toForge(common);
+        assertTrue(forge.isEmpty());
+        helper.succeed();
+    }
+
+    public void conversion(GameTestHelper helper) {
+        var common = new FluidStackLike(Fluids.WATER, MachineStorage.ONE_BUCKET * 2, DataComponentPatch.EMPTY);
+        var forge = MachineStorageNeoForge.toForge(common);
+        assertFalse(forge.isEmpty());
+        assertEquals(2000, forge.getAmount());
+        var c = MachineStorageNeoForge.toCommon(forge);
+        assertEquals(common, c);
+        assertEquals(MachineStorage.ONE_BUCKET * 2, c.amount());
         helper.succeed();
     }
 }

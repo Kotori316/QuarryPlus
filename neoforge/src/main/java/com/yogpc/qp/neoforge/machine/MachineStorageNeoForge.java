@@ -12,6 +12,9 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
+/**
+ * Required to access internal fields of {@link MachineStorage} in ItemStorageImpl and FluidStorageImpl for {@link ResourceHandler}.
+ */
 public final class MachineStorageNeoForge extends MachineStorage {
     public static class Factory implements MachineStorageFactory {
         @Override
