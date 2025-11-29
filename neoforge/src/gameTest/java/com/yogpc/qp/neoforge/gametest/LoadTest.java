@@ -9,7 +9,6 @@ import com.yogpc.qp.neoforge.PlatformAccessNeoForge;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 
 import java.util.List;
@@ -20,14 +19,17 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-@EventBusSubscriber(modid = QuarryPlus.modID)
 public final class LoadTest {
     static {
         QuarryPlus.LOGGER.info("Loading GameTest for NeoForge");
     }
 
+    /**
+     * Accessed from {@link com.yogpc.qp.neoforge.QuarryPlusNeoForge} via reflection.
+     */
     @SubscribeEvent
     public static void registerGameTest(FMLConstructModEvent event) {
+        QuarryPlus.LOGGER.info("Registering GameTest for NeoForge");
         var tests = Stream.of(
             commonTests().stream(),
             placeTests().stream(),
@@ -36,6 +38,7 @@ public final class LoadTest {
             Stream.of(TestFunction.create(QuarryPlus.modID, "load", LoadTest::load))
         ).flatMap(Function.identity());
         tests.forEach(TestFunctionRegister::registerTestFunction);
+        QuarryPlus.LOGGER.info("Registered GameTest for NeoForge");
     }
 
     static void load(GameTestHelper helper) {
