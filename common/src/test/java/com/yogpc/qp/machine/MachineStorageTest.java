@@ -11,6 +11,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,7 +40,12 @@ class MachineStorageTest extends BeforeMC {
 
     @Nested
     class ItemTest {
-        MachineStorage storage = new MachineStorage();
+        MachineStorage storage;
+
+        @BeforeEach
+        void setUp() {
+            storage = new MachineStorage();
+        }
 
         @Test
         void addItem() {
@@ -85,7 +91,12 @@ class MachineStorageTest extends BeforeMC {
 
     @Nested
     class FluidTest {
-        MachineStorage storage = new MachineStorage();
+        MachineStorage storage;
+
+        @BeforeEach
+        void setUp() {
+            storage = new MachineStorage();
+        }
 
         @Test
         void addFluid() {
@@ -95,6 +106,76 @@ class MachineStorageTest extends BeforeMC {
             assertEquals(MachineStorage.ONE_BUCKET, storage.getFluidCount(Fluids.WATER));
             storage.addFluid(Fluids.WATER, MachineStorage.ONE_BUCKET * 3);
             assertEquals(MachineStorage.ONE_BUCKET * 4, storage.getFluidCount(Fluids.WATER));
+        }
+
+        @Test
+        void getByIndex() {
+            MachineStorage.FluidKey water = new MachineStorage.FluidKey(Fluids.WATER, DataComponentPatch.EMPTY);
+            MachineStorage.FluidKey lava = new MachineStorage.FluidKey(Fluids.LAVA, DataComponentPatch.EMPTY);
+            storage.fluids.put(water, MachineStorage.ONE_BUCKET);
+            storage.fluids.put(lava, MachineStorage.ONE_BUCKET * 3);
+
+            var first = storage.getFluidByIndex(0);
+            assertEquals(Fluids.WATER, first.fluid());
+            assertEquals(MachineStorage.ONE_BUCKET, first.amount());
+
+            var second = storage.getFluidByIndex(1);
+            assertEquals(Fluids.LAVA, second.fluid());
+            assertEquals(MachineStorage.ONE_BUCKET * 3, second.amount());
+        }
+
+        @Test
+        void extractByIndexWater() {
+            MachineStorage.FluidKey water = new MachineStorage.FluidKey(Fluids.WATER, DataComponentPatch.EMPTY);
+            MachineStorage.FluidKey lava = new MachineStorage.FluidKey(Fluids.LAVA, DataComponentPatch.EMPTY);
+            storage.fluids.put(water, MachineStorage.ONE_BUCKET);
+            storage.fluids.put(lava, MachineStorage.ONE_BUCKET * 3);
+
+            {
+                var extracted = storage.drainFluidByIndex(0, MachineStorage.ONE_BUCKET, false);
+                assertEquals(Fluids.WATER, extracted.fluid());
+                assertEquals(MachineStorage.ONE_BUCKET, extracted.amount());
+                assertEquals(MachineStorage.ONE_BUCKET, storage.getFluidCount(water));
+            }
+            {
+                var extracted = storage.drainFluidByIndex(0, MachineStorage.ONE_BUCKET * 100, false);
+                assertEquals(Fluids.WATER, extracted.fluid());
+                assertEquals(MachineStorage.ONE_BUCKET, extracted.amount());
+                assertEquals(MachineStorage.ONE_BUCKET, storage.getFluidCount(water));
+            }
+            {
+                var extracted = storage.drainFluidByIndex(0, MachineStorage.ONE_BUCKET, true);
+                assertEquals(Fluids.WATER, extracted.fluid());
+                assertEquals(MachineStorage.ONE_BUCKET, extracted.amount());
+                assertEquals(0, storage.getFluidCount(water));
+            }
+        }
+
+        @Test
+        void extractByIndexLava() {
+            MachineStorage.FluidKey water = new MachineStorage.FluidKey(Fluids.WATER, DataComponentPatch.EMPTY);
+            MachineStorage.FluidKey lava = new MachineStorage.FluidKey(Fluids.LAVA, DataComponentPatch.EMPTY);
+            storage.fluids.put(water, MachineStorage.ONE_BUCKET);
+            storage.fluids.put(lava, MachineStorage.ONE_BUCKET * 3);
+
+            {
+                var extracted = storage.drainFluidByIndex(1, MachineStorage.ONE_BUCKET, false);
+                assertEquals(Fluids.LAVA, extracted.fluid());
+                assertEquals(MachineStorage.ONE_BUCKET, extracted.amount());
+                assertEquals(MachineStorage.ONE_BUCKET, storage.getFluidCount(water));
+            }
+            {
+                var extracted = storage.drainFluidByIndex(1, MachineStorage.ONE_BUCKET * 100, false);
+                assertEquals(Fluids.LAVA, extracted.fluid());
+                assertEquals(MachineStorage.ONE_BUCKET * 3, extracted.amount());
+                assertEquals(MachineStorage.ONE_BUCKET, storage.getFluidCount(water));
+            }
+            {
+                var extracted = storage.drainFluidByIndex(1, MachineStorage.ONE_BUCKET * 2, true);
+                assertEquals(Fluids.LAVA, extracted.fluid());
+                assertEquals(MachineStorage.ONE_BUCKET * 2, extracted.amount());
+                assertEquals(MachineStorage.ONE_BUCKET, storage.getFluidCount(water));
+            }
         }
     }
 
@@ -108,7 +189,6 @@ class MachineStorageTest extends BeforeMC {
         var serialized = assertDoesNotThrow(() -> MachineStorage.CODEC.codec().encodeStart(ops, storage).getOrThrow());
         assertNotNull(serialized);
     }
-
 
     @ParameterizedTest
     @MethodSource("ops")
