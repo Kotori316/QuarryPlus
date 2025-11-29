@@ -16,7 +16,7 @@ public final class FlexibleMarkerBlock extends ExMarkerBlock {
     public static final String NAME = "flexible_marker";
 
     public FlexibleMarkerBlock() {
-        super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak().lightLevel(value -> 7).noCollission(), NAME);
+        super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak().lightLevel(value -> 7).noCollision(), NAME);
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.Area;
 import com.yogpc.qp.machine.misc.IndexedButton;
 import com.yogpc.qp.machine.misc.SmallCheckBox;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -125,8 +126,8 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryContainer>
             if (quarry.currentState != AdvQuarryState.WAITING) return;
             var direction = movablePosition.direction;
             var increase = diffPosition.sign;
-            var shift = Screen.hasShiftDown();
-            var ctrl = Screen.hasControlDown();
+            var shift = Minecraft.getInstance().hasShiftDown();
+            var ctrl = Minecraft.getInstance().hasControlDown();
             int t;
             if (shift && ctrl) t = 1024 * increase;
             else if (shift) t = 256 * increase;

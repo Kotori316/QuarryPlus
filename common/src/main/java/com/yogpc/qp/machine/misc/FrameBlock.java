@@ -87,7 +87,7 @@ public class FrameBlock extends QpBlock {
     }
 
     private void breakChain(Level world, BlockPos first) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             Set<BlockPos> set = new HashSet<>();
             set.add(first);
             ArrayList<BlockPos> current = new ArrayList<>();

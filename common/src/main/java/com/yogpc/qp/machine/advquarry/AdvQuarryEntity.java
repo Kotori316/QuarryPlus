@@ -207,7 +207,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
 
     void setState(AdvQuarryState state, BlockState blockState) {
         if (level != null && this.currentState != state) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 if (!AdvQuarryState.isWorking(currentState) && AdvQuarryState.isWorking(state)) {
                     // Start working
                     this.chunkLoader = QuarryChunkLoader.of((ServerLevel) level, getBlockPos());

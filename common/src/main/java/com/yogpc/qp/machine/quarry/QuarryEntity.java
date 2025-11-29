@@ -231,7 +231,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
 
     void setState(QuarryState state, BlockState blockState) {
         if (level != null && this.currentState != state) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 if (!QuarryState.isWorking(currentState) && QuarryState.isWorking(state)) {
                     // Start working
                     this.chunkLoader = QuarryChunkLoader.of((ServerLevel) level, getBlockPos());

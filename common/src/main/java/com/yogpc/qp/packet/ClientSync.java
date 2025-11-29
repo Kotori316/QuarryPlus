@@ -14,7 +14,7 @@ public interface ClientSync {
     default <T extends BlockEntity & ClientSync> void syncToClient() {
         if (this instanceof BlockEntity entity) {
             var level = entity.getLevel();
-            if (level != null && !level.isClientSide) {
+            if (level != null && !level.isClientSide()) {
                 var clientSyncMessage = new ClientSyncMessage((T) this);
                 PlatformAccess.getAccess().packetHandler().sendToClientWorld(clientSyncMessage, level);
             }

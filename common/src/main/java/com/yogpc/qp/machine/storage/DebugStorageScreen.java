@@ -8,6 +8,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
+import net.minecraft.client.input.MouseButtonEvent;
+
 public final class DebugStorageScreen extends AbstractContainerScreen<DebugStorageContainer> {
     private static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/marker.png");
     ItemCountList itemCountList;
@@ -44,13 +46,13 @@ public final class DebugStorageScreen extends AbstractContainerScreen<DebugStora
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
         if (itemCountList.isMouseOver(mouseX, mouseY)) {
-            if (itemCountList.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
+            if (itemCountList.mouseDragged(event, mouseX, mouseY)) {
                 return true;
             }
         }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return super.mouseDragged(event, mouseX, mouseY);
     }
 
     @Override

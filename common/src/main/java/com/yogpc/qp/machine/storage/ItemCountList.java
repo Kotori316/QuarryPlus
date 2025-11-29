@@ -40,7 +40,7 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
     }
 
     @Override
-    protected boolean isSelectedItem(int index) {
+    protected boolean entriesCanBeSelected() {
         return false;
     }
 
@@ -55,8 +55,8 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
     }
 
     @Override
-    protected void renderDecorations(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        super.renderDecorations(guiGraphics, mouseX, mouseY);
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
         if (isMouseOver(mouseX, mouseY)) {
             var hovered = getHovered();
             if (hovered != null) {
@@ -93,12 +93,12 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-            guiGraphics.renderFakeItem(stack, left, top);
+        public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+            guiGraphics.renderFakeItem(stack, getX(), getY());
             var text = getNarration();
             final int textWidth = minecraft.font.width(text);
-            final int textX = left + 20;
-            final int textY = top + 4;
+            final int textX = getX() + 20;
+            final int textY = getY() + 4;
             guiGraphics.drawString(minecraft.font, text, textX, textY, ARGB.opaque(0xFFFFFF));
             guiGraphics.drawString(minecraft.font, count + unit, textX + textWidth + 8, textY, ARGB.opaque(0xFFFFFF), true);
         }

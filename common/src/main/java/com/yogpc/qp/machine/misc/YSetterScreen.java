@@ -11,6 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
 
+import static net.minecraft.client.Minecraft.*;
+
 public final class YSetterScreen extends AbstractContainerScreen<YSetterContainer> {
     private static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/adv_pump.png");
     private static final int tp = 15;
@@ -58,7 +60,7 @@ public final class YSetterScreen extends AbstractContainerScreen<YSetterContaine
     private void changeDigY(boolean plus) {
         var accessor = getMenu().yAccessor;
         if (accessor != null) {
-            int n = Screen.hasShiftDown() ? 16 : Screen.hasControlDown() ? 4 : 1;
+            int n = getInstance().hasShiftDown() ? 16 : getInstance().hasControlDown() ? 4 : 1;
             var count = (plus ? 1 : -1) * n;
             var updated = Math.min(count + accessor.getDigMinY(), accessor.getLimitTop());
             accessor.setDigMinY(updated);

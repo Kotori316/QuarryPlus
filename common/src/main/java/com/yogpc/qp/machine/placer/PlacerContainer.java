@@ -47,7 +47,7 @@ public final class PlacerContainer extends AbstractContainerMenu {
             this.addSlot(new Slot(player.getInventory(), l, 8 + l * 18, 142));
         }
 
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             tile.syncToClient();
         }
     }

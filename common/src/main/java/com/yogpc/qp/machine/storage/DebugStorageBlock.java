@@ -35,7 +35,7 @@ public final class DebugStorageBlock extends QpEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (level.getBlockEntity(pos) instanceof DebugStorageEntity storage) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(storage, DebugStorageContainer::new));
             }
             return InteractionResult.SUCCESS_SERVER;

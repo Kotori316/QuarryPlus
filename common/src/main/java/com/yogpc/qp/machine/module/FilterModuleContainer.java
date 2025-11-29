@@ -7,6 +7,7 @@ import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.misc.SlotContainer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -108,8 +109,8 @@ public final class FilterModuleContainer extends AbstractContainerMenu {
         }
 
         @Override
-        public void stopOpen(Player player) {
-            super.stopOpen(player);
+        public void stopOpen(ContainerUser user) {
+            super.stopOpen(user);
             if (this.isEmpty()) {
                 filterModuleItem.remove(QuarryDataComponents.ITEM_KEY_LIST_COMPONENT);
             } else {

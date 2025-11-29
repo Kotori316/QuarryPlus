@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
+import net.minecraft.client.input.MouseButtonEvent;
+
 public final class MoverScreen extends AbstractContainerScreen<MoverContainer> {
     private static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/mover.png");
     private static final WidgetSprites PAGE_FORWARD_SPRITES = new WidgetSprites(
@@ -108,8 +110,8 @@ public final class MoverScreen extends AbstractContainerScreen<MoverContainer> {
         }
 
         @Override
-        public void onClick(double mouseX, double mouseY) {
-            super.onClick(mouseX, mouseY);
+        public void onClick(MouseButtonEvent event, boolean isDoubleClick) {
+            super.onClick(event, isDoubleClick);
             onPress.accept(this);
         }
 

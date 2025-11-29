@@ -38,7 +38,7 @@ public class NormalMarkerBlock extends QpEntityBlock {
     public static final String NAME = "marker";
 
     public NormalMarkerBlock() {
-        super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak().lightLevel(value -> 7).noCollission(),
+        super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak().lightLevel(value -> 7).noCollision(),
             NAME, b -> new QpBlockItem(b, new Item.Properties()));
         this.registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.UP));
     }
