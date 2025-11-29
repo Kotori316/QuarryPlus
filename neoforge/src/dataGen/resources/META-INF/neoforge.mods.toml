@@ -1,0 +1,8 @@
+modLoader = "kotori_scala"
+loaderVersion = "[3.7.0, ),[1,)"
+license = "All rights reserved"
+
+[[mods]]
+modId = "quarryplus_data"
+version = "1.0"
+description = "NeoForge data generator for QuarryPlus"
