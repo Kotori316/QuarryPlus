@@ -135,7 +135,7 @@ public final class MachineStorageNeoForge extends MachineStorage {
 
         @Override
         public long getAmountAsLong(int index) {
-            return storage().getFluidByIndex(index).amount();
+            return toForge(storage().getFluidByIndex(index)).getAmount();
         }
 
         @Override
