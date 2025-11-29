@@ -89,18 +89,19 @@ runs {
 
     create("commonData") {
         runType("clientData")
+        val dataGenModId = "${modId}_common_data"
         isDataGenerator = true
         workingDirectory.set(project.file("runs/commonData"))
         arguments.addAll(
             "--mod",
-            "quarryplus",
+            dataGenModId,
             "--output",
             project(":common").file("src/generated/resources/").toString(),
             "--existing",
             project(":common").file("src/main/resources/").toString()
         )
 
-        modSources.add(modId, sourceSets["commonDataGen"])
+        modSources.add(dataGenModId, sourceSets["commonDataGen"])
     }
 }
 
