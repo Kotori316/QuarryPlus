@@ -13,16 +13,16 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public final class AccessItemTest {
     public static Stream<TestFunction> accessItems(String batchName, String structureName) {
-        var items = PlatformAccess.getAccess().registerObjects().allItems();
-
-        return items.map(e -> {
-            var name = "AccessItemTest_%s".formatted(e.getKey().getPath());
-            return TestFunction.createWithStructure(QuarryPlus.modID, batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, g -> {
+        var name = "AccessItemTest";
+        return Stream.of(
+            TestFunction.createWithStructure(QuarryPlus.modID, batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, g -> {
                 var parameter = new CreativeModeTab.ItemDisplayParameters(g.getLevel().enabledFeatures(), false, g.getLevel().registryAccess());
-                var i = e.getValue().get();
-                assertAll(i.creativeTabItem(parameter).map(t -> () -> assertFalse(t.isEmpty())));
+                PlatformAccess.getAccess().registerObjects().allItems().forEach(e -> {
+                    var i = e.getValue().get();
+                    assertAll(i.creativeTabItem(parameter).map(t -> () -> assertFalse(t.isEmpty())));
+                });
                 g.succeed();
-            });
-        });
+            })
+        );
     }
 }

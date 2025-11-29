@@ -9,6 +9,7 @@ import com.yogpc.qp.machine.storage.DebugStorageBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.Set;
 import java.util.stream.Stream;
@@ -23,24 +24,26 @@ public final class CheckBlockDropTest {
     );
 
     public static Stream<TestFunction> checkDrops(String batchName, String structureName) {
-        var blocks = BuiltInRegistries.BLOCK.entrySet().stream()
-            .filter(e -> e.getKey().location().getNamespace().equals(QuarryPlus.modID));
-
-        return blocks.map(e -> {
-            var b = e.getValue();
-            var name = "CheckBlockDrop%s".formatted(b.getClass().getSimpleName());
-            return TestFunction.createWithStructure(QuarryPlus.modID, batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, g -> {
+        var name = "CheckBlockDrop";
+        return Stream.of(
+            TestFunction.createWithStructure(QuarryPlus.modID, batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, g -> {
                 var pos = BlockPos.ZERO.above();
-                g.setBlock(pos, b);
-                assertInstanceOf(b.getClass(), g.getBlockState(pos).getBlock());
-                var drops = Block.getDrops(g.getBlockState(pos), g.getLevel(), g.absolutePos(pos), g.getLevel().getBlockEntity(g.absolutePos(pos)));
-                if (EXCEPT.contains(e.getKey().location().getPath())) {
-                    assertTrue(drops.isEmpty(), "Drop items must be empty for %s".formatted(e.getKey()));
-                } else {
-                    assertFalse(drops.isEmpty(), "Drop item is empty for %s".formatted(e.getKey()));
-                }
+                var blocks = BuiltInRegistries.BLOCK.entrySet().stream()
+                    .filter(e -> e.getKey().location().getNamespace().equals(QuarryPlus.modID));
+                blocks.forEach(e -> {
+                    var b = e.getValue();
+                    g.setBlock(pos, b);
+                    assertInstanceOf(b.getClass(), g.getBlockState(pos).getBlock());
+                    var drops = Block.getDrops(g.getBlockState(pos), g.getLevel(), g.absolutePos(pos), g.getLevel().getBlockEntity(g.absolutePos(pos)));
+                    if (EXCEPT.contains(e.getKey().location().getPath())) {
+                        assertTrue(drops.isEmpty(), "Drop items must be empty for %s".formatted(e.getKey()));
+                    } else {
+                        assertFalse(drops.isEmpty(), "Drop item is empty for %s".formatted(e.getKey()));
+                    }
+                    g.setBlock(pos, Blocks.AIR);
+                });
                 g.succeed();
-            });
-        });
+            })
+        );
     }
 }
