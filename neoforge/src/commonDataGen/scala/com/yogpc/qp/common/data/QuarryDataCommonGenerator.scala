@@ -34,7 +34,7 @@ object QuarryDataCommonGenerator {
     event.addProvider(StateAndModelProvider(event.getGenerator.getPackOutput))
     event.addProvider(QuarrySpriteSourceProvider(event.getGenerator.getPackOutput, event.getLookupProvider))
     event.addProvider(PackMetadataGenerator(event.getGenerator.getPackOutput)
-      .add(PackMetadataSection.TYPE, PackMetadataSection(Component.literal("QuarryPlus Resource"), DetectedVersion.BUILT_IN.packVersion(PackType.CLIENT_RESOURCES)))
+      .add(PackMetadataSection.CLIENT_TYPE, PackMetadataSection(Component.literal("QuarryPlus Resource"), DetectedVersion.BUILT_IN.packVersion(PackType.CLIENT_RESOURCES).minorRange()))
     )
 
     val blockTag = QuarryBlockTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider)

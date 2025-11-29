@@ -3,7 +3,7 @@ package com.yogpc.qp.common.data
 import com.yogpc.qp.QuarryPlus
 import net.minecraft.client.renderer.texture.atlas.sources.DirectoryLister
 import net.minecraft.core.HolderLookup
-import net.minecraft.data.PackOutput
+import net.minecraft.data.{AtlasIds, PackOutput}
 import net.neoforged.neoforge.client.data.SpriteSourceProvider
 
 import java.util.concurrent.CompletableFuture
@@ -12,7 +12,7 @@ class QuarrySpriteSourceProvider(output: PackOutput, lookupProvider: Completable
   extends SpriteSourceProvider(output, lookupProvider, QuarryPlus.modID) {
 
   override def gather(): Unit = {
-    atlas(SpriteSourceProvider.BLOCKS_ATLAS)
+    atlas(AtlasIds.BLOCKS)
       .addSource(DirectoryLister("entity/quarry", "entity/"))
   }
 }
