@@ -7,28 +7,32 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
 public final class EnergyIntegration {
     @SubscribeEvent
     public static void attachCapabilities(RegisterCapabilitiesEvent event) {
         for (BlockEntityType<?> blockEntityType : PlatformAccess.getAccess().registerObjects().getBlockEntityTypes()) {
-            event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, blockEntityType, EnergyIntegration::provider);
+            event.registerBlockEntity(Capabilities.Energy.BLOCK, blockEntityType, EnergyIntegration::provider);
         }
     }
 
     @Nullable
-    private static IEnergyStorage provider(Object entity, Direction direction) {
+    private static EnergyHandler provider(Object entity, Direction direction) {
         if (entity instanceof PowerEntity powerEntity) {
             return new PowerEntityStorage(powerEntity, direction);
         }
         return null;
     }
 
-    record PowerEntityStorage(PowerEntity entity) implements IEnergyStorage {
+    private static final class PowerEntityStorage extends SnapshotJournal<Long> implements EnergyHandler {
+        private final PowerEntity entity;
+
         PowerEntityStorage(PowerEntity entity, Direction ignored) {
-            this(entity);
+            this.entity = entity;
         }
 
         static int clamp(long value) {
@@ -36,35 +40,35 @@ public final class EnergyIntegration {
         }
 
         @Override
-        public int receiveEnergy(int maxReceive, boolean simulate) {
-            var received = entity.addEnergy(maxReceive * PowerEntity.ONE_FE, simulate);
+        public int insert(int amount, TransactionContext transaction) {
+            updateSnapshots(transaction);
+            var received = entity.addEnergy(amount * PowerEntity.ONE_FE, true);
             return clamp(received / PowerEntity.ONE_FE);
         }
 
         @Override
-        public int extractEnergy(int maxExtract, boolean simulate) {
-            // not extractable
+        public long getAmountAsLong() {
+            return entity.getEnergy() / PowerEntity.ONE_FE;
+        }
+
+        @Override
+        public long getCapacityAsLong() {
+            return entity.getMaxEnergy() / PowerEntity.ONE_FE;
+        }
+
+        @Override
+        public int extract(int amount, TransactionContext transaction) {
             return 0;
         }
 
         @Override
-        public int getEnergyStored() {
-            return clamp(entity.getEnergy() / PowerEntity.ONE_FE);
+        protected Long createSnapshot() {
+            return this.entity.getEnergy();
         }
 
         @Override
-        public int getMaxEnergyStored() {
-            return clamp(entity.getMaxEnergy() / PowerEntity.ONE_FE);
-        }
-
-        @Override
-        public boolean canExtract() {
-            return false;
-        }
-
-        @Override
-        public boolean canReceive() {
-            return true;
+        protected void revertToSnapshot(Long snapshot) {
+            this.entity.setEnergy(snapshot, false);
         }
     }
 }

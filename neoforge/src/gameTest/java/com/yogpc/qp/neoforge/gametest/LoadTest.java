@@ -32,7 +32,7 @@ public final class LoadTest {
             commonTests().stream(),
             placeTests().stream(),
             MachineEnergyHandlerTest.tests().stream(),
-            MachineStorageHandlerTest.tests().stream(),
+            MachineStorageNeoForgeTest.tests().stream(),
             Stream.of(TestFunction.create(QuarryPlus.modID, "load", LoadTest::load))
         ).flatMap(Function.identity());
         tests.forEach(TestFunctionRegister::registerTestFunction);

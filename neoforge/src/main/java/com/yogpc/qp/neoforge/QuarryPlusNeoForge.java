@@ -19,7 +19,7 @@ public final class QuarryPlusNeoForge {
         QuarryPlus.LOGGER.info("Initialize {} with {}", container.getModId(), container.getClass().getName());
         PlatformAccessNeoForge.RegisterObjectsNeoForge.REGISTER_LIST.forEach(r -> r.register(modBus));
         modBus.register(this);
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             modBus.register(QuarryPlusClientNeoForge.class);
         }
         modBus.register(EnergyIntegration.class);

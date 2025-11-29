@@ -8,7 +8,8 @@ import com.yogpc.qp.machine.quarry.QuarryEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
@@ -26,11 +27,11 @@ public final class MachineEnergyHandlerTest {
         );
     }
 
-    private static Pair<QuarryEntity, IEnergyStorage> getHandler(GameTestHelper helper, BlockPos pos) {
+    private static Pair<QuarryEntity, EnergyHandler> getHandler(GameTestHelper helper, BlockPos pos) {
         helper.setBlock(pos, PlatformAccess.getAccess().registerObjects().quarryBlock().get());
         QuarryEntity quarry = helper.getBlockEntity(pos, QuarryEntity.class);
 
-        var handler = helper.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, helper.absolutePos(pos), null, quarry, null);
+        var handler = helper.getLevel().getCapability(Capabilities.Energy.BLOCK, helper.absolutePos(pos), null, quarry, null);
         assertNotNull(handler);
         return Pair.of(quarry, handler);
     }
@@ -41,11 +42,16 @@ public final class MachineEnergyHandlerTest {
         QuarryEntity quarry = pair.getKey();
         var handler = pair.getValue();
 
-        assertEquals(PlatformAccess.config().powerMap().quarry().maxEnergy(), handler.getMaxEnergyStored());
+        assertEquals(PlatformAccess.config().powerMap().quarry().maxEnergy(), handler.getCapacityAsLong());
 
-        handler.receiveEnergy(1000, true);
+        try (var tx = Transaction.openRoot()) {
+            handler.insert(1000, tx);
+        }
         assertEquals(0, quarry.getEnergy());
-        handler.receiveEnergy(1000, false);
+        try (var tx = Transaction.openRoot()) {
+            handler.insert(1000, tx);
+            tx.commit();
+        }
         assertEquals(1000 * PowerEntity.ONE_FE, quarry.getEnergy());
 
         helper.succeed();
@@ -59,15 +65,22 @@ public final class MachineEnergyHandlerTest {
 
         quarry.setEnergy((long) PlatformAccess.config().powerMap().quarry().maxEnergy() * PowerEntity.ONE_FE, false);
 
-        assertEquals(PlatformAccess.config().powerMap().quarry().maxEnergy(), handler.getEnergyStored());
+        assertEquals(PlatformAccess.config().powerMap().quarry().maxEnergy(), handler.getCapacityAsLong());
 
         {
-            var inserted = handler.receiveEnergy(1000, true);
+            int inserted;
+            try (var tx = Transaction.openRoot()) {
+                inserted = handler.insert(1000, tx);
+                tx.commit();
+            }
             assertEquals(10000 * PowerEntity.ONE_FE, quarry.getEnergy());
             assertEquals(0, inserted, "Quarry should not receive energy than its capacity");
         }
         {
-            var inserted = handler.receiveEnergy(1000, false);
+            int inserted;
+            try (var tx = Transaction.openRoot()) {
+                inserted = handler.insert(1000, tx);
+            }
             assertEquals(10000 * PowerEntity.ONE_FE, quarry.getEnergy());
             assertEquals(0, inserted, "Quarry should not receive energy than its capacity");
         }
@@ -80,7 +93,11 @@ public final class MachineEnergyHandlerTest {
         var pair = getHandler(helper, pos);
         var handler = pair.getValue();
 
-        var inserted = handler.receiveEnergy(20000, true);
+        int inserted;
+        try (var tx = Transaction.openRoot()) {
+            inserted = handler.insert(20000, tx);
+            tx.commit();
+        }
         assertEquals(10000, inserted, "Quarry should not receive energy than its capacity");
 
         helper.succeed();
