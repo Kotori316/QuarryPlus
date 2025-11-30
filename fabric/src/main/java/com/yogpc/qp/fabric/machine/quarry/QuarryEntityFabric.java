@@ -4,9 +4,11 @@ import com.yogpc.qp.QuarryDataComponents;
 import com.yogpc.qp.fabric.PlatformAccessFabric;
 import com.yogpc.qp.machine.exp.ExpModule;
 import com.yogpc.qp.machine.quarry.QuarryEntity;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -15,6 +17,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public final class QuarryEntityFabric extends QuarryEntity implements ExpModule {
     boolean shouldRemoveFluid = true;
@@ -28,17 +31,27 @@ public final class QuarryEntityFabric extends QuarryEntity implements ExpModule 
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.putBoolean("shouldRemoveFluid", shouldRemoveFluid);
-        output.putBoolean("shouldRemoveBedrock", shouldRemoveBedrock);
         output.putInt("collectedExp", collectedExp);
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+        collectedExp = input.getIntOr("collectedExp", collectedExp);
+    }
+
+    @Override
+    public ValueOutput toClientTag(ValueOutput output) {
+        output.putBoolean("shouldRemoveFluid", shouldRemoveFluid);
+        output.putBoolean("shouldRemoveBedrock", shouldRemoveBedrock);
+        return super.toClientTag(output);
+    }
+
+    @Override
+    public void fromClientTag(ValueInput input) {
+        super.fromClientTag(input);
         shouldRemoveFluid = input.getBooleanOr("shouldRemoveFluid", shouldRemoveFluid);
         shouldRemoveBedrock = input.getBooleanOr("shouldRemoveBedrock", shouldRemoveBedrock);
-        collectedExp = input.getIntOr("collectedExp", collectedExp);
     }
 
     @Override
@@ -88,5 +101,16 @@ public final class QuarryEntityFabric extends QuarryEntity implements ExpModule 
     @Override
     public int getExp() {
         return collectedExp;
+    }
+
+    @Override
+    public Stream<MutableComponent> checkerLogs() {
+        return Stream.concat(
+            super.checkerLogs(),
+            Stream.of(
+                detail(ChatFormatting.GREEN, "ShouldRemoveFluid", String.valueOf(shouldRemoveFluid())),
+                detail(ChatFormatting.GREEN, "ShouldRemoveBedrock", String.valueOf(shouldRemoveBedrock()))
+            )
+        );
     }
 }

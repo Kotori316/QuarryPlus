@@ -47,6 +47,7 @@ public final class QuarryBlockFabric extends QuarryBlock {
                 } else {
                     entity.shouldRemoveBedrock = !entity.shouldRemoveBedrock;
                     player.displayClientMessage(Component.literal("Set removeBedrock: %s".formatted(entity.shouldRemoveBedrock)), false);
+                    entity.syncToClient();
                 }
             }
             return InteractionResult.SUCCESS_SERVER;
