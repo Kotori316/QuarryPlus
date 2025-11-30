@@ -64,7 +64,8 @@ runs {
 
     create("gameTestServer") {
         workingDirectory = project.file("game-test")
-        systemProperties.put("neoforge.enabledGameTestNamespaces", "$modId,minecraft")
+        systemProperty("neoforge.enabledGameTestNamespaces", "$modId,minecraft")
+        systemProperty("mixin.debug.export", "false")
         environmentVariable("TEST_UTILITY_NO_REGISTRATION", "false")
         // systemProperties.put("bsl.debug", "true")
         jvmArguments("-ea")
