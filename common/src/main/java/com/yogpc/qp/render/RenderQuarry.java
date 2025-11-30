@@ -1,21 +1,26 @@
 package com.yogpc.qp.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.quarry.QuarryEntity;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("DuplicatedCode")
-public class RenderQuarry implements BlockEntityRenderer<QuarryEntity> {
+public class RenderQuarry implements BlockEntityRenderer<QuarryEntity, RenderQuarry.RenderQuarryState> {
     private static final double d1 = 1d / 16d;
     private static final double d4 = 4d / 16d;
 
@@ -34,19 +39,50 @@ public class RenderQuarry implements BlockEntityRenderer<QuarryEntity> {
     }
 
     @Override
-    public void render(QuarryEntity quarry, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay, Vec3 vec3) {
+    public RenderQuarryState createRenderState() {
+        return new RenderQuarryState();
+    }
+
+    @Override
+    public void extractRenderState(QuarryEntity blockEntity, RenderQuarryState renderState, float partialTick, Vec3 cameraPosition, @Nullable ModelFeatureRenderer.CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(blockEntity, renderState, partialTick, cameraPosition, breakProgress);
+        renderState.extract(blockEntity, partialTick);
+    }
+
+    @Override
+    public void submit(RenderQuarryState renderState, PoseStack matrices, SubmitNodeCollector nodeCollector, CameraRenderState cameraRenderState) {
         ProfilerFiller profiler = Profiler.get();
         profiler.push(QuarryPlus.modID);
         profiler.push("RenderQuarry");
+        var quarry = renderState.quarry;
+        var tickDelta = renderState.partialTick;
+
         matrices.pushPose();
         var pos = quarry.getBlockPos();
         matrices.translate(-pos.getX(), -pos.getY(), -pos.getZ());
         if (quarry.getArea() != null) {
-            switch (quarry.renderMode()) {
-                case "frame" -> renderFrame(quarry, matrices, vertexConsumers);
-                case "drill" -> renderDrill(quarry, matrices, tickDelta, vertexConsumers);
-                case null, default -> {
+            var renderMode = quarry.renderMode();
+            if (renderMode != null) {
+                matrices.pushPose();
+                switch (renderMode) {
+                    case "frame" -> {
+                        // PoseStack.Pose passed to submitCustomGeometry cannot be translated.
+                        // So we must apply translation to PoseStack here.
+                        matrices.translate(0.5, 0.5, 0.5);
+                        nodeCollector.submitCustomGeometry(matrices, RenderType.cutout(), (pose, vertexConsumer) -> {
+                            renderFrame(quarry, pose, vertexConsumer);
+                        });
+                    }
+                    case "drill" -> {
+                        // PoseStack.Pose passed to submitCustomGeometry cannot be translated.
+                        // So we must apply translation to PoseStack here.
+                        matrices.translate(0.5, 1.0, 0.5);
+                        nodeCollector.submitCustomGeometry(matrices, RenderType.cutout(), (pose, vertexConsumer) -> {
+                            renderDrill(quarry, pose, tickDelta, vertexConsumer);
+                        });
+                    }
                 }
+                matrices.popPose();
             }
         }
 
@@ -55,15 +91,14 @@ public class RenderQuarry implements BlockEntityRenderer<QuarryEntity> {
         profiler.pop();
     }
 
-    Buffer getBuffer(MultiBufferSource vertexConsumers, PoseStack matrices) {
-        return new Buffer(vertexConsumers.getBuffer(RenderType.cutout()), matrices, ColorBox.white);
+    Buffer getBuffer(VertexConsumer vertexConsumer, PoseStack.Pose matrices) {
+        return new Buffer(vertexConsumer, matrices, ColorBox.white);
     }
 
-    private void renderFrame(QuarryEntity quarry, PoseStack matrices, MultiBufferSource vertexConsumers) {
+    private void renderFrame(QuarryEntity quarry, PoseStack.Pose matrices, VertexConsumer vertexConsumer) {
         assert quarry.getArea() != null; // Null check is done.
 
-        var buffer = getBuffer(vertexConsumers, matrices);
-        matrices.translate(0.5, 0.5, 0.5);
+        var buffer = getBuffer(vertexConsumer, matrices);
         var minX = quarry.getArea().minX();
         var minY = quarry.getArea().minY();
         var minZ = quarry.getArea().minZ();
@@ -434,10 +469,9 @@ public class RenderQuarry implements BlockEntityRenderer<QuarryEntity> {
         buffer.pos(MXm, MYP, MZP).colored().tex(B_maxU, B_minV).lightedAndEnd();
     }
 
-    private void renderDrill(QuarryEntity quarry, PoseStack matrices, float tickDelta, MultiBufferSource vertexConsumers) {
+    private void renderDrill(QuarryEntity quarry, PoseStack.Pose matrices, float tickDelta, VertexConsumer vertexConsumer) {
         assert quarry.getArea() != null; // Null check is done.
-        var buffer = getBuffer(vertexConsumers, matrices);
-        matrices.translate(0.5, 1.0, 0.5);
+        var buffer = getBuffer(vertexConsumer, matrices);
         var minX = quarry.getArea().minX();
         var minZ = quarry.getArea().minZ();
         var maxX = quarry.getArea().maxX();
@@ -765,6 +799,16 @@ public class RenderQuarry implements BlockEntityRenderer<QuarryEntity> {
             buffer.pos(hXPd, MYPd, zF).colored().tex(D_maxU, D_minV).lightedAndEnd();
             buffer.pos(hXPd, MYmd, zF).colored().tex(D_minU, D_minV).lightedAndEnd();
             buffer.pos(hXPd, MYmd, zL).colored().tex(D_minU, fixedV).lightedAndEnd();
+        }
+    }
+
+    public static class RenderQuarryState extends BlockEntityRenderState {
+        private QuarryEntity quarry;
+        private float partialTick;
+
+        void extract(QuarryEntity quarry, float partialTick) {
+            this.quarry = quarry;
+            this.partialTick = partialTick;
         }
     }
 }

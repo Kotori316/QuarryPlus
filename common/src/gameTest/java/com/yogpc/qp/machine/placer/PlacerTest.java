@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -49,13 +50,18 @@ public final class PlacerTest {
 
     static class PlacerTestDirect {
         private static Stream<TestFunction> removeBlock(String batchName, String structureName) {
+            var blockNames = List.of(
+                ResourceLocation.fromNamespaceAndPath("minecraft", "stone"),
+                ResourceLocation.fromNamespaceAndPath("minecraft", "ice"),
+                ResourceLocation.fromNamespaceAndPath("minecraft", "acacia_log"),
+                ResourceLocation.fromNamespaceAndPath("minecraft", "birch_leaves")
+            );
             return Stream.of(Direction.values())
-                .flatMap(direction -> Stream.of(Blocks.STONE, Blocks.ICE, Blocks.ACACIA_LOG, Blocks.BIRCH_LEAVES).map(b -> {
+                .flatMap(direction -> blockNames.stream().map(blockName -> {
                     var r = Rotation.NONE;
-                    var blockName = BuiltInRegistries.BLOCK.getKey(b);
                     var name = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, "PlacerTest_removeBlock_%s_%s_%s".formatted(
                         direction.name().toLowerCase(Locale.ROOT), r.name().toLowerCase(Locale.ROOT), blockName.getPath()));
-                    return TestFunction.createWithStructure(QuarryPlus.modID, batchName, name, structureName, g -> placeBlock1(g, direction, b));
+                    return TestFunction.createWithStructure(QuarryPlus.modID, batchName, name, structureName, g -> placeBlock1(g, direction, blockName));
                 }));
         }
 
@@ -78,17 +84,23 @@ public final class PlacerTest {
         }
 
         private static Stream<TestFunction> placeBlock1(String batchName, String structureName) {
+            var blockNames = List.of(
+                ResourceLocation.fromNamespaceAndPath("minecraft", "stone"),
+                ResourceLocation.fromNamespaceAndPath("minecraft", "ice"),
+                ResourceLocation.fromNamespaceAndPath("minecraft", "acacia_log"),
+                ResourceLocation.fromNamespaceAndPath("minecraft", "birch_leaves")
+            );
             return Stream.of(Direction.values())
-                .flatMap(direction -> Stream.of(Blocks.STONE, Blocks.ICE, Blocks.ACACIA_LOG, Blocks.BIRCH_LEAVES).map(b -> {
+                .flatMap(direction -> blockNames.stream().map(blockName -> {
                     var r = Rotation.NONE;
-                    var blockName = BuiltInRegistries.BLOCK.getKey(b);
                     var name = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, "PlacerTest_placeBlock1_%s_%s_%s".formatted(
                         direction.name().toLowerCase(Locale.ROOT), r.name().toLowerCase(Locale.ROOT), blockName.getPath()));
-                    return TestFunction.createWithStructure(QuarryPlus.modID, batchName, name, structureName, g -> placeBlock1(g, direction, b));
+                    return TestFunction.createWithStructure(QuarryPlus.modID, batchName, name, structureName, g -> placeBlock1(g, direction, blockName));
                 }));
         }
 
-        private static void placeBlock1(GameTestHelper helper, Direction direction, Block block) {
+        private static void placeBlock1(GameTestHelper helper, Direction direction, ResourceLocation blockName) {
+            var block = BuiltInRegistries.BLOCK.getValue(blockName);
             var placerBlock = PlatformAccess.getAccess().registerObjects().placerBlock().get();
             var stonePos = placerPos.relative(direction);
             helper.startSequence()

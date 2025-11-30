@@ -19,7 +19,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -90,7 +90,7 @@ public final class PacketHandler implements PlatformAccess.Packet {
     public void sendToClientWorld(@NotNull CustomPacketPayload message, @NotNull Level level) {
         if (level.getServer() instanceof GameTestServer) {
             // sending message to test server will cause NPE
-            QuarryPlus.LOGGER.debug("PacketHandler#sendToClient is called in GameTestServer for {}", message.getClass().getSimpleName());
+            QuarryPlus.LOGGER.trace("PacketHandler#sendToClient is called in GameTestServer for {}", message.getClass().getSimpleName());
         } else if (level instanceof ServerLevel serverLevel) {
             PacketDistributor.sendToPlayersInDimension(serverLevel, message);
         } else {
@@ -116,7 +116,7 @@ public final class PacketHandler implements PlatformAccess.Packet {
     private static class ProxyProvider {
         @NotNull
         private static Proxy getInstance() {
-            return switch (FMLLoader.getDist()) {
+            return switch (FMLEnvironment.getDist()) {
                 case CLIENT -> new ClientSupplier().get();
                 case DEDICATED_SERVER -> new ServerSupplier().get();
             };

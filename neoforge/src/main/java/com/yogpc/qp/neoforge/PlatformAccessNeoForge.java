@@ -353,7 +353,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
 
     @Override
     public boolean isInDevelopmentEnvironment() {
-        return !FMLEnvironment.production;
+        return !FMLEnvironment.isProduction();
     }
 
     @Override

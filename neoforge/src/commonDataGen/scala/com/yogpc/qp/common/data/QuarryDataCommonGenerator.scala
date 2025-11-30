@@ -9,15 +9,17 @@ import net.minecraft.server.packs.PackType
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets
 import net.neoforged.bus.api.SubscribeEvent
-import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.fml.common.{EventBusSubscriber, Mod}
 import net.neoforged.neoforge.data.event.GatherDataEvent
 
 import java.util.Collections
 import scala.annotation.static
 import scala.jdk.javaapi.CollectionConverters
 
-@EventBusSubscriber(modid = QuarryPlus.modID)
+@Mod("quarryplus_common_data")
+@EventBusSubscriber
 class QuarryDataCommonGenerator {
+  QuarryPlus.LOGGER.info("Initialize finished quarryplus_common_data")
 }
 
 object QuarryDataCommonGenerator {
@@ -34,7 +36,7 @@ object QuarryDataCommonGenerator {
     event.addProvider(StateAndModelProvider(event.getGenerator.getPackOutput))
     event.addProvider(QuarrySpriteSourceProvider(event.getGenerator.getPackOutput, event.getLookupProvider))
     event.addProvider(PackMetadataGenerator(event.getGenerator.getPackOutput)
-      .add(PackMetadataSection.TYPE, PackMetadataSection(Component.literal("QuarryPlus Resource"), DetectedVersion.BUILT_IN.packVersion(PackType.CLIENT_RESOURCES)))
+      .add(PackMetadataSection.CLIENT_TYPE, PackMetadataSection(Component.literal("QuarryPlus Resource"), DetectedVersion.BUILT_IN.packVersion(PackType.CLIENT_RESOURCES).minorRange()))
     )
 
     val blockTag = QuarryBlockTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider)

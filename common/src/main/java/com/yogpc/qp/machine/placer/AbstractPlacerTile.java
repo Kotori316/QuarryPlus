@@ -244,7 +244,7 @@ public abstract class AbstractPlacerTile extends QpEntity
 
     public void cycleRedStoneMode() {
         this.redstoneMode = RedStoneMode.cycle(redstoneMode);
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             syncToClient();
         }
     }

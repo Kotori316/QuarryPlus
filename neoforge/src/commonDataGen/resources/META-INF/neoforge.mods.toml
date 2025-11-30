@@ -1,0 +1,8 @@
+modLoader = "kotori_scala"
+loaderVersion = "[3.7.0, ),[1,)"
+license = "All rights reserved"
+
+[[mods]]
+modId = "quarryplus_common_data"
+version = "1.0"
+description = "Common data generator for QuarryPlus"

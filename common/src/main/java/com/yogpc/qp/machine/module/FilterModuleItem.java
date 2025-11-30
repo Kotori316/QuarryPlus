@@ -5,7 +5,7 @@ import com.yogpc.qp.QuarryDataComponents;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpItem;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,7 +40,7 @@ public final class FilterModuleItem extends QpItem implements QuarryModuleProvid
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand usedHand) {
         var stack = player.getItemInHand(usedHand);
-        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
+        if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             PlatformAccess.getAccess().openGui(serverPlayer, new GeneralScreenHandler<>(player.getOnPos(), stack.getHoverName(),
                 (syncId, inventory, pos) -> new FilterModuleContainer(syncId, inventory, stack)));
         }
@@ -57,7 +57,7 @@ public final class FilterModuleItem extends QpItem implements QuarryModuleProvid
 
         var itemList = stack.get(QuarryDataComponents.ITEM_KEY_LIST_COMPONENT);
         if (itemList != null && !itemList.isEmpty()) {
-            if (Screen.hasShiftDown()) {
+            if (Minecraft.getInstance().hasShiftDown()) {
                 itemList.stream()
                     .map(MachineStorage.ItemKey::item)
                     .filter(Predicate.isEqual(Items.AIR).negate())

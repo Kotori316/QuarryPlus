@@ -67,7 +67,7 @@ public abstract class QuarryBlock extends QpEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return createTickerHelper(blockEntityType, this.<QuarryEntity>getBlockEntityType().orElse(null), CombinedBlockEntityTicker.of(this, level,
                 QuarryEntity::clientTick
             ));
@@ -102,7 +102,7 @@ public abstract class QuarryBlock extends QpEntityBlock {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             if (level.getBlockEntity(pos) instanceof QuarryEntity quarry) {
                 quarry.updateMaxEnergyWithEnchantment(level);
                 var facing = state.getValue(BlockStateProperties.FACING);

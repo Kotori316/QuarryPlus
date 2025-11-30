@@ -28,7 +28,7 @@ public class Box {
     final double offZ;
     final double maxSize;
 
-    void render(final VertexConsumer buffer, final PoseStack matrixStack, final TextureAtlasSprite sprite, final ColorBox colorBox) {
+    void render(final VertexConsumer buffer, final PoseStack.Pose matrixStack, final TextureAtlasSprite sprite, final ColorBox colorBox) {
         double n1X = this.dx;
         double n1Y = Box.normalY(this.dx, this.dy, this.dz);
         double n1Z = this.dz;
@@ -41,7 +41,7 @@ public class Box {
     }
 
     @SuppressWarnings({"UnnecessaryLocalVariable", "DuplicatedCode"})
-    final void renderInternal(final VertexConsumer b, final PoseStack matrixStack, final TextureAtlasSprite sprite, final double n1X, final double n1Y, final double n1Z,
+    final void renderInternal(final VertexConsumer b, final PoseStack.Pose matrixStack, final TextureAtlasSprite sprite, final double n1X, final double n1Y, final double n1Z,
                               final double n2X, final double n2Z, final ColorBox colorBox) {
         double eX = this.dx / this.length * this.sizeX;
         double eY = this.dy / this.length * this.sizeY;

@@ -62,7 +62,7 @@ public final class SoftBlock extends TransparentBlock implements InCreativeTabs 
     }
 
     private void breakChain(Level world, BlockPos first) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             var nextCheck = new ArrayList<BlockPos>();
             for (var dir : Direction26.DIRECTIONS) {
                 var nPos = first.offset(dir.vec());

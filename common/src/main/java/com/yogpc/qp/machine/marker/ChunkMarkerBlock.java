@@ -16,7 +16,7 @@ public final class ChunkMarkerBlock extends ExMarkerBlock {
     public static final String NAME = "chunk_marker";
 
     public ChunkMarkerBlock() {
-        super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak().lightLevel(value -> 7).noCollission(), NAME);
+        super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak().lightLevel(value -> 7).noCollision(), NAME);
     }
 
     @Override

@@ -83,12 +83,6 @@ public final class QuarryFakePlayerCommon {
         public void tick() {
         }
 
-        @Override
-        @Nullable
-        public MinecraftServer getServer() {
-            return serverGetter.apply(level());
-        }
-
         static class NetHandler extends ServerGamePacketListenerImpl {
             private static final net.minecraft.network.Connection DUMMY_CONNECTION = new net.minecraft.network.Connection(PacketFlow.SERVERBOUND) {
                 @Override

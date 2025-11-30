@@ -7,9 +7,8 @@ import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
@@ -34,16 +33,16 @@ public final class RemotePlacerTest {
 
     static class RemotePlacerTestDirect {
         private static Stream<TestFunction> removeBlock(String batchName, String structureName) {
-            return getBlocks().map(b -> {
+            return getBlocks().map(blockName -> {
                 var r = Rotation.NONE;
-                var blockName = BuiltInRegistries.BLOCK.getKey(b);
                 var name = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, "RemotePlacerTest_removeBlock_%s_%s".formatted(
                     r.name().toLowerCase(Locale.ROOT), blockName.getPath()));
-                return TestFunction.createWithStructure(QuarryPlus.modID, batchName, name, structureName, g -> removeBlock(g, b));
+                return TestFunction.createWithStructure(QuarryPlus.modID, batchName, name, structureName, g -> removeBlock(g, blockName));
             });
         }
 
-        private static void removeBlock(GameTestHelper helper, Block block) {
+        private static void removeBlock(GameTestHelper helper, ResourceLocation blockName) {
+            var block = BuiltInRegistries.BLOCK.getValue(blockName);
             var placerBlock = PlatformAccess.getAccess().registerObjects().remotePlacerBlock().get();
             helper.startSequence()
                 .thenExecuteAfter(1, () -> helper.setBlock(placerPos, placerBlock))
@@ -65,16 +64,16 @@ public final class RemotePlacerTest {
         }
 
         private static Stream<TestFunction> placeBlock1(String batchName, String structureName) {
-            return getBlocks().map(b -> {
+            return getBlocks().map(blockName -> {
                 var r = Rotation.NONE;
-                var blockName = BuiltInRegistries.BLOCK.getKey(b);
                 var name = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, "RemotePlacerTest_placeBlock1_%s_%s".formatted(
                     r.name().toLowerCase(Locale.ROOT), blockName.getPath()));
-                return TestFunction.createWithStructure(QuarryPlus.modID, batchName, name, structureName, g -> placeBlock1(g, b));
+                return TestFunction.createWithStructure(QuarryPlus.modID, batchName, name, structureName, g -> placeBlock1(g, blockName));
             });
         }
 
-        private static void placeBlock1(GameTestHelper helper, Block block) {
+        private static void placeBlock1(GameTestHelper helper, ResourceLocation blockName) {
+            var block = BuiltInRegistries.BLOCK.getValue(blockName);
             var placerBlock = PlatformAccess.getAccess().registerObjects().remotePlacerBlock().get();
             helper.startSequence()
                 .thenExecuteAfter(1, () -> helper.setBlock(placerPos, placerBlock))
@@ -100,7 +99,13 @@ public final class RemotePlacerTest {
     }
 
     @NotNull
-    private static Stream<Block> getBlocks() {
-        return Stream.of(Blocks.STONE, Blocks.ICE, Blocks.ACACIA_LOG, Blocks.BIRCH_LEAVES, Blocks.OBSIDIAN);
+    private static Stream<ResourceLocation> getBlocks() {
+        return Stream.of(
+            ResourceLocation.fromNamespaceAndPath("minecraft", "stone"),
+            ResourceLocation.fromNamespaceAndPath("minecraft", "ice"),
+            ResourceLocation.fromNamespaceAndPath("minecraft", "acacia_log"),
+            ResourceLocation.fromNamespaceAndPath("minecraft", "birch_leaves"),
+            ResourceLocation.fromNamespaceAndPath("minecraft", "obsidian")
+        );
     }
 }

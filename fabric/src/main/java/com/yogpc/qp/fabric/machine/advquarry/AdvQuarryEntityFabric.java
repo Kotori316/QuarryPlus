@@ -4,15 +4,18 @@ import com.yogpc.qp.QuarryDataComponents;
 import com.yogpc.qp.fabric.PlatformAccessFabric;
 import com.yogpc.qp.machine.advquarry.AdvQuarryEntity;
 import com.yogpc.qp.machine.exp.ExpModule;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public final class AdvQuarryEntityFabric extends AdvQuarryEntity implements ExpModule {
     boolean shouldRemoveBedrock = false;
@@ -25,15 +28,25 @@ public final class AdvQuarryEntityFabric extends AdvQuarryEntity implements ExpM
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.putBoolean("shouldRemoveBedrock", shouldRemoveBedrock);
         output.putInt("collectedExp", collectedExp);
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        shouldRemoveBedrock = input.getBooleanOr("shouldRemoveBedrock", shouldRemoveBedrock);
         collectedExp = input.getIntOr("collectedExp", collectedExp);
+    }
+
+    @Override
+    public ValueOutput toClientTag(ValueOutput output) {
+        output.putBoolean("shouldRemoveBedrock", shouldRemoveBedrock);
+        return super.toClientTag(output);
+    }
+
+    @Override
+    public void fromClientTag(ValueInput input) {
+        super.fromClientTag(input);
+        shouldRemoveBedrock = input.getBooleanOr("shouldRemoveBedrock", shouldRemoveBedrock);
     }
 
     @Override
@@ -68,5 +81,15 @@ public final class AdvQuarryEntityFabric extends AdvQuarryEntity implements ExpM
     @Override
     public int getExp() {
         return collectedExp;
+    }
+
+    @Override
+    public Stream<MutableComponent> checkerLogs() {
+        return Stream.concat(
+            super.checkerLogs(),
+            Stream.of(
+                detail(ChatFormatting.GREEN, "ShouldRemoveBedrock", String.valueOf(shouldRemoveBedrock()))
+            )
+        );
     }
 }

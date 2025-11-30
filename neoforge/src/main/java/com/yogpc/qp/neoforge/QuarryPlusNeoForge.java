@@ -19,12 +19,20 @@ public final class QuarryPlusNeoForge {
         QuarryPlus.LOGGER.info("Initialize {} with {}", container.getModId(), container.getClass().getName());
         PlatformAccessNeoForge.RegisterObjectsNeoForge.REGISTER_LIST.forEach(r -> r.register(modBus));
         modBus.register(this);
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             modBus.register(QuarryPlusClientNeoForge.class);
         }
         modBus.register(EnergyIntegration.class);
         modBus.register(StorageIntegration.class);
         NeoForge.EVENT_BUS.register(PlatformAccess.getAccess());
+        try {
+            var clazz = Class.forName("com.yogpc.qp.neoforge.gametest.LoadTest", true, QuarryPlusNeoForge.class.getClassLoader());
+            QuarryPlus.LOGGER.info("Found GameTest class {}", clazz.getName());
+            modBus.register(clazz);
+        } catch (ReflectiveOperationException e) {
+            // no op
+            QuarryPlus.LOGGER.debug("No GameTest are registered");
+        }
         QuarryPlus.LOGGER.info("Initialize finished {}", container.getModId());
     }
 

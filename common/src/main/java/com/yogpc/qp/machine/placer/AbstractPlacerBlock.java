@@ -4,7 +4,7 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.QpBlockItem;
 import com.yogpc.qp.machine.QpEntityBlock;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -47,7 +47,7 @@ public abstract class AbstractPlacerBlock extends QpEntityBlock {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (!player.isCrouching() && stack.is(Items.REDSTONE_TORCH)) {
-            if (!level.isClientSide && level.getBlockEntity(pos) instanceof AbstractPlacerTile placer) {
+            if (!level.isClientSide() && level.getBlockEntity(pos) instanceof AbstractPlacerTile placer) {
                 if (placer.enabled) {
                     placer.cycleRedStoneMode();
                     player.displayClientMessage(Component.translatable("quarryplus.chat.placer_rs", placer.redstoneMode.toString()), false);
@@ -106,7 +106,7 @@ public abstract class AbstractPlacerBlock extends QpEntityBlock {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             tooltipComponents.add(Component.translatable("quarryplus.tooltip.placer_plus"));
         }
     }

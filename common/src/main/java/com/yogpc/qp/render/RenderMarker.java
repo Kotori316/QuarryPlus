@@ -1,38 +1,57 @@
 package com.yogpc.qp.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.Area;
 import com.yogpc.qp.machine.marker.NormalMarkerEntity;
 import com.yogpc.qp.machine.marker.QuarryMarker;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RenderMarker implements BlockEntityRenderer<NormalMarkerEntity> {
+public class RenderMarker implements BlockEntityRenderer<NormalMarkerEntity, RenderMarker.RenderMarkerState> {
     @SuppressWarnings("unused")
     public RenderMarker(BlockEntityRendererProvider.Context context) {
     }
 
     @Override
-    public void render(NormalMarkerEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int light, int overlay, Vec3 vec3) {
+    public RenderMarkerState createRenderState() {
+        return new RenderMarkerState();
+    }
+
+    @Override
+    public void extractRenderState(NormalMarkerEntity blockEntity, RenderMarkerState renderState, float partialTick, Vec3 cameraPosition, @Nullable ModelFeatureRenderer.CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(blockEntity, renderState, partialTick, cameraPosition, breakProgress);
+        renderState.extract(blockEntity);
+    }
+
+    @Override
+    public void submit(RenderMarkerState renderState, PoseStack poseStack, SubmitNodeCollector nodeCollector, CameraRenderState cameraRenderState) {
         ProfilerFiller profiler = Profiler.get();
         profiler.push(QuarryPlus.modID);
         profiler.push("RenderMarker");
+        var blockEntity = renderState.marker;
 
         if (blockEntity.getStatus() == NormalMarkerEntity.Status.CONNECTED_MASTER) {
             var markerPos = blockEntity.getBlockPos();
             poseStack.pushPose();
             poseStack.translate(-markerPos.getX(), -markerPos.getY(), -markerPos.getZ());
-            blockEntity.getLink().ifPresent(link -> renderLink(poseStack, bufferSource, link, ColorBox.markerBlueColor));
+            nodeCollector.submitCustomGeometry(poseStack, RenderType.cutout(), (pose, vertexConsumer) -> {
+                blockEntity.getLink().ifPresent(link -> renderLink(pose, vertexConsumer, link, ColorBox.markerBlueColor));
+            });
             poseStack.popPose();
         }
 
@@ -40,11 +59,18 @@ public class RenderMarker implements BlockEntityRenderer<NormalMarkerEntity> {
         profiler.pop();
     }
 
-    public static void renderLink(PoseStack poseStack, MultiBufferSource bufferSource, QuarryMarker.Link link, ColorBox color) {
+    public static class RenderMarkerState extends BlockEntityRenderState {
+        private NormalMarkerEntity marker;
+
+        void extract(NormalMarkerEntity marker) {
+            this.marker = marker;
+        }
+    }
+
+    static void renderLink(PoseStack.Pose pose, VertexConsumer buffer, QuarryMarker.Link link, ColorBox color) {
         var sprite = Sprites.INSTANCE.getWhite();
-        var buffer = bufferSource.getBuffer(RenderType.cutout());
         for (Box box : getRenderBox(link.area())) {
-            box.render(buffer, poseStack, sprite, color);
+            box.render(buffer, pose, sprite, color);
         }
     }
 

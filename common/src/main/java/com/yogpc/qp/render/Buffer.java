@@ -7,18 +7,18 @@ import org.joml.Vector4f;
 
 final class Buffer {
     private final VertexConsumer bufferBuilder;
-    private final PoseStack matrix;
+    private final PoseStack.Pose matrix;
     private final Vector4f vector4f = new Vector4f();
     private final ColorBox colorBox;
 
-    Buffer(VertexConsumer bufferBuilder, PoseStack matrix, ColorBox colorBox) {
+    Buffer(VertexConsumer bufferBuilder, PoseStack.Pose matrix, ColorBox colorBox) {
         this.bufferBuilder = bufferBuilder;
         this.matrix = matrix;
         this.colorBox = colorBox;
     }
 
     Buffer pos(double x, double y, double z) {
-        Matrix4f matrix4f = matrix.last().pose();
+        Matrix4f matrix4f = matrix.pose();
 
         vector4f.set((float) x, (float) y, (float) z, 1.0F);
         vector4f.mul(matrix4f);

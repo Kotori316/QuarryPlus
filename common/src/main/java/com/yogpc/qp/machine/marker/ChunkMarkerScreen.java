@@ -3,9 +3,9 @@ package com.yogpc.qp.machine.marker;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.misc.IndexedButton;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -81,9 +81,9 @@ public final class ChunkMarkerScreen extends AbstractContainerScreen<MarkerConta
         int yMin = marker.minY;
         int yMax = marker.maxY;
         int n;
-        if (Screen.hasShiftDown()) { // Shift
+        if (Minecraft.getInstance().hasShiftDown()) { // Shift
             n = 16;
-        } else if (Screen.hasControlDown()) { // Ctrl
+        } else if (Minecraft.getInstance().hasControlDown()) { // Ctrl
             n = 4;
         } else {
             n = 1;

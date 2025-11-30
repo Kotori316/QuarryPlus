@@ -2,6 +2,7 @@ package com.yogpc.qp.render;
 
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
@@ -23,8 +24,13 @@ public class Sprites {
     }
 
     private TextureAtlasSprite getSprite(String name) {
-        return spriteMap.computeIfAbsent(name, s ->
-            Minecraft.getInstance().getTextureAtlas(atlas()).apply(getSpriteLocation(s)));
+        return spriteMap.computeIfAbsent(name, s -> {
+            AbstractTexture texture = Minecraft.getInstance().getTextureManager().getTexture(atlas());
+            if (texture instanceof TextureAtlas atlas) {
+                return atlas.getSprite(getSpriteLocation(s));
+            }
+            return null;
+        });
     }
 
     @NotNull

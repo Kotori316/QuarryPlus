@@ -1,9 +1,9 @@
 package com.yogpc.qp.machine.misc;
 
 import com.yogpc.qp.QuarryPlus;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -58,7 +58,7 @@ public final class YSetterScreen extends AbstractContainerScreen<YSetterContaine
     private void changeDigY(boolean plus) {
         var accessor = getMenu().yAccessor;
         if (accessor != null) {
-            int n = Screen.hasShiftDown() ? 16 : Screen.hasControlDown() ? 4 : 1;
+            int n = Minecraft.getInstance().hasShiftDown() ? 16 : Minecraft.getInstance().hasControlDown() ? 4 : 1;
             var count = (plus ? 1 : -1) * n;
             var updated = Math.min(count + accessor.getDigMinY(), accessor.getLimitTop());
             accessor.setDigMinY(updated);

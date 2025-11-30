@@ -3,6 +3,7 @@ package com.yogpc.qp.machine.storage;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -44,13 +45,13 @@ public final class DebugStorageScreen extends AbstractContainerScreen<DebugStora
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
         if (itemCountList.isMouseOver(mouseX, mouseY)) {
-            if (itemCountList.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
+            if (itemCountList.mouseDragged(event, mouseX, mouseY)) {
                 return true;
             }
         }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return super.mouseDragged(event, mouseX, mouseY);
     }
 
     @Override

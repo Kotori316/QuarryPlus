@@ -31,7 +31,7 @@ public final class ExpModuleItem extends QpItem implements QuarryModuleProvider.
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand usedHand) {
         var stack = player.getItemInHand(usedHand);
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             int exp = stack.getOrDefault(QuarryDataComponents.HOLDING_EXP_COMPONENT, 0);
             if (exp > 0) {
                 player.displayClientMessage(Component.literal("Give %d exp point".formatted(exp)), true);

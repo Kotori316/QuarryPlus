@@ -53,6 +53,7 @@ runs {
     create("client") {
         workingDirectory = project.file("run")
         systemProperties.put("neoforge.enabledGameTestNamespaces", "$modId,minecraft")
+        environmentVariable("TEST_UTILITY_NO_REGISTRATION", "false")
         arguments("--username", "Kotori")
         modSources.add(modId, sourceSets["gameTest"])
         dependencies {
@@ -63,7 +64,9 @@ runs {
 
     create("gameTestServer") {
         workingDirectory = project.file("game-test")
-        systemProperties.put("neoforge.enabledGameTestNamespaces", "$modId,minecraft")
+        systemProperty("neoforge.enabledGameTestNamespaces", "$modId,minecraft")
+        systemProperty("mixin.debug.export", "false")
+        environmentVariable("TEST_UTILITY_NO_REGISTRATION", "false")
         // systemProperties.put("bsl.debug", "true")
         jvmArguments("-ea")
         modSources.add(modId, sourceSets["gameTest"])
@@ -75,32 +78,34 @@ runs {
 
     create("clientData") {
         workingDirectory.set(project.file("runs/data"))
+        val dataGenModId = "${modId}_data"
         arguments.addAll(
             "--mod",
-            "quarryplus",
+            dataGenModId,
             "--output",
             file("src/generated/resources/").toString(),
             "--existing",
             file("src/main/resources/").toString()
         )
 
-        modSources.add(modId, sourceSets["dataGen"])
+        modSources.add(dataGenModId, sourceSets["dataGen"])
     }
 
     create("commonData") {
         runType("clientData")
+        val dataGenModId = "${modId}_common_data"
         isDataGenerator = true
         workingDirectory.set(project.file("runs/commonData"))
         arguments.addAll(
             "--mod",
-            "quarryplus",
+            dataGenModId,
             "--output",
             project(":common").file("src/generated/resources/").toString(),
             "--existing",
             project(":common").file("src/main/resources/").toString()
         )
 
-        modSources.add(modId, sourceSets["commonDataGen"])
+        modSources.add(dataGenModId, sourceSets["commonDataGen"])
     }
 }
 

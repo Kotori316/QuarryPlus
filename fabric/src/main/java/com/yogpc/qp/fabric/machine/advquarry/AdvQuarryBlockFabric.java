@@ -29,6 +29,7 @@ public final class AdvQuarryBlockFabric extends AdvQuarryBlock {
                 } else {
                     entity.shouldRemoveBedrock = !entity.shouldRemoveBedrock;
                     player.displayClientMessage(Component.literal("Set removeBedrock: %s".formatted(entity.shouldRemoveBedrock)), false);
+                    entity.syncToClient();
                 }
             }
             return InteractionResult.SUCCESS_SERVER;

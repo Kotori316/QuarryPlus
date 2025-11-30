@@ -9,6 +9,7 @@ import net.minecraft.client.gui.components.StateSwitchingButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -108,8 +109,8 @@ public final class MoverScreen extends AbstractContainerScreen<MoverContainer> {
         }
 
         @Override
-        public void onClick(double mouseX, double mouseY) {
-            super.onClick(mouseX, mouseY);
+        public void onClick(MouseButtonEvent event, boolean isDoubleClick) {
+            super.onClick(event, isDoubleClick);
             onPress.accept(this);
         }
 
