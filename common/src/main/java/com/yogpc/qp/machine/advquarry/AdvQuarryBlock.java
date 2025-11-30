@@ -4,6 +4,8 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.*;
 import com.yogpc.qp.machine.marker.QuarryMarker;
+import com.yogpc.qp.machine.module.ModuleContainer;
+import com.yogpc.qp.machine.module.QuarryModuleProvider;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -91,7 +93,13 @@ public class AdvQuarryBlock extends QpEntityBlock {
         if (entity != null) {
             if (!level.isClientSide()) {
                 if (entity.enabled) {
-                    PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, AdvQuarryContainer::new));
+                    if (player.getMainHandItem().getItem() instanceof QuarryModuleProvider.Item &&
+                        !PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+                        // Open module screen when player has Module item
+                        PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, ModuleContainer::new));
+                    } else {
+                        PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, AdvQuarryContainer::new));
+                    }
                 } else {
                     player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
                 }
