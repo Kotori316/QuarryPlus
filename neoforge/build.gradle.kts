@@ -53,6 +53,7 @@ runs {
     create("client") {
         workingDirectory = project.file("run")
         systemProperties.put("neoforge.enabledGameTestNamespaces", "$modId,minecraft")
+        environmentVariable("TEST_UTILITY_NO_REGISTRATION", "false")
         arguments("--username", "Kotori")
         modSources.add(modId, sourceSets["gameTest"])
         dependencies {
@@ -64,6 +65,7 @@ runs {
     create("gameTestServer") {
         workingDirectory = project.file("game-test")
         systemProperties.put("neoforge.enabledGameTestNamespaces", "$modId,minecraft")
+        environmentVariable("TEST_UTILITY_NO_REGISTRATION", "false")
         // systemProperties.put("bsl.debug", "true")
         jvmArguments("-ea")
         modSources.add(modId, sourceSets["gameTest"])

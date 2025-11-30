@@ -21,9 +21,9 @@ public final class MachineEnergyHandlerTest {
     static List<TestFunction> tests() {
         var instance = new MachineEnergyHandlerTest();
         return List.of(
-            TestFunction.create(QuarryPlus.modID, "loadHandler", instance::loadHandler),
-            TestFunction.create(QuarryPlus.modID, "insertThanMax", instance::insertThanMax),
-            TestFunction.create(QuarryPlus.modID, "insertThanMax2", instance::insertThanMax2)
+            TestFunction.create(QuarryPlus.modID, "MachineEnergyHandlerTestLoadHandler", instance::loadHandler),
+            TestFunction.create(QuarryPlus.modID, "MachineEnergyHandlerTestInsertThanMax", instance::insertThanMax),
+            TestFunction.create(QuarryPlus.modID, "MachineEnergyHandlerTestInsertThanMax2", instance::insertThanMax2)
         );
     }
 

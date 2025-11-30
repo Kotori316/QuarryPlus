@@ -42,7 +42,7 @@ public final class EnergyIntegration {
         @Override
         public int insert(int amount, TransactionContext transaction) {
             updateSnapshots(transaction);
-            var received = entity.addEnergy(amount * PowerEntity.ONE_FE, true);
+            var received = entity.addEnergy(amount * PowerEntity.ONE_FE, false);
             return clamp(received / PowerEntity.ONE_FE);
         }
 

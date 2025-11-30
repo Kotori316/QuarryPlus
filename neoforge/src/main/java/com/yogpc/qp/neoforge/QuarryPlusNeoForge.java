@@ -29,7 +29,7 @@ public final class QuarryPlusNeoForge {
             var clazz = Class.forName("com.yogpc.qp.neoforge.gametest.LoadTest", true, QuarryPlusNeoForge.class.getClassLoader());
             QuarryPlus.LOGGER.info("Found GameTest class {}", clazz.getName());
             modBus.register(clazz);
-        } catch (ClassNotFoundException e) {
+        } catch (ReflectiveOperationException e) {
             // no op
             QuarryPlus.LOGGER.debug("No GameTest are registered");
         }

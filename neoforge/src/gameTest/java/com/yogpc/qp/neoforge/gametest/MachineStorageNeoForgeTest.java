@@ -22,10 +22,10 @@ public final class MachineStorageNeoForgeTest {
     static List<TestFunction> tests() {
         var instance = new MachineStorageNeoForgeTest();
         return List.of(
-            TestFunction.create(QuarryPlus.modID, "loadHandler", instance::loadHandler),
-            TestFunction.create(QuarryPlus.modID, "fluidContent", instance::fluidContent),
-            TestFunction.create(QuarryPlus.modID, "conversionEmpty", instance::conversionEmpty),
-            TestFunction.create(QuarryPlus.modID, "conversion", instance::conversion)
+            TestFunction.create(QuarryPlus.modID, "MachineStorageNeoForgeTestLoadHandler", instance::loadHandler),
+            TestFunction.create(QuarryPlus.modID, "MachineStorageNeoForgeTestFluidContent", instance::fluidContent),
+            TestFunction.create(QuarryPlus.modID, "MachineStorageNeoForgeTestConversionEmpty", instance::conversionEmpty),
+            TestFunction.create(QuarryPlus.modID, "MachineStorageNeoForgeTestConversion", instance::conversion)
         );
     }
 
