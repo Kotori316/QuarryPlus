@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
+// TODO Seems not working in CI environment. It doesn't load any tests.
 public final class LoadTest {
     static {
         QuarryPlus.LOGGER.info("Loading GameTest for NeoForge");
