@@ -2,6 +2,7 @@ package com.yogpc.qp.machine.advquarry;
 
 import com.google.common.collect.Sets;
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.*;
 import com.yogpc.qp.machine.exp.ExpModule;
 import com.yogpc.qp.machine.misc.BlockBreakEventResult;
@@ -44,6 +45,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -52,6 +55,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync {
+    public static final Marker MARKER = MarkerFactory.getMarker("advQuarry");
 
     @NotNull
     AdvQuarryState currentState = AdvQuarryState.FINISHED;
@@ -607,11 +611,16 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
             var state = statePair.getValue();
             var target = statePair.getKey();
             var blockEntity = serverLevel.getBlockEntity(target);
-            var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe), pickaxe, stateAfterBreak(serverLevel, target, state));
-            if (!afterBreakEventResult.canceled()) {
-                afterBreakEventResult.drops().stream().flatMap(itemConverter::convert).forEach(storage::addItem);
-                var amount = resultMap.getOrDefault(target, BlockBreakEventResult.EMPTY).exp().orElse(afterBreakEventResult.exp().orElse(0));
-                exp.addAndGet(amount);
+            try {
+                var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe), pickaxe, stateAfterBreak(serverLevel, target, state));
+                if (!afterBreakEventResult.canceled()) {
+                    afterBreakEventResult.drops().stream().flatMap(itemConverter::convert).forEach(storage::addItem);
+                    var amount = resultMap.getOrDefault(target, BlockBreakEventResult.EMPTY).exp().orElse(afterBreakEventResult.exp().orElse(0));
+                    exp.addAndGet(amount);
+                }
+            } catch (Exception e) {
+                // Sometimes Block.getDrops will throw an exception...
+                QuarryPlus.LOGGER.warn(MARKER, "Error occurred while processing block {} at ({})", state.getBlock(), target.toShortString(), e);
             }
         }
         // Remove blocks

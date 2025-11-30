@@ -603,13 +603,18 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         );
         if (useEnergy(requiredEnergy, true, getMaxEnergy() < requiredEnergy, "breakBlock") == requiredEnergy) {
             useEnergy(requiredEnergy, false, getMaxEnergy() < requiredEnergy, "breakBlock");
-            var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe), pickaxe, stateAfterBreak(serverLevel, target, state));
-            if (!afterBreakEventResult.canceled()) {
-                afterBreakEventResult.drops().stream().flatMap(itemConverter::convert).forEach(storage::addItem);
-                var amount = eventResult.exp().orElse(afterBreakEventResult.exp().orElse(0));
-                if (amount != 0) {
-                    getExpModule().ifPresent(e -> e.addExp(amount));
+            try {
+                var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe), pickaxe, stateAfterBreak(serverLevel, target, state));
+                if (!afterBreakEventResult.canceled()) {
+                    afterBreakEventResult.drops().stream().flatMap(itemConverter::convert).forEach(storage::addItem);
+                    var amount = eventResult.exp().orElse(afterBreakEventResult.exp().orElse(0));
+                    if (amount != 0) {
+                        getExpModule().ifPresent(e -> e.addExp(amount));
+                    }
                 }
+            } catch (Exception e) {
+                // Sometimes Block.getDrops will throw an exception...
+                QuarryPlus.LOGGER.warn(MARKER, "Error occurred while processing block {} at ({})", state.getBlock(), target.toShortString(), e);
             }
 
             if (shouldRemoveFluid()) {
