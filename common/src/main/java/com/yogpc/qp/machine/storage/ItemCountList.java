@@ -94,10 +94,10 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
 
         @Override
         public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
-            guiGraphics.renderFakeItem(stack, getX(), getY());
+            guiGraphics.renderFakeItem(stack, getRowLeft(), getY());
             var text = getNarration();
             final int textWidth = minecraft.font.width(text);
-            final int textX = getX() + 20;
+            final int textX = getRowLeft() + 20;
             final int textY = getY() + 4;
             guiGraphics.drawString(minecraft.font, text, textX, textY, ARGB.opaque(0xFFFFFF));
             guiGraphics.drawString(minecraft.font, count + unit, textX + textWidth + 8, textY, ARGB.opaque(0xFFFFFF), true);
