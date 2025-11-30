@@ -4,22 +4,20 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
 import com.yogpc.qp.machine.marker.ChunkMarkerEntity;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import static com.yogpc.qp.render.RenderMarker.renderLink;
-
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.state.CameraRenderState;
-import org.jetbrains.annotations.Nullable;
 
 public class RenderChunkMarker implements BlockEntityRenderer<ChunkMarkerEntity, RenderChunkMarker.RenderChunkMarkerState> {
     @SuppressWarnings("unused")
@@ -58,6 +56,7 @@ public class RenderChunkMarker implements BlockEntityRenderer<ChunkMarkerEntity,
 
     public static class RenderChunkMarkerState extends BlockEntityRenderState {
         private ChunkMarkerEntity marker;
+
         void extract(ChunkMarkerEntity marker) {
             this.marker = marker;
         }

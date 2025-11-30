@@ -5,22 +5,21 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
 import com.yogpc.qp.machine.marker.FlexibleMarkerEntity;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import static com.yogpc.qp.render.RenderMarker.renderLink;
-
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.state.CameraRenderState;
-import org.jetbrains.annotations.Nullable;
 
 public class RenderFlexibleMarker implements BlockEntityRenderer<FlexibleMarkerEntity, RenderFlexibleMarker.RenderFlexibleMarkerState> {
     @SuppressWarnings("unused")
@@ -75,6 +74,7 @@ public class RenderFlexibleMarker implements BlockEntityRenderer<FlexibleMarkerE
 
     public static class RenderFlexibleMarkerState extends BlockEntityRenderState {
         private FlexibleMarkerEntity marker;
+
         void extract(FlexibleMarkerEntity marker) {
             this.marker = marker;
         }

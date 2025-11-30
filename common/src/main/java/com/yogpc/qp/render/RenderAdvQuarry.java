@@ -1,14 +1,12 @@
 package com.yogpc.qp.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.Area;
 import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import com.yogpc.qp.machine.advquarry.AdvQuarryEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -102,6 +100,7 @@ public class RenderAdvQuarry implements BlockEntityRenderer<AdvQuarryEntity, Ren
 
     public static class RenderAdvQuarryState extends BlockEntityRenderState {
         AdvQuarryEntity quarry;
+
         void extract(AdvQuarryEntity quarry) {
             this.quarry = quarry;
         }

@@ -6,24 +6,21 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.Area;
 import com.yogpc.qp.machine.marker.NormalMarkerEntity;
 import com.yogpc.qp.machine.marker.QuarryMarker;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.state.CameraRenderState;
-
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import org.jetbrains.annotations.Nullable;
 
 public class RenderMarker implements BlockEntityRenderer<NormalMarkerEntity, RenderMarker.RenderMarkerState> {
     @SuppressWarnings("unused")
@@ -64,6 +61,7 @@ public class RenderMarker implements BlockEntityRenderer<NormalMarkerEntity, Ren
 
     public static class RenderMarkerState extends BlockEntityRenderState {
         private NormalMarkerEntity marker;
+
         void extract(NormalMarkerEntity marker) {
             this.marker = marker;
         }

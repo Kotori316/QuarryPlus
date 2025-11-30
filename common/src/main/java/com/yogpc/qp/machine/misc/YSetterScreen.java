@@ -1,17 +1,15 @@
 package com.yogpc.qp.machine.misc;
 
 import com.yogpc.qp.QuarryPlus;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
-
-import static net.minecraft.client.Minecraft.*;
 
 public final class YSetterScreen extends AbstractContainerScreen<YSetterContainer> {
     private static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/adv_pump.png");
@@ -60,7 +58,7 @@ public final class YSetterScreen extends AbstractContainerScreen<YSetterContaine
     private void changeDigY(boolean plus) {
         var accessor = getMenu().yAccessor;
         if (accessor != null) {
-            int n = getInstance().hasShiftDown() ? 16 : getInstance().hasControlDown() ? 4 : 1;
+            int n = Minecraft.getInstance().hasShiftDown() ? 16 : Minecraft.getInstance().hasControlDown() ? 4 : 1;
             var count = (plus ? 1 : -1) * n;
             var updated = Math.min(count + accessor.getDigMinY(), accessor.getLimitTop());
             accessor.setDigMinY(updated);

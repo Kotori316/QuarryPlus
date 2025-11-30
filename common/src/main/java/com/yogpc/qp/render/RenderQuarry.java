@@ -4,22 +4,19 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.quarry.QuarryEntity;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.Vec3;
-
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.state.CameraRenderState;
-
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("DuplicatedCode")
@@ -808,6 +805,7 @@ public class RenderQuarry implements BlockEntityRenderer<QuarryEntity, RenderQua
     public static class RenderQuarryState extends BlockEntityRenderState {
         private QuarryEntity quarry;
         private float partialTick;
+
         void extract(QuarryEntity quarry, float partialTick) {
             this.quarry = quarry;
             this.partialTick = partialTick;
