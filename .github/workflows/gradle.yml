@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "1.21.2"
+      - "1.21.11"
     tags:
       - "!*"
   pull_request:
     branches:
-      - "1.21.2"
+      - "1.21.11"
 
 permissions:
   contents: read
