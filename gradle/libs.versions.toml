@@ -26,7 +26,6 @@ mockito_inline = "5.2.0"
 
 plugin_cf = "3.4"
 plugin_publish_all = "1.1.0"
-plugin_github_release = "2.5.2"
 plugin_idea_ext = "1.3"
 
 plugin_fabric_loom = "1.13.6"
@@ -73,7 +72,6 @@ mockito = ["mockito_core", "mockito_inline"]
 
 [plugins]
 cf = { id = "com.kotori316.plugin.cf", version.ref = "plugin_cf" }
-github-release = { id = "com.github.breadmoirai.github-release", version.ref = "plugin_github_release" }
 publish-all = { id = "me.modmuss50.mod-publish-plugin", version.ref = "plugin_publish_all" }
 idea-ext = { id = "org.jetbrains.gradle.plugin.idea-ext", version.ref = "plugin_idea_ext" }
 
