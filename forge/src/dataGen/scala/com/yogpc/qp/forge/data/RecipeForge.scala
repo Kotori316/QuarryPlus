@@ -32,7 +32,7 @@ class RecipeForge(output: PackOutput, registries: CompletableFuture[HolderLookup
       val recipeFeatures = collected.getSavedRecipes.map { (id, recipe, conditions) =>
         val json = net.minecraft.world.item.crafting.Recipe.CODEC.encodeStart(registryOps, recipe).getOrThrow().getAsJsonObject
         saveConditions(registryOps, conditions, json)
-        val path = recipePathProvider.json(id.location())
+        val path = recipePathProvider.json(id.identifier())
         DataProvider.saveStable(pOutput, json, path)
       }
 
