@@ -14,9 +14,8 @@ import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.*;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.Variant;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
@@ -77,7 +76,7 @@ final class StateAndModelProvider extends ModelProvider {
 
     void frame(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
         var centerTemplate = ExtendedModelTemplateBuilder.builder()
-            .renderType(renderTypeName(RenderType.cutout()))
+            .renderType(renderTypeName(ChunkSectionLayer.CUTOUT))
             .element(b ->
                 b.from(4.0f, 4.0f, 4.0f).to(12.0f, 12.0f, 12.0f)
                     .allFaces((direction, faceBuilder) -> faceBuilder.uvs(4, 4, 12, 12).texture(TextureSlot.TEXTURE))
@@ -92,7 +91,7 @@ final class StateAndModelProvider extends ModelProvider {
             blockModels.modelOutput
         );
         var sideTemplate = ExtendedModelTemplateBuilder.builder()
-            .renderType(renderTypeName(RenderType.cutout()))
+            .renderType(renderTypeName(ChunkSectionLayer.CUTOUT))
             .element(b -> b.from(4, 4, 0).to(12, 12, 4)
                 .face(Direction.DOWN, f -> f.uvs(4, 0, 12, 4).texture(TextureSlot.TEXTURE))
                 .face(Direction.UP, f -> f.uvs(4, 0, 12, 4).texture(TextureSlot.TEXTURE))
@@ -436,13 +435,7 @@ final class StateAndModelProvider extends ModelProvider {
         }*/
     }
 
-    private static String renderTypeName(RenderStateShard type) {
-        try {
-            var field = RenderStateShard.class.getDeclaredField("name");
-            field.setAccessible(true);
-            return (String) field.get(type);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
+    private static String renderTypeName(ChunkSectionLayer type) {
+        return type.label();
     }
 }

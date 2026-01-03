@@ -30,7 +30,7 @@ public final class LoadRecipeTest {
     public static void getRecipes(GameTestHelper helper) {
         var manager = helper.getLevel().recipeAccess();
         var recipes = manager.getRecipes().stream()
-            .filter(h -> h.id().location().getNamespace().equals(QuarryPlus.modID))
+            .filter(h -> h.id().identifier().getNamespace().equals(QuarryPlus.modID))
             .toList();
 
         assertFalse(recipes.isEmpty());

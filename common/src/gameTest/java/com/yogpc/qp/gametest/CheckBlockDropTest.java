@@ -29,13 +29,13 @@ public final class CheckBlockDropTest {
             TestFunction.createWithStructure(QuarryPlus.modID, batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, g -> {
                 var pos = BlockPos.ZERO.above();
                 var blocks = BuiltInRegistries.BLOCK.entrySet().stream()
-                    .filter(e -> e.getKey().location().getNamespace().equals(QuarryPlus.modID));
+                    .filter(e -> e.getKey().identifier().getNamespace().equals(QuarryPlus.modID));
                 blocks.forEach(e -> {
                     var b = e.getValue();
                     g.setBlock(pos, b);
                     assertInstanceOf(b.getClass(), g.getBlockState(pos).getBlock());
                     var drops = Block.getDrops(g.getBlockState(pos), g.getLevel(), g.absolutePos(pos), g.getLevel().getBlockEntity(g.absolutePos(pos)));
-                    if (EXCEPT.contains(e.getKey().location().getPath())) {
+                    if (EXCEPT.contains(e.getKey().identifier().getPath())) {
                         assertTrue(drops.isEmpty(), "Drop items must be empty for %s".formatted(e.getKey()));
                     } else {
                         assertFalse(drops.isEmpty(), "Drop item is empty for %s".formatted(e.getKey()));

@@ -34,7 +34,7 @@ class BlockDropProvider(registries: HolderLookup.Provider) extends BlockLootSubP
 
   override def getKnownBlocks: java.lang.Iterable[Block] = {
     BuiltInRegistries.BLOCK.entrySet().asScala
-      .filter(_.getKey.location().getNamespace == QuarryPlus.modID)
+      .filter(_.getKey.identifier().getNamespace == QuarryPlus.modID)
       .map(_.getValue)
       .asJava
   }

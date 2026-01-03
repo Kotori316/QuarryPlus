@@ -37,7 +37,7 @@ public final class EnableMapTest {
                 var items = BuiltInRegistries.ITEM.entrySet().stream()
                     .filter(e -> e.getValue() instanceof QpItem)
                     .map(Map.Entry::getKey)
-                    .map(ResourceKey::location);
+                    .map(ResourceKey::identifier);
                 Stream.concat(blockEntityTypes, items).forEach(e -> {
                     if (!PlatformAccess.getAccess().registerObjects().defaultEnableSetting().containsKey(e.getPath())) {
                         g.fail(Component.literal("%s is not configured".formatted(e.getPath())));
@@ -54,7 +54,7 @@ public final class EnableMapTest {
             TestFunction.createWithStructure(QuarryPlus.modID, batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, g -> {
                 var blockEntityTypes = BuiltInRegistries.BLOCK_ENTITY_TYPE.entrySet()
                     .stream()
-                    .filter(e -> e.getKey().location().getNamespace().equals(QuarryPlus.modID))
+                    .filter(e -> e.getKey().identifier().getNamespace().equals(QuarryPlus.modID))
                     .toList();
                 try {
                     var field = BlockEntityType.class.getDeclaredField("validBlocks");
