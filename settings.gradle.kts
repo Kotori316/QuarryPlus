@@ -31,6 +31,7 @@ develocity {
 includeBuild("build-logic")
 include("common")
 include("dependency-check")
+include("publish-all")
 if (!System.getenv("DISABLE_FORGE").toBoolean()) {
     include("forge")
 }
