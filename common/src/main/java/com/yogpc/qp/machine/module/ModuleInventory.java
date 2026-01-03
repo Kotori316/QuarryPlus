@@ -2,7 +2,7 @@ package com.yogpc.qp.machine.module;
 
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.QpItem;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class ModuleInventory extends SimpleContainer {
-    static final Set<ResourceLocation> allowMultiModule = Set.of(
-        ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "void_module")
+    static final Set<Identifier> allowMultiModule = Set.of(
+        Identifier.fromNamespaceAndPath(QuarryPlus.modID, "void_module")
     );
     private final Predicate<QuarryModule> staticFilter;
     private final Function<ModuleInventory, Set<QuarryModule>> holdings;

@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.yogpc.qp.machine.MachineStorage;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 import java.util.Map;
@@ -18,10 +18,10 @@ public final class QuarryDataComponents {
         .networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(MachineStorage.ITEM_KEY_MAP_CODEC.codec().listOf()))
         .build();
 
-    public static final Map<ResourceLocation, DataComponentType<?>> ALL = Map.of(
-        ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "quarry_remove_bedrock_component"), QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT,
-        ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "quarry_holding_exp_component"), QuarryDataComponents.HOLDING_EXP_COMPONENT,
-        ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "filter_module_rows"), QuarryDataComponents.FILTER_MODULE_ROWS_COMPONENT,
-        ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "quarry_item_key_list"), QuarryDataComponents.ITEM_KEY_LIST_COMPONENT
+    public static final Map<Identifier, DataComponentType<?>> ALL = Map.of(
+        Identifier.fromNamespaceAndPath(QuarryPlus.modID, "quarry_remove_bedrock_component"), QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT,
+        Identifier.fromNamespaceAndPath(QuarryPlus.modID, "quarry_holding_exp_component"), QuarryDataComponents.HOLDING_EXP_COMPONENT,
+        Identifier.fromNamespaceAndPath(QuarryPlus.modID, "filter_module_rows"), QuarryDataComponents.FILTER_MODULE_ROWS_COMPONENT,
+        Identifier.fromNamespaceAndPath(QuarryPlus.modID, "quarry_item_key_list"), QuarryDataComponents.ITEM_KEY_LIST_COMPONENT
     );
 }

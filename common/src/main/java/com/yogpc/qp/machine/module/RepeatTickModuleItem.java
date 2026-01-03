@@ -3,7 +3,7 @@ package com.yogpc.qp.machine.module;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.QpItem;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -33,8 +33,8 @@ public final class RepeatTickModuleItem extends QpItem implements QuarryModulePr
 
     public record RepeatTickModule(int stackSize) implements QuarryModule {
         @Override
-        public ResourceLocation moduleId() {
-            return ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, NAME);
+        public Identifier moduleId() {
+            return Identifier.fromNamespaceAndPath(QuarryPlus.modID, NAME);
         }
     }
 

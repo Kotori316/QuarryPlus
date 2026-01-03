@@ -15,7 +15,7 @@ import com.yogpc.qp.packet.YSetterMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -32,7 +32,7 @@ import java.util.Optional;
 public final class PacketHandler implements PlatformAccess.Packet {
     private static final int PROTOCOL = 1;
     private static final SimpleChannel CHANNEL =
-        ChannelBuilder.named(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "main"))
+        ChannelBuilder.named(Identifier.fromNamespaceAndPath(QuarryPlus.modID, "main"))
             .networkProtocolVersion(PROTOCOL)
             .acceptedVersions(Channel.VersionTest.exact(PROTOCOL))
             .simpleChannel()

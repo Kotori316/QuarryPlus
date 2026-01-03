@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.quarry.QuarryEntity;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -69,7 +68,7 @@ public class RenderQuarry implements BlockEntityRenderer<QuarryEntity, RenderQua
                         // PoseStack.Pose passed to submitCustomGeometry cannot be translated.
                         // So we must apply translation to PoseStack here.
                         matrices.translate(0.5, 0.5, 0.5);
-                        nodeCollector.submitCustomGeometry(matrices, RenderType.cutout(), (pose, vertexConsumer) -> {
+                        nodeCollector.submitCustomGeometry(matrices, Sprites.cutout(), (pose, vertexConsumer) -> {
                             renderFrame(quarry, pose, vertexConsumer);
                         });
                     }
@@ -77,7 +76,7 @@ public class RenderQuarry implements BlockEntityRenderer<QuarryEntity, RenderQua
                         // PoseStack.Pose passed to submitCustomGeometry cannot be translated.
                         // So we must apply translation to PoseStack here.
                         matrices.translate(0.5, 1.0, 0.5);
-                        nodeCollector.submitCustomGeometry(matrices, RenderType.cutout(), (pose, vertexConsumer) -> {
+                        nodeCollector.submitCustomGeometry(matrices, Sprites.cutout(), (pose, vertexConsumer) -> {
                             renderDrill(quarry, pose, tickDelta, vertexConsumer);
                         });
                     }

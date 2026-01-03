@@ -3,8 +3,8 @@ package com.yogpc.qp.enchantment;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.Item;
@@ -12,7 +12,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 
 public final class QuarryPickaxeEnchantment {
     public static final String NAME = "quarry_pickaxe";
-    public static final ResourceKey<Enchantment> KEY = ResourceKey.create(Registries.ENCHANTMENT, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, NAME));
+    public static final ResourceKey<Enchantment> KEY = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(QuarryPlus.modID, NAME));
 
     public static Enchantment createEnchantment(BootstrapContext<Enchantment> context, TagKey<Item> quarryPickaxeTag) {
         var definition = Enchantment.definition(
@@ -23,6 +23,6 @@ public final class QuarryPickaxeEnchantment {
             1,
             EquipmentSlotGroup.HAND
         );
-        return Enchantment.enchantment(definition).build(KEY.location());
+        return Enchantment.enchantment(definition).build(KEY.identifier());
     }
 }

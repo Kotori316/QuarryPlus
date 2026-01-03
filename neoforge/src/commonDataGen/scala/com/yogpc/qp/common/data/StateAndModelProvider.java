@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.Variant;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
@@ -31,7 +31,7 @@ final class StateAndModelProvider extends ModelProvider {
         super(output, QuarryPlus.modID);
     }
 
-    private ResourceLocation blockTexture(String name) {
+    private Identifier blockTexture(String name) {
         return modLocation("block/" + name);
     }
 
@@ -157,7 +157,7 @@ final class StateAndModelProvider extends ModelProvider {
         blockModels.createTrivialCube(block);
     }
 
-    void simpleBlockAndItemCubeBottomTop(BlockModelGenerators blockModels, QpBlock block, ResourceLocation side, ResourceLocation top, ResourceLocation bottom) {
+    void simpleBlockAndItemCubeBottomTop(BlockModelGenerators blockModels, QpBlock block, Identifier side, Identifier top, Identifier bottom) {
         var model = ModelTemplates.CUBE_BOTTOM_TOP.create(block,
             new TextureMapping()
                 .put(TextureSlot.SIDE, side)
@@ -233,7 +233,7 @@ final class StateAndModelProvider extends ModelProvider {
         simpleItem(itemModels, item, modLocation(texture));
     }
 
-    void simpleItem(ItemModelGenerators itemModels, QpItem item, ResourceLocation texture) {
+    void simpleItem(ItemModelGenerators itemModels, QpItem item, Identifier texture) {
         itemModels.itemModelOutput.accept(
             item,
             ItemModelUtils.plainModel(ModelTemplates.FLAT_ITEM.create(item, TextureMapping.layer0(texture), itemModels.modelOutput))
@@ -427,7 +427,7 @@ final class StateAndModelProvider extends ModelProvider {
         for (QpBlock marker : List.<QpBlock>of()) {
             var baseName = marker.name.getPath();
             var m = models().withExistingParent("block/" + baseName,
-                    ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "block/waterlogged_marker_common"))
+                    Identifier.fromNamespaceAndPath(QuarryPlus.modID, "block/waterlogged_marker_common"))
                 .texture("texture", blockTexture(baseName.replace("waterlogged_", "")))
                 .texture("particle", blockTexture(baseName.replace("waterlogged_", "")));
             simpleBlock(marker, m);

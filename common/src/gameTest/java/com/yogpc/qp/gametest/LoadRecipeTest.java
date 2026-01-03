@@ -13,8 +13,8 @@ import com.yogpc.qp.machine.placer.RemotePlacerBlock;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -39,7 +39,7 @@ public final class LoadRecipeTest {
 
     private static CraftingRecipe findRecipe(GameTestHelper helper, String id) {
         var manager = helper.getLevel().recipeAccess();
-        var holder = manager.byKey(ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, id)));
+        var holder = manager.byKey(ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(QuarryPlus.modID, id)));
         if (holder.isEmpty()) {
             throw new AssertionError("Recipe %s is not found".formatted(id));
         }

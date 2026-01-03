@@ -1,5 +1,6 @@
 package com.yogpc.qp.machine.misc;
 
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
@@ -28,5 +29,14 @@ public class IndexedButton extends Button {
     @Override
     public boolean isHoveredOrFocused() {
         return isHovered();
+    }
+
+    /**
+     * Same content as {@link net.minecraft.client.gui.components.Button.Plain}
+     */
+    @Override
+    protected void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.renderDefaultSprite(guiGraphics);
+        this.renderDefaultLabel(guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
     }
 }

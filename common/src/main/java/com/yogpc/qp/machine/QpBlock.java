@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.yogpc.qp.InCreativeTabs;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.function.Function;
 
 public abstract class QpBlock extends Block implements InCreativeTabs {
-    public final ResourceLocation name;
+    public final Identifier name;
     public final BlockItem blockItem;
 
     public QpBlock(Properties properties, String name, Function<? super QpBlock, ? extends BlockItem> itemGenerator) {
         super(properties.setId(QuarryPlus.blockKey(name)));
-        this.name = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name);
+        this.name = Identifier.fromNamespaceAndPath(QuarryPlus.modID, name);
         this.blockItem = itemGenerator.apply(this);
     }
 

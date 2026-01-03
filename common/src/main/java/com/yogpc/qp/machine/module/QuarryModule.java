@@ -1,12 +1,12 @@
 package com.yogpc.qp.machine.module;
 
 import com.yogpc.qp.QuarryPlus;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Locale;
 
 public interface QuarryModule {
-    ResourceLocation moduleId();
+    Identifier moduleId();
 
     enum Constant implements QuarryModule {
         DUMMY,
@@ -18,8 +18,8 @@ public interface QuarryModule {
         }
 
         @Override
-        public ResourceLocation moduleId() {
-            return ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name().toLowerCase(Locale.ROOT) + "_module");
+        public Identifier moduleId() {
+            return Identifier.fromNamespaceAndPath(QuarryPlus.modID, name().toLowerCase(Locale.ROOT) + "_module");
         }
     }
 }

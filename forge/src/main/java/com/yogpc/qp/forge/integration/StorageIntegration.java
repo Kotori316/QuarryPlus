@@ -3,12 +3,12 @@ package com.yogpc.qp.forge.integration;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.forge.PlatformAccessForge;
 import com.yogpc.qp.machine.MachineStorageHolder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 
 public final class StorageIntegration {
-    public static final ResourceLocation MACHINE_STORAGE = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "machine_storage");
+    public static final Identifier MACHINE_STORAGE = Identifier.fromNamespaceAndPath(QuarryPlus.modID, "machine_storage");
 
     @SubscribeEvent
     public static void attachCapabilities(AttachCapabilitiesEvent.BlockEntities event) {

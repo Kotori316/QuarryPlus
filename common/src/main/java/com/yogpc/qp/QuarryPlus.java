@@ -2,8 +2,8 @@ package com.yogpc.qp;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -32,10 +32,10 @@ public final class QuarryPlus {
     }
 
     public static ResourceKey<Item> itemKey(String name) {
-        return ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(modID, name));
+        return ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(modID, name));
     }
 
     public static ResourceKey<Block> blockKey(String name) {
-        return ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(modID, name));
+        return ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(modID, name));
     }
 }

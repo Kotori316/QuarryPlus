@@ -6,7 +6,6 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.Area;
 import com.yogpc.qp.machine.marker.NormalMarkerEntity;
 import com.yogpc.qp.machine.marker.QuarryMarker;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -49,7 +48,7 @@ public class RenderMarker implements BlockEntityRenderer<NormalMarkerEntity, Ren
             var markerPos = blockEntity.getBlockPos();
             poseStack.pushPose();
             poseStack.translate(-markerPos.getX(), -markerPos.getY(), -markerPos.getZ());
-            nodeCollector.submitCustomGeometry(poseStack, RenderType.cutout(), (pose, vertexConsumer) -> {
+            nodeCollector.submitCustomGeometry(poseStack, Sprites.cutout(), (pose, vertexConsumer) -> {
                 blockEntity.getLink().ifPresent(link -> renderLink(pose, vertexConsumer, link, ColorBox.markerBlueColor));
             });
             poseStack.popPose();

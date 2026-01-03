@@ -2,10 +2,12 @@ package com.yogpc.qp.render;
 
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -19,7 +21,7 @@ public class Sprites {
     }
 
     @SuppressWarnings("deprecation")
-    public static ResourceLocation atlas() {
+    public static Identifier atlas() {
         return TextureAtlas.LOCATION_BLOCKS;
     }
 
@@ -34,8 +36,8 @@ public class Sprites {
     }
 
     @NotNull
-    private static ResourceLocation getSpriteLocation(String s) {
-        return ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "entity/" + s);
+    private static Identifier getSpriteLocation(String s) {
+        return Identifier.fromNamespaceAndPath(QuarryPlus.modID, "entity/" + s);
     }
 
     public TextureAtlasSprite getMarkerBlue() {
@@ -68,5 +70,9 @@ public class Sprites {
 
     public TextureAtlasSprite getWhite() {
         return getSprite("white");
+    }
+
+    public static RenderType cutout() {
+        return Sheets.cutoutBlockSheet();
     }
 }

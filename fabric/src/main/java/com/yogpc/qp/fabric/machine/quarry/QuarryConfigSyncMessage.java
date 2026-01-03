@@ -7,8 +7,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
@@ -18,7 +18,7 @@ import java.util.Objects;
  * To Server
  */
 public final class QuarryConfigSyncMessage implements CustomPacketPayload, OnReceiveWithLevel {
-    public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "quarry_message");
+    public static final Identifier NAME = Identifier.fromNamespaceAndPath(QuarryPlus.modID, "quarry_message");
     public static final CustomPacketPayload.Type<QuarryConfigSyncMessage> TYPE = new Type<>(NAME);
     public static final StreamCodec<FriendlyByteBuf, QuarryConfigSyncMessage> STREAM_CODEC = CustomPacketPayload.codec(
         QuarryConfigSyncMessage::write, QuarryConfigSyncMessage::new

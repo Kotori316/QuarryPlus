@@ -4,31 +4,24 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.misc.IndexedButton;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.StateSwitchingButton;
-import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Consumer;
 
 public final class MoverScreen extends AbstractContainerScreen<MoverContainer> {
-    private static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/mover.png");
+    private static final Identifier LOCATION = Identifier.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/mover.png");
     private static final WidgetSprites PAGE_FORWARD_SPRITES = new WidgetSprites(
-        ResourceLocation.withDefaultNamespace("recipe_book/page_forward"), ResourceLocation.withDefaultNamespace("recipe_book/page_forward_highlighted")
+        Identifier.withDefaultNamespace("recipe_book/page_forward"), Identifier.withDefaultNamespace("recipe_book/page_forward_highlighted")
     );
     private static final WidgetSprites PAGE_BACKWARD_SPRITES = new WidgetSprites(
-        ResourceLocation.withDefaultNamespace("recipe_book/page_backward"), ResourceLocation.withDefaultNamespace("recipe_book/page_backward_highlighted")
+        Identifier.withDefaultNamespace("recipe_book/page_backward"), Identifier.withDefaultNamespace("recipe_book/page_backward_highlighted")
     );
     private IndexedButton enchantmentMoveButton;
-    private StateSwitchingButton forwardButton;
-    private StateSwitchingButton backwardButton;
+    private ArrowButton forwardButton;
+    private ArrowButton backwardButton;
     private int currentIndex = 0;
 
     public MoverScreen(MoverContainer menu, Inventory playerInventory, Component title) {
@@ -64,6 +57,8 @@ public final class MoverScreen extends AbstractContainerScreen<MoverContainer> {
         this.addRenderableWidget(enchantmentMoveButton = new IndexedButton(1, leftPos + (imageWidth - width) / 2, topPos + 38, width, 20, Component.empty(), this::onPress));
         this.addRenderableWidget(backwardButton = new ArrowButton(leftPos + (imageWidth - 12) / 2 - 20, enchantmentMoveButton.getY() + enchantmentMoveButton.getHeight() + 8, 12, 17, false, PAGE_BACKWARD_SPRITES, this::onPress));
         this.addRenderableWidget(forwardButton = new ArrowButton(leftPos + (imageWidth - 12) / 2 + 20, enchantmentMoveButton.getY() + enchantmentMoveButton.getHeight() + 8, 12, 17, false, PAGE_FORWARD_SPRITES, this::onPress));
+        backwardButton.setState(true);
+        forwardButton.setState(true);
 
         enchantmentMoveButton.setTooltip(Tooltip.create(Component.literal("Move this enchantment")));
         backwardButton.setTooltip(Tooltip.create(Component.literal("Previous")));
@@ -99,24 +94,23 @@ public final class MoverScreen extends AbstractContainerScreen<MoverContainer> {
         }
     }
 
-    private static final class ArrowButton extends StateSwitchingButton {
-        private final Consumer<ArrowButton> onPress;
+    private static final class ArrowButton extends ImageButton {
 
-        public ArrowButton(int x, int y, int width, int height, boolean initialState, @Nullable WidgetSprites sprites, Consumer<ArrowButton> onPress) {
-            super(x, y, width, height, initialState);
-            this.onPress = onPress;
-            this.initTextureValues(sprites);
+        private boolean state;
+
+        public ArrowButton(int x, int y, int width, int height, boolean initialState, WidgetSprites sprites, Button.OnPress onPress) {
+            super(x, y, width, height, sprites, onPress);
+            this.state = initialState;
+        }
+
+        public void setState(boolean state) {
+            this.state = state;
         }
 
         @Override
-        public void onClick(MouseButtonEvent event, boolean isDoubleClick) {
-            super.onClick(event, isDoubleClick);
-            onPress.accept(this);
-        }
-
-        @Override
-        public boolean isHoveredOrFocused() {
-            return isHovered();
+        public void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+            var spriteIdentifier = this.sprites.get(state, isHovered());
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, spriteIdentifier, this.getX(), this.getY(), this.width, this.height);
         }
     }
 }

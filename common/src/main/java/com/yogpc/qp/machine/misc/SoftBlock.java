@@ -5,7 +5,7 @@ import com.yogpc.qp.InCreativeTabs;
 import com.yogpc.qp.QuarryPlus;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.BlockItem;
@@ -25,7 +25,7 @@ import java.util.function.Predicate;
 public final class SoftBlock extends TransparentBlock implements InCreativeTabs {
     public static final String NAME = "soft_block";
     private static final int CHAIN_MAX = Short.MAX_VALUE / 2;
-    public final ResourceLocation location = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, NAME);
+    public final Identifier location = Identifier.fromNamespaceAndPath(QuarryPlus.modID, NAME);
     public final BlockItem blockItem;
 
     public SoftBlock() {

@@ -11,8 +11,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -20,7 +20,7 @@ import net.minecraft.world.level.Level;
 import java.util.Objects;
 
 public final class AdvActionActionMessage implements CustomPacketPayload, OnReceiveWithLevel {
-    public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "adv_action_action_message");
+    public static final Identifier NAME = Identifier.fromNamespaceAndPath(QuarryPlus.modID, "adv_action_action_message");
     public static final CustomPacketPayload.Type<AdvActionActionMessage> TYPE = new Type<>(NAME);
     public static final StreamCodec<RegistryFriendlyByteBuf, AdvActionActionMessage> STREAM_CODEC = CustomPacketPayload.codec(
         AdvActionActionMessage::write, AdvActionActionMessage::new

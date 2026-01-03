@@ -9,14 +9,14 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ChunkMarkerScreen extends AbstractContainerScreen<MarkerContainer> implements Button.OnPress {
-    private static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/marker.png");
+    private static final Identifier LOCATION = Identifier.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/marker.png");
     private static final int CHUNK = 16;
     private final ChunkMarkerEntity marker;
     private static final int BUTTON_WIDTH = 44;

@@ -5,7 +5,7 @@ import com.kotori316.testutil.common.TestFunction;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.ItemConverter;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -41,11 +41,11 @@ public final class ItemConverterGameTest {
 
     private static Stream<TestFunction> noConversionChunkDestroyer(String batchName, String structureName) {
         var keep = Stream.of(
-            ResourceLocation.fromNamespaceAndPath("minecraft", "apple"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "bedrock"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "potion"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "diamond_ore"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "end_stone")
+            Identifier.fromNamespaceAndPath("minecraft", "apple"),
+            Identifier.fromNamespaceAndPath("minecraft", "bedrock"),
+            Identifier.fromNamespaceAndPath("minecraft", "potion"),
+            Identifier.fromNamespaceAndPath("minecraft", "diamond_ore"),
+            Identifier.fromNamespaceAndPath("minecraft", "end_stone")
         );
         return keep.map(location -> {
             var path = location.getPath();
@@ -65,18 +65,18 @@ public final class ItemConverterGameTest {
 
     private static Stream<TestFunction> conversionChunkDestroyer(String batchName, String structureName) {
         var items = Stream.of(
-            ResourceLocation.fromNamespaceAndPath("minecraft", "dirt"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "grass_block"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "stone"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "cobblestone"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "deepslate"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "granite"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "diorite"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "andesite"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "tuff"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "netherrack"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "sandstone"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "red_sandstone")
+            Identifier.fromNamespaceAndPath("minecraft", "dirt"),
+            Identifier.fromNamespaceAndPath("minecraft", "grass_block"),
+            Identifier.fromNamespaceAndPath("minecraft", "stone"),
+            Identifier.fromNamespaceAndPath("minecraft", "cobblestone"),
+            Identifier.fromNamespaceAndPath("minecraft", "deepslate"),
+            Identifier.fromNamespaceAndPath("minecraft", "granite"),
+            Identifier.fromNamespaceAndPath("minecraft", "diorite"),
+            Identifier.fromNamespaceAndPath("minecraft", "andesite"),
+            Identifier.fromNamespaceAndPath("minecraft", "tuff"),
+            Identifier.fromNamespaceAndPath("minecraft", "netherrack"),
+            Identifier.fromNamespaceAndPath("minecraft", "sandstone"),
+            Identifier.fromNamespaceAndPath("minecraft", "red_sandstone")
         );
         return items.map(location -> {
             var path = location.getPath();

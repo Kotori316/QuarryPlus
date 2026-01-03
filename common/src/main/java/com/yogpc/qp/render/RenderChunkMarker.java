@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
 import com.yogpc.qp.machine.marker.ChunkMarkerEntity;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -45,7 +44,7 @@ public class RenderChunkMarker implements BlockEntityRenderer<ChunkMarkerEntity,
         poseStack.pushPose();
         BlockPos markerPos = marker.getBlockPos();
         poseStack.translate(-markerPos.getX(), -markerPos.getY(), -markerPos.getZ());
-        nodeCollector.submitCustomGeometry(poseStack, RenderType.cutout(), (pose, vertexConsumer) -> {
+        nodeCollector.submitCustomGeometry(poseStack, Sprites.cutout(), (pose, vertexConsumer) -> {
             marker.getLink().ifPresent(link -> renderLink(pose, vertexConsumer, link, ColorBox.redColor));
         });
         poseStack.popPose();

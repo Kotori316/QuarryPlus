@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
 import com.yogpc.qp.machine.marker.FlexibleMarkerEntity;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -48,7 +47,7 @@ public class RenderFlexibleMarker implements BlockEntityRenderer<FlexibleMarkerE
         BlockPos markerPos = marker.getBlockPos();
         poseStack.translate(-markerPos.getX(), -markerPos.getY(), -markerPos.getZ());
 
-        nodeCollector.submitCustomGeometry(poseStack, RenderType.cutout(), (pose, vertexConsumer) -> {
+        nodeCollector.submitCustomGeometry(poseStack, Sprites.cutout(), (pose, vertexConsumer) -> {
             var direction = marker.getDirection();
             AABB bb;
             final double a = 0.5d, c = 6d / 16d;

@@ -8,7 +8,7 @@ import com.yogpc.qp.{PlatformAccess, QuarryPlus}
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.{BuiltInRegistries, Registries}
 import net.minecraft.data.recipes.{RecipeCategory, RecipeOutput, RecipeProvider}
-import net.minecraft.resources.{ResourceKey, ResourceLocation}
+import net.minecraft.resources.{Identifier, ResourceKey}
 import net.minecraft.world.item.crafting.{Ingredient, Recipe as McRecipe}
 import net.minecraft.world.item.{Item, Items}
 
@@ -160,7 +160,7 @@ class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeO
 
     InstallBedrockModuleRecipe.builder(PlatformAccess.getAccess.registerObjects().quarryBlock().get())
       .unlockedBy("has_bedrock_module", has(bedrockModule))
-      .save(ip.installBedrockModuleQuarryRecipeOutput(recipeOutput), ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "install_bedrock_module_quarry")))
+      .save(ip.installBedrockModuleQuarryRecipeOutput(recipeOutput), ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(QuarryPlus.modID, "install_bedrock_module_quarry")))
 
     shaped(RecipeCategory.MISC, quarryItem(RepeatTickModuleItem.NAME))
       .define('a', ip.amethyst)
@@ -228,8 +228,8 @@ class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeO
     BuiltInRegistries.ITEM.getValue(modLoc(name))
   }
 
-  private def modLoc(name: String): ResourceLocation = {
-    ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name)
+  private def modLoc(name: String): Identifier = {
+    Identifier.fromNamespaceAndPath(QuarryPlus.modID, name)
   }
 
   private def modLocKey(name: String): ResourceKey[McRecipe[?]] = {

@@ -7,7 +7,6 @@ import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import com.yogpc.qp.machine.advquarry.AdvQuarryEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -79,7 +78,7 @@ public class RenderAdvQuarry implements BlockEntityRenderer<AdvQuarryEntity, Ren
                 double xMax = Math.min(endX, playerX + 128);
                 double zMin = Math.max(startZ, playerZ - 128);
                 double zMax = Math.min(endZ, playerZ + 128);
-                nodeCollector.submitCustomGeometry(poseStack, RenderType.cutout(), (pose, vertexConsumer) -> {
+                nodeCollector.submitCustomGeometry(poseStack, Sprites.cutout(), (pose, vertexConsumer) -> {
                     if (b1)
                         Box.apply(xMin, range.minY(), startZ, xMax, range.minY(), startZ, xMax - xMin, d, d, false, false).render(vertexConsumer, pose, sprite, color);
                     if (b2)

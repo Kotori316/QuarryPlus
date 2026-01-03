@@ -30,7 +30,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -95,7 +95,7 @@ public interface PlatformAccess {
 
         default Collection<? extends BlockEntityType<?>> getBlockEntityTypes() {
             return BuiltInRegistries.BLOCK_ENTITY_TYPE.entrySet().stream()
-                .filter(p -> p.getKey().location().getNamespace().equals(QuarryPlus.modID))
+                .filter(p -> p.getKey().identifier().getNamespace().equals(QuarryPlus.modID))
                 .map(Map.Entry::getValue)
                 .toList();
         }
@@ -106,7 +106,7 @@ public interface PlatformAccess {
 
         Supplier<? extends FilterModuleItem> filterModuleItem();
 
-        Stream<Map.Entry<ResourceLocation, Supplier<? extends InCreativeTabs>>> allItems();
+        Stream<Map.Entry<Identifier, Supplier<? extends InCreativeTabs>>> allItems();
 
         Supplier<MenuType<? extends YSetterContainer>> ySetterContainer();
 

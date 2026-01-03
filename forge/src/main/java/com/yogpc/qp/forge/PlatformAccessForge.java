@@ -40,7 +40,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -89,7 +89,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         static final List<DeferredRegister<?>> REGISTER_LIST = List.of(
             BLOCK_REGISTER, ITEM_REGISTER, BLOCK_ENTITY_REGISTER, RECIPE_REGISTER, INGREDIENT_REGISTER, CREATIVE_TAB_REGISTER, LOOT_TYPE_REGISTER, DATA_COMPONENT_TYPE_REGISTER, MENU_TYPE_REGISTER
         );
-        private static final Map<ResourceLocation, Supplier<? extends InCreativeTabs>> TAB_ITEMS = new HashMap<>();
+        private static final Map<Identifier, Supplier<? extends InCreativeTabs>> TAB_ITEMS = new HashMap<>();
         private static final Map<String, EnableMap.EnableOrNot> ENABLE_MAP = new HashMap<>();
 
         // Machine
@@ -147,7 +147,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<RecipeSerializer<FilterModuleExpandRecipe>> FILTER_MODULE_EXPAND_RECIPE = RECIPE_REGISTER.register(FilterModuleExpandRecipe.LOCATION.getPath(), () -> FilterModuleExpandRecipe.SERIALIZER);
 
         static {
-            for (Map.Entry<ResourceLocation, DataComponentType<?>> e : QuarryDataComponents.ALL.entrySet()) {
+            for (Map.Entry<Identifier, DataComponentType<?>> e : QuarryDataComponents.ALL.entrySet()) {
                 DATA_COMPONENT_TYPE_REGISTER.register(e.getKey().getPath(), e::getValue);
             }
         }
@@ -159,13 +159,13 @@ public final class PlatformAccessForge implements PlatformAccess {
         private static <T extends Block & InCreativeTabs> RegistryObject<T> registerBlock(String name, Supplier<T> supplier, Function<T, ? extends BlockItem> itemGetter) {
             var block = BLOCK_REGISTER.register(name, supplier);
             ITEM_REGISTER.register(name, () -> itemGetter.apply(block.get()));
-            TAB_ITEMS.put(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name), block);
+            TAB_ITEMS.put(Identifier.fromNamespaceAndPath(QuarryPlus.modID, name), block);
             return block;
         }
 
         private static <T extends Item & InCreativeTabs> RegistryObject<T> registerItem(String name, Supplier<T> supplier, EnableMap.EnableOrNot enableOrNot) {
             var item = ITEM_REGISTER.register(name, supplier);
-            TAB_ITEMS.put(ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, name), item);
+            TAB_ITEMS.put(Identifier.fromNamespaceAndPath(QuarryPlus.modID, name), item);
             ENABLE_MAP.put(name, enableOrNot);
             return item;
         }
@@ -271,7 +271,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         }
 
         @Override
-        public Stream<Map.Entry<ResourceLocation, Supplier<? extends InCreativeTabs>>> allItems() {
+        public Stream<Map.Entry<Identifier, Supplier<? extends InCreativeTabs>>> allItems() {
             return TAB_ITEMS.entrySet().stream();
         }
 

@@ -9,7 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -51,10 +51,10 @@ public final class PlacerTest {
     static class PlacerTestDirect {
         private static Stream<TestFunction> removeBlock(String batchName, String structureName) {
             var blockNames = List.of(
-                ResourceLocation.fromNamespaceAndPath("minecraft", "stone"),
-                ResourceLocation.fromNamespaceAndPath("minecraft", "ice"),
-                ResourceLocation.fromNamespaceAndPath("minecraft", "acacia_log"),
-                ResourceLocation.fromNamespaceAndPath("minecraft", "birch_leaves")
+                Identifier.fromNamespaceAndPath("minecraft", "stone"),
+                Identifier.fromNamespaceAndPath("minecraft", "ice"),
+                Identifier.fromNamespaceAndPath("minecraft", "acacia_log"),
+                Identifier.fromNamespaceAndPath("minecraft", "birch_leaves")
             );
             return Stream.of(Direction.values())
                 .flatMap(direction -> blockNames.stream().map(blockName -> {
@@ -85,10 +85,10 @@ public final class PlacerTest {
 
         private static Stream<TestFunction> placeBlock1(String batchName, String structureName) {
             var blockNames = List.of(
-                ResourceLocation.fromNamespaceAndPath("minecraft", "stone"),
-                ResourceLocation.fromNamespaceAndPath("minecraft", "ice"),
-                ResourceLocation.fromNamespaceAndPath("minecraft", "acacia_log"),
-                ResourceLocation.fromNamespaceAndPath("minecraft", "birch_leaves")
+                Identifier.fromNamespaceAndPath("minecraft", "stone"),
+                Identifier.fromNamespaceAndPath("minecraft", "ice"),
+                Identifier.fromNamespaceAndPath("minecraft", "acacia_log"),
+                Identifier.fromNamespaceAndPath("minecraft", "birch_leaves")
             );
             return Stream.of(Direction.values())
                 .flatMap(direction -> blockNames.stream().map(blockName -> {
@@ -99,7 +99,7 @@ public final class PlacerTest {
                 }));
         }
 
-        private static void placeBlock1(GameTestHelper helper, Direction direction, ResourceLocation blockName) {
+        private static void placeBlock1(GameTestHelper helper, Direction direction, Identifier blockName) {
             var block = BuiltInRegistries.BLOCK.getValue(blockName);
             var placerBlock = PlatformAccess.getAccess().registerObjects().placerBlock().get();
             var stonePos = placerPos.relative(direction);

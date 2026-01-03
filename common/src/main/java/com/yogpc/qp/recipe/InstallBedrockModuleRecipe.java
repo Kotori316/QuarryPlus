@@ -7,7 +7,7 @@ import com.yogpc.qp.QuarryDataComponents;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.QpBlock;
 import net.minecraft.advancements.*;
-import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -16,8 +16,8 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
@@ -49,7 +49,7 @@ public final class InstallBedrockModuleRecipe implements CraftingRecipe {
         this.placementInfo = Lazy.lazy(() -> PlacementInfo.create(this.ingredients));
     }
 
-    InstallBedrockModuleRecipe(ResourceLocation targetBlockId) {
+    InstallBedrockModuleRecipe(Identifier targetBlockId) {
         this(fromId(targetBlockId));
     }
 
@@ -92,7 +92,7 @@ public final class InstallBedrockModuleRecipe implements CraftingRecipe {
         return QuarryPlus.modID + ":" + NAME;
     }
 
-    private static QpBlock fromId(ResourceLocation blockId) {
+    private static QpBlock fromId(Identifier blockId) {
         Block block = BuiltInRegistries.BLOCK.getValue(blockId);
         if (block instanceof QpBlock qpBlock) {
             return qpBlock;
@@ -100,7 +100,7 @@ public final class InstallBedrockModuleRecipe implements CraftingRecipe {
         throw new IllegalArgumentException("Invalid block %s(%s)".formatted(block, blockId));
     }
 
-    ResourceLocation getTargetBlockId() {
+    Identifier getTargetBlockId() {
         return block.name;
     }
 
@@ -116,10 +116,10 @@ public final class InstallBedrockModuleRecipe implements CraftingRecipe {
 
     private static final class Serializer implements RecipeSerializer<InstallBedrockModuleRecipe> {
         public static final MapCodec<InstallBedrockModuleRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-            RecordCodecBuilder.of(InstallBedrockModuleRecipe::getTargetBlockId, "target", ResourceLocation.CODEC)
+            RecordCodecBuilder.of(InstallBedrockModuleRecipe::getTargetBlockId, "target", Identifier.CODEC)
         ).apply(i, InstallBedrockModuleRecipe::new));
         public static final StreamCodec<RegistryFriendlyByteBuf, InstallBedrockModuleRecipe> STREAM_CODEC =
-            ResourceLocation.STREAM_CODEC.map(InstallBedrockModuleRecipe::new, InstallBedrockModuleRecipe::getTargetBlockId).cast();
+            Identifier.STREAM_CODEC.map(InstallBedrockModuleRecipe::new, InstallBedrockModuleRecipe::getTargetBlockId).cast();
 
         @Override
         public MapCodec<InstallBedrockModuleRecipe> codec() {
@@ -170,7 +170,7 @@ public final class InstallBedrockModuleRecipe implements CraftingRecipe {
                 .requirements(AdvancementRequirements.Strategy.OR);
             this.criteria.forEach(builder::addCriterion);
             InstallBedrockModuleRecipe recipe = new InstallBedrockModuleRecipe(block);
-            AdvancementHolder advancement = builder.build(resourceKey.location().withPrefix("recipes/" + this.category.getFolderName() + "/"));
+            AdvancementHolder advancement = builder.build(resourceKey.identifier().withPrefix("recipes/" + this.category.getFolderName() + "/"));
             recipeOutput.accept(resourceKey, recipe, advancement);
         }
     }

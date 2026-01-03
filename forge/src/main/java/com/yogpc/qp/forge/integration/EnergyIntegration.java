@@ -3,7 +3,7 @@ package com.yogpc.qp.forge.integration;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.PowerEntity;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class EnergyIntegration {
-    public static final ResourceLocation POWER_ENTITY_STORAGE = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "power_entity_storage");
+    public static final Identifier POWER_ENTITY_STORAGE = Identifier.fromNamespaceAndPath(QuarryPlus.modID, "power_entity_storage");
 
     @SubscribeEvent
     public static void attachCapabilities(AttachCapabilitiesEvent.BlockEntities event) {

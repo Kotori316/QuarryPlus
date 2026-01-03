@@ -15,7 +15,7 @@ public abstract class RegistryDataLoaderMixin {
     @Redirect(method = "loadElementFromResource", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/WritableRegistry;register(Lnet/minecraft/resources/ResourceKey;Ljava/lang/Object;Lnet/minecraft/core/RegistrationInfo;)Lnet/minecraft/core/Holder$Reference;"))
     private static <T> Holder.Reference<T> changeLifeCycle(WritableRegistry<T> instance, ResourceKey<T> key, T t, RegistrationInfo registrationInfo) {
         RegistrationInfo i;
-        if (QuarryPlus.modID.equals(key.location().getNamespace())) {
+        if (QuarryPlus.modID.equals(key.identifier().getNamespace())) {
             // Make QuarryPlus things stable
             i = RegistrationInfo.BUILT_IN;
         } else {

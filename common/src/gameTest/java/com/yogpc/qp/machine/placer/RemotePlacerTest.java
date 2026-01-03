@@ -7,7 +7,7 @@ import com.yogpc.qp.QuarryPlus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -41,7 +41,7 @@ public final class RemotePlacerTest {
             });
         }
 
-        private static void removeBlock(GameTestHelper helper, ResourceLocation blockName) {
+        private static void removeBlock(GameTestHelper helper, Identifier blockName) {
             var block = BuiltInRegistries.BLOCK.getValue(blockName);
             var placerBlock = PlatformAccess.getAccess().registerObjects().remotePlacerBlock().get();
             helper.startSequence()
@@ -72,7 +72,7 @@ public final class RemotePlacerTest {
             });
         }
 
-        private static void placeBlock1(GameTestHelper helper, ResourceLocation blockName) {
+        private static void placeBlock1(GameTestHelper helper, Identifier blockName) {
             var block = BuiltInRegistries.BLOCK.getValue(blockName);
             var placerBlock = PlatformAccess.getAccess().registerObjects().remotePlacerBlock().get();
             helper.startSequence()
@@ -99,13 +99,13 @@ public final class RemotePlacerTest {
     }
 
     @NotNull
-    private static Stream<ResourceLocation> getBlocks() {
+    private static Stream<Identifier> getBlocks() {
         return Stream.of(
-            ResourceLocation.fromNamespaceAndPath("minecraft", "stone"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "ice"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "acacia_log"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "birch_leaves"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "obsidian")
+            Identifier.fromNamespaceAndPath("minecraft", "stone"),
+            Identifier.fromNamespaceAndPath("minecraft", "ice"),
+            Identifier.fromNamespaceAndPath("minecraft", "acacia_log"),
+            Identifier.fromNamespaceAndPath("minecraft", "birch_leaves"),
+            Identifier.fromNamespaceAndPath("minecraft", "obsidian")
         );
     }
 }

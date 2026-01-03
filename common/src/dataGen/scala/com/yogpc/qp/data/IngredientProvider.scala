@@ -4,7 +4,7 @@ import com.yogpc.qp.QuarryPlus
 import net.minecraft.core.HolderGetter
 import net.minecraft.core.registries.Registries
 import net.minecraft.data.recipes.RecipeOutput
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.tags.TagKey
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.crafting.Ingredient
@@ -50,7 +50,7 @@ trait IngredientProvider(itemRegistry: HolderGetter[Item]) {
   }
 
   def markerTag: TagKey[Item] = {
-    TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "markers"))
+    TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(QuarryPlus.modID, "markers"))
   }
 
   def pumpModuleRecipeOutput(original: RecipeOutput): RecipeOutput = original

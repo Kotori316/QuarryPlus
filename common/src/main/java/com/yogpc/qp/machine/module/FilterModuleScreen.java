@@ -4,11 +4,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 public final class FilterModuleScreen extends AbstractContainerScreen<FilterModuleContainer> {
-    private static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/container/generic_54.png");
+    private static final Identifier LOCATION = Identifier.fromNamespaceAndPath("minecraft", "textures/gui/container/generic_54.png");
 
     public FilterModuleScreen(FilterModuleContainer menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);

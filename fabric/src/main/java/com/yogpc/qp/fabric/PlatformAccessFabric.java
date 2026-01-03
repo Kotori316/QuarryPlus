@@ -47,7 +47,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -121,7 +121,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
 
         public static final LootItemFunctionType<MachineLootFunction> MACHINE_LOOT_FUNCTION = new LootItemFunctionType<>(MachineLootFunction.SERIALIZER);
 
-        private static final Map<ResourceLocation, InCreativeTabs> TAB_ITEMS = new HashMap<>();
+        private static final Map<Identifier, InCreativeTabs> TAB_ITEMS = new HashMap<>();
         public static final CreativeModeTab TAB = QuarryPlus.buildCreativeModeTab(FabricItemGroup.builder()).build();
         private static final Map<Class<? extends QpBlock>, BlockEntityType<?>> BLOCK_ENTITY_TYPES = new HashMap<>();
         private static final Map<String, EnableMap.EnableOrNot> ENABLE_MAP = new HashMap<>();
@@ -148,25 +148,25 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerItem(CHECKER_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
             registerItem(Y_SET_ITEM, EnableMap.EnableOrNot.ALWAYS_ON);
             registerBlockItem(FRAME_BLOCK);
-            registerBlockItem(SOFT_BLOCK, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, SoftBlock.NAME), softBlock -> softBlock.blockItem);
+            registerBlockItem(SOFT_BLOCK, Identifier.fromNamespaceAndPath(QuarryPlus.modID, SoftBlock.NAME), softBlock -> softBlock.blockItem);
             registerEntityBlock(DEBUG_STORAGE_BLOCK, DEBUG_STORAGE_TYPE, EnableMap.EnableOrNot.ALWAYS_ON);
             Registry.register(BuiltInRegistries.MENU, QuarryMenuFabric.GUI_ID, QUARRY_MENU);
             Registry.register(BuiltInRegistries.MENU, YSetterContainer.GUI_ID, Y_SET_MENU);
             Registry.register(BuiltInRegistries.MENU, MoverContainer.GUI_ID, MOVER_MENU);
             Registry.register(BuiltInRegistries.MENU, ModuleContainer.GUI_ID, MODULE_MENU);
-            Registry.register(BuiltInRegistries.MENU, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MarkerContainer.FLEXIBLE_NAME), FLEXIBLE_MARKER_MENU);
-            Registry.register(BuiltInRegistries.MENU, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MarkerContainer.CHUNK_NAME), CHUNK_MARKER_MENU);
-            Registry.register(BuiltInRegistries.MENU, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, DebugStorageContainer.NAME), DEBUG_STORAGE_MENU);
+            Registry.register(BuiltInRegistries.MENU, Identifier.fromNamespaceAndPath(QuarryPlus.modID, MarkerContainer.FLEXIBLE_NAME), FLEXIBLE_MARKER_MENU);
+            Registry.register(BuiltInRegistries.MENU, Identifier.fromNamespaceAndPath(QuarryPlus.modID, MarkerContainer.CHUNK_NAME), CHUNK_MARKER_MENU);
+            Registry.register(BuiltInRegistries.MENU, Identifier.fromNamespaceAndPath(QuarryPlus.modID, DebugStorageContainer.NAME), DEBUG_STORAGE_MENU);
             Registry.register(BuiltInRegistries.MENU, AdvQuarryContainer.GUI_ID, ADV_QUARRY_MENU);
             Registry.register(BuiltInRegistries.MENU, FilterModuleContainer.GUI_ID, FILTER_MODULE_MENU);
             Registry.register(BuiltInRegistries.MENU, PlacerContainer.PLACER_GUI_ID, PLACER_MENU_TYPE);
             Registry.register(BuiltInRegistries.MENU, PlacerContainer.REMOTE_PLACER_GUI_ID, REMOTE_PLACER_MENU_TYPE);
-            Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MachineLootFunction.NAME), MACHINE_LOOT_FUNCTION);
-            Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
-            for (Map.Entry<ResourceLocation, DataComponentType<?>> entry : QuarryDataComponents.ALL.entrySet()) {
+            Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, Identifier.fromNamespaceAndPath(QuarryPlus.modID, MachineLootFunction.NAME), MACHINE_LOOT_FUNCTION);
+            Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath(QuarryPlus.modID, QuarryPlus.modID), TAB);
+            for (Map.Entry<Identifier, DataComponentType<?>> entry : QuarryDataComponents.ALL.entrySet()) {
                 Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, entry.getKey(), entry.getValue());
             }
-            Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, InstallBedrockModuleRecipe.NAME), InstallBedrockModuleRecipe.SERIALIZER);
+            Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, Identifier.fromNamespaceAndPath(QuarryPlus.modID, InstallBedrockModuleRecipe.NAME), InstallBedrockModuleRecipe.SERIALIZER);
             Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, FilterModuleExpandRecipe.LOCATION, FilterModuleExpandRecipe.SERIALIZER);
         }
 
@@ -184,7 +184,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             registerBlockItem(block, block.name, b -> b.blockItem);
         }
 
-        private static <T extends Block & InCreativeTabs> void registerBlockItem(T block, ResourceLocation name, Function<T, ? extends BlockItem> itemGetter) {
+        private static <T extends Block & InCreativeTabs> void registerBlockItem(T block, Identifier name, Function<T, ? extends BlockItem> itemGetter) {
             Registry.register(BuiltInRegistries.BLOCK, name, block);
             registerItem(itemGetter.apply(block), name);
             TAB_ITEMS.put(name, block);
@@ -195,7 +195,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             ENABLE_MAP.put(item.name.getPath(), enable);
         }
 
-        private static void registerItem(Item item, ResourceLocation name) {
+        private static void registerItem(Item item, Identifier name) {
             Registry.register(BuiltInRegistries.ITEM, name, item);
             if (item instanceof InCreativeTabs c) {
                 TAB_ITEMS.put(name, c);
@@ -291,7 +291,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         }
 
         @Override
-        public Stream<Map.Entry<ResourceLocation, Supplier<? extends InCreativeTabs>>> allItems() {
+        public Stream<Map.Entry<Identifier, Supplier<? extends InCreativeTabs>>> allItems() {
             return TAB_ITEMS.entrySet().stream().map(t -> Pair.of(t.getKey(), t::getValue));
         }
 

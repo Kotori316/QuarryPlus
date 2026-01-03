@@ -3,7 +3,7 @@ package com.yogpc.qp.machine.module;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.ItemConverter;
 import com.yogpc.qp.machine.MachineStorage;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Collection;
 import java.util.List;
@@ -30,8 +30,8 @@ public interface ConverterModule extends QuarryModule {
         }
 
         @Override
-        public ResourceLocation moduleId() {
-            return ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, NAME);
+        public Identifier moduleId() {
+            return Identifier.fromNamespaceAndPath(QuarryPlus.modID, NAME);
         }
     }
 }

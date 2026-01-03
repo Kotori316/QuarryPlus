@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.ChunkPos;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryContainer> {
-    private static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/adv_quarry.png");
+    private static final Identifier LOCATION = Identifier.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/adv_quarry.png");
     private SmallCheckBox areaFrameCheckBox;
     private SmallCheckBox chunkByChunkCheckBox;
     private SmallCheckBox startCheckBox;

@@ -9,7 +9,7 @@ import com.yogpc.qp.machine.MachineStorage;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
@@ -21,16 +21,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public final class AccessFluidTest {
     public static Stream<TestFunction> empty(String batchName, String structureName) {
         return Stream.of(
-            ResourceLocation.fromNamespaceAndPath("minecraft", "bucket"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "air"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "cobblestone")
+            Identifier.fromNamespaceAndPath("minecraft", "bucket"),
+            Identifier.fromNamespaceAndPath("minecraft", "air"),
+            Identifier.fromNamespaceAndPath("minecraft", "cobblestone")
         ).map(location -> {
             var name = "AccessFluidTestEmpty_%s".formatted(location.getPath());
             return TestFunction.createWithStructure(QuarryPlus.modID, batchName, CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), structureName, g -> emptyBucket(g, location));
         });
     }
 
-    private static void emptyBucket(GameTestHelper helper, ResourceLocation location) {
+    private static void emptyBucket(GameTestHelper helper, Identifier location) {
         var item = BuiltInRegistries.ITEM.getValue(location);
         var access = PlatformAccess.getAccess();
         var fluid = access.getFluidInItem(new ItemStack(item));

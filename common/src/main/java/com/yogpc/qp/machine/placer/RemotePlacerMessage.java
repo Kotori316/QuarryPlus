@@ -8,8 +8,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
@@ -20,7 +20,7 @@ import java.util.Objects;
  */
 public record RemotePlacerMessage(BlockPos pos, ResourceKey<Level> dim,
                                   BlockPos newTarget) implements CustomPacketPayload, OnReceiveWithLevel {
-    public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "remote_placer_message");
+    public static final Identifier NAME = Identifier.fromNamespaceAndPath(QuarryPlus.modID, "remote_placer_message");
     public static final CustomPacketPayload.Type<RemotePlacerMessage> TYPE = new Type<>(NAME);
     public static final StreamCodec<RegistryFriendlyByteBuf, RemotePlacerMessage> STREAM_CODEC = CustomPacketPayload.codec(
         RemotePlacerMessage::write, RemotePlacerMessage::new
@@ -29,7 +29,7 @@ public record RemotePlacerMessage(BlockPos pos, ResourceKey<Level> dim,
     public RemotePlacerMessage(FriendlyByteBuf buf) {
         this(
             buf.readBlockPos(),
-            ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation()),
+            ResourceKey.create(Registries.DIMENSION, buf.readIdentifier()),
             buf.readBlockPos()
         );
     }
@@ -43,7 +43,7 @@ public record RemotePlacerMessage(BlockPos pos, ResourceKey<Level> dim,
     }
 
     public void write(FriendlyByteBuf buf) {
-        buf.writeBlockPos(pos).writeResourceLocation(dim.location());
+        buf.writeBlockPos(pos).writeIdentifier(dim.identifier());
         buf.writeBlockPos(newTarget);
     }
 

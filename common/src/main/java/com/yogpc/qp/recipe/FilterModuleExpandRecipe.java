@@ -5,13 +5,13 @@ import com.yogpc.qp.QuarryDataComponents;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.module.FilterModuleItem;
 import net.minecraft.advancements.*;
-import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -26,7 +26,7 @@ public final class FilterModuleExpandRecipe extends ShapedRecipe {
     static final int MAX_ROWS = 6;
     static final int ROW_INCREMENT = 2;
 
-    public static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "filter_module_expand_recipe");
+    public static final Identifier LOCATION = Identifier.fromNamespaceAndPath(QuarryPlus.modID, "filter_module_expand_recipe");
     public static final RecipeSerializer<FilterModuleExpandRecipe> SERIALIZER = new CustomRecipe.Serializer<>(FilterModuleExpandRecipe::new);
 
     private final Item moduleItem;
@@ -122,7 +122,7 @@ public final class FilterModuleExpandRecipe extends ShapedRecipe {
                 .requirements(AdvancementRequirements.Strategy.OR);
             this.criteria.forEach(builder::addCriterion);
             FilterModuleExpandRecipe recipe = new FilterModuleExpandRecipe(CraftingBookCategory.MISC);
-            AdvancementHolder advancement = builder.build(id.location().withPrefix("recipes/" + this.category.getFolderName() + "/"));
+            AdvancementHolder advancement = builder.build(id.identifier().withPrefix("recipes/" + this.category.getFolderName() + "/"));
             recipeOutput.accept(id, recipe, advancement);
         }
     }

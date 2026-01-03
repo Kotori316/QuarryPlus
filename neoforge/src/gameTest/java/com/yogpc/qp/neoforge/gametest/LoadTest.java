@@ -11,7 +11,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
@@ -62,11 +62,11 @@ public final class LoadTest {
     @SubscribeEvent
     public static void registerTests(RegisterGameTestsEvent event) {
         QuarryPlus.LOGGER.info("registerTests {}", event);
-        Map<ResourceLocation, @NotNull Holder<TestEnvironmentDefinition>> environments = TESTS.stream().map(TestFunction::environmentName).distinct()
+        Map<Identifier, @NotNull Holder<TestEnvironmentDefinition>> environments = TESTS.stream().map(TestFunction::environmentName).distinct()
             .collect(Collectors.toMap(Function.identity(), event::registerEnvironment));
         TESTS.forEach(testFunction -> {
-            var resourceLocation = testFunction.name();
-            event.registerTest(resourceLocation, testFunction.createTestInstance(environments.get(testFunction.environmentName())));
+            var Identifier = testFunction.name();
+            event.registerTest(Identifier, testFunction.createTestInstance(environments.get(testFunction.environmentName())));
         });
         TestUtilityCommon.TEST_LOADER_LOGGER.info("Registered {} tests for {}", TESTS.size(), QuarryPlus.modID);
     }

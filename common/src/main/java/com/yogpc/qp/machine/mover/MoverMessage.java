@@ -8,8 +8,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
@@ -21,7 +21,7 @@ import java.util.Objects;
  * To server only
  */
 public final class MoverMessage implements CustomPacketPayload, OnReceiveWithLevel {
-    public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "mover_message");
+    public static final Identifier NAME = Identifier.fromNamespaceAndPath(QuarryPlus.modID, "mover_message");
     public static final CustomPacketPayload.Type<MoverMessage> TYPE = new Type<>(NAME);
     public static final StreamCodec<RegistryFriendlyByteBuf, MoverMessage> STREAM_CODEC = CustomPacketPayload.codec(
         MoverMessage::write, MoverMessage::new
