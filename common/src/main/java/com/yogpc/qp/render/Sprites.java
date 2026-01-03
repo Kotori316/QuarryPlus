@@ -2,8 +2,8 @@ package com.yogpc.qp.render;
 
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -73,6 +73,6 @@ public class Sprites {
     }
 
     public static RenderType cutout() {
-        return Sheets.cutoutBlockSheet();
+        return RenderTypes.cutoutMovingBlock();
     }
 }
