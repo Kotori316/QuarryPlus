@@ -1,12 +1,12 @@
 [versions]
-minecraft = "1.21.10"
-forge = "1.21.10-60.1.5"
-fabric_api = "0.138.4+1.21.10"
+minecraft = "1.21.11"
+forge = "1.21.11-61.0.3"
+fabric_api = "0.140.2+1.21.11"
 fabric_loader = "0.18.4"
-neoforge = "21.10.64"
+neoforge = "21.11.17-beta"
 fabric_version_checker = "2.5.0"
 
-du = "21.10.9-SNAPSHOT"
+du = "21.11.3-SNAPSHOT"
 
 scala = "3.7.3"
 
@@ -15,8 +15,8 @@ slp_forge = "3.7.3-build-12"
 slp_fabric = "3.1.8"
 slp_neoforge = "3.7.3-build-12"
 jei_forge = "19.27.0.336"
-jei_fabric = "26.1.1.21"
-jei_neoforge = "26.1.1.21"
+jei_fabric = "27.3.0.14"
+jei_neoforge = "27.3.0.14"
 
 night-config = "3.7.3"
 
@@ -25,7 +25,7 @@ mockito_core = "5.21.0"
 mockito_inline = "5.2.0"
 
 plugin_cf = "3.4"
-plugin_publish_all = "1.+"
+plugin_publish_all = "1.1.0"
 plugin_github_release = "2.5.2"
 plugin_idea_ext = "1.3"
 
