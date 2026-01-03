@@ -6,9 +6,11 @@ plugins {
     alias(libs.plugins.publish.all)
 }
 
+version = project(":common").version
+
 val changelogProvider: Provider<String> = provider {
     val time = ZonedDateTime.now(ZoneId.of("Asia/Tokyo")).withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-    val fromFile = project.file(project.property("changelog_file")!!).readText()
+    val fromFile = rootProject.file(project.property("changelog_file")!!).readText()
     val shortFormat = fromFile.split(Regex("^# ", RegexOption.MULTILINE), limit = 3)[1]
     """
         QuarryPlus for Minecraft ${libs.versions.minecraft.get()}
