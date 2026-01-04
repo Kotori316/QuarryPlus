@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21 AS base
+FROM eclipse-temurin:25 AS base
 
 RUN <<EOF
 set -eu
