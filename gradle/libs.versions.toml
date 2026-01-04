@@ -6,7 +6,7 @@ fabric_loader = "0.18.4"
 neoforge = "21.11.17-beta"
 fabric_version_checker = "2.5.0"
 
-du = "21.11.3-SNAPSHOT"
+du = "21.11.3"
 
 scala = "3.7.3"
 
