@@ -40,6 +40,16 @@ class QuarryConfigLoaderTest {
         );
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void loadDigFromMaxY(boolean value) {
+        var config = Config.inMemory();
+        config.set("digFromMaxY", value);
+        var loaded = assertDoesNotThrow(() -> QuarryConfigLoader.load(config));
+        assertNotNull(loaded);
+        assertEquals(value, loaded.digFromMaxY());
+    }
+
     @Test
     void loadCommented() {
         var config = CommentedConfig.inMemory();

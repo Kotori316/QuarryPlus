@@ -515,8 +515,11 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         if (area == null) return null;
         var itr = switch (state) {
             case MAKE_FRAME -> area.quarryFramePosIterator();
-            case MOVE_HEAD, BREAK_BLOCK ->
-                area.quarryDigPosIterator(lastReturned != null ? lastReturned.getY() : area.minY() - 1);
+            case MOVE_HEAD, BREAK_BLOCK -> {
+                int digFromY = PlatformAccess.config().digFromMaxY() ? area.maxY() - 1 : area.minY() - 1;
+                int y = lastReturned != null ? lastReturned.getY() : digFromY;
+                yield area.quarryDigPosIterator(y);
+            }
             default -> null;
         };
         if (itr != null && lastReturned != null) {

@@ -36,6 +36,8 @@ public interface QuarryConfig {
 
     int flexibleMarkerRange();
 
+    boolean digFromMaxY();
+
     static QuarryConfig load(Path path, BooleanSupplier inDevelop) {
         try (var config = CommentedFileConfig.builder(path)
             .preserveInsertionOrder()

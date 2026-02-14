@@ -49,8 +49,9 @@ final class QuarryConfigLoader {
         var removeMinecartWithChest = config.<Boolean>get("removeMinecartWithChest");
         var markerPlusRange = config.<Integer>get("markerPlusRange");
         var flexibleMarkerRange = config.<Integer>get("flexibleMarkerRange");
+        var digFromMaxY = config.<Boolean>get("digFromMaxY");
 
-        return new QuarryConfigImpl(debug, noEnergy, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop, enableChunkLoader, convertDeepslateOres, removeCommonMaterialsByChunkDestroyer, customPlayer, removeMinecartWithChest, markerPlusRange, flexibleMarkerRange);
+        return new QuarryConfigImpl(debug, noEnergy, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop, enableChunkLoader, convertDeepslateOres, removeCommonMaterialsByChunkDestroyer, customPlayer, removeMinecartWithChest, markerPlusRange, flexibleMarkerRange, digFromMaxY);
     }
 
     record QuarryConfigImpl(
@@ -66,7 +67,8 @@ final class QuarryConfigLoader {
         boolean customPlayer,
         boolean removeMinecartWithChest,
         int markerPlusRange,
-        int flexibleMarkerRange
+        int flexibleMarkerRange,
+        boolean digFromMaxY
     ) implements QuarryConfig {
     }
 
@@ -87,6 +89,7 @@ final class QuarryConfigLoader {
         defineBoolean(config, specConfig, "removeMinecartWithChest", true, "Remove Minecart with Chest when processing blocks");
         defineInt(config, specConfig, "markerPlusRange", 256, 8, 1 << 20, "Range of Marker Plus");
         defineInt(config, specConfig, "flexibleMarkerRange", 256, 16, 1 << 24, "Range of Flexible Marker");
+        defineBoolean(config, specConfig, "digFromMaxY", false, "Whether to start digging from the top of the frame. If false, it starts digging from the bottom of the frame.");
 
         // powerMap.quarry.*
         defineInCodec(config, specConfig, "powerMap.quarry", PowerMap.Default.QUARRY);
