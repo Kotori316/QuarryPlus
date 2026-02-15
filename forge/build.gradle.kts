@@ -1,7 +1,6 @@
 plugins {
     id("com.kotori316.common")
     alias(libs.plugins.forge.gradle)
-    alias(libs.plugins.forge.mixin)
     id("com.kotori316.publish")
     id("com.kotori316.gt")
     id("com.kotori316.dg")
@@ -55,47 +54,33 @@ minecraft {
             "version" to libs.versions.minecraft.get(),
         )
     )
-    reobf = false
 
     runs {
         configureEach {
-            property("forge.logging.markers", "")
-            property("mixin.env.remapRefMap", "true")
-            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
-            property("mixin.debug.export", "true")
-            property("forge.logging.console.level", "debug")
+            systemProperty("forge.logging.markers", "")
+            systemProperty("mixin.debug.export", "true")
+            systemProperty("forge.logging.console.level", "debug")
+            if (System.getProperty("os.name").startsWith("Mac")) {
+                jvmArgs("-XstartOnFirstThread")
+            }
         }
 
         create("client") {
-            workingDirectory(project.file("Minecraft"))
-            property("forge.enabledGameTestNamespaces", modId)
+            workingDir.convention(layout.projectDirectory.dir("Minecraft"))
+            systemProperty("forge.enabledGameTestNamespaces", modId)
             args("--accessToken", "0")
             jvmArgs("-EnableAssertions".lowercase())
-
-            mods {
-                create(modId) {
-                    source(sourceSets["main"])
-                    // source(sourceSets.test)
-                }
-            }
         }
 
         /*create("gameTestServer") {
-            property("forge.enabledGameTestNamespaces", modId)
-            property("forge.enableGameTest", "true")
-            property("forge.gameTestServer", "true")
-            workingDirectory(project.file("game-test"))
-            property("bsl.debug", "true")
+            systemProperty("forge.enabledGameTestNamespaces", modId)
+            workingDir.convention(layout.projectDirectory.dir("game-test"))
+            systemProperty("bsl.debug", "true")
             jvmArgs("-ea")
-            mods {
-                create("main") {
-                    source(sourceSets["runGame"])
-                }
-            }
         }*/
 
         create("data") {
-            workingDirectory(project.file("run-server"))
+            workingDir.convention(layout.projectDirectory.dir("run-server"))
             args(
                 "--mod",
                 modId,
@@ -105,18 +90,18 @@ minecraft {
                 "--existing",
                 file("src/main/resources/")
             )
-
-            mods {
-                create(modId) {
-                    source(sourceSets["genData"])
-                }
-            }
         }
     }
 }
 
+repositories {
+    minecraft.mavenizer(this)
+    maven(fg.forgeMaven)
+    maven(fg.minecraftLibsMaven)
+}
+
 dependencies {
-    minecraft(libs.forge)
+    implementation(minecraft.dependency(libs.forge))
     compileOnly(project(":common"))
     runtimeOnly(variantOf(libs.slp.forge) { classifier("with-library") }) {
         isTransitive = false
@@ -131,12 +116,6 @@ dependencies {
 
     "runGameRuntimeOnly"(platform(libs.junit))
     "runGameRuntimeOnly"(libs.jupiter.core)
-}
-
-mixin {
-    add(sourceSets.main.get(), "mixins.${modId}.refmap.json")
-    config("${modId}.mixins.json")
-    isQuiet = true
 }
 
 tasks.jar {

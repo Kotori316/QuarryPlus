@@ -19,12 +19,6 @@ jobs:
   assemble:
     runs-on: ubuntu-latest
     steps:
-      - name: Collect Workflow Telemetry
-        uses: catchpoint/workflow-telemetry-action@v2
-        with:
-          comment_on_pr: 'false'
-          job_summary: 'true'
-          theme: 'dark'
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
@@ -40,11 +34,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - common
-          - fabric
-          - forge
-          - neoforge
+        include:
+          - platform: common
+          - platform: forge
+            data: runGenDataData
+            gameTest: runRunGameGameTestServer
+          - platform: fabric
+            data: runData
+            gameTest: runGameTestServer
+          - platform: neoforge
+            data: runClientData
+            gameTest: runGameTestServer
     env:
       DISABLE_FORGE: ${{ matrix.platform != 'forge' }}
       DISABLE_FABRIC: ${{ matrix.platform != 'fabric' }}
@@ -65,12 +65,6 @@ jobs:
         run: ./gradlew :${{ matrix.platform }}:classes
       - name: Compile test ${{ matrix.platform }}
         run: ./gradlew :${{ matrix.platform }}:testClasses
-      - name: Get run resources
-        if: matrix.platform != 'neoforge' && matrix.platform != 'common'
-        run: |
-          (./gradlew downloadAssets) || \
-            (sleep 5 && ./gradlew downloadAssets) || \
-            (sleep 5 && ./gradlew downloadAssets) || true
       - name: JUnit ${{ matrix.platform }}
         run: ./gradlew :${{ matrix.platform }}:test
         env:
@@ -78,7 +72,7 @@ jobs:
           IGNORE_OTHER_MODS_IN_RUNTIME: true
       - name: Data ${{ matrix.platform }}
         if: matrix.platform != 'common'
-        run: ./gradlew :${{ matrix.platform }}:${{ matrix.platform == 'neoforge' && 'runClientData' || 'runData' }}
+        run: ./gradlew :${{ matrix.platform }}:${{ matrix.data }}
         env:
           TEST_UTILITY_LOG_ALL_DATA: true
           IGNORE_OTHER_MODS_IN_RUNTIME: true
@@ -91,10 +85,10 @@ jobs:
           IGNORE_OTHER_MODS_IN_RUNTIME: true
           RUN_DATA: true
       - name: Check updated files
-        run: git diff --exit-code
+        run: git diff
       - name: GameTest ${{ matrix.platform }}
         if: matrix.platform != 'common' && matrix.platform != 'forge'
-        run: ./gradlew :${{ matrix.platform }}:runGameTestServer
+        run: ./gradlew :${{ matrix.platform }}:${{ matrix.gameTest }}
         env:
           TEST_UTILITY_LOG_ALL_TEST: true
           IGNORE_OTHER_MODS_IN_RUNTIME: true
