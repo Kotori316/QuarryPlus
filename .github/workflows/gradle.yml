@@ -19,12 +19,6 @@ jobs:
   assemble:
     runs-on: ubuntu-latest
     steps:
-      - name: Collect Workflow Telemetry
-        uses: catchpoint/workflow-telemetry-action@v2
-        with:
-          comment_on_pr: 'false'
-          job_summary: 'true'
-          theme: 'dark'
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
