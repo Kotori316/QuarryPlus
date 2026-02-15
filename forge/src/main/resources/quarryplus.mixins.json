@@ -10,6 +10,5 @@
   "server": [],
   "injectors": {
     "defaultRequire": 1
-  },
-  "refmap": "mixins.quarryplus.refmap.json"
+  }
 }
