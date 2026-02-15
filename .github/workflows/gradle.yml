@@ -18,20 +18,12 @@ permissions:
 jobs:
   assemble:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/kotori316/quarry-cache:1.21
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-      options: '--user root --privileged -v /sys/:/sys/'
     steps:
-      - name: Collect Workflow Telemetry
-        uses: catchpoint/workflow-telemetry-action@v2
-        with:
-          comment_on_pr: 'false'
-          job_summary: 'true'
-          theme: 'dark'
       - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
       - uses: gradle/actions/wrapper-validation@v5
       - run: chmod +x ./gradlew
       - run: ./gradlew assemble --scan
@@ -39,34 +31,36 @@ jobs:
 
   platforms:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/kotori316/quarry-cache:1.21
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-      options: '--user root'
     strategy:
       fail-fast: false
       matrix:
-        platform: [ common, fabric, forge, neoforge ]
+        include:
+          - platform: common
+          - platform: forge
+            data: runGenDataData
+            gameTest: runRunGameGameTestServer
+          - platform: fabric
+            data: runData
+            gameTest: runGameTestServer
+          - platform: neoforge
+            data: runData
+            gameTest: runGameTestServer
     env:
       DISABLE_FORGE: ${{ matrix.platform != 'forge' }}
       DISABLE_FABRIC: ${{ matrix.platform != 'fabric' }}
       DISABLE_NEOFORGE: ${{ matrix.platform != 'neoforge' }}
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
       - uses: gradle/actions/wrapper-validation@v5
       - run: ls -al && whoami
       - name: Compile main ${{ matrix.platform }}
         run: ./gradlew :${{ matrix.platform }}:classes
       - name: Compile test ${{ matrix.platform }}
         run: ./gradlew :${{ matrix.platform }}:testClasses
-      - name: Get run resources
-        if: matrix.platform != 'neoforge' && matrix.platform != 'common'
-        run: |
-          (./gradlew downloadAssets) || \
-            (sleep 5 && ./gradlew downloadAssets) || \
-            (sleep 5 && ./gradlew downloadAssets) || true
       - name: JUnit ${{ matrix.platform }}
         run: ./gradlew :${{ matrix.platform }}:test
         env:
@@ -74,7 +68,7 @@ jobs:
           IGNORE_OTHER_MODS_IN_RUNTIME: true
       - name: Data ${{ matrix.platform }}
         if: matrix.platform != 'common'
-        run: ./gradlew :${{ matrix.platform }}:runData
+        run: ./gradlew :${{ matrix.platform }}:${{ matrix.data }}
         env:
           TEST_UTILITY_LOG_ALL_DATA: true
           IGNORE_OTHER_MODS_IN_RUNTIME: true
@@ -87,11 +81,10 @@ jobs:
           IGNORE_OTHER_MODS_IN_RUNTIME: true
           RUN_DATA: true
       - name: Check updated files
-        if: false
-        run: git diff --exit-code
+        run: git diff
       - name: GameTest ${{ matrix.platform }}
         if: matrix.platform != 'common'
-        run: ./gradlew :${{ matrix.platform }}:runGameTestServer
+        run: ./gradlew :${{ matrix.platform }}:${{ matrix.gameTest }}
         env:
           TEST_UTILITY_LOG_ALL_TEST: true
           IGNORE_OTHER_MODS_IN_RUNTIME: true
