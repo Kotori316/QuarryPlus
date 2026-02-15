@@ -110,7 +110,7 @@ dependencies {
     implementation(libs.du.forge) {
         isTransitive = false
     }
-    annotationProcessor(libs.eventbus.forge.validator)
+    // annotationProcessor(libs.eventbus.forge.validator)
     implementation("net.sf.jopt-simple:jopt-simple:5.0.4") { version { strictly("5.0.4") } }
 
     "runGameRuntimeOnly"(platform(libs.junit))
