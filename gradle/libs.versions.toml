@@ -1,6 +1,7 @@
 [versions]
 minecraft = "1.21.1"
 forge = "1.21.1-52.1.10"
+eventbus_forge = "7.0-beta.9"
 fabric_api = "0.116.8+1.21.1"
 fabric_loader = "0.18.4"
 neoforge = "21.1.219"
@@ -45,6 +46,7 @@ mockito_inline = { group = "org.mockito", name = "mockito-inline", version.ref =
 
 # Forge
 forge = { group = "net.minecraftforge", name = "forge", version.ref = "forge" }
+eventbus_forge_validator = { group = "net.minecraftforge", name = "eventbus-validator", version.ref = "eventbus_forge" }
 du_forge = { group = "com.kotori316", name = "debug-utility-forge", version.ref = "du" }
 slp_forge = { group = "com.kotori316", name = "scalablecatsforce", version.ref = "slp_forge" }
 jei_forge = { group = "mezz.jei", name = "jei-1.21.1-forge", version.ref = "jei_forge" }

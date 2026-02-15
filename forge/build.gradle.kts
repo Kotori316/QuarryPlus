@@ -110,8 +110,7 @@ dependencies {
     implementation(libs.du.forge) {
         isTransitive = false
     }
-    // Mixin
-    annotationProcessor("org.spongepowered:mixin:0.8.7:processor")
+    annotationProcessor(libs.eventbus.forge.validator)
     implementation("net.sf.jopt-simple:jopt-simple:5.0.4") { version { strictly("5.0.4") } }
 
     "runGameRuntimeOnly"(platform(libs.junit))
