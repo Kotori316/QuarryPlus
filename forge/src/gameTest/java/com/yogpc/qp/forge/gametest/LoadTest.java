@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-@SuppressWarnings("unused")
 public final class LoadTest implements GatherGameTest {
 
     @GameTest()

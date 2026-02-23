@@ -1,7 +1,7 @@
 {
   "type": "minecraft:function",
   "environment": "quarryplus:test",
-  "function": "minecraft:always_pass",
+  "function": "quarryplus:machine_storage_handler_fluid_content",
   "max_ticks": 1,
   "structure": "minecraft:empty"
 }

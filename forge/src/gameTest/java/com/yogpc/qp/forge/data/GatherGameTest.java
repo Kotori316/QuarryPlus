@@ -26,7 +26,11 @@ public interface GatherGameTest {
         }
 
         public static Function<Holder<TestEnvironmentDefinition>, TestData<Holder<TestEnvironmentDefinition>>> empty() {
-            return def -> new TestData<>(def, Identifier.fromNamespaceAndPath("minecraft", "empty"), 1, 0, true);
+            return withStructure(Identifier.fromNamespaceAndPath("minecraft", "empty"));
+        }
+
+        public static Function<Holder<TestEnvironmentDefinition>, TestData<Holder<TestEnvironmentDefinition>>> withStructure(Identifier structureName) {
+            return def -> new TestData<>(def, structureName, 1, 0, true);
         }
     }
 }
