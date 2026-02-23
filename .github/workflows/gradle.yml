@@ -84,6 +84,13 @@ jobs:
           TEST_UTILITY_LOG_ALL_DATA: true
           IGNORE_OTHER_MODS_IN_RUNTIME: true
           RUN_DATA: true
+      - name: 'Data gameTest(in Forge module)'
+        if: matrix.platform == 'forge'
+        run: ./gradlew :${{ matrix.platform }}:runRunGameData
+        env:
+          TEST_UTILITY_LOG_ALL_DATA: true
+          IGNORE_OTHER_MODS_IN_RUNTIME: true
+          RUN_DATA: true
       - name: Check updated files
         run: git diff
       - name: GameTest ${{ matrix.platform }}
