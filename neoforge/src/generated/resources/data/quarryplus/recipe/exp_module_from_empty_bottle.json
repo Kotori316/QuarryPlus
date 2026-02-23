@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "tag": "c:storage_blocks/diamond"
+    },
+    "G": {
+      "tag": "c:storage_blocks/gold"
+    },
+    "e": {
+      "tag": "c:ender_pearls"
+    },
+    "h": {
+      "item": "minecraft:hay_block"
+    },
+    "m": {
+      "tag": "quarryplus:markers"
+    },
+    "p": {
+      "item": "minecraft:glass_bottle"
+    }
+  },
+  "pattern": [
+    "epe",
+    "mhp",
+    "GhD"
+  ],
+  "result": {
+    "count": 1,
+    "id": "quarryplus:exp_module"
+  }
+}

@@ -10,11 +10,14 @@ import com.yogpc.qp.machine.module.FilterModuleItem;
 import com.yogpc.qp.machine.module.RepeatTickModuleItem;
 import com.yogpc.qp.machine.placer.PlacerBlock;
 import com.yogpc.qp.machine.placer.RemotePlacerBlock;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -304,15 +307,45 @@ public final class LoadRecipeTest {
         }
         assertNotNull(recipe, "Recipe not found");
 
+        for (var potionHolder : List.of(Potions.WATER, Potions.FIRE_RESISTANCE, Potions.NIGHT_VISION, Potions.LONG_INVISIBILITY)) {
+            var h = Items.HAY_BLOCK.getDefaultInstance();
+            var e = Items.ENDER_PEARL.getDefaultInstance();
+            var G = Items.GOLD_BLOCK.getDefaultInstance();
+            var p = new ItemStack(Items.POTION);
+            p.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
+            var m = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
+            var input = CraftingInput.of(3, 3, List.of(
+                e, p, e,
+                m, h, p,
+                G, h, G
+            ));
+            assertTrue(recipe.matches(input, helper.getLevel()));
+            var result = recipe.assemble(input, helper.getLevel().registryAccess());
+            assertEquals(name, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
+        }
+        helper.succeed();
+    }
+
+    public static void createExpModuleFromEmptyBottle(GameTestHelper helper) {
+        var name = "exp_module_from_empty_bottle";
+        var recipe = findRecipeNullable(helper, name);
+        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+            assertNull(recipe, "This recipe(%s) must not be loaded in fabric".formatted(name));
+            helper.succeed();
+            return;
+        }
+        assertNotNull(recipe, "Recipe not found");
+
         var h = Items.HAY_BLOCK.getDefaultInstance();
         var e = Items.ENDER_PEARL.getDefaultInstance();
         var G = Items.GOLD_BLOCK.getDefaultInstance();
-        var p = Items.POTION.getDefaultInstance();
+        var D = Items.DIAMOND_BLOCK.getDefaultInstance();
+        var p = Items.GLASS_BOTTLE.getDefaultInstance();
         var m = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
         var input = CraftingInput.of(3, 3, List.of(
             e, p, e,
             m, h, p,
-            G, h, G
+            G, h, D
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
         var result = recipe.assemble(input, helper.getLevel().registryAccess());
