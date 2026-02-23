@@ -158,7 +158,7 @@ class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeO
       .unlockedBy(ip.markerTag)
       .save(ip.expModuleRecipeOutput(recipeOutput))
 
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, quarryItem(ExpModuleItem.NAME))
+    shaped(RecipeCategory.MISC, quarryItem(ExpModuleItem.NAME))
       .define('h', Items.HAY_BLOCK)
       .define('e', ip.enderPearl)
       .define('G', ip.goldBlock)
@@ -169,7 +169,7 @@ class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeO
       .pattern("mhp")
       .pattern("GhD")
       .unlockedBy(ip.markerTag)
-      .save(ip.expModuleRecipeOutput(recipeOutput), ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, ExpModuleItem.NAME + "_from_empty_bottle"))
+      .save(ip.expModuleRecipeOutput(recipeOutput), ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(QuarryPlus.modID, ExpModuleItem.NAME + "_from_empty_bottle")))
 
     InstallBedrockModuleRecipe.builder(PlatformAccess.getAccess.registerObjects().quarryBlock().get())
       .unlockedBy("has_bedrock_module", has(bedrockModule))
