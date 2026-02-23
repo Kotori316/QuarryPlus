@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "quarryplus:placer_test_place_block1_up_none_acacia_log",
+  "max_ticks": 100,
+  "setup_ticks": 1,
+  "structure": "quarryplus:empty"
+}

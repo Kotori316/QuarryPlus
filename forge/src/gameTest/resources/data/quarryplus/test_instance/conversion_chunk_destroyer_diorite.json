@@ -1,7 +1,8 @@
 {
   "type": "minecraft:function",
   "environment": "quarryplus:test",
-  "function": "minecraft:always_pass",
+  "function": "quarryplus:conversion_chunk_destroyer_diorite",
   "max_ticks": 100,
+  "setup_ticks": 1,
   "structure": "minecraft:empty"
 }

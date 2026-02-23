@@ -1,7 +1,8 @@
 {
   "type": "minecraft:function",
   "environment": "quarryplus:test",
-  "function": "minecraft:always_pass",
+  "function": "quarryplus:load_recipe_test_install_bedrock_module_quarry2",
   "max_ticks": 100,
+  "setup_ticks": 1,
   "structure": "minecraft:empty"
 }

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "quarryplus:place_mover_test_move_from_enchanted_book",
+  "max_ticks": 100,
+  "setup_ticks": 1,
+  "structure": "quarryplus:empty"
+}

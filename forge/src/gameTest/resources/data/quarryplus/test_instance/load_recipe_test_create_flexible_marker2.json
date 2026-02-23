@@ -1,7 +1,8 @@
 {
   "type": "minecraft:function",
   "environment": "quarryplus:test",
-  "function": "minecraft:always_pass",
+  "function": "quarryplus:load_recipe_test_create_flexible_marker2",
   "max_ticks": 100,
+  "setup_ticks": 1,
   "structure": "minecraft:empty"
 }

@@ -10,6 +10,7 @@ import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.registries.RegisterEvent;
 
 @Mod(QuarryPlus.modID)
 public final class QuarryPlusForge {
@@ -22,6 +23,24 @@ public final class QuarryPlusForge {
         }
         AttachCapabilitiesEvent.BlockEntities.BUS.addListener(EnergyIntegration::attachCapabilities);
         AttachCapabilitiesEvent.BlockEntities.BUS.addListener(StorageIntegration::attachCapabilities);
+
+        try {
+            var clazz = Class.forName("com.yogpc.qp.forge.gametest.QuarryPlusGameTest", true, QuarryPlusForge.class.getClassLoader());
+            var method = clazz.getMethod("register", RegisterEvent.class);
+            QuarryPlus.LOGGER.info("Found GameTest class {}", clazz.getName());
+            RegisterEvent.getBus(context.getModBusGroup()).addListener(event -> {
+                try {
+                    method.invoke(null, event);
+                } catch (ReflectiveOperationException e) {
+                    QuarryPlus.LOGGER.error("Failed to register GameTest", e);
+                    throw new RuntimeException(e);
+                }
+            });
+        } catch (ReflectiveOperationException e) {
+            // no op
+            QuarryPlus.LOGGER.debug("No GameTest are registered");
+        }
+
         QuarryPlus.LOGGER.info("Initialize Common finished");
     }
 

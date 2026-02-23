@@ -15,7 +15,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.CompletableFuture;
 
 public final class TestInstanceGeneratorForge extends AbstractTestGenerator<GameTestInstance> {
@@ -26,10 +28,29 @@ public final class TestInstanceGeneratorForge extends AbstractTestGenerator<Game
     @Override
     protected @NotNull Map<Identifier, GameTestInstance> getValueMap(HolderLookup.Provider lookup) {
         var def = lookup.lookupOrThrow(Registries.TEST_ENVIRONMENT).getOrThrow(ResourceKey.create(Registries.TEST_ENVIRONMENT, Identifier.fromNamespaceAndPath(QuarryPlus.modID, "test")));
-        var testData = new TestData<Holder<TestEnvironmentDefinition>>(def, Identifier.fromNamespaceAndPath("minecraft", "empty"), 1, 0, true);
-        return Map.of(
-            Identifier.fromNamespaceAndPath(QuarryPlus.modID, "test"), new FunctionGameTestInstance(ResourceKey.create(Registries.TEST_FUNCTION, Identifier.fromNamespaceAndPath("minecraft", "always_pass")), testData)
-        );
+
+        Map<Identifier, GameTestInstance> map = new HashMap<>();
+        {
+            // dummy test
+            var testData = new TestData<Holder<TestEnvironmentDefinition>>(def, Identifier.fromNamespaceAndPath("minecraft", "empty"), 1, 0, true);
+            map.put(
+                Identifier.fromNamespaceAndPath(QuarryPlus.modID, "test"),
+                new FunctionGameTestInstance(ResourceKey.create(Registries.TEST_FUNCTION, Identifier.fromNamespaceAndPath("minecraft", "always_pass")), testData)
+            );
+        }
+
+        ServiceLoader<GatherGameTest> loader = ServiceLoader.load(GatherGameTest.class);
+        for (GatherGameTest gatherGameTest : loader) {
+            for (var property : gatherGameTest.gather()) {
+                var testData = property.testData().apply(def);
+                map.put(
+                    property.id(),
+                    new FunctionGameTestInstance(ResourceKey.create(Registries.TEST_FUNCTION, property.id()), testData)
+                );
+            }
+        }
+
+        return map;
     }
 
     @Override
