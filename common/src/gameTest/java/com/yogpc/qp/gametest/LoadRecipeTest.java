@@ -4,6 +4,7 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryDataComponents;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
+import com.yogpc.qp.machine.exp.ExpModuleItem;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
 import com.yogpc.qp.machine.marker.FlexibleMarkerBlock;
 import com.yogpc.qp.machine.module.FilterModuleItem;
@@ -321,7 +322,7 @@ public final class LoadRecipeTest {
             ));
             assertTrue(recipe.matches(input, helper.getLevel()));
             var result = recipe.assemble(input, helper.getLevel().registryAccess());
-            assertEquals(name, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
+            assertEquals(ExpModuleItem.NAME, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
         }
         helper.succeed();
     }
@@ -349,7 +350,7 @@ public final class LoadRecipeTest {
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
         var result = recipe.assemble(input, helper.getLevel().registryAccess());
-        assertEquals(name, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
+        assertEquals(ExpModuleItem.NAME, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
         helper.succeed();
     }
 
