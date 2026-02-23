@@ -87,7 +87,7 @@ jobs:
       - name: Check updated files
         run: git diff
       - name: GameTest ${{ matrix.platform }}
-        if: matrix.platform != 'common' && matrix.platform != 'forge'
+        if: matrix.platform != 'common'
         run: ./gradlew :${{ matrix.platform }}:${{ matrix.gameTest }}
         env:
           TEST_UTILITY_LOG_ALL_TEST: true
