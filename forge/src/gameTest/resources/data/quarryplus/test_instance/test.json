@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "minecraft:always_pass",
+  "max_ticks": 1,
+  "structure": "minecraft:empty"
+}
