@@ -28,12 +28,12 @@ final class TestEnvironmentGeneratorForge extends AbstractTestGenerator<TestEnvi
     }
 
     @Override
-    protected Codec<TestEnvironmentDefinition> codec() {
+    protected @NotNull Codec<TestEnvironmentDefinition> codec() {
         return TestEnvironmentDefinition.DIRECT_CODEC;
     }
 
     @Override
-    protected ResourceKey<? extends Registry<TestEnvironmentDefinition>> targetKey() {
+    protected @NotNull ResourceKey<? extends Registry<TestEnvironmentDefinition>> targetKey() {
         return Registries.TEST_ENVIRONMENT;
     }
 }

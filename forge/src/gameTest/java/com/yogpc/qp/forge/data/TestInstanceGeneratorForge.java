@@ -54,12 +54,12 @@ public final class TestInstanceGeneratorForge extends AbstractTestGenerator<Game
     }
 
     @Override
-    protected Codec<GameTestInstance> codec() {
+    protected @NotNull Codec<GameTestInstance> codec() {
         return GameTestInstance.DIRECT_CODEC;
     }
 
     @Override
-    protected ResourceKey<? extends Registry<GameTestInstance>> targetKey() {
+    protected @NotNull ResourceKey<? extends Registry<GameTestInstance>> targetKey() {
         return Registries.TEST_INSTANCE;
     }
 }

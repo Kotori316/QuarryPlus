@@ -46,6 +46,7 @@ public abstract class AbstractTestGenerator<T> implements DataProvider {
     @NotNull
     protected abstract Map<Identifier, T> getValueMap(HolderLookup.Provider lookup);
 
+    @NotNull
     private CompletableFuture<Map<Identifier, T>> getCache() {
         if (cache == null) {
             cache = this.lookupProvider.thenApply(this::getValueMap);
@@ -53,6 +54,7 @@ public abstract class AbstractTestGenerator<T> implements DataProvider {
         return cache;
     }
 
+    @NotNull
     public final CompletableFuture<HolderLookup.Provider> getPatchedLookupProvider() {
         return getCache().thenCompose(valueMap -> {
             var registrySetBuilder = new RegistrySetBuilder();
@@ -77,8 +79,10 @@ public abstract class AbstractTestGenerator<T> implements DataProvider {
         );
     }
 
+    @NotNull
     protected abstract Codec<T> codec();
 
+    @NotNull
     protected abstract ResourceKey<? extends Registry<T>> targetKey();
 
     @Override
