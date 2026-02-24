@@ -22,6 +22,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.PositionMoveRotation;
 import net.minecraft.world.entity.Relative;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
@@ -50,6 +51,7 @@ public final class QuarryFakePlayerCommon {
             super(level.getServer(), level, name, info);
             this.serverGetter = serverGetter;
             this.connection = new NetHandler(level.getServer(), this);
+            setGameMode(GameType.SURVIVAL);
         }
 
         @Override
@@ -62,11 +64,6 @@ public final class QuarryFakePlayerCommon {
 
         @Override
         public boolean isInvulnerableTo(ServerLevel level, DamageSource damageSource) {
-            return true;
-        }
-
-        @Override
-        public boolean isInvulnerable() {
             return true;
         }
 

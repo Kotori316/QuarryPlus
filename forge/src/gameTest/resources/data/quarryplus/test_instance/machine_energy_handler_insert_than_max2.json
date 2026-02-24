@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "quarryplus:machine_energy_handler_insert_than_max2",
+  "max_ticks": 1,
+  "structure": "quarryplus:empty"
+}

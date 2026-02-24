@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "quarryplus:access_fluid_test_lava_bucket",
+  "max_ticks": 100,
+  "setup_ticks": 1,
+  "structure": "minecraft:empty"
+}

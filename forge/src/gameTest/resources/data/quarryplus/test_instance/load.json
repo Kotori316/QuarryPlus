@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "quarryplus:load",
+  "max_ticks": 1,
+  "structure": "minecraft:empty"
+}

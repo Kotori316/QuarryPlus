@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "quarryplus:enable_map_test_set_to_map",
+  "max_ticks": 100,
+  "setup_ticks": 1,
+  "structure": "minecraft:empty"
+}

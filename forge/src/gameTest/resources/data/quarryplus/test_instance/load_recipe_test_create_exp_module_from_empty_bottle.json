@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "quarryplus:load_recipe_test_create_exp_module_from_empty_bottle",
+  "max_ticks": 100,
+  "setup_ticks": 1,
+  "structure": "minecraft:empty"
+}

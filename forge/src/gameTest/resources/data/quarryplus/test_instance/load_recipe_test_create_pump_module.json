@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "quarryplus:load_recipe_test_create_pump_module",
+  "max_ticks": 100,
+  "setup_ticks": 1,
+  "structure": "minecraft:empty"
+}

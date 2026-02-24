@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "quarryplus:no_conversion_chunk_destroyer_end_stone",
+  "max_ticks": 100,
+  "setup_ticks": 1,
+  "structure": "minecraft:empty"
+}

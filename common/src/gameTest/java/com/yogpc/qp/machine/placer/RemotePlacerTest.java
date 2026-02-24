@@ -17,7 +17,6 @@ import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public final class RemotePlacerTest {
@@ -58,7 +57,7 @@ public final class RemotePlacerTest {
                 .thenExecuteAfter(1, () -> helper.assertBlockNotPresent(block, targetPos))
                 .thenExecuteAfter(1, () -> {
                     RemotePlacerEntity placer = helper.getBlockEntity(placerPos, RemotePlacerEntity.class);
-                    assertEquals(1, placer.countItem(block.asItem()), "Placer should contain removed item");
+                    helper.assertValueEqual(1, placer.countItem(block.asItem()), "Placer should contain removed item");
                 })
                 .thenSucceed();
         }
@@ -92,7 +91,7 @@ public final class RemotePlacerTest {
                 .thenExecuteAfter(1, () -> helper.assertBlockPresent(block, RemotePlacerTest.targetPos))
                 .thenExecuteAfter(1, () -> {
                     RemotePlacerEntity placer = helper.getBlockEntity(placerPos, RemotePlacerEntity.class);
-                    assertEquals(0, placer.countItem(block.asItem()), "Placer must not contain placed item");
+                    helper.assertValueEqual(0, placer.countItem(block.asItem()), "Placer must not contain placed item");
                 })
                 .thenSucceed();
         }

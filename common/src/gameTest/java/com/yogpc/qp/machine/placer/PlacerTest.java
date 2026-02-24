@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public final class PlacerTest {
     private static final BlockPos placerPos = new BlockPos(2, 2, 2);
@@ -78,7 +78,7 @@ public final class PlacerTest {
                 .thenExecuteAfter(1, () -> helper.assertBlockNotPresent(block, stonePos))
                 .thenExecuteAfter(1, () -> {
                     PlacerEntity placer = helper.getBlockEntity(placerPos, PlacerEntity.class);
-                    assertEquals(1, placer.countItem(block.asItem()), "Placer should contain removed item");
+                    helper.assertValueEqual(1, placer.countItem(block.asItem()), "Placer should contain removed item");
                 })
                 .thenSucceed();
         }
@@ -116,7 +116,7 @@ public final class PlacerTest {
                 .thenExecuteAfter(1, () -> helper.assertBlockPresent(block, stonePos))
                 .thenExecuteAfter(1, () -> {
                     PlacerEntity placer = helper.getBlockEntity(placerPos, PlacerEntity.class);
-                    assertEquals(0, placer.countItem(block.asItem()), "Placer must not contain placed item");
+                    helper.assertValueEqual(0, placer.countItem(block.asItem()), "Placer must not contain placed item");
                 })
                 .thenSucceed();
         }
@@ -156,7 +156,7 @@ public final class PlacerTest {
                 .thenExecuteAfter(1, () -> tile.setItem(0, new ItemStack(Blocks.STONE)))
                 .thenExecuteAfter(1, tile::placeBlock)
                 .thenExecuteAfter(1, () -> helper.assertBlockPresent(Blocks.STONE, placerPos.relative(Direction.UP)))
-                .thenExecute(() -> assertTrue(tile.getItem(0).isEmpty()))
+                .thenExecuteAfter(1, () -> helper.assertTrue(tile.getItem(0).isEmpty(), "Item should be removed from placer, but %s remains".formatted(tile.getItem(0))))
                 .thenSucceed();
         }
 
@@ -171,7 +171,7 @@ public final class PlacerTest {
                 .thenExecuteAfter(1, () -> tile.setItem(0, new ItemStack(Blocks.STONE)))
                 .thenExecuteAfter(1, tile::placeBlock)
                 .thenExecuteAfter(1, () -> helper.assertBlockPresent(Blocks.DIAMOND_BLOCK, placerPos.relative(Direction.UP)))
-                .thenExecute(() -> assertEquals(Blocks.STONE.asItem(), tile.getItem(0).getItem()))
+                .thenExecute(() -> helper.assertValueEqual(Blocks.STONE.asItem(), tile.getItem(0).getItem(), "Item should be stone, but %s is found".formatted(tile.getItem(0).getItem())))
                 .thenSucceed();
         }
     }
@@ -201,7 +201,7 @@ public final class PlacerTest {
                 .thenExecuteAfter(1, () -> helper.setBlock(placerPos.relative(Direction.EAST), Blocks.REDSTONE_BLOCK))
                 .thenExecuteAfter(1, () -> helper.setBlock(placerPos.relative(Direction.EAST), Blocks.AIR))
                 .thenExecuteAfter(1, () -> helper.assertBlockNotPresent(Blocks.STONE, stonePos))
-                .thenExecuteAfter(1, () -> assertEquals(1, tile.countItem(Items.STONE)))
+                .thenExecuteAfter(1, () -> helper.assertValueEqual(1, tile.countItem(Items.STONE), "Should contain 1 stone, but %d".formatted(tile.countItem(Items.STONE))))
                 .thenSucceed();
         }
     }

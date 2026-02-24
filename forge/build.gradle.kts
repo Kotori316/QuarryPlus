@@ -72,12 +72,11 @@ minecraft {
             jvmArgs("-EnableAssertions".lowercase())
         }
 
-        /*create("gameTestServer") {
+        create("gameTestServer") {
             systemProperty("forge.enabledGameTestNamespaces", modId)
             workingDir.convention(layout.projectDirectory.dir("game-test"))
-            systemProperty("bsl.debug", "true")
-            jvmArgs("-ea")
-        }*/
+            jvmArgs("-EnableAssertions".lowercase())
+        }
 
         create("data") {
             workingDir.convention(layout.projectDirectory.dir("run-server"))
@@ -90,6 +89,23 @@ minecraft {
                 "--existing",
                 file("src/main/resources/")
             )
+            with("runGame") {
+                workingDir.convention(layout.projectDirectory.dir("run-server"))
+                args(
+                    // see build/minecraftforge/forgegradle/slimeLauncherMetadataforNetMinecraftforgeForge/runs.json
+                    "--launchTarget",
+                    "forge_userdev_data",
+                    "--gameDir",
+                    ".",
+                    "--mod",
+                    modId,
+                    "--server",
+                    "--output",
+                    file("src/gameTest/resources/"),
+                    "--existing",
+                    file("src/main/resources/")
+                )
+            }
         }
     }
 }
