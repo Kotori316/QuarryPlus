@@ -94,7 +94,7 @@ jobs:
           ! test -d "${{ matrix.platform }}/game-test/crash-reports"
       - name: Upload failed test report
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           path: |
             ${{ matrix.platform }}/build/reports/tests/*
