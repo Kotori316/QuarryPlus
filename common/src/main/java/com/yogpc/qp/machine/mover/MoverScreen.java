@@ -63,9 +63,9 @@ public final class MoverScreen extends AbstractContainerScreen<MoverContainer> {
         this.addRenderableWidget(backwardButton = new ArrowButton(leftPos + (imageWidth - 12) / 2 - 20, enchantmentMoveButton.getY() + enchantmentMoveButton.getHeight() + 8, 12, 17, false, PAGE_BACKWARD_SPRITES, this::onPress));
         this.addRenderableWidget(forwardButton = new ArrowButton(leftPos + (imageWidth - 12) / 2 + 20, enchantmentMoveButton.getY() + enchantmentMoveButton.getHeight() + 8, 12, 17, false, PAGE_FORWARD_SPRITES, this::onPress));
 
-        enchantmentMoveButton.setTooltip(Tooltip.create(Component.literal("Move this enchantment")));
-        backwardButton.setTooltip(Tooltip.create(Component.literal("Previous")));
-        forwardButton.setTooltip(Tooltip.create(Component.literal("Next")));
+        enchantmentMoveButton.setTooltip(Tooltip.create(Component.translatable("quarryplus.gui.mover.move_enchantment")));
+        backwardButton.setTooltip(Tooltip.create(Component.translatable("quarryplus.gui.mover.previous")));
+        forwardButton.setTooltip(Tooltip.create(Component.translatable("quarryplus.gui.mover.next")));
     }
 
     public void onPress(AbstractWidget button) {

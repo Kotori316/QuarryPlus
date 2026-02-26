@@ -129,8 +129,7 @@ public class AdvQuarryBlock extends QpEntityBlock {
                             area
                         );
                         if (placer instanceof Player p) {
-                            var text = "This machine doesn't have enough space for work";
-                            p.displayClientMessage(Component.literal(text).withStyle(ChatFormatting.RED), false);
+                            p.displayClientMessage(Component.translatable("quarryplus.chat.adv_quarry_no_space").withStyle(ChatFormatting.RED), false);
                         }
                         return;
                     }
@@ -162,7 +161,7 @@ public class AdvQuarryBlock extends QpEntityBlock {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-        tooltipComponents.add(Component.literal("Experimental"));
+        tooltipComponents.add(Component.translatable("quarryplus.gui.adv_quarry.experimental"));
     }
 
     @NotNull

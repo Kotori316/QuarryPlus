@@ -18,7 +18,7 @@ public final class QuarryItemFabric extends QuarryItem {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
         if (stack.getOrDefault(QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT, Boolean.FALSE)) {
-            tooltipComponents.add(Component.literal("Remove Bedrock: ON"));
+            tooltipComponents.add(Component.translatable("quarryplus.tooltip.remove_bedrock_on"));
         }
     }
 }

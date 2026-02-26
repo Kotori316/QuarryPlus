@@ -75,19 +75,19 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryContainer>
             }
         }
 
-        this.addRenderableWidget(new IndexedButton(8, leftPos + 118, topPos + 58, 50, 12, Component.literal("Start"), this::startQuarryOnPress));
+        this.addRenderableWidget(new IndexedButton(8, leftPos + 118, topPos + 58, 50, 12, Component.translatable("quarryplus.gui.adv_quarry.start"), this::startQuarryOnPress));
         if (!PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
-            this.addRenderableWidget(new IndexedButton(9, leftPos + 8, topPos + 58, 50, 12, Component.literal("Modules"), this::openModuleOnPress));
+            this.addRenderableWidget(new IndexedButton(9, leftPos + 8, topPos + 58, 50, 12, Component.translatable("quarryplus.gui.adv_quarry.modules"), this::openModuleOnPress));
         }
 
         areaFrameCheckBox = new SmallCheckBox(leftPos + 8, topPos + 72, 100, 10, 10, 10,
-            Component.literal("Area Frame"), getMenu().quarry.workConfig.placeAreaFrame(), this::checkBoxOnPress);
+            Component.translatable("quarryplus.gui.adv_quarry.area_frame"), getMenu().quarry.workConfig.placeAreaFrame(), this::checkBoxOnPress);
         this.addRenderableWidget(areaFrameCheckBox);
         chunkByChunkCheckBox = new SmallCheckBox(leftPos + 8, topPos + 83, 100, 10, 10, 10,
-            Component.literal("Chunk by Chunk"), getMenu().quarry.workConfig.chunkByChunk(), this::checkBoxOnPress);
+            Component.translatable("quarryplus.gui.adv_quarry.chunk_by_chunk"), getMenu().quarry.workConfig.chunkByChunk(), this::checkBoxOnPress);
         this.addRenderableWidget(chunkByChunkCheckBox);
         startCheckBox = new SmallCheckBox(leftPos + 8, topPos + 94, 100, 10, 10, 10,
-            Component.literal("Ready to Start"), getMenu().quarry.workConfig.startImmediately(), this::checkBoxOnPress);
+            Component.translatable("quarryplus.gui.adv_quarry.ready_to_start"), getMenu().quarry.workConfig.startImmediately(), this::checkBoxOnPress);
         this.addRenderableWidget(startCheckBox);
     }
 

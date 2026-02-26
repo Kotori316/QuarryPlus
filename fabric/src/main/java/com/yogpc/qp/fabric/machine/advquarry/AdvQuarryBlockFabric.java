@@ -28,7 +28,7 @@ public final class AdvQuarryBlockFabric extends AdvQuarryBlock {
                     player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
                 } else {
                     entity.shouldRemoveBedrock = !entity.shouldRemoveBedrock;
-                    player.displayClientMessage(Component.literal("Set removeBedrock: %s".formatted(entity.shouldRemoveBedrock)), false);
+                    player.displayClientMessage(Component.translatable("quarryplus.chat.set_remove_bedrock", entity.shouldRemoveBedrock), false);
                 }
             }
             return ItemInteractionResult.sidedSuccess(level.isClientSide());

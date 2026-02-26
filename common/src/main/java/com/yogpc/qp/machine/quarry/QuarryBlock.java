@@ -129,8 +129,7 @@ public abstract class QuarryBlock extends QpEntityBlock {
                             area
                         );
                         if (placer instanceof Player p) {
-                            var text = "This Quarry doesn't have enough space for work";
-                            p.displayClientMessage(Component.literal(text).withStyle(ChatFormatting.RED), false);
+                            p.displayClientMessage(Component.translatable("quarryplus.chat.quarry_no_space").withStyle(ChatFormatting.RED), false);
                         }
                         return;
                     }
@@ -168,8 +167,8 @@ public abstract class QuarryBlock extends QpEntityBlock {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
         var tag = stack.get(DataComponents.BLOCK_ENTITY_DATA);
         if (tag != null && tag.contains("storage")) {
-            tooltipComponents.add(Component.literal("DON'T PLACE THIS INTO WORLD.").withStyle(ChatFormatting.RED));
-            tooltipComponents.add(Component.literal("This block might cause crash.").withStyle(ChatFormatting.RED));
+            tooltipComponents.add(Component.translatable("quarryplus.tooltip.quarry_dont_place").withStyle(ChatFormatting.RED));
+            tooltipComponents.add(Component.translatable("quarryplus.tooltip.quarry_may_crash").withStyle(ChatFormatting.RED));
         }
     }
 
