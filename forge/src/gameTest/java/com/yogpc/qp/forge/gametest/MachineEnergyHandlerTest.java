@@ -3,7 +3,7 @@ package com.yogpc.qp.forge.gametest;
 import com.kotori316.testutil.common.TestFunction;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.forge.data.GatherGameTest;
+import com.yogpc.qp.data.GatherGameTest;
 import com.yogpc.qp.machine.PowerEntity;
 import com.yogpc.qp.machine.quarry.QuarryEntity;
 import net.minecraft.core.BlockPos;

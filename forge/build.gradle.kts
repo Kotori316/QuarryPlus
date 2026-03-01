@@ -98,7 +98,7 @@ minecraft {
                     modId,
                     "--server",
                     "--output",
-                    file("src/gameTest/resources/"),
+                    file("src/gameTestGenerated/resources/"),
                     "--existing",
                     file("src/main/resources/")
                 )

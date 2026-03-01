@@ -1,4 +1,4 @@
-package com.yogpc.qp.forge.data;
+package com.yogpc.qp.data;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.HolderLookup;

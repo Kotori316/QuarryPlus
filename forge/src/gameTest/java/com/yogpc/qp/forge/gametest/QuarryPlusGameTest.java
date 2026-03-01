@@ -1,7 +1,7 @@
 package com.yogpc.qp.forge.gametest;
 
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.forge.data.GatherGameTest;
+import com.yogpc.qp.data.GatherGameTest;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.StructureUtils;
 import net.minecraftforge.registries.RegisterEvent;

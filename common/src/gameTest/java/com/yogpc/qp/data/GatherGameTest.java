@@ -1,4 +1,4 @@
-package com.yogpc.qp.forge.data;
+package com.yogpc.qp.data;
 
 import com.kotori316.testutil.common.TestFunction;
 import net.minecraft.core.Holder;

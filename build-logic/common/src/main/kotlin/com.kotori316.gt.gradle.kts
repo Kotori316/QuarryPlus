@@ -10,6 +10,7 @@ sourceSets {
         }
         resources {
             srcDir("src/gameTest/resources")
+            srcDir("src/gameTestGenerated/resources")
         }
         project.configurations {
             named(s.compileClasspathConfigurationName) {
