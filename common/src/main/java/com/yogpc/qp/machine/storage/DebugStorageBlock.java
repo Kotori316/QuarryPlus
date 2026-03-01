@@ -46,7 +46,7 @@ public final class DebugStorageBlock extends QpEntityBlock {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-        tooltipComponents.add(Component.literal("Insertion Only. No extraction"));
-        tooltipComponents.add(Component.literal("Just for debug").withStyle(ChatFormatting.RED));
+        tooltipComponents.add(Component.translatable("quarryplus.tooltip.debug_storage"));
+        tooltipComponents.add(Component.translatable("quarryplus.tooltip.debug_only").withStyle(ChatFormatting.RED));
     }
 }

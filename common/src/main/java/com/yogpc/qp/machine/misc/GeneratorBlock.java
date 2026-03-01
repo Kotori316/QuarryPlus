@@ -58,8 +58,8 @@ public class GeneratorBlock extends QpEntityBlock {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-        tooltipComponents.add(Component.literal("Works only for Quarry"));
-        tooltipComponents.add(Component.literal("Only for debug purposes").withStyle(ChatFormatting.RED));
+        tooltipComponents.add(Component.translatable("quarryplus.tooltip.creative_generator"));
+        tooltipComponents.add(Component.translatable("quarryplus.tooltip.debug_only").withStyle(ChatFormatting.RED));
     }
 
     @Nullable

@@ -60,9 +60,9 @@ public final class MoverScreen extends AbstractContainerScreen<MoverContainer> {
         backwardButton.setState(true);
         forwardButton.setState(true);
 
-        enchantmentMoveButton.setTooltip(Tooltip.create(Component.literal("Move this enchantment")));
-        backwardButton.setTooltip(Tooltip.create(Component.literal("Previous")));
-        forwardButton.setTooltip(Tooltip.create(Component.literal("Next")));
+        enchantmentMoveButton.setTooltip(Tooltip.create(Component.translatable("quarryplus.gui.mover.move_enchantment")));
+        backwardButton.setTooltip(Tooltip.create(Component.translatable("quarryplus.gui.mover.previous")));
+        forwardButton.setTooltip(Tooltip.create(Component.translatable("quarryplus.gui.mover.next")));
     }
 
     public void onPress(AbstractWidget button) {

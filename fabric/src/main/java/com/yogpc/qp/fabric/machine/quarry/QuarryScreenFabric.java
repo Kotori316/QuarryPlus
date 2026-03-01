@@ -39,7 +39,7 @@ public final class QuarryScreenFabric extends AbstractContainerScreen<QuarryMenu
         {
             removeFluids = new SmallCheckBox(leftPos + 8, topPos + 20, 80, 10, 10, 10,
                 Component.nullToEmpty("Remove fluids"), this.menu.quarry.shouldRemoveFluid, this::onPressFluidButton);
-            removeFluids.setTooltip(Tooltip.create(Component.literal("Check to remove fluids in area")));
+            removeFluids.setTooltip(Tooltip.create(Component.translatable("quarryplus.tooltip.quarry_screen.remove_fluids")));
             addRenderableWidget(removeFluids);
         }
         {
@@ -63,14 +63,14 @@ public final class QuarryScreenFabric extends AbstractContainerScreen<QuarryMenu
 
     static Component bedrockMessage(boolean shouldRemoveBedrock) {
         if (shouldRemoveBedrock) {
-            return Component.literal("Remove Bedrock: ON");
+            return Component.translatable("quarryplus.tooltip.remove_bedrock_on");
         }
-        return Component.literal("Remove Bedrock: OFF");
+        return Component.translatable("quarryplus.tooltip.remove_bedrock_off");
     }
 
     static Tooltip bedrockMessageTooltip(boolean shouldRemoveBedrock) {
-        var message = shouldRemoveBedrock ? Component.literal("Remove Bedrock ON") :
-            Component.literal("Right click quarry with Bedrock Module to toggle");
+        var message = shouldRemoveBedrock ? Component.translatable("quarryplus.tooltip.remove_bedrock_on") :
+            Component.translatable("quarryplus.tooltip.quarry_screen.bedrock_toggle");
         return Tooltip.create(message);
     }
 }

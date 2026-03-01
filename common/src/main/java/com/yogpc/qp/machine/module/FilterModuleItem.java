@@ -53,7 +53,7 @@ public final class FilterModuleItem extends QpItem implements QuarryModuleProvid
         var rows = getRowsFromStack(stack);
         consumer.accept(Component.translatable("quarryplus.tooltip.filter_module_1"));
         consumer.accept(Component.translatable("quarryplus.tooltip.filter_module_2"));
-        consumer.accept(Component.literal("Rows: %d".formatted(rows)));
+        consumer.accept(Component.translatable("quarryplus.tooltip.filter_module_rows", rows));
 
         var itemList = stack.get(QuarryDataComponents.ITEM_KEY_LIST_COMPONENT);
         if (itemList != null && !itemList.isEmpty()) {
@@ -66,10 +66,10 @@ public final class FilterModuleItem extends QpItem implements QuarryModuleProvid
                     .map(Component::literal)
                     .forEach(consumer);
             } else {
-                var first = Component.literal("  %s".formatted(BuiltInRegistries.ITEM.getKey(itemList.getFirst().item())));
+                var first = Component.literal("  %s".formatted(BuiltInRegistries.ITEM.getKey(itemList.getFirst().item()).toString()));
                 consumer.accept(first);
                 if (itemList.size() > 1) {
-                    consumer.accept(Component.literal("  ...(%s)".formatted(itemList.size() - 1)));
+                    consumer.accept(Component.translatable("quarryplus.tooltip.filter_module_more", itemList.size() - 1));
                 }
             }
         }

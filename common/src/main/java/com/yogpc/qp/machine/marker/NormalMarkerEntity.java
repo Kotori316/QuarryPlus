@@ -53,7 +53,7 @@ public class NormalMarkerEntity extends QpEntity implements QuarryMarker, Client
             return;
         }
         if (this.status.isConnected()) {
-            messageSender.accept(Component.literal("This marker already has connection"));
+            messageSender.accept(Component.translatable("quarryplus.chat.marker_already_connected"));
             return;
         }
         assert level != null;
@@ -98,8 +98,8 @@ public class NormalMarkerEntity extends QpEntity implements QuarryMarker, Client
                 .filter(NormalMarkerEntity.class::isInstance)
                 .map(NormalMarkerEntity.class::cast)
                 .forEach(e -> e.setLink(link, false));
-            messageSender.accept(Component.literal("Marker successfully established connection"));
-        }, () -> messageSender.accept(Component.literal("Marker tried to establish connection, but failed")));
+            messageSender.accept(Component.translatable("quarryplus.chat.marker_connected"));
+        }, () -> messageSender.accept(Component.translatable("quarryplus.chat.marker_failed")));
     }
 
     Optional<NormalMarkerEntity> getMarker(Level level, BlockPos pos, BlockEntityType<?> type, Direction.Axis axis) {
