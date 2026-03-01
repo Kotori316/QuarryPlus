@@ -1,12 +1,9 @@
 package com.yogpc.qp.common.data
 
 import com.yogpc.qp.QuarryPlus
-import net.minecraft.DetectedVersion
 import net.minecraft.data.loot.LootTableProvider
 import net.minecraft.data.metadata.PackMetadataGenerator
 import net.minecraft.network.chat.Component
-import net.minecraft.server.packs.PackType
-import net.minecraft.server.packs.metadata.pack.PackMetadataSection
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.{EventBusSubscriber, Mod}
@@ -35,9 +32,7 @@ object QuarryDataCommonGenerator {
     ))
     event.addProvider(StateAndModelProvider(event.getGenerator.getPackOutput))
     event.addProvider(QuarrySpriteSourceProvider(event.getGenerator.getPackOutput, event.getLookupProvider))
-    event.addProvider(PackMetadataGenerator(event.getGenerator.getPackOutput)
-      .add(PackMetadataSection.CLIENT_TYPE, PackMetadataSection(Component.literal("QuarryPlus Resource"), DetectedVersion.BUILT_IN.packVersion(PackType.CLIENT_RESOURCES).minorRange()))
-    )
+    event.addProvider(PackMetadataGenerator.forFeaturePack(event.getGenerator.getPackOutput, Component.literal("QuarryPlus Resource")))
 
     val blockTag = QuarryBlockTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider)
     val itemTag = QuarryItemTagProvider(event.getGenerator.getPackOutput, event.getLookupProvider)
