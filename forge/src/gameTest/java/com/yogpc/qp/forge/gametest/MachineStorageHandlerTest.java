@@ -1,7 +1,7 @@
 package com.yogpc.qp.forge.gametest;
 
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.forge.data.GatherGameTest;
+import com.yogpc.qp.data.GatherGameTest;
 import com.yogpc.qp.forge.integration.MachineStorageHandler;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.MachineStorageHolder;

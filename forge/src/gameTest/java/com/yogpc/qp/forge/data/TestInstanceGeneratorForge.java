@@ -2,6 +2,8 @@ package com.yogpc.qp.forge.data;
 
 import com.mojang.serialization.Codec;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.data.AbstractTestGenerator;
+import com.yogpc.qp.data.GatherGameTest;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
