@@ -4,7 +4,6 @@
   "package": "com.yogpc.qp.forge.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "RegistryDataLoaderMixin"
   ],
   "client": [],
   "server": [],
