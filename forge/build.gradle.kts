@@ -79,24 +79,21 @@ minecraft {
         }
 
         create("data") {
-            workingDir.convention(layout.projectDirectory.dir("run-server"))
-            args(
-                "--mod",
-                modId,
-                "--all",
-                "--output",
-                file("src/generated/resources/"),
-                "--existing",
-                file("src/main/resources/")
-            )
+            with("dataGen") {
+                workingDir.convention(layout.projectDirectory.dir("run-server"))
+                args(
+                    "--mod",
+                    modId,
+                    "--all",
+                    "--output",
+                    file("src/generated/resources/"),
+                    "--existing",
+                    file("src/main/resources/")
+                )
+            }
             with("runGame") {
                 workingDir.convention(layout.projectDirectory.dir("run-server"))
                 args(
-                    // see build/minecraftforge/forgegradle/slimeLauncherMetadataforNetMinecraftforgeForge/runs.json
-                    "--launchTarget",
-                    "forge_userdev_data",
-                    "--gameDir",
-                    ".",
                     "--mod",
                     modId,
                     "--server",
