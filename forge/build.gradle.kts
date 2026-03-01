@@ -241,3 +241,9 @@ tasks.register("jksSignJar", com.kotori316.common.JarSignTask::class) {
 ext {
     set("publishJarTaskName", "jar")
 }
+
+tasks.register("runGameTestServer") {
+    group = "forge runs"
+    description = "Alias for runRunGameGameTestServerforNetMinecraftforgeForge"
+    dependsOn("runRunGameGameTestServerforNetMinecraftforgeForge")
+}
