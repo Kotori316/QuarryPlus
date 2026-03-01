@@ -169,7 +169,7 @@ tasks.named("sourcesJar", org.gradle.jvm.tasks.Jar::class) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-tasks.processResources {
+tasks.withType(ProcessResources::class) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     val projectVersion = project.version.toString()
     inputs.property("version", projectVersion)

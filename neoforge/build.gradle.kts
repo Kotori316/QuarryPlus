@@ -43,11 +43,43 @@ tasks.named("processCommonDataGenResources", ProcessResources::class) {
 }
 // End Common data gen
 
+// Game test merged
+sourceSets {
+    create("gameTestMerged") {
+        val s = this
+        java {
+            srcDirs(sourceSets.main.get().java.srcDirs)
+            srcDirs(sourceSets["gameTest"].java.srcDirs)
+        }
+        resources {
+            srcDirs(sourceSets.main.get().resources.srcDirs)
+            srcDirs(sourceSets["gameTest"].resources.srcDirs)
+        }
+        project.configurations {
+            named(s.compileClasspathConfigurationName) {
+                extendsFrom(configurations["gameTestCompileClasspath"])
+            }
+            named(s.runtimeClasspathConfigurationName) {
+                extendsFrom(configurations["gameTestRuntimeClasspath"])
+            }
+        }
+    }
+}
+tasks.named("compileGameTestMergedJava", JavaCompile::class) {
+    source(project(":common").sourceSets.main.get().allSource)
+    source(project(":common").sourceSets["gameTest"].allSource)
+}
+tasks.named("processGameTestMergedResources", ProcessResources::class) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(project(":common").sourceSets.main.get().resources)
+    from(project(":common").sourceSets["gameTest"].resources)
+}
+// End Game test merged
+
 runs {
     configureEach {
         systemProperty("neoforge.enabledGameTestNamespaces", modId)
         systemProperty("mixin.debug.export", "true")
-        modSources.add(modId, sourceSets["main"])
     }
 
     create("client") {
@@ -55,6 +87,7 @@ runs {
         systemProperties.put("neoforge.enabledGameTestNamespaces", "$modId,minecraft")
         environmentVariable("TEST_UTILITY_NO_REGISTRATION", "false")
         arguments("--username", "Kotori")
+        modSources.add(modId, sourceSets["main"])
         modSources.add(modId, sourceSets["gameTest"])
         dependencies {
             runtime(project.configurations.gameTestRuntime.get())
@@ -64,12 +97,11 @@ runs {
 
     create("gameTestServer") {
         workingDirectory = project.file("game-test")
-        systemProperty("neoforge.enabledGameTestNamespaces", "$modId,minecraft")
         systemProperty("mixin.debug.export", "false")
         environmentVariable("TEST_UTILITY_NO_REGISTRATION", "false")
         // systemProperties.put("bsl.debug", "true")
         jvmArguments("-ea")
-        modSources.add(modId, sourceSets["gameTest"])
+        modSources.add(modId, sourceSets["gameTestMerged"])
         dependencies {
             runtime(project.configurations.gameTestRuntime.get())
         }
@@ -88,6 +120,7 @@ runs {
             file("src/main/resources/").toString()
         )
 
+        modSources.add(modId, sourceSets["main"])
         modSources.add(dataGenModId, sourceSets["dataGen"])
     }
 
@@ -105,6 +138,7 @@ runs {
             project(":common").file("src/main/resources/").toString()
         )
 
+        modSources.add(modId, sourceSets["main"])
         modSources.add(dataGenModId, sourceSets["commonDataGen"])
     }
 }
