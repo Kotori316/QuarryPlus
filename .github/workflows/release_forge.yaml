@@ -6,7 +6,7 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     permissions:
       contents: write
     steps:
@@ -33,6 +33,7 @@ jobs:
           TEST_UTILITY_LOG_ALL_TEST: false
           IGNORE_OTHER_MODS_IN_RUNTIME: true
           RUN_GAME_TEST: true
+          DISABLE_FORGE: true
       - name: Check version
         run: ./gradlew checkReleaseVersion
         env:

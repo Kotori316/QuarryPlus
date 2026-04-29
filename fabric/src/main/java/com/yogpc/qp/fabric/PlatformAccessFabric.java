@@ -396,7 +396,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         if (extracted == null) {
             return FluidStackLike.EMPTY;
         }
-        return new FluidStackLike(extracted.resource().getFluid(), extracted.amount(), extracted.resource().getComponents());
+        return new FluidStackLike(extracted.resource().getFluid(), FluidStackLikeUnit.fromFabric(extracted.amount()), extracted.resource().getComponents());
     }
 
     @Override

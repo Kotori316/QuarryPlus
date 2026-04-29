@@ -1,6 +1,7 @@
 package com.yogpc.qp.machine.storage;
 
 import com.yogpc.qp.FluidStackLike;
+import com.yogpc.qp.FluidStackLikeUnit;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.MachineStorage;
 import net.minecraft.client.Minecraft;
@@ -81,9 +82,10 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
         }
 
         ItemCountRow(MachineStorage.FluidKeyCount fluid) {
+            var stackLike = new FluidStackLike(fluid.key().fluid(), FluidStackLikeUnit.fromCommon(fluid.count()), fluid.key().patch());
             stack = fluid.key().fluid().getBucket().getDefaultInstance();
-            count = fluid.count() * 1000 / MachineStorage.ONE_BUCKET;
-            name = PlatformAccess.getAccess().getFluidName(new FluidStackLike(fluid.key().fluid(), fluid.count(), fluid.key().patch()));
+            count = stackLike.amount().forgeAmount(); // Use forgeAmount in text for readability
+            name = PlatformAccess.getAccess().getFluidName(stackLike);
             unit = " mB";
         }
 

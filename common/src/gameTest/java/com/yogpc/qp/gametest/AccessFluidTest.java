@@ -3,6 +3,7 @@ package com.yogpc.qp.gametest;
 import com.google.common.base.CaseFormat;
 import com.kotori316.testutil.common.TestFunction;
 import com.yogpc.qp.FluidStackLike;
+import com.yogpc.qp.FluidStackLikeUnit;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.MachineStorage;
@@ -41,7 +42,7 @@ public final class AccessFluidTest {
     public static void waterBucket(GameTestHelper helper) {
         var access = PlatformAccess.getAccess();
         var fluid = access.getFluidInItem(new ItemStack(Items.WATER_BUCKET));
-        var expected = new FluidStackLike(Fluids.WATER, MachineStorage.ONE_BUCKET, DataComponentPatch.EMPTY);
+        var expected = new FluidStackLike(Fluids.WATER, FluidStackLikeUnit.ONE_BUCKET, DataComponentPatch.EMPTY);
         assertEquals(expected, fluid);
         helper.succeed();
     }
@@ -49,7 +50,7 @@ public final class AccessFluidTest {
     public static void lavaBucket(GameTestHelper helper) {
         var access = PlatformAccess.getAccess();
         var fluid = access.getFluidInItem(new ItemStack(Items.LAVA_BUCKET));
-        var expected = new FluidStackLike(Fluids.LAVA, MachineStorage.ONE_BUCKET, DataComponentPatch.EMPTY);
+        var expected = new FluidStackLike(Fluids.LAVA, FluidStackLikeUnit.ONE_BUCKET, DataComponentPatch.EMPTY);
         assertEquals(expected, fluid);
         helper.succeed();
     }
