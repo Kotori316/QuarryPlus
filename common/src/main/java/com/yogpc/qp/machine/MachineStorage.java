@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.yogpc.qp.FluidStackLike;
+import com.yogpc.qp.FluidStackLikeUnit;
 import com.yogpc.qp.PlatformAccess;
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import net.minecraft.core.BlockPos;
@@ -79,7 +80,7 @@ public class MachineStorage {
         var content = PlatformAccess.getAccess().getFluidInItem(stack);
         if (content.fluid().isSame(Fluids.EMPTY)) return;
         var key = new FluidKey(content.fluid(), content.patch());
-        fluids.addTo(key, content.amount());
+        fluids.addTo(key, content.amount().commonAmount());
         notifyUpdate();
     }
 
@@ -133,8 +134,8 @@ public class MachineStorage {
     }
 
     public record FluidKey(Fluid fluid, DataComponentPatch patch) {
-        public FluidStackLike toStack(int amount) {
-            return new FluidStackLike(fluid, amount, patch);
+        public FluidStackLike toStack(long amount) {
+            return new FluidStackLike(fluid, FluidStackLikeUnit.fromCommon(amount), patch);
         }
     }
 
@@ -239,15 +240,15 @@ public class MachineStorage {
             var itr = fluids.object2LongEntrySet().fastIterator();
             while (itr.hasNext()) {
                 var entry = itr.next();
-                var stack = entry.getKey().toStack(Math.clamp(entry.getLongValue(), 0, Integer.MAX_VALUE));
+                var stack = entry.getKey().toStack(entry.getLongValue());
                 var rest = PlatformAccess.getAccess().transfer().transferFluid(level, pos, stack, direction.getOpposite(), false);
                 if (rest.amount() == stack.amount()) {
                     continue;
                 }
-                if (rest.isEmpty() && stack.amount() == entry.getLongValue()) {
+                if (rest.isEmpty() && stack.amount().commonAmount() == entry.getLongValue()) {
                     itr.remove();
                 } else {
-                    entry.setValue((entry.getLongValue() - stack.amount()) + rest.amount());
+                    entry.setValue((entry.getLongValue() - stack.amount().commonAmount()) + rest.amount().commonAmount());
                 }
                 if (count++ > MAX_TRANSFER) {
                     break root;
@@ -275,13 +276,13 @@ public class MachineStorage {
             return FluidStackLike.EMPTY;
         }
         var e = Iterators.get(fluids.object2LongEntrySet().iterator(), i);
-        return new FluidStackLike(e.getKey().fluid(), e.getLongValue(), e.getKey().patch());
+        return new FluidStackLike(e.getKey().fluid(), FluidStackLikeUnit.fromCommon(e.getLongValue()), e.getKey().patch());
     }
 
     public FluidStackLike drainFluid(FluidStackLike toDrain, boolean execute) {
         var key = new FluidKey(toDrain.fluid(), toDrain.patch());
         var amount = fluids.getLong(key);
-        var toDrainAmount = Math.min(amount, toDrain.amount());
+        var toDrainAmount = Math.min(amount, toDrain.amount().commonAmount());
         if (execute) {
             if (amount - toDrainAmount > 0) {
                 fluids.put(key, amount - toDrainAmount);
@@ -290,7 +291,7 @@ public class MachineStorage {
             }
             notifyUpdate();
         }
-        return toDrain.withAmount(toDrainAmount);
+        return toDrain.withAmount(FluidStackLikeUnit.fromCommon(toDrainAmount));
     }
 
     public FluidStackLike drainFluidByIndex(int index, long amount, boolean execute) {
@@ -298,7 +299,7 @@ public class MachineStorage {
         if (fluid.isEmpty()) {
             return FluidStackLike.EMPTY;
         }
-        return drainFluid(fluid.withAmount(amount), execute);
+        return drainFluid(fluid.withAmount(FluidStackLikeUnit.fromCommon(amount)), execute);
     }
 
     // For Forge ItemHandler

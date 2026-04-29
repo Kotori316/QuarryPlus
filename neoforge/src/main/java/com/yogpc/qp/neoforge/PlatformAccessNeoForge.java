@@ -7,7 +7,6 @@ import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
-import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import com.yogpc.qp.machine.advquarry.AdvQuarryContainer;
@@ -362,14 +361,14 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
     @Override
     public FluidStackLike getFluidInItem(ItemStack stack) {
         if (stack.getItem() instanceof BucketItem bucketItem && !stack.is(Items.BUCKET)) {
-            return new FluidStackLike(bucketItem.content, MachineStorage.ONE_BUCKET, DataComponentPatch.EMPTY);
+            return new FluidStackLike(bucketItem.content, FluidStackLikeUnit.ONE_BUCKET, DataComponentPatch.EMPTY);
         }
         return FluidStackLike.EMPTY;
     }
 
     @Override
     public Component getFluidName(FluidStackLike stack) {
-        var s = new FluidStack(stack.fluid(), Math.clamp(stack.amount(), 0, Integer.MAX_VALUE));
+        var s = new FluidStack(stack.fluid(), stack.amount().neoForgeAmount());
         return s.getHoverName();
     }
 

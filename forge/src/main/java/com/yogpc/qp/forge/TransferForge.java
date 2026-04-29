@@ -1,8 +1,8 @@
 package com.yogpc.qp.forge;
 
 import com.yogpc.qp.FluidStackLike;
+import com.yogpc.qp.FluidStackLikeUnit;
 import com.yogpc.qp.PlatformAccess;
-import com.yogpc.qp.machine.MachineStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponentPatch;
@@ -15,15 +15,15 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 public final class TransferForge implements PlatformAccess.Transfer {
     public static FluidStack toForge(FluidStackLike f) {
-        return new FluidStack(f.fluid(), Math.clamp(f.forgeAmount(), 0, Integer.MAX_VALUE));
+        return new FluidStack(f.fluid(), f.amount().forgeAmount());
     }
 
     public static FluidStackLike toCommon(FluidStack f) {
-        return new FluidStackLike(f.getFluid(), toCommonAmount(f.getAmount()), DataComponentPatch.EMPTY);
+        return new FluidStackLike(f.getFluid(), FluidStackLikeUnit.fromForge(f.getAmount()), DataComponentPatch.EMPTY);
     }
 
-    public static long toCommonAmount(long mb) {
-        return mb * MachineStorage.ONE_BUCKET / 1000;
+    public static long toCommonAmount(int mb) {
+        return FluidStackLikeUnit.fromForge(mb).commonAmount();
     }
 
     @Override
@@ -44,7 +44,7 @@ public final class TransferForge implements PlatformAccess.Transfer {
         return entity.getCapability(ForgeCapabilities.FLUID_HANDLER, side)
             .map(h -> h.fill(toForge(stack), simulate ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE))
             .filter(i -> i > 0)
-            .map(filled -> stack.withAmount(stack.amount() - toCommonAmount(filled)))
+            .map(filled -> stack.withAmount(FluidStackLikeUnit.fromCommon(stack.amount().commonAmount() - toCommonAmount(filled))))
             .orElse(stack);
     }
 }

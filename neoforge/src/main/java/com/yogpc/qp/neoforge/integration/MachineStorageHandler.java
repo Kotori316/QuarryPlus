@@ -40,7 +40,7 @@ public record MachineStorageHandler<T>(MachineStorageHolder<T> holder, T object)
     @Override
     public int fill(FluidStack resource, FluidAction action) {
         if (action.execute()) {
-            storage().addFluid(resource.getFluid(), TransferNeoForge.toCommon(resource).amount());
+            storage().addFluid(resource.getFluid(), TransferNeoForge.toCommon(resource).amount().commonAmount());
         }
         return resource.getAmount();
     }

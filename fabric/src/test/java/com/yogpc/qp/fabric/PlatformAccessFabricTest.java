@@ -2,7 +2,7 @@ package com.yogpc.qp.fabric;
 
 import com.yogpc.qp.BeforeMC;
 import com.yogpc.qp.FluidStackLike;
-import com.yogpc.qp.machine.MachineStorage;
+import com.yogpc.qp.FluidStackLikeUnit;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -19,14 +19,14 @@ class PlatformAccessFabricTest extends BeforeMC {
     class FluidTest {
         @Test
         void testWater() {
-            var expected = new FluidStackLike(Fluids.WATER, MachineStorage.ONE_BUCKET, DataComponentPatch.EMPTY);
+            var expected = new FluidStackLike(Fluids.WATER, FluidStackLikeUnit.ONE_BUCKET, DataComponentPatch.EMPTY);
             var result = access.getFluidInItem(new ItemStack(Items.WATER_BUCKET));
             assertEquals(expected, result);
         }
 
         @Test
         void testLava() {
-            var expected = new FluidStackLike(Fluids.LAVA, MachineStorage.ONE_BUCKET, DataComponentPatch.EMPTY);
+            var expected = new FluidStackLike(Fluids.LAVA, FluidStackLikeUnit.ONE_BUCKET, DataComponentPatch.EMPTY);
             var result = access.getFluidInItem(new ItemStack(Items.LAVA_BUCKET));
             assertEquals(expected, result);
         }

@@ -1,6 +1,7 @@
 package com.yogpc.qp.fabric;
 
 import com.yogpc.qp.FluidStackLike;
+import com.yogpc.qp.FluidStackLikeUnit;
 import com.yogpc.qp.PlatformAccess;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -43,16 +44,16 @@ final class TransferFabric implements PlatformAccess.Transfer {
             return stack;
         }
         try (var transaction = Transaction.openOuter()) {
-            var inserted = storage.insert(FluidVariant.of(stack.fluid(), stack.patch()), stack.fabricAmount(), transaction);
+            var inserted = storage.insert(FluidVariant.of(stack.fluid(), stack.patch()), stack.amount().fabricAmount(), transaction);
             if (!simulate) {
                 transaction.commit();
             }
             if (inserted == 0) {
                 return stack;
-            } else if (stack.amount() <= inserted) {
+            } else if (stack.amount().fabricAmount() <= inserted) {
                 return FluidStackLike.EMPTY;
             } else {
-                return new FluidStackLike(stack.fluid(), stack.amount() - inserted, stack.patch());
+                return new FluidStackLike(stack.fluid(), FluidStackLikeUnit.fromFabric(stack.amount().fabricAmount() - inserted), stack.patch());
             }
         }
     }
