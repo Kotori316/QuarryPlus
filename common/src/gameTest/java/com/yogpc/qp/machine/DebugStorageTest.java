@@ -1,6 +1,7 @@
 package com.yogpc.qp.machine;
 
 import com.yogpc.qp.FluidStackLike;
+import com.yogpc.qp.FluidStackLikeUnit;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.storage.DebugStorageBlock;
 import com.yogpc.qp.machine.storage.DebugStorageEntity;
@@ -53,7 +54,7 @@ public final class DebugStorageTest {
 
     public static void addFluid(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().debugStorageBlock().get());
-        PlatformAccess.getAccess().transfer().transferFluid(helper.getLevel(), helper.absolutePos(base), new FluidStackLike(Fluids.WATER, MachineStorage.ONE_BUCKET * 4, DataComponentPatch.EMPTY), Direction.UP, false);
+        PlatformAccess.getAccess().transfer().transferFluid(helper.getLevel(), helper.absolutePos(base), new FluidStackLike(Fluids.WATER, FluidStackLikeUnit.fromCommon(MachineStorage.ONE_BUCKET * 4L), DataComponentPatch.EMPTY), Direction.UP, false);
 
         DebugStorageEntity entity = helper.getBlockEntity(base);
         var storage = getStorage(entity);
