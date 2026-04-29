@@ -3,6 +3,7 @@ package com.yogpc.qp.machine;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.yogpc.qp.BeforeMC;
+import com.yogpc.qp.FluidStackLikeUnit;
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
@@ -117,11 +118,11 @@ class MachineStorageTest extends BeforeMC {
 
             var first = storage.getFluidByIndex(0);
             assertEquals(Fluids.WATER, first.fluid());
-            assertEquals(MachineStorage.ONE_BUCKET, first.amount());
+            assertEquals(FluidStackLikeUnit.ONE_BUCKET, first.amount());
 
             var second = storage.getFluidByIndex(1);
             assertEquals(Fluids.LAVA, second.fluid());
-            assertEquals(MachineStorage.ONE_BUCKET * 3, second.amount());
+            assertEquals(MachineStorage.ONE_BUCKET * 3, second.amount().commonAmount());
         }
 
         @Test
@@ -134,19 +135,19 @@ class MachineStorageTest extends BeforeMC {
             {
                 var extracted = storage.drainFluidByIndex(0, MachineStorage.ONE_BUCKET, false);
                 assertEquals(Fluids.WATER, extracted.fluid());
-                assertEquals(MachineStorage.ONE_BUCKET, extracted.amount());
+                assertEquals(MachineStorage.ONE_BUCKET, extracted.amount().commonAmount());
                 assertEquals(MachineStorage.ONE_BUCKET, storage.getFluidCount(water));
             }
             {
                 var extracted = storage.drainFluidByIndex(0, MachineStorage.ONE_BUCKET * 100, false);
                 assertEquals(Fluids.WATER, extracted.fluid());
-                assertEquals(MachineStorage.ONE_BUCKET, extracted.amount());
+                assertEquals(MachineStorage.ONE_BUCKET, extracted.amount().commonAmount());
                 assertEquals(MachineStorage.ONE_BUCKET, storage.getFluidCount(water));
             }
             {
                 var extracted = storage.drainFluidByIndex(0, MachineStorage.ONE_BUCKET, true);
                 assertEquals(Fluids.WATER, extracted.fluid());
-                assertEquals(MachineStorage.ONE_BUCKET, extracted.amount());
+                assertEquals(MachineStorage.ONE_BUCKET, extracted.amount().commonAmount());
                 assertEquals(0, storage.getFluidCount(water));
             }
         }
@@ -161,19 +162,19 @@ class MachineStorageTest extends BeforeMC {
             {
                 var extracted = storage.drainFluidByIndex(1, MachineStorage.ONE_BUCKET, false);
                 assertEquals(Fluids.LAVA, extracted.fluid());
-                assertEquals(MachineStorage.ONE_BUCKET, extracted.amount());
+                assertEquals(MachineStorage.ONE_BUCKET, extracted.amount().commonAmount());
                 assertEquals(MachineStorage.ONE_BUCKET, storage.getFluidCount(water));
             }
             {
                 var extracted = storage.drainFluidByIndex(1, MachineStorage.ONE_BUCKET * 100, false);
                 assertEquals(Fluids.LAVA, extracted.fluid());
-                assertEquals(MachineStorage.ONE_BUCKET * 3, extracted.amount());
+                assertEquals(MachineStorage.ONE_BUCKET * 3, extracted.amount().commonAmount());
                 assertEquals(MachineStorage.ONE_BUCKET, storage.getFluidCount(water));
             }
             {
                 var extracted = storage.drainFluidByIndex(1, MachineStorage.ONE_BUCKET * 2, true);
                 assertEquals(Fluids.LAVA, extracted.fluid());
-                assertEquals(MachineStorage.ONE_BUCKET * 2, extracted.amount());
+                assertEquals(MachineStorage.ONE_BUCKET * 2, extracted.amount().commonAmount());
                 assertEquals(MachineStorage.ONE_BUCKET, storage.getFluidCount(water));
             }
         }
