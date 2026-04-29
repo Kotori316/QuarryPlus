@@ -2,9 +2,11 @@ package com.yogpc.qp.neoforge.gametest;
 
 import com.kotori316.testutil.common.TestFunction;
 import com.yogpc.qp.FluidStackLike;
+import com.yogpc.qp.FluidStackLikeUnit;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.MachineStorageHolder;
+import com.yogpc.qp.neoforge.TransferNeoForge;
 import com.yogpc.qp.neoforge.machine.MachineStorageNeoForge;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -54,19 +56,19 @@ public final class MachineStorageNeoForgeTest {
 
     public void conversionEmpty(GameTestHelper helper) {
         var common = FluidStackLike.EMPTY;
-        var forge = MachineStorageNeoForge.toForge(common);
+        var forge = TransferNeoForge.toNeoForge(common);
         assertTrue(forge.isEmpty());
         helper.succeed();
     }
 
     public void conversion(GameTestHelper helper) {
-        var common = new FluidStackLike(Fluids.WATER, MachineStorage.ONE_BUCKET * 2, DataComponentPatch.EMPTY);
-        var forge = MachineStorageNeoForge.toForge(common);
+        var common = new FluidStackLike(Fluids.WATER, FluidStackLikeUnit.fromCommon(MachineStorage.ONE_BUCKET * 2), DataComponentPatch.EMPTY);
+        var forge = TransferNeoForge.toNeoForge(common);
         assertFalse(forge.isEmpty());
         assertEquals(2000, forge.getAmount());
-        var c = MachineStorageNeoForge.toCommon(forge);
+        var c = TransferNeoForge.toCommon(forge);
         assertEquals(common, c);
-        assertEquals(MachineStorage.ONE_BUCKET * 2, c.amount());
+        assertEquals(MachineStorage.ONE_BUCKET * 2, c.amount().commonAmount());
         helper.succeed();
     }
 }

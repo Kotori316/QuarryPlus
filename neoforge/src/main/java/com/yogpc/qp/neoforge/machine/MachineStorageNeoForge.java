@@ -1,11 +1,10 @@
 package com.yogpc.qp.neoforge.machine;
 
-import com.yogpc.qp.FluidStackLike;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.MachineStorageFactory;
 import com.yogpc.qp.machine.MachineStorageHolder;
+import com.yogpc.qp.neoforge.TransferNeoForge;
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
-import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ItemResource;
@@ -21,18 +20,6 @@ public final class MachineStorageNeoForge extends MachineStorage {
         public MachineStorage createMachineStorage() {
             return new MachineStorageNeoForge();
         }
-    }
-
-    public static FluidStack toForge(FluidStackLike f) {
-        return new FluidStack(f.fluid(), Math.clamp(f.amount() * 1000 / MachineStorage.ONE_BUCKET, 0, Integer.MAX_VALUE), f.patch());
-    }
-
-    public static FluidStackLike toCommon(FluidStack f) {
-        return new FluidStackLike(f.getFluid(), fromForgeAmount(f.getAmount()), f.getComponentsPatch());
-    }
-
-    public static long fromForgeAmount(int fluidStackAmount) {
-        return (long) fluidStackAmount * MachineStorage.ONE_BUCKET / 1000;
     }
 
     public static <T> ResourceHandler<ItemResource> createItemHandler(MachineStorageHolder<T> holder, T object) {
@@ -130,12 +117,12 @@ public final class MachineStorageNeoForge extends MachineStorage {
             if (fluidStackLike.isEmpty()) {
                 return FluidResource.EMPTY;
             }
-            return FluidResource.of(toForge(fluidStackLike));
+            return FluidResource.of(TransferNeoForge.toNeoForge(fluidStackLike));
         }
 
         @Override
         public long getAmountAsLong(int index) {
-            return toForge(storage().getFluidByIndex(index)).getAmount();
+            return TransferNeoForge.toNeoForge(storage().getFluidByIndex(index)).getAmount();
         }
 
         @Override
@@ -153,15 +140,15 @@ public final class MachineStorageNeoForge extends MachineStorage {
             updateSnapshots(transaction);
             var fluidStack = resource.toStack(amount);
             var key = new FluidKey(fluidStack.getFluid(), fluidStack.getComponentsPatch());
-            storage().fluids.addTo(key, fromForgeAmount(amount));
+            storage().fluids.addTo(key, TransferNeoForge.toCommonAmount(amount));
             return amount;
         }
 
         @Override
         public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
             updateSnapshots(transaction);
-            var drained = storage().drainFluidByIndex(index, fromForgeAmount(amount), true);
-            return toForge(drained).getAmount();
+            var drained = storage().drainFluidByIndex(index, TransferNeoForge.toCommonAmount(amount), true);
+            return TransferNeoForge.toNeoForge(drained).getAmount();
         }
 
         @Override
