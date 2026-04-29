@@ -24,7 +24,7 @@ public record MachineStorageHandler<T>(MachineStorageHolder<T> holder, T object)
     @Override
     public @NotNull FluidStack getFluidInTank(int tank) {
         var f = storage().getFluidByIndex(tank);
-        return TransferNeoForge.toForge(f);
+        return TransferNeoForge.toNeoForge(f);
     }
 
     @Override
@@ -48,13 +48,13 @@ public record MachineStorageHandler<T>(MachineStorageHolder<T> holder, T object)
     @Override
     public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
         var drained = storage().drainFluid(TransferNeoForge.toCommon(resource), action.execute());
-        return TransferNeoForge.toForge(drained);
+        return TransferNeoForge.toNeoForge(drained);
     }
 
     @Override
     public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
         var drained = storage().drainFluidByIndex(0, TransferNeoForge.toCommonAmount(maxDrain), action.execute());
-        return TransferNeoForge.toForge(drained);
+        return TransferNeoForge.toNeoForge(drained);
     }
 
     @Override

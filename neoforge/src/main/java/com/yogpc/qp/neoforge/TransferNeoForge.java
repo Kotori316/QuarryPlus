@@ -15,7 +15,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public final class TransferNeoForge implements PlatformAccess.Transfer {
-    public static FluidStack toForge(FluidStackLike f) {
+    public static FluidStack toNeoForge(FluidStackLike f) {
         return new FluidStack(Holder.direct(f.fluid()), f.amount().neoForgeAmount(), f.patch());
     }
 
@@ -40,7 +40,7 @@ public final class TransferNeoForge implements PlatformAccess.Transfer {
         var handler = level.getCapability(Capabilities.FluidHandler.BLOCK, pos, side);
         if (handler == null) return stack;
 
-        var inserted = handler.fill(toForge(stack), simulate ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
+        var inserted = handler.fill(toNeoForge(stack), simulate ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
         if (inserted == 0) return stack;
         return stack.withAmount(FluidStackLikeUnit.fromCommon(stack.amount().commonAmount() - toCommonAmount(inserted)));
     }
