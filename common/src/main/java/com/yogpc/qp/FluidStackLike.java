@@ -17,4 +17,16 @@ public record FluidStackLike(Fluid fluid, long amount, DataComponentPatch patch)
     public FluidStackLike withAmount(long amount) {
         return new FluidStackLike(this.fluid, amount, this.patch);
     }
+
+    public long fabricAmount() {
+        return amount;
+    }
+
+    public long forgeAmount() {
+        return amount * 1000L / 81000;
+    }
+
+    public long neoForgeAmount() {
+        return amount * 1000L / 81000;
+    }
 }

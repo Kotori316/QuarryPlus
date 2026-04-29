@@ -1,10 +1,9 @@
 package com.yogpc.qp.forge.integration;
 
-import com.yogpc.qp.FluidStackLike;
+import com.yogpc.qp.forge.TransferForge;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.MachineStorageHolder;
 import net.minecraft.core.Direction;
-import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
@@ -22,14 +21,6 @@ public record MachineStorageHandler<T>(MachineStorageHolder<T> holder, T object)
         return holder.getMachineStorage(object);
     }
 
-    static FluidStack toForge(FluidStackLike f) {
-        return new FluidStack(f.fluid(), Math.clamp(f.amount() * 1000 / MachineStorage.ONE_BUCKET, 0, Integer.MAX_VALUE));
-    }
-
-    static FluidStackLike toCommon(FluidStack f) {
-        return new FluidStackLike(f.getFluid(), (long) f.getAmount() * MachineStorage.ONE_BUCKET / 1000, DataComponentPatch.EMPTY);
-    }
-
     @Override
     public int getTanks() {
         // It must contain an empty tank for new fluid
@@ -39,7 +30,7 @@ public record MachineStorageHandler<T>(MachineStorageHolder<T> holder, T object)
     @Override
     public @NotNull FluidStack getFluidInTank(int tank) {
         var f = storage().getFluidByIndex(tank);
-        return toForge(f);
+        return TransferForge.toForge(f);
     }
 
     @Override
@@ -55,21 +46,21 @@ public record MachineStorageHandler<T>(MachineStorageHolder<T> holder, T object)
     @Override
     public int fill(FluidStack resource, FluidAction action) {
         if (action.execute()) {
-            storage().addFluid(resource.getFluid(), resource.getAmount());
+            storage().addFluid(resource.getFluid(), TransferForge.toCommon(resource).amount());
         }
         return resource.getAmount();
     }
 
     @Override
     public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
-        var drained = storage().drainFluid(toCommon(resource), action.execute());
-        return toForge(drained);
+        var drained = storage().drainFluid(TransferForge.toCommon(resource), action.execute());
+        return TransferForge.toForge(drained);
     }
 
     @Override
     public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
-        var drained = storage().drainFluidByIndex(0, maxDrain, action.execute());
-        return toForge(drained);
+        var drained = storage().drainFluidByIndex(0, TransferForge.toCommonAmount(maxDrain), action.execute());
+        return TransferForge.toForge(drained);
     }
 
     @Override

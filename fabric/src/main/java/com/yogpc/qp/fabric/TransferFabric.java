@@ -43,7 +43,7 @@ final class TransferFabric implements PlatformAccess.Transfer {
             return stack;
         }
         try (var transaction = Transaction.openOuter()) {
-            var inserted = storage.insert(FluidVariant.of(stack.fluid(), stack.patch()), stack.amount(), transaction);
+            var inserted = storage.insert(FluidVariant.of(stack.fluid(), stack.patch()), stack.fabricAmount(), transaction);
             if (!simulate) {
                 transaction.commit();
             }
