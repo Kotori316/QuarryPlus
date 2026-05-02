@@ -22,7 +22,7 @@ public final class EnergyIntegration {
                 var rebornMods = FabricLoader.getInstance().getAllMods().stream()
                     .map(ModContainer::getMetadata).filter(s -> s.getId().contains("reborn"))
                     .map(m -> String.format("%s@%s", m.getId(), m.getVersion().getFriendlyString())).toList();
-                QuarryPlus.LOGGER.error("QuarryPlus caught energy integration error. RebornMods: %s".formatted(rebornMods), error);
+                QuarryPlus.LOGGER.error("QuarryPlus caught energy integration error. RebornMods: {}", rebornMods, error);
             }
         }
     }

@@ -11,7 +11,7 @@ du = "26.1.0-SNAPSHOT"
 
 scala = "3.8.3"
 
-teamreborn_energy = "4.1.0"
+teamreborn_energy = "5.0.0"
 slp_forge = "4.0.0-mc26.1.2-3.8.3"
 slp_fabric = "4.0.2"
 slp_neoforge = "4.0.0-mc26.1.2-3.8.3"
