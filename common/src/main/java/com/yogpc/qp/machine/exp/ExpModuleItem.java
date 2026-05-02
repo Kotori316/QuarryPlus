@@ -34,7 +34,7 @@ public final class ExpModuleItem extends QpItem implements QuarryModuleProvider.
         if (!level.isClientSide()) {
             int exp = stack.getOrDefault(QuarryDataComponents.HOLDING_EXP_COMPONENT, 0);
             if (exp > 0) {
-                player.displayClientMessage(Component.translatable("quarryplus.chat.give_exp_point", exp), true);
+                player.sendOverlayMessage(Component.translatable("quarryplus.chat.give_exp_point", exp));
                 player.giveExperiencePoints(exp);
                 stack.set(QuarryDataComponents.HOLDING_EXP_COMPONENT, 0);
             }

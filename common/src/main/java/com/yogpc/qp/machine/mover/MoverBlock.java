@@ -42,7 +42,7 @@ public final class MoverBlock extends QpEntityBlock {
                 if (entity.enabled) {
                     PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, MoverContainer::new));
                 } else {
-                    player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
+                    player.sendOverlayMessage(Component.translatable("quarryplus.chat.disable_message", getName()));
                 }
             }
             return InteractionResult.SUCCESS_SERVER;

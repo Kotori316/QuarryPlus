@@ -93,7 +93,7 @@ public class NormalMarkerBlock extends QpEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (level.getBlockEntity(pos) instanceof NormalMarkerEntity marker) {
             if (!level.isClientSide()) {
-                marker.tryConnect(c -> player.displayClientMessage(c, false));
+                marker.tryConnect(c -> player.sendSystemMessage(c));
             }
             return InteractionResult.SUCCESS_SERVER;
         }

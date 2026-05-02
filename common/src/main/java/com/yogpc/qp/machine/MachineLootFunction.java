@@ -2,12 +2,10 @@ package com.yogpc.qp.machine;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.yogpc.qp.PlatformAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import org.jetbrains.annotations.Nullable;
@@ -31,8 +29,8 @@ public final class MachineLootFunction extends LootItemConditionalFunction {
     }
 
     @Override
-    public LootItemFunctionType<? extends MachineLootFunction> getType() {
-        return PlatformAccess.getAccess().registerObjects().machineLootFunction().get();
+    public MapCodec<? extends MachineLootFunction> codec() {
+        return SERIALIZER;
     }
 
     public static void process(ItemStack stack, @Nullable BlockEntity entity) {

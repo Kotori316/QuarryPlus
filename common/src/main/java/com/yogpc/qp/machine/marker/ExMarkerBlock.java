@@ -81,7 +81,7 @@ sealed abstract class ExMarkerBlock extends QpEntityBlock permits FlexibleMarker
                 if (entity.enabled) {
                     PlatformAccess.getAccess().openGui((ServerPlayer) player, getScreenHandler(entity));
                 } else {
-                    player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
+                    player.sendOverlayMessage(Component.translatable("quarryplus.chat.disable_message", getName()));
                 }
             }
             return InteractionResult.SUCCESS_SERVER;

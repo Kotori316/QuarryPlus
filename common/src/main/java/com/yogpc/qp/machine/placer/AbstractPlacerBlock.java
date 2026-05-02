@@ -50,9 +50,9 @@ public abstract class AbstractPlacerBlock extends QpEntityBlock {
             if (!level.isClientSide() && level.getBlockEntity(pos) instanceof AbstractPlacerTile placer) {
                 if (placer.enabled) {
                     placer.cycleRedStoneMode();
-                    player.displayClientMessage(Component.translatable("quarryplus.chat.placer_rs", placer.redstoneMode.toString()), false);
+                    player.sendOverlayMessage(Component.translatable("quarryplus.chat.placer_rs", placer.redstoneMode.toString()));
                 } else {
-                    player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
+                    player.sendSystemMessage(Component.translatable("quarryplus.chat.disable_message", getName()));
                 }
             }
             return InteractionResult.SUCCESS;
@@ -67,7 +67,7 @@ public abstract class AbstractPlacerBlock extends QpEntityBlock {
                 if (placer.enabled) {
                     PlatformAccess.getAccess().openGui((ServerPlayer) player, createScreenHandler(placer));
                 } else {
-                    player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
+                    player.sendOverlayMessage(Component.translatable("quarryplus.chat.disable_message", getName()));
                 }
             }
             return InteractionResult.SUCCESS_SERVER;

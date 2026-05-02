@@ -81,7 +81,7 @@ public class GeneratorBlock extends QpEntityBlock {
             int pre = state.getValue(BlockStateProperties.LEVEL);
             int newValue = (player.isShiftKeyDown() ? pre - 1 : pre + 1) & ((1 << 4) - 1);
             level.setBlock(pos, state.setValue(BlockStateProperties.LEVEL, newValue), Block.UPDATE_ALL);
-            player.displayClientMessage(Component.literal("Change generator mode to %d(%d FE)".formatted(newValue, ENERGY[newValue] / PowerEntity.ONE_FE)), false);
+            player.sendSystemMessage(Component.literal("Change generator mode to %d(%d FE)".formatted(newValue, ENERGY[newValue] / PowerEntity.ONE_FE)));
         }
         return InteractionResult.SUCCESS;
     }

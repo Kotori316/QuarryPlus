@@ -101,7 +101,7 @@ public class AdvQuarryBlock extends QpEntityBlock {
                         PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, AdvQuarryContainer::new));
                     }
                 } else {
-                    player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
+                    player.sendOverlayMessage(Component.translatable("quarryplus.chat.disable_message", getName()));
                 }
             }
             return InteractionResult.SUCCESS_SERVER;
@@ -137,7 +137,7 @@ public class AdvQuarryBlock extends QpEntityBlock {
                             area
                         );
                         if (placer instanceof Player p) {
-                            p.displayClientMessage(Component.translatable("quarryplus.chat.adv_quarry_no_space").withStyle(ChatFormatting.RED), false);
+                            p.sendSystemMessage(Component.translatable("quarryplus.chat.adv_quarry_no_space").withStyle(ChatFormatting.RED));
                         }
                         return;
                     }
@@ -171,7 +171,7 @@ public class AdvQuarryBlock extends QpEntityBlock {
     @NotNull
     @VisibleForTesting
     static Area createDefaultArea(BlockPos pos, Direction quarryBehind, int limit) {
-        var chunkPos = new ChunkPos(pos);
+        var chunkPos = ChunkPos.containing(pos);
         final int minX, minZ, maxX, maxZ;
         if (0 < limit && limit < 16) {
             if (pos.getX() - limit / 2 < chunkPos.getMinBlockX()) {

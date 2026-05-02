@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +23,7 @@ public abstract class YSetterItem extends QpItem {
     protected final InteractionResult interact(@NotNull Level level, @NotNull BlockPos pos, @Nullable Player player) {
         if (!isEnabled()) {
             if (player != null) {
-                player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
+                player.sendOverlayMessage(Component.translatable("quarryplus.chat.disable_message", getName(ItemStack.EMPTY)));
             }
             return InteractionResult.SUCCESS_SERVER;
         }

@@ -5,6 +5,7 @@ import com.yogpc.qp.machine.QpItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -20,13 +21,13 @@ public abstract class CheckerItem extends QpItem {
     protected final InteractionResult outputLog(@NotNull Level level, @NotNull BlockPos pos, @Nullable Player player) {
         if (!isEnabled()) {
             if (player != null) {
-                player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
+                player.sendOverlayMessage(Component.translatable("quarryplus.chat.disable_message", getName(ItemStack.EMPTY)));
             }
             return InteractionResult.SUCCESS_SERVER;
         }
         if (level.getBlockEntity(pos) instanceof QpEntity e) {
             if (!level.isClientSide() && player != null) {
-                e.checkerLogs().forEach(c -> player.displayClientMessage(c, false));
+                e.checkerLogs().forEach(c -> player.sendSystemMessage(c));
             }
             return InteractionResult.SUCCESS;
         }

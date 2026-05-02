@@ -3,7 +3,6 @@ package com.yogpc.qp;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.GeneralScreenHandler;
-import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpEntity;
 import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
@@ -40,7 +39,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -127,8 +125,6 @@ public interface PlatformAccess {
         Supplier<MenuType<? extends PlacerContainer>> placerContainer();
 
         Supplier<MenuType<? extends PlacerContainer>> remotePlacerContainer();
-
-        Supplier<LootItemFunctionType<? extends MachineLootFunction>> machineLootFunction();
     }
 
     Packet packetHandler();

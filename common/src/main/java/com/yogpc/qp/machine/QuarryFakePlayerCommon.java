@@ -55,7 +55,11 @@ public final class QuarryFakePlayerCommon {
         }
 
         @Override
-        public void displayClientMessage(Component chatComponent, boolean actionBar) {
+        public void sendSystemMessage(Component chatComponent) {
+        }
+
+        @Override
+        public void sendOverlayMessage(Component chatComponent) {
         }
 
         @Override

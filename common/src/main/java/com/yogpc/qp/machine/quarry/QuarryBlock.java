@@ -89,7 +89,7 @@ public abstract class QuarryBlock extends QpEntityBlock {
                 if (entity.enabled) {
                     openGui((ServerPlayer) player, level, pos, entity);
                 } else {
-                    player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
+                    player.sendOverlayMessage(Component.translatable("quarryplus.chat.disable_message", getName()));
                 }
             }
             return InteractionResult.SUCCESS_SERVER;
@@ -131,7 +131,7 @@ public abstract class QuarryBlock extends QpEntityBlock {
                             area
                         );
                         if (placer instanceof Player p) {
-                            p.displayClientMessage(Component.translatable("quarryplus.chat.quarry_no_space").withStyle(ChatFormatting.RED), false);
+                            p.sendSystemMessage(Component.translatable("quarryplus.chat.quarry_no_space").withStyle(ChatFormatting.RED));
                         }
                         return;
                     }
