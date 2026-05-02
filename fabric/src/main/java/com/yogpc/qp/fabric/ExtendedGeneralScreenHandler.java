@@ -1,7 +1,7 @@
 package com.yogpc.qp.fabric;
 
 import com.yogpc.qp.machine.GeneralScreenHandler;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 public record ExtendedGeneralScreenHandler<T extends AbstractContainerMenu>(
     GeneralScreenHandler<T> handler
-) implements ExtendedScreenHandlerFactory<BlockPos> {
+) implements ExtendedMenuProvider<BlockPos> {
     @Override
     public BlockPos getScreenOpeningData(ServerPlayer player) {
         return handler.pos();

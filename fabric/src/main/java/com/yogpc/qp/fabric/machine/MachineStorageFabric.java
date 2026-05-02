@@ -23,11 +23,11 @@ public final class MachineStorageFabric extends MachineStorage {
     }
 
     static ItemKey fromItemVariant(ItemVariant variant) {
-        return new ItemKey(variant.getItem(), variant.getComponents());
+        return new ItemKey(variant.getItem(), variant.getComponentsPatch());
     }
 
     static FluidKey fromFluidVariant(FluidVariant variant) {
-        return new FluidKey(variant.getFluid(), variant.getComponents());
+        return new FluidKey(variant.getFluid(), variant.getComponentsPatch());
     }
 
     public static final class ItemStorageImpl<T> extends SnapshotParticipant<Object2LongLinkedOpenHashMap<ItemKey>> implements Storage<ItemVariant> {

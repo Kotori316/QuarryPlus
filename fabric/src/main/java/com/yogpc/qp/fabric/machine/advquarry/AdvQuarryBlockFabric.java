@@ -23,12 +23,12 @@ public final class AdvQuarryBlockFabric extends AdvQuarryBlock {
             var entity = this.<AdvQuarryEntityFabric>getBlockEntityType().map(t -> t.getBlockEntity(level, pos)).orElse(null);
             if (entity != null && !level.isClientSide()) {
                 if (!item.isEnabled()) {
-                    player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", stack.getItemName()), true);
+                    player.sendOverlayMessage(Component.translatable("quarryplus.chat.disable_message", stack.getItemName()));
                 } else if (!entity.enabled) {
-                    player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
+                    player.sendOverlayMessage(Component.translatable("quarryplus.chat.disable_message", getName()));
                 } else {
                     entity.shouldRemoveBedrock = !entity.shouldRemoveBedrock;
-                    player.displayClientMessage(Component.translatable("quarryplus.chat.set_remove_bedrock", entity.shouldRemoveBedrock), false);
+                    player.sendSystemMessage(Component.translatable("quarryplus.chat.set_remove_bedrock", entity.shouldRemoveBedrock));
                     entity.syncToClient();
                 }
             }
