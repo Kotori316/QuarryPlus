@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "1.21.11"
+      - "26.1"
     tags:
       - "!*"
   pull_request:
     branches:
-      - "1.21.11"
+      - "26.1"
 
 permissions:
   contents: read
@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
       - uses: gradle/actions/wrapper-validation@v6
       - run: chmod +x ./gradlew
       - run: ./gradlew assemble --scan
@@ -54,7 +54,7 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
       - uses: gradle/actions/setup-gradle@v6
         with:
           add-job-summary: 'never'

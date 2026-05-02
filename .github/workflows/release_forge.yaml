@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
       - run: chmod +x ./gradlew
       - uses: gradle/actions/setup-gradle@v6
         with:
@@ -52,6 +52,6 @@ jobs:
     with:
       release_command: 'checkReleaseVersion assemble publishToMavenLocal publishMods registerVersion publish --continue'
       enable_signature_check: false
-      java_version: 21
+      java_version: 25
       use_gradle_cache: true
     secrets: inherit
