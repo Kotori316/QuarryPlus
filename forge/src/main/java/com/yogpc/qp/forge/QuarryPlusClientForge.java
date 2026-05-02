@@ -13,9 +13,7 @@ import com.yogpc.qp.machine.placer.RemotePlacerScreen;
 import com.yogpc.qp.machine.storage.DebugStorageScreen;
 import com.yogpc.qp.render.*;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -48,7 +46,5 @@ public final class QuarryPlusClientForge {
     }
 
     private static void setRenderLayer() {
-        ItemBlockRenderTypes.setRenderLayer(PlatformAccessForge.RegisterObjectsForge.BLOCK_FRAME.get(), ChunkSectionLayer.CUTOUT);
-        ItemBlockRenderTypes.setRenderLayer(PlatformAccessForge.RegisterObjectsForge.BLOCK_SOFT.get(), ChunkSectionLayer.CUTOUT);
     }
 }

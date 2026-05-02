@@ -1,5 +1,6 @@
 package com.yogpc.qp.neoforge;
 
+import com.mojang.serialization.MapCodec;
 import com.yogpc.qp.*;
 import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.EnableMap;
@@ -42,7 +43,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
@@ -78,7 +79,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         private static final DeferredRegister<RecipeSerializer<?>> RECIPE_REGISTER = DeferredRegister.create(Registries.RECIPE_SERIALIZER, QuarryPlus.modID);
         private static final DeferredRegister<IngredientType<?>> INGREDIENT_REGISTER = DeferredRegister.create(NeoForgeRegistries.INGREDIENT_TYPES, QuarryPlus.modID);
         private static final DeferredRegister<CreativeModeTab> CREATIVE_TAB_REGISTER = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, QuarryPlus.modID);
-        private static final DeferredRegister<LootItemFunctionType<?>> LOOT_TYPE_REGISTER = DeferredRegister.create(Registries.LOOT_FUNCTION_TYPE, QuarryPlus.modID);
+        private static final DeferredRegister<MapCodec<? extends LootItemFunction>> LOOT_TYPE_REGISTER = DeferredRegister.create(Registries.LOOT_FUNCTION_TYPE, QuarryPlus.modID);
         private static final DeferredRegister<DataComponentType<?>> DATA_COMPONENT_TYPE_REGISTER = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, QuarryPlus.modID);
         private static final DeferredRegister<MenuType<?>> MENU_TYPE_REGISTER = DeferredRegister.create(Registries.MENU, QuarryPlus.modID);
         static final List<DeferredRegister<?>> REGISTER_LIST = List.of(
@@ -136,7 +137,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredHolder<MenuType<?>, MenuType<? extends PlacerContainer>> PLACER_MENU_TYPE = registerMenu(PlacerContainer.PLACER_GUI_NAME, PlacerContainer::createPlacerContainer);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends PlacerContainer>> REMOTE_PLACER_MENU_TYPE = registerMenu(PlacerContainer.REMOTE_PLACER_GUI_NAME, PlacerContainer::createRemotePlacerContainer);
 
-        public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<? extends MachineLootFunction>> MACHINE_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(MachineLootFunction.NAME, () -> new LootItemFunctionType<>(MachineLootFunction.SERIALIZER));
+        public static final DeferredHolder<MapCodec<? extends LootItemFunction>, MapCodec<MachineLootFunction>> MACHINE_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(MachineLootFunction.NAME, () -> MachineLootFunction.SERIALIZER);
         public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<InstallBedrockModuleRecipe>> INSTALL_BEDROCK_MODULE_RECIPE = RECIPE_REGISTER.register(InstallBedrockModuleRecipe.NAME, () -> InstallBedrockModuleRecipe.SERIALIZER);
         public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<FilterModuleExpandRecipe>> FILTER_MODULE_EXPAND_RECIPE = RECIPE_REGISTER.register(FilterModuleExpandRecipe.LOCATION.getPath(), () -> FilterModuleExpandRecipe.SERIALIZER);
 
@@ -319,10 +320,6 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
             return REMOTE_PLACER_MENU_TYPE;
         }
 
-        @Override
-        public Supplier<LootItemFunctionType<? extends MachineLootFunction>> machineLootFunction() {
-            return MACHINE_LOOT_FUNCTION;
-        }
     }
 
     @Override
