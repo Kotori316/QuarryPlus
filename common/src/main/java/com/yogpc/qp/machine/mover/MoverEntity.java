@@ -28,12 +28,12 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public final class MoverEntity extends QpEntity implements ClientSync {
-    final SimpleContainer inventory = new Inventory(2);
+    final SimpleContainer inventory;
 
     public MoverEntity(BlockPos pos, BlockState blockState) {
         super(PlatformAccess.getAccess().registerObjects().getBlockEntityType((QpBlock) blockState.getBlock()).orElseThrow(),
             pos, blockState);
-        inventory.addListener(container -> this.setChanged());
+        inventory = new Inventory(2, this::setChanged);
     }
 
     @Override
@@ -71,8 +71,17 @@ public final class MoverEntity extends QpEntity implements ClientSync {
     }
 
     private static class Inventory extends SimpleContainer {
-        public Inventory(int size) {
+        private final Runnable onChanged;
+
+        public Inventory(int size, Runnable onChanged) {
             super(size);
+            this.onChanged = onChanged;
+        }
+
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            onChanged.run();
         }
 
         @Override
