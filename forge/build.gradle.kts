@@ -234,16 +234,11 @@ tasks.named("jar", Jar::class) {
 }
 
 tasks.register("jksSignJar", com.kotori316.common.JarSignTask::class) {
+    description = "Add jks signature to Forge jar"
     dependsOn(tasks.jar)
     jarTask = tasks.jar
 }
 
 ext {
     set("publishJarTaskName", "jar")
-}
-
-tasks.register("runGameTestServer") {
-    group = "forge runs"
-    description = "Alias for runRunGameGameTestServerforNetMinecraftforgeForge"
-    dependsOn("runRunGameGameTestServerforNetMinecraftforgeForge")
 }

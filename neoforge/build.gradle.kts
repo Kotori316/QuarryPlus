@@ -181,6 +181,7 @@ tasks.named("jar", Jar::class) {
 }
 
 tasks.register("jksSignJar", com.kotori316.common.JarSignTask::class) {
+    description = "Add jks signature to NeoForge jar"
     dependsOn(tasks.jar)
     jarTask = tasks.jar
 }
