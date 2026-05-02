@@ -1,5 +1,3 @@
-import net.fabricmc.loom.task.AbstractRemapJarTask
-
 plugins {
     id("com.kotori316.common")
     alias(libs.plugins.fabric.loom)
@@ -7,10 +5,6 @@ plugins {
 }
 
 loom {
-}
-
-tasks.withType(AbstractRemapJarTask::class) {
-    enabled = false
 }
 
 sourceSets {

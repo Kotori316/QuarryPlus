@@ -90,5 +90,5 @@ tasks.processResources {
 }
 
 ext {
-    set("publishJarTaskName", "remapJar")
+    set("publishJarTaskName", "jar")
 }
