@@ -79,7 +79,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     @NotNull
     Set<QuarryModule> modules = Collections.emptySet();
     @NotNull
-    final ModuleInventory moduleInventory = new ModuleInventory(5, q -> true, m -> modules, this::setChanged);
+    final ModuleInventory moduleInventory = new ModuleInventory(5, _ -> true, _ -> modules, this::setChanged);
     @NotNull
     QuarryChunkLoader chunkLoader = QuarryChunkLoader.None.INSTANCE;
     @NotNull
@@ -92,7 +92,6 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         targetHead = head;
         currentState = QuarryState.FINISHED;
         storage = MachineStorage.of();
-        moduleInventory.addListener(container -> setChanged());
     }
 
     static PowerMap.Quarry powerMap() {

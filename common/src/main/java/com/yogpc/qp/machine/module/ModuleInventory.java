@@ -31,7 +31,7 @@ public final class ModuleInventory extends SimpleContainer {
 
     @VisibleForTesting
     ModuleInventory(int size) {
-        this(size, q -> true, m -> Set.copyOf(m.getModules()), () -> {
+        this(size, _ -> true, m -> Set.copyOf(m.getModules()), () -> {
         });
     }
 
