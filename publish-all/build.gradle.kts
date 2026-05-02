@@ -54,9 +54,9 @@ fun getReleaseJarFiles(): List<Provider<RegularFile>> {
         list.add(project(":forge").tasks.named("sourcesJar", AbstractArchiveTask::class).flatMap { it.archiveFile })
     }
     if (!(System.getenv("DISABLE_FABRIC") ?: "false").toBoolean()) {
-        list.add(project(":fabric").tasks.named("remapJar", AbstractArchiveTask::class).flatMap({ it.archiveFile }))
+        list.add(project(":fabric").tasks.named("jar", AbstractArchiveTask::class).flatMap({ it.archiveFile }))
         list.add(
-            project(":fabric").tasks.named("remapSourcesJar", AbstractArchiveTask::class).flatMap({ it.archiveFile })
+            project(":fabric").tasks.named("sourcesJar", AbstractArchiveTask::class).flatMap({ it.archiveFile })
         )
     }
     if (!(System.getenv("DISABLE_NEOFORGE") ?: "false").toBoolean()) {

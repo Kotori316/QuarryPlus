@@ -7,9 +7,6 @@ plugins {
 }
 
 loom {
-    knownIndyBsms.add("scala/runtime/LambdaDeserialize")
-    knownIndyBsms.add("java/lang/runtime/SwitchBootstraps/typeSwitch")
-
     runs {
         configureEach {
             property("mixin.debug.export", "true")
@@ -57,24 +54,18 @@ loom {
 
 dependencies {
     minecraft(libs.minecraft)
-    mappings(loom.layered {
-        officialMojangMappings()
-        val parchmentMC = project.property("parchment.minecraft")
-        val parchmentDate = project.property("parchment.mapping")
-        parchment("org.parchmentmc.data:parchment-$parchmentMC:$parchmentDate@zip")
-    })
 
-    modImplementation(libs.fabric.loader)
-    modImplementation(libs.fabric.api)
-    modImplementation(libs.fabric.version.checker)
+    implementation(libs.fabric.loader)
+    implementation(libs.fabric.api)
+    implementation(libs.fabric.version.checker)
     compileOnly(project(":common"))
 
-    modImplementation(libs.teamreborn.energy)
+    implementation(libs.teamreborn.energy)
     // modLocalRuntime(libs.jei.fabric)
-    modImplementation(libs.du.fabric) {
+    implementation(libs.du.fabric) {
         isTransitive = false
     }
-    modLocalRuntime(libs.slp.fabric)
+    runtimeOnly(libs.slp.fabric)
 
     implementation(libs.config.toml)
     include(libs.config.core)
@@ -100,9 +91,4 @@ tasks.processResources {
 
 ext {
     set("publishJarTaskName", "remapJar")
-}
-
-// Workaround?
-tasks.remapJar {
-    mustRunAfter("compileTestScala")
 }

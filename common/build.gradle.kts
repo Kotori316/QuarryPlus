@@ -7,8 +7,6 @@ plugins {
 }
 
 loom {
-    knownIndyBsms.add("scala/runtime/LambdaDeserialize")
-    knownIndyBsms.add("java/lang/runtime/SwitchBootstraps/typeSwitch")
 }
 
 tasks.withType(AbstractRemapJarTask::class) {
@@ -43,15 +41,9 @@ sourceSets {
 
 dependencies {
     minecraft(libs.minecraft)
-    mappings(loom.layered {
-        officialMojangMappings()
-        val parchmentMC = project.property("parchment.minecraft")
-        val parchmentDate = project.property("parchment.mapping")
-        parchment("org.parchmentmc.data:parchment-$parchmentMC:$parchmentDate@zip")
-    })
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader
-    modLocalRuntime(libs.fabric.loader)
+    runtimeOnly(libs.fabric.loader)
     compileOnly(libs.config.core)
     testImplementation(libs.config.core)
     testRuntimeOnly(libs.config.toml)

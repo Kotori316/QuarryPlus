@@ -9,19 +9,6 @@ plugins {
 val modId = "QuarryPlus".lowercase()
 
 subsystems {
-    parchment {
-        minecraftVersion = project.property("parchment.minecraft").toString()
-        mappingsVersion = project.property("parchment.mapping").toString()
-    }
-}
-
-configurations.all {
-    resolutionStrategy.eachDependency {
-        // Hack for NeoForge, conflicts with Mockito?
-        if (requested.group == "org.ow2.asm" && requested.name.startsWith("asm")) {
-            useVersion("9.7")
-        }
-    }
 }
 
 // Common data gen
@@ -146,7 +133,7 @@ runs {
 dependencies {
     implementation(libs.neoforge)
     compileOnly(project(":common"))
-    runtimeOnly(variantOf(libs.slp.neoforge) { classifier("with-library") }) {
+    runtimeOnly(variantOf(libs.slp.neoforge) { classifier("all") }) {
         isTransitive = false
     }
     implementation(libs.du.neoforge) {

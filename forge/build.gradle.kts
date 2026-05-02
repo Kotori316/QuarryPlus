@@ -116,7 +116,7 @@ repositories {
 dependencies {
     implementation(minecraft.dependency(libs.forge))
     compileOnly(project(":common"))
-    runtimeOnly(variantOf(libs.slp.forge) { classifier("with-library") }) {
+    runtimeOnly(variantOf(libs.slp.forge) { classifier("all") }) {
         isTransitive = false
     }
     // runtimeOnly(libs.jei.forge)
