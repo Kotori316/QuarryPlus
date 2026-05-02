@@ -11,24 +11,15 @@ import net.minecraft.world.level.block.Block;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-import java.util.function.Supplier;
-
 public final class QuarryPlus {
     public static final String modID = "quarryplus";
     public static final String MOD_NAME = "QuarryPlus";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
-    public static CreativeModeTab.Builder buildCreativeModeTab(CreativeModeTab.Builder builder) {
+    public static CreativeModeTab.Builder buildCreativeModeTab(CreativeModeTab.Builder builder, CreativeModeTab.DisplayItemsGenerator displayItemsGenerator) {
         return builder.icon(() -> new ItemStack(PlatformAccess.getAccess().registerObjects().quarryBlock().get()))
             .title(Component.translatable("itemGroup.%s".formatted(modID)))
-            .displayItems((itemDisplayParameters, output) -> {
-                PlatformAccess.getAccess().registerObjects().allItems()
-                    .map(Map.Entry::getValue)
-                    .map(Supplier::get)
-                    .flatMap(inCreativeTabs -> inCreativeTabs.creativeTabItem(itemDisplayParameters))
-                    .forEach(output::accept);
-            });
+            .displayItems(displayItemsGenerator);
     }
 
     public static ResourceKey<Item> itemKey(String name) {

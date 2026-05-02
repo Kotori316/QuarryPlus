@@ -122,7 +122,12 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final MapCodec<MachineLootFunction> MACHINE_LOOT_FUNCTION = MachineLootFunction.SERIALIZER;
 
         private static final Map<Identifier, InCreativeTabs> TAB_ITEMS = new HashMap<>();
-        public static final CreativeModeTab TAB = QuarryPlus.buildCreativeModeTab(FabricCreativeModeTab.builder()).build();
+        public static final CreativeModeTab TAB = QuarryPlus.buildCreativeModeTab(FabricCreativeModeTab.builder(), (itemDisplayParameters, output) ->
+            PlatformAccess.getAccess().registerObjects().allItems()
+                .map(Map.Entry::getValue)
+                .map(Supplier::get)
+                .flatMap(inCreativeTabs -> inCreativeTabs.creativeTabItem(itemDisplayParameters))
+                .forEach(output::accept)).build();
         private static final Map<Class<? extends QpBlock>, BlockEntityType<?>> BLOCK_ENTITY_TYPES = new HashMap<>();
         private static final Map<String, EnableMap.EnableOrNot> ENABLE_MAP = new HashMap<>();
 

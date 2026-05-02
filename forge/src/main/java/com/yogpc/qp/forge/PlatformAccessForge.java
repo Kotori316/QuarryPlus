@@ -142,7 +142,12 @@ public final class PlatformAccessForge implements PlatformAccess {
 
         public static final RegistryObject<MapCodec<MachineLootFunction>> MACHINE_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(MachineLootFunction.NAME, () -> MachineLootFunction.SERIALIZER);
 
-        public static final RegistryObject<CreativeModeTab> CREATIVE_MODE_TAB = CREATIVE_TAB_REGISTER.register(QuarryPlus.modID, () -> QuarryPlus.buildCreativeModeTab(CreativeModeTab.builder()).build());
+        public static final RegistryObject<CreativeModeTab> CREATIVE_MODE_TAB = CREATIVE_TAB_REGISTER.register(QuarryPlus.modID, () -> QuarryPlus.buildCreativeModeTab(CreativeModeTab.builder(), (itemDisplayParameters, output) ->
+            PlatformAccess.getAccess().registerObjects().allItems()
+                .map(Map.Entry::getValue)
+                .map(Supplier::get)
+                .flatMap(inCreativeTabs -> inCreativeTabs.creativeTabItem(itemDisplayParameters))
+                .forEach(output::accept)).build());
         public static final RegistryObject<RecipeSerializer<InstallBedrockModuleRecipe>> INSTALL_BEDROCK_MODULE_RECIPE = RECIPE_REGISTER.register(InstallBedrockModuleRecipe.NAME, () -> InstallBedrockModuleRecipe.SERIALIZER);
         public static final RegistryObject<RecipeSerializer<FilterModuleExpandRecipe>> FILTER_MODULE_EXPAND_RECIPE = RECIPE_REGISTER.register(FilterModuleExpandRecipe.LOCATION.getPath(), () -> FilterModuleExpandRecipe.SERIALIZER);
 
