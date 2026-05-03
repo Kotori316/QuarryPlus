@@ -36,9 +36,9 @@
     "quarryplus.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.16.0",
-    "fabric": ">=0.105.0+1.21.1",
-    "minecraft": "1.21.x"
+    "fabricloader": ">=0.19.0",
+    "fabric-api": ">=0.147.0+26.1.2",
+    "minecraft": "26.1.x"
   },
   "custom": {
     "kotori316_version_checker": "${update_url}"

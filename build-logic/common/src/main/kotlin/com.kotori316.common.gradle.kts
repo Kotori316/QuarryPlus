@@ -28,12 +28,13 @@ val releaseDebug: Boolean = (System.getenv("RELEASE_DEBUG") ?: "true").toBoolean
 base {
     group = "com.kotori316"
     archivesName.set("AdditionalEnchantedMiner-${minecraft}-${getPlatform(project)}")
-    val mcVersionSplit = minecraft.split("-")[0].split(".").drop(1)
-    val major = mcVersionSplit[0]
-    val minor = mcVersionSplit.getOrElse(1) { _ -> "0" }
+    val mcVersionSplit = minecraft.split("-")[0].split(".")
+    val year = mcVersionSplit[0]
+    val release = mcVersionSplit[1]
+    val patch = mcVersionSplit.getOrElse(2) { _ -> "0" }
     val versionMinor: String? by project
-    val patch = System.getenv("GITHUB_RUN_NUMBER") ?: versionMinor ?: "0"
-    version = "${major}.${minor}.${patch}"
+    val build = System.getenv("GITHUB_RUN_NUMBER") ?: versionMinor ?: "0"
+    version = "${year}.${release}${patch}.${build}"
 }
 
 println(
