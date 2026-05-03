@@ -27,16 +27,16 @@ import org.jetbrains.annotations.NotNull;
 public final class PacketHandler implements PlatformAccess.Packet {
     public static class Server {
         public static void registerMessage() {
-            PayloadTypeRegistry.playS2C().register(ClientSyncMessage.TYPE, ClientSyncMessage.STREAM_CODEC);
-            PayloadTypeRegistry.playC2S().register(YSetterMessage.TYPE, YSetterMessage.STREAM_CODEC);
-            PayloadTypeRegistry.playC2S().register(MoverMessage.TYPE, MoverMessage.STREAM_CODEC);
-            PayloadTypeRegistry.playC2S().register(QuarryConfigSyncMessage.TYPE, QuarryConfigSyncMessage.STREAM_CODEC);
-            PayloadTypeRegistry.playC2S().register(FlexibleMarkerMessage.TYPE, FlexibleMarkerMessage.STREAM_CODEC);
-            PayloadTypeRegistry.playC2S().register(ChunkMarkerMessage.TYPE, ChunkMarkerMessage.STREAM_CODEC);
-            PayloadTypeRegistry.playC2S().register(AdvActionActionMessage.TYPE, AdvActionActionMessage.STREAM_CODEC);
-            PayloadTypeRegistry.playC2S().register(AdvActionSyncMessage.TYPE, AdvActionSyncMessage.STREAM_CODEC);
-            PayloadTypeRegistry.playS2C().register(AdvQuarryInitialAskMessage.TYPE, AdvQuarryInitialAskMessage.STREAM_CODEC);
-            PayloadTypeRegistry.playC2S().register(RemotePlacerMessage.TYPE, RemotePlacerMessage.STREAM_CODEC);
+            PayloadTypeRegistry.clientboundPlay().register(ClientSyncMessage.TYPE, ClientSyncMessage.STREAM_CODEC);
+            PayloadTypeRegistry.serverboundPlay().register(YSetterMessage.TYPE, YSetterMessage.STREAM_CODEC);
+            PayloadTypeRegistry.serverboundPlay().register(MoverMessage.TYPE, MoverMessage.STREAM_CODEC);
+            PayloadTypeRegistry.serverboundPlay().register(QuarryConfigSyncMessage.TYPE, QuarryConfigSyncMessage.STREAM_CODEC);
+            PayloadTypeRegistry.serverboundPlay().register(FlexibleMarkerMessage.TYPE, FlexibleMarkerMessage.STREAM_CODEC);
+            PayloadTypeRegistry.serverboundPlay().register(ChunkMarkerMessage.TYPE, ChunkMarkerMessage.STREAM_CODEC);
+            PayloadTypeRegistry.serverboundPlay().register(AdvActionActionMessage.TYPE, AdvActionActionMessage.STREAM_CODEC);
+            PayloadTypeRegistry.serverboundPlay().register(AdvActionSyncMessage.TYPE, AdvActionSyncMessage.STREAM_CODEC);
+            PayloadTypeRegistry.clientboundPlay().register(AdvQuarryInitialAskMessage.TYPE, AdvQuarryInitialAskMessage.STREAM_CODEC);
+            PayloadTypeRegistry.serverboundPlay().register(RemotePlacerMessage.TYPE, RemotePlacerMessage.STREAM_CODEC);
         }
 
         public static void initServer() {
@@ -70,7 +70,7 @@ public final class PacketHandler implements PlatformAccess.Packet {
     }
 
     public void sendToClientWorld(@NotNull CustomPacketPayload message, @NotNull Level level) {
-        for (ServerPlayer player : PlayerLookup.world((ServerLevel) level)) {
+        for (ServerPlayer player : PlayerLookup.level((ServerLevel) level)) {
             ServerPlayNetworking.send(player, message);
         }
     }
