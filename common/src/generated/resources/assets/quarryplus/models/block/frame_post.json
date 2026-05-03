@@ -33,7 +33,6 @@
       ]
     }
   ],
-  "render_type": "minecraft:cutout",
   "textures": {
     "particle": "quarryplus:block/frame",
     "texture": "quarryplus:block/frame"

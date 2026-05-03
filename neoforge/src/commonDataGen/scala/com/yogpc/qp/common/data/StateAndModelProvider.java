@@ -1,6 +1,8 @@
 package com.yogpc.qp.common.data;
 
+import com.google.gson.JsonPrimitive;
 import com.mojang.math.Quadrant;
+import com.mojang.serialization.JsonOps;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.QpBlock;
@@ -14,11 +16,11 @@ import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.*;
-import net.minecraft.client.renderer.block.model.Variant;
+import net.minecraft.client.renderer.block.dispatch.Variant;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
@@ -30,8 +32,12 @@ final class StateAndModelProvider extends ModelProvider {
         super(output, QuarryPlus.modID);
     }
 
-    private Identifier blockTexture(String name) {
-        return modLocation("block/" + name);
+    private Material blockTexture(String name) {
+        return texture("block/" + name);
+    }
+
+    private Material texture(String name) {
+        return new Material(modLocation(name));
     }
 
     @Override
@@ -76,7 +82,6 @@ final class StateAndModelProvider extends ModelProvider {
 
     void frame(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
         var centerTemplate = ExtendedModelTemplateBuilder.builder()
-            .renderType(renderTypeName(ChunkSectionLayer.CUTOUT))
             .element(b ->
                 b.from(4.0f, 4.0f, 4.0f).to(12.0f, 12.0f, 12.0f)
                     .allFaces((direction, faceBuilder) -> faceBuilder.uvs(4, 4, 12, 12).texture(TextureSlot.TEXTURE))
@@ -91,7 +96,6 @@ final class StateAndModelProvider extends ModelProvider {
             blockModels.modelOutput
         );
         var sideTemplate = ExtendedModelTemplateBuilder.builder()
-            .renderType(renderTypeName(ChunkSectionLayer.CUTOUT))
             .element(b -> b.from(4, 4, 0).to(12, 12, 4)
                 .face(Direction.DOWN, f -> f.uvs(4, 0, 12, 4).texture(TextureSlot.TEXTURE))
                 .face(Direction.UP, f -> f.uvs(4, 0, 12, 4).texture(TextureSlot.TEXTURE))
@@ -146,7 +150,7 @@ final class StateAndModelProvider extends ModelProvider {
         blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_.get(), dummyReplacerModel));
         blockModels.registerSimpleItemModel(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_.get(), dummyReplacerModel);*/
 
-        var dummyBlockTemplate = ModelTemplates.CUBE_ALL.extend().renderType("translucent").build();
+        var dummyBlockTemplate = ModelTemplates.CUBE_ALL.extend().build();
         var dummyBlockModel = dummyBlockTemplate.create(modLocation("block/dummy_block"), TextureMapping.cube(blockTexture("dummy_block")), blockModels.modelOutput);
         blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get(), BlockModelGenerators.plainVariant(dummyBlockModel)));
         blockModels.registerSimpleItemModel(PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_SOFT.get(), dummyBlockModel);
@@ -156,7 +160,7 @@ final class StateAndModelProvider extends ModelProvider {
         blockModels.createTrivialCube(block);
     }
 
-    void simpleBlockAndItemCubeBottomTop(BlockModelGenerators blockModels, QpBlock block, Identifier side, Identifier top, Identifier bottom) {
+    void simpleBlockAndItemCubeBottomTop(BlockModelGenerators blockModels, QpBlock block, Material side, Material top, Material bottom) {
         var model = ModelTemplates.CUBE_BOTTOM_TOP.create(block,
             new TextureMapping()
                 .put(TextureSlot.SIDE, side)
@@ -216,12 +220,7 @@ final class StateAndModelProvider extends ModelProvider {
     }
 
     static Quadrant rotationFromValue(int rot) {
-        return switch (rot) {
-            case 90 -> Quadrant.R90;
-            case 180 -> Quadrant.R180;
-            case 270 -> Quadrant.R270;
-            default -> Quadrant.R0;
-        };
+        return Quadrant.CODEC.parse(JsonOps.INSTANCE, new JsonPrimitive(rot)).getOrThrow();
     }
 
     void simpleItem(ItemModelGenerators itemModels, QpItem item) {
@@ -229,10 +228,10 @@ final class StateAndModelProvider extends ModelProvider {
     }
 
     void simpleItem(ItemModelGenerators itemModels, QpItem item, String texture) {
-        simpleItem(itemModels, item, modLocation(texture));
+        simpleItem(itemModels, item, texture(texture));
     }
 
-    void simpleItem(ItemModelGenerators itemModels, QpItem item, Identifier texture) {
+    void simpleItem(ItemModelGenerators itemModels, QpItem item, Material texture) {
         itemModels.itemModelOutput.accept(
             item,
             ItemModelUtils.plainModel(ModelTemplates.FLAT_ITEM.create(item, TextureMapping.layer0(texture), itemModels.modelOutput))
