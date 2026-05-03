@@ -36,7 +36,7 @@ public record ItemConverter(List<Conversion> conversions) {
 
         default Stream<ItemStack> convert(ItemStack stack) {
             if (stack.isEmpty()) {
-                return Stream.empty();
+                return Stream.of(stack);
             }
             return this.convert(ItemStackTemplate.fromNonEmptyStack(stack)).map(ItemStackTemplate::create);
         }
@@ -47,6 +47,9 @@ public record ItemConverter(List<Conversion> conversions) {
         boolean shouldApply(ItemStackTemplate stack);
 
         default boolean shouldApply(ItemStack stack) {
+            if (stack.isEmpty()) {
+                return false;
+            }
             return this.shouldApply(ItemStackTemplate.fromNonEmptyStack(stack));
         }
     }
@@ -104,6 +107,7 @@ public record ItemConverter(List<Conversion> conversions) {
             // Check item tag
             if (
                 stack.is(ItemTags.DIRT)
+                    || stack.is(ItemTags.GRASS_BLOCKS)
                     || stack.is(Items.COBBLESTONE)
                     || stack.is(Items.SANDSTONE)
                     || stack.is(Items.RED_SANDSTONE)

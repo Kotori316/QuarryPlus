@@ -30,6 +30,7 @@ public final class GameTestFunctions {
             LoadRecipeTest.class,
             EnableMapTest.class,
             ExpModuleItemTest.class,
+            FilterModuleItemTest.class,
             EnchantmentTest.class,
             MachineStorageTest.class,
             AccessFluidTest.class

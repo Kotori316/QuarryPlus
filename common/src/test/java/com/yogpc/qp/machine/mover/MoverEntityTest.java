@@ -9,7 +9,6 @@ import com.yogpc.qp.machine.QpBlockItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -64,16 +63,6 @@ class MoverEntityTest extends BeforeMC {
         var instance = assertDoesNotThrow(() -> new MoverEntity(BlockPos.ZERO, new DummyBlock().defaultBlockState()));
         assertTrue(instance.inventory.isEmpty());
         assertTrue(instance.movableEnchantments.isEmpty());
-    }
-
-    @Test
-    void canPlace() {
-        var instance = assertDoesNotThrow(() -> new MoverEntity(BlockPos.ZERO, new DummyBlock().defaultBlockState()));
-        assertAll(
-            () -> assertFalse(instance.inventory.canPlaceItem(0, ItemStack.EMPTY)),
-            () -> assertFalse(instance.inventory.canPlaceItem(0, Items.DIAMOND_PICKAXE.getDefaultInstance())),
-            () -> assertFalse(instance.inventory.canPlaceItem(0, Items.NETHERITE_PICKAXE.getDefaultInstance()))
-        );
     }
 
     @ParameterizedTest

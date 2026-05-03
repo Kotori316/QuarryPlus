@@ -19,6 +19,17 @@ import static org.junit.jupiter.api.Assertions.*;
 public final class PlaceMoverTest {
     static final BlockPos base = BlockPos.ZERO.above();
 
+    public static void canPlace(GameTestHelper helper) {
+        helper.setBlock(base, PlatformAccess.getAccess().registerObjects().moverBlock().get());
+        MoverEntity mover = helper.getBlockEntity(base, MoverEntity.class);
+        assertAll(
+            () -> assertFalse(mover.inventory.canPlaceItem(0, ItemStack.EMPTY)),
+            () -> assertFalse(mover.inventory.canPlaceItem(0, Items.DIAMOND_PICKAXE.getDefaultInstance())),
+            () -> assertFalse(mover.inventory.canPlaceItem(0, Items.NETHERITE_PICKAXE.getDefaultInstance()))
+        );
+        helper.succeed();
+    }
+
     public static void place(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().moverBlock().get());
         assertInstanceOf(MoverBlock.class, helper.getBlockState(base).getBlock());

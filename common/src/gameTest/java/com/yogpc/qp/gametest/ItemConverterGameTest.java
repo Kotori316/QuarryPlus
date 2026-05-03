@@ -7,6 +7,7 @@ import com.yogpc.qp.machine.ItemConverter;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 
 import java.util.List;
 import java.util.function.Function;
@@ -32,8 +33,7 @@ public final class ItemConverterGameTest {
                 assertFalse(converter.shouldApply(stack));
                 var conversion = new ItemConverter(List.of(converter));
                 var converted = conversion.convert(stack).toList();
-                assertEquals(1, converted.size());
-                assertSame(stack, converted.getFirst());
+                assertEquals(0, converted.size());
                 g.succeed();
             })
         );
@@ -57,7 +57,7 @@ public final class ItemConverterGameTest {
                 var conversion = new ItemConverter(List.of(converter));
                 var converted = conversion.convert(stack).toList();
                 assertEquals(1, converted.size());
-                assertSame(stack, converted.getFirst());
+                assertEquals(ItemStackTemplate.fromNonEmptyStack(stack), ItemStackTemplate.fromNonEmptyStack(converted.getFirst()));
                 g.succeed();
             });
         });
@@ -66,7 +66,10 @@ public final class ItemConverterGameTest {
     private static Stream<TestFunction> conversionChunkDestroyer(String batchName, String structureName) {
         var items = Stream.of(
             Identifier.fromNamespaceAndPath("minecraft", "dirt"),
+            Identifier.fromNamespaceAndPath("minecraft", "coarse_dirt"),
+            Identifier.fromNamespaceAndPath("minecraft", "rooted_dirt"),
             Identifier.fromNamespaceAndPath("minecraft", "grass_block"),
+            Identifier.fromNamespaceAndPath("minecraft", "podzol"),
             Identifier.fromNamespaceAndPath("minecraft", "stone"),
             Identifier.fromNamespaceAndPath("minecraft", "cobblestone"),
             Identifier.fromNamespaceAndPath("minecraft", "deepslate"),
