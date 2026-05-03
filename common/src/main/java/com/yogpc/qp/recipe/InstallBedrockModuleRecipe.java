@@ -8,7 +8,6 @@ import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.QpBlock;
 import net.minecraft.advancements.*;
 import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeBuilder;
@@ -18,12 +17,10 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import org.apache.logging.log4j.util.Lazy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,23 +31,34 @@ import java.util.Map;
 /**
  * Used only in fabric. Registered in all platforms.
  */
-public final class InstallBedrockModuleRecipe implements CraftingRecipe {
+public final class InstallBedrockModuleRecipe extends NormalCraftingRecipe {
     public static final String NAME = "install_bedrock_module_recipe";
-    public static final RecipeSerializer<InstallBedrockModuleRecipe> SERIALIZER = new Serializer();
+    public static final MapCodec<InstallBedrockModuleRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+        RecordCodecBuilder.of(o -> o.commonInfo, Recipe.CommonInfo.MAP_CODEC),
+        RecordCodecBuilder.of(o -> o.bookInfo, CraftingRecipe.CraftingBookInfo.MAP_CODEC),
+        RecordCodecBuilder.of(InstallBedrockModuleRecipe::getTargetBlockId, "target", Identifier.CODEC)
+    ).apply(i, InstallBedrockModuleRecipe::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, InstallBedrockModuleRecipe> STREAM_CODEC = StreamCodec.composite(
+        Recipe.CommonInfo.STREAM_CODEC, o -> o.commonInfo,
+        CraftingRecipe.CraftingBookInfo.STREAM_CODEC, o -> o.bookInfo,
+        Identifier.STREAM_CODEC, InstallBedrockModuleRecipe::getTargetBlockId,
+        InstallBedrockModuleRecipe::new
+    );
+    public static final RecipeSerializer<InstallBedrockModuleRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+
     private final QpBlock block;
     final ItemStack result;
     final List<Ingredient> ingredients;
-    final Lazy<PlacementInfo> placementInfo;
 
-    public InstallBedrockModuleRecipe(QpBlock block) {
+    public InstallBedrockModuleRecipe(Recipe.CommonInfo commonInfo, CraftingRecipe.CraftingBookInfo bookInfo, QpBlock block) {
+        super(commonInfo, bookInfo);
         this.block = block;
         this.ingredients = getIngredients(block);
         this.result = resultItem(block);
-        this.placementInfo = Lazy.lazy(() -> PlacementInfo.create(this.ingredients));
     }
 
-    InstallBedrockModuleRecipe(Identifier targetBlockId) {
-        this(fromId(targetBlockId));
+    InstallBedrockModuleRecipe(Recipe.CommonInfo commonInfo, CraftingRecipe.CraftingBookInfo bookInfo, Identifier targetBlockId) {
+        this(commonInfo, bookInfo, fromId(targetBlockId));
     }
 
     @Override
@@ -66,7 +74,7 @@ public final class InstallBedrockModuleRecipe implements CraftingRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+    public ItemStack assemble(CraftingInput input) {
         var stack = input.items().stream().filter(s -> s.is(block.blockItem)).findFirst().map(ItemStack::copy).orElse(ItemStack.EMPTY);
         stack.set(QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT, true);
         return stack;
@@ -78,18 +86,8 @@ public final class InstallBedrockModuleRecipe implements CraftingRecipe {
     }
 
     @Override
-    public PlacementInfo placementInfo() {
-        return this.placementInfo.get();
-    }
-
-    @Override
-    public CraftingBookCategory category() {
-        return CraftingBookCategory.MISC;
-    }
-
-    @Override
-    public String group() {
-        return QuarryPlus.modID + ":" + NAME;
+    protected PlacementInfo createPlacementInfo() {
+        return PlacementInfo.create(this.ingredients);
     }
 
     private static QpBlock fromId(Identifier blockId) {
@@ -112,25 +110,6 @@ public final class InstallBedrockModuleRecipe implements CraftingRecipe {
         var stack = new ItemStack(block);
         stack.set(QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT, true);
         return stack;
-    }
-
-    private static final class Serializer implements RecipeSerializer<InstallBedrockModuleRecipe> {
-        public static final MapCodec<InstallBedrockModuleRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-            RecordCodecBuilder.of(InstallBedrockModuleRecipe::getTargetBlockId, "target", Identifier.CODEC)
-        ).apply(i, InstallBedrockModuleRecipe::new));
-        public static final StreamCodec<RegistryFriendlyByteBuf, InstallBedrockModuleRecipe> STREAM_CODEC =
-            Identifier.STREAM_CODEC.map(InstallBedrockModuleRecipe::new, InstallBedrockModuleRecipe::getTargetBlockId).cast();
-
-        @Override
-        public MapCodec<InstallBedrockModuleRecipe> codec() {
-            return CODEC;
-        }
-
-        @Override
-        @Deprecated
-        public StreamCodec<RegistryFriendlyByteBuf, InstallBedrockModuleRecipe> streamCodec() {
-            return STREAM_CODEC;
-        }
     }
 
     public static Builder builder(QpBlock block) {
@@ -158,8 +137,8 @@ public final class InstallBedrockModuleRecipe implements CraftingRecipe {
         }
 
         @Override
-        public Item getResult() {
-            return block.blockItem;
+        public ResourceKey<Recipe<?>> defaultId() {
+            return RecipeBuilder.getDefaultRecipeId(new ItemStack(block.blockItem));
         }
 
         @Override
@@ -169,7 +148,11 @@ public final class InstallBedrockModuleRecipe implements CraftingRecipe {
                 .rewards(AdvancementRewards.Builder.recipe(resourceKey))
                 .requirements(AdvancementRequirements.Strategy.OR);
             this.criteria.forEach(builder::addCriterion);
-            InstallBedrockModuleRecipe recipe = new InstallBedrockModuleRecipe(block);
+            InstallBedrockModuleRecipe recipe = new InstallBedrockModuleRecipe(
+                new Recipe.CommonInfo(false),
+                new CraftingRecipe.CraftingBookInfo(CraftingBookCategory.MISC, QuarryPlus.modID + ":" + NAME),
+                block
+            );
             AdvancementHolder advancement = builder.build(resourceKey.identifier().withPrefix("recipes/" + this.category.getFolderName() + "/"));
             recipeOutput.accept(resourceKey, recipe, advancement);
         }
