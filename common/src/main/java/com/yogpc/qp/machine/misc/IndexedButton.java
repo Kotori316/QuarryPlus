@@ -1,6 +1,6 @@
 package com.yogpc.qp.machine.misc;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
@@ -14,8 +14,7 @@ public class IndexedButton extends Button {
     }
 
     public IndexedButton(int index, int xPos, int yPos, int width, int height, Component displayString, Button.OnPress handler) {
-        super(xPos, yPos, width, height, displayString, handler, Button.DEFAULT_NARRATION);
-        this.index = index;
+        this(index, xPos, yPos, width, height, displayString, handler, Button.DEFAULT_NARRATION);
     }
 
     public int getIndex() {
@@ -35,8 +34,8 @@ public class IndexedButton extends Button {
      * Same content as {@link net.minecraft.client.gui.components.Button.Plain}
      */
     @Override
-    protected void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderDefaultSprite(guiGraphics);
-        this.renderDefaultLabel(guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
+    protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.extractDefaultSprite(guiGraphics);
+        this.extractDefaultLabel(guiGraphics.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
     }
 }

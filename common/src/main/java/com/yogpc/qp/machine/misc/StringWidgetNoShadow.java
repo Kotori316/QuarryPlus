@@ -2,7 +2,7 @@ package com.yogpc.qp.machine.misc;
 
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractStringWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
@@ -25,12 +25,12 @@ public final class StringWidgetNoShadow extends AbstractStringWidget {
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         Component component = this.getMessage();
         Font font = this.getFont();
         int k = this.getX();
         int l = this.getY() + (this.getHeight() - 9) / 2;
         FormattedCharSequence formattedcharsequence = component.getVisualOrderText();
-        guiGraphics.drawString(font, formattedcharsequence, k, l, this.color, false);
+        guiGraphics.text(font, formattedcharsequence, k, l, this.color, false);
     }
 }
