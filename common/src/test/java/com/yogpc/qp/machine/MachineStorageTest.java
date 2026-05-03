@@ -9,7 +9,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,9 +51,9 @@ class MachineStorageTest extends BeforeMC {
         @Test
         void addItem() {
             MachineStorage.ItemKey itemKey = new MachineStorage.ItemKey(Items.APPLE, DataComponentPatch.EMPTY);
-            storage.addItem(itemKey.toStack(20));
+            storage.addItem(itemKey.toTemplate(20));
             assertEquals(20, storage.getItemCount(itemKey));
-            storage.addItem(itemKey.toStack(40));
+            storage.addItem(itemKey.toTemplate(40));
             assertEquals(60, storage.getItemCount(itemKey));
         }
 
@@ -66,10 +66,10 @@ class MachineStorageTest extends BeforeMC {
         @Test
         void otherItemCount1() {
             MachineStorage.ItemKey itemKey = new MachineStorage.ItemKey(Items.APPLE, DataComponentPatch.EMPTY);
-            storage.addItem(itemKey.toStack(20));
+            storage.addItem(itemKey.toTemplate(20));
             var key2 = new MachineStorage.ItemKey(Items.GOLDEN_APPLE, DataComponentPatch.EMPTY);
             assertEquals(0, storage.getItemCount(key2));
-            storage.addItem(key2.toStack(40));
+            storage.addItem(key2.toTemplate(40));
             assertAll(
                 () -> assertEquals(20, storage.getItemCount(itemKey)),
                 () -> assertEquals(40, storage.getItemCount(key2))
@@ -79,10 +79,10 @@ class MachineStorageTest extends BeforeMC {
         @Test
         void otherItemCount2() {
             MachineStorage.ItemKey itemKey = new MachineStorage.ItemKey(Items.APPLE, DataComponentPatch.EMPTY);
-            storage.addItem(itemKey.toStack(20));
+            storage.addItem(itemKey.toTemplate(20));
             var key2 = new MachineStorage.ItemKey(Items.APPLE, DataComponentPatch.builder().set(DataComponents.DAMAGE, 3).build());
             assertEquals(0, storage.getItemCount(key2));
-            storage.addItem(key2.toStack(40));
+            storage.addItem(key2.toTemplate(40));
             assertAll(
                 () -> assertEquals(20, storage.getItemCount(itemKey)),
                 () -> assertEquals(40, storage.getItemCount(key2))
@@ -184,7 +184,7 @@ class MachineStorageTest extends BeforeMC {
     @MethodSource("ops")
     void serialize(DynamicOps<?> ops) {
         MachineStorage storage = new MachineStorage();
-        storage.addItem(new ItemStack(Items.APPLE, 40));
+        storage.addItem(new ItemStackTemplate(Items.APPLE, 40));
         storage.addFluid(Fluids.WATER, MachineStorage.ONE_BUCKET);
 
         var serialized = assertDoesNotThrow(() -> MachineStorage.CODEC.codec().encodeStart(ops, storage).getOrThrow());
@@ -195,7 +195,7 @@ class MachineStorageTest extends BeforeMC {
     @MethodSource("ops")
     <T> void cycle(DynamicOps<T> ops) {
         MachineStorage storage = new MachineStorage();
-        storage.addItem(new ItemStack(Items.APPLE, 40));
+        storage.addItem(new ItemStackTemplate(Items.APPLE, 40));
         storage.addFluid(Fluids.WATER, MachineStorage.ONE_BUCKET);
 
         var serialized = assertDoesNotThrow(() -> MachineStorage.CODEC.codec().encodeStart(ops, storage).getOrThrow());
@@ -228,7 +228,7 @@ class MachineStorageTest extends BeforeMC {
         var deserialized = assertDoesNotThrow(() -> MachineStorage.CODEC.codec().parse(JsonOps.INSTANCE, GsonHelper.parse(json)).getOrThrow());
         assertInstanceOf(MachineStorage.class, deserialized);
         MachineStorage expected = new MachineStorage();
-        expected.addItem(new ItemStack(Items.APPLE, 4));
+        expected.addItem(new ItemStackTemplate(Items.APPLE, 4));
         expected.addFluid(Fluids.WATER, MachineStorage.ONE_BUCKET);
         assertEquals(expected, deserialized);
     }
@@ -255,7 +255,7 @@ class MachineStorageTest extends BeforeMC {
         var deserialized = assertDoesNotThrow(() -> MachineStorage.CODEC.codec().parse(JsonOps.INSTANCE, GsonHelper.parse(json)).getOrThrow());
         assertInstanceOf(MachineStorage.class, deserialized);
         MachineStorage expected = new MachineStorage();
-        expected.addItem(new ItemStack(Items.APPLE, 4));
+        expected.addItem(new ItemStackTemplate(Items.APPLE, 4));
         expected.addFluid(Fluids.WATER, MachineStorage.ONE_BUCKET);
         assertEquals(expected, deserialized);
     }

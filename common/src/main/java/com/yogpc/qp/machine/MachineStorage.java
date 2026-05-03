@@ -14,12 +14,14 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,8 +64,13 @@ public class MachineStorage {
 
     public void addItem(ItemStack stack) {
         if (stack.isEmpty()) return;
-        var key = ItemKey.of(stack);
-        items.addTo(key, stack.getCount());
+        addItem(ItemStackTemplate.fromNonEmptyStack(stack));
+    }
+
+    @VisibleForTesting
+    public void addItem(ItemStackTemplate template) {
+        var key = ItemKey.of(template);
+        items.addTo(key, template.count());
         notifyUpdate();
     }
 
@@ -127,10 +134,21 @@ public class MachineStorage {
             return new ItemKey(stack.getItem(), stack.getComponentsPatch());
         }
 
+        @VisibleForTesting
+        public static ItemKey of(ItemStackTemplate stack) {
+            return new ItemKey(stack.item().value(), stack.components());
+        }
+
         public ItemStack toStack(int count) {
             var stack = new ItemStack(item, count);
             stack.applyComponents(patch);
             return stack;
+        }
+
+        @VisibleForTesting
+        public ItemStackTemplate toTemplate(int count) {
+            var template = new ItemStackTemplate(item, patch);
+            return template.withCount(count);
         }
     }
 

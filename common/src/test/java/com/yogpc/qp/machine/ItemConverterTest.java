@@ -1,8 +1,7 @@
 package com.yogpc.qp.machine;
 
 import com.yogpc.qp.BeforeMC;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,8 +21,8 @@ class ItemConverterTest extends BeforeMC {
         assertNotNull(instance);
     }
 
-    static Stream<ItemStack> stacks() {
-        return Stream.concat(Stream.of(
+    static Stream<ItemStackTemplate> stacks() {
+        return Stream.of(
             Items.STONE,
             Items.DEEPSLATE,
             Items.DEEPSLATE_BRICKS,
@@ -32,12 +31,12 @@ class ItemConverterTest extends BeforeMC {
             Items.POTION,
             Items.DIAMOND_ORE,
             Items.END_STONE
-        ).map(Item::getDefaultInstance), Stream.of(ItemStack.EMPTY));
+        ).map(ItemStackTemplate::new);
     }
 
     @ParameterizedTest
     @MethodSource("stacks")
-    void noConversion(ItemStack stack) {
+    void noConversion(ItemStackTemplate stack) {
         var converter = new ItemConverter(List.of());
         var converted = converter.convert(stack).toList();
         assertEquals(1, converted.size());
@@ -46,7 +45,7 @@ class ItemConverterTest extends BeforeMC {
 
     @ParameterizedTest
     @MethodSource("stacks")
-    void noConversionDeepslate(ItemStack stack) {
+    void noConversionDeepslate(ItemStackTemplate stack) {
         var conversion = new ItemConverter.DeepslateOreConversion();
         var converter = new ItemConverter(List.of(conversion));
         assertFalse(conversion.shouldApply(stack));
@@ -57,35 +56,35 @@ class ItemConverterTest extends BeforeMC {
 
     @ParameterizedTest
     @MethodSource
-    void conversionDeepslate(ItemStack stack, ItemStack expected) {
+    void conversionDeepslate(ItemStackTemplate stack, ItemStackTemplate expected) {
         var converter = new ItemConverter.DeepslateOreConversion();
         assertTrue(converter.shouldApply(stack));
         var converted = converter.convert(stack).toList();
         assertEquals(1, converted.size());
         var convertedStack = converted.getFirst();
-        assertEquals(expected.getCount(), convertedStack.getCount());
+        assertEquals(expected.count(), convertedStack.count());
         assertEquals(MachineStorage.ItemKey.of(expected), MachineStorage.ItemKey.of(convertedStack));
     }
 
     static Stream<Arguments> conversionDeepslate() {
         return Stream.of(
-            Arguments.of(Items.DEEPSLATE_COAL_ORE.getDefaultInstance(), Items.COAL_ORE.getDefaultInstance()),
-            Arguments.of(Items.DEEPSLATE_IRON_ORE.getDefaultInstance(), Items.IRON_ORE.getDefaultInstance()),
-            Arguments.of(Items.DEEPSLATE_GOLD_ORE.getDefaultInstance(), Items.GOLD_ORE.getDefaultInstance()),
-            Arguments.of(Items.DEEPSLATE_REDSTONE_ORE.getDefaultInstance(), Items.REDSTONE_ORE.getDefaultInstance()),
-            Arguments.of(Items.DEEPSLATE_LAPIS_ORE.getDefaultInstance(), Items.LAPIS_ORE.getDefaultInstance()),
-            Arguments.of(Items.DEEPSLATE_EMERALD_ORE.getDefaultInstance(), Items.EMERALD_ORE.getDefaultInstance()),
-            Arguments.of(Items.DEEPSLATE_DIAMOND_ORE.getDefaultInstance(), Items.DIAMOND_ORE.getDefaultInstance()),
-            Arguments.of(Items.DEEPSLATE_COPPER_ORE.getDefaultInstance(), Items.COPPER_ORE.getDefaultInstance())
+            Arguments.of(new ItemStackTemplate(Items.DEEPSLATE_COAL_ORE), new ItemStackTemplate(Items.COAL_ORE)),
+            Arguments.of(new ItemStackTemplate(Items.DEEPSLATE_IRON_ORE), new ItemStackTemplate(Items.IRON_ORE)),
+            Arguments.of(new ItemStackTemplate(Items.DEEPSLATE_GOLD_ORE), new ItemStackTemplate(Items.GOLD_ORE)),
+            Arguments.of(new ItemStackTemplate(Items.DEEPSLATE_REDSTONE_ORE), new ItemStackTemplate(Items.REDSTONE_ORE)),
+            Arguments.of(new ItemStackTemplate(Items.DEEPSLATE_LAPIS_ORE), new ItemStackTemplate(Items.LAPIS_ORE)),
+            Arguments.of(new ItemStackTemplate(Items.DEEPSLATE_EMERALD_ORE), new ItemStackTemplate(Items.EMERALD_ORE)),
+            Arguments.of(new ItemStackTemplate(Items.DEEPSLATE_DIAMOND_ORE), new ItemStackTemplate(Items.DIAMOND_ORE)),
+            Arguments.of(new ItemStackTemplate(Items.DEEPSLATE_COPPER_ORE), new ItemStackTemplate(Items.COPPER_ORE))
         );
     }
 
     @ParameterizedTest
     @MethodSource("stacks")
-    void noConvertToEmptyConverter(ItemStack stack) {
+    void noConvertToEmptyConverter(ItemStackTemplate stack) {
         var conversion = new ItemConverter.ToEmptyConverter(Set.of(
-            MachineStorage.ItemKey.of(Items.BREAD.getDefaultInstance()),
-            MachineStorage.ItemKey.of(Items.WHEAT.getDefaultInstance())
+            MachineStorage.ItemKey.of(new ItemStackTemplate(Items.BREAD)),
+            MachineStorage.ItemKey.of(new ItemStackTemplate(Items.WHEAT))
         ));
         var converter = new ItemConverter(List.of(conversion));
         assertFalse(conversion.shouldApply(stack));
@@ -96,31 +95,32 @@ class ItemConverterTest extends BeforeMC {
 
     @ParameterizedTest
     @MethodSource
-    void convertToEmptyConverter(ItemStack stack) {
+    void convertToEmptyConverter(ItemStackTemplate stack) {
         var conversion = new ItemConverter.ToEmptyConverter(Set.of(
-            MachineStorage.ItemKey.of(Items.BREAD.getDefaultInstance()),
-            MachineStorage.ItemKey.of(Items.WHEAT.getDefaultInstance())
+            MachineStorage.ItemKey.of(new ItemStackTemplate(Items.BREAD)),
+            MachineStorage.ItemKey.of(new ItemStackTemplate(Items.WHEAT))
         ));
         assertTrue(conversion.shouldApply(stack));
         var converter = new ItemConverter(List.of(conversion));
         assertEquals(0, converter.convert(stack).count());
     }
 
-    static Stream<ItemStack> convertToEmptyConverter() {
+    static Stream<ItemStackTemplate> convertToEmptyConverter() {
         return Stream.of(
-            Items.BREAD.getDefaultInstance(),
-            Items.WHEAT.getDefaultInstance()
-        );
+            Items.BREAD,
+            Items.WHEAT
+        ).map(ItemStackTemplate::new);
     }
 
     @ParameterizedTest
     @MethodSource("concatTarget")
-    void concat(ItemStack stack) {
+    void concat(ItemStackTemplate stack) {
         var converter = new ItemConverter(List.of(
             new ItemConverter.ToEmptyConverter(Set.of(
-                MachineStorage.ItemKey.of(Items.BREAD.getDefaultInstance())
+                MachineStorage.ItemKey.of(new ItemStackTemplate(Items.BREAD))
             )),
-            new ItemConverter.DeepslateOreConversion()));
+            new ItemConverter.DeepslateOreConversion())
+        );
 
         var converted = converter.convert(stack).toList();
         if (!converted.isEmpty()) {
@@ -128,13 +128,12 @@ class ItemConverterTest extends BeforeMC {
         }
     }
 
-    static Stream<ItemStack> concatTarget() {
+    static Stream<ItemStackTemplate> concatTarget() {
         return Stream.concat(
             Stream.of(
-                Items.BREAD.getDefaultInstance()
+                new ItemStackTemplate(Items.BREAD)
             ),
-            conversionDeepslate().map(a -> (ItemStack) a.get()[0])
+            conversionDeepslate().map(a -> (ItemStackTemplate) a.get()[0])
         );
     }
-
 }
