@@ -5,7 +5,6 @@ import com.yogpc.qp.FluidStackLikeUnit;
 import com.yogpc.qp.PlatformAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -17,7 +16,7 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 public final class TransferNeoForge implements PlatformAccess.Transfer {
     public static FluidStack toNeoForge(FluidStackLike f) {
-        return new FluidStack(Holder.direct(f.fluid()), f.amount().neoForgeAmount(), f.patch());
+        return new FluidStack(f.fluid(), f.amount().neoForgeAmount(), f.patch());
     }
 
     public static FluidStackLike toCommon(FluidStack f) {

@@ -10,7 +10,6 @@ import com.yogpc.qp.PlatformAccess;
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
@@ -129,7 +128,9 @@ public class MachineStorage {
         }
 
         public ItemStack toStack(int count) {
-            return new ItemStack(Holder.direct(item), count, patch);
+            var stack = new ItemStack(item, count);
+            stack.applyComponents(patch);
+            return stack;
         }
     }
 

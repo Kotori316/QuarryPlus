@@ -5,7 +5,7 @@ import com.yogpc.qp.FluidStackLikeUnit;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.MachineStorage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
@@ -37,7 +37,7 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
     }
 
     @Override
-    protected void renderListBackground(GuiGraphics guiGraphics) {
+    protected void extractListBackground(GuiGraphicsExtractor guiGraphics) {
     }
 
     @Override
@@ -56,14 +56,14 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+    public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractWidgetRenderState(guiGraphics, mouseX, mouseY, partialTick);
         if (isMouseOver(mouseX, mouseY)) {
             var hovered = getHovered();
             if (hovered != null) {
                 var stack = hovered.stack;
                 var component = stack.getStyledHoverName();
-                guiGraphics.renderTooltip(minecraft.font, List.of(ClientTooltipComponent.create(component.getVisualOrderText())), mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, stack.get(DataComponents.TOOLTIP_STYLE));
+                guiGraphics.tooltip(minecraft.font, List.of(ClientTooltipComponent.create(component.getVisualOrderText())), mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, stack.get(DataComponents.TOOLTIP_STYLE));
             }
         }
     }
@@ -95,14 +95,14 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
         }
 
         @Override
-        public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
-            guiGraphics.renderFakeItem(stack, getRowLeft(), getY());
+        public void extractContent(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+            guiGraphics.fakeItem(stack, getRowLeft(), getY());
             var text = getNarration();
             final int textWidth = minecraft.font.width(text);
             final int textX = getRowLeft() + 20;
             final int textY = getY() + 4;
-            guiGraphics.drawString(minecraft.font, text, textX, textY, ARGB.opaque(0xFFFFFF));
-            guiGraphics.drawString(minecraft.font, count + unit, textX + textWidth + 8, textY, ARGB.opaque(0xFFFFFF), true);
+            guiGraphics.text(minecraft.font, text, textX, textY, ARGB.opaque(0xFFFFFF));
+            guiGraphics.text(minecraft.font, count + unit, textX + textWidth + 8, textY, ARGB.opaque(0xFFFFFF), true);
         }
     }
 }
