@@ -15,7 +15,7 @@ public final class QuarryPlusGameTest {
     public static void register(RegisterEvent event) {
         if (event.getRegistryKey().equals(Registries.TEST_FUNCTION)) {
             registerTests(event);
-            StructureUtils.testStructuresDir = Path.of("gameteststructures");
+            StructureUtils.testStructuresSourceDir = Path.of("gameteststructures");
         }
     }
 

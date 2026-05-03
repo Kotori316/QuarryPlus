@@ -47,14 +47,12 @@ public final class InstallBedrockModuleRecipe extends NormalCraftingRecipe {
     public static final RecipeSerializer<InstallBedrockModuleRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
     private final QpBlock block;
-    final ItemStack result;
     final List<Ingredient> ingredients;
 
     public InstallBedrockModuleRecipe(Recipe.CommonInfo commonInfo, CraftingRecipe.CraftingBookInfo bookInfo, QpBlock block) {
         super(commonInfo, bookInfo);
         this.block = block;
         this.ingredients = getIngredients(block);
-        this.result = resultItem(block);
     }
 
     InstallBedrockModuleRecipe(Recipe.CommonInfo commonInfo, CraftingRecipe.CraftingBookInfo bookInfo, Identifier targetBlockId) {
@@ -104,12 +102,6 @@ public final class InstallBedrockModuleRecipe extends NormalCraftingRecipe {
 
     private static @NotNull NonNullList<Ingredient> getIngredients(QpBlock block) {
         return NonNullList.of(Ingredient.of(block), Ingredient.of(PlatformAccess.getAccess().registerObjects().bedrockModuleItem().get()));
-    }
-
-    static ItemStack resultItem(QpBlock block) {
-        var stack = new ItemStack(block);
-        stack.set(QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT, true);
-        return stack;
     }
 
     public static Builder builder(QpBlock block) {

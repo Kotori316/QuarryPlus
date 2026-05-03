@@ -8,5 +8,9 @@
     }
   ],
   "type": "quarryplus:filter_module_expand_recipe",
-  "category": "misc"
+  "category": "misc",
+  "moduleItem": {
+    "id": "quarryplus:filter_module"
+  },
+  "show_notification": false
 }

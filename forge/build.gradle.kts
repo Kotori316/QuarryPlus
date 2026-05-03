@@ -91,6 +91,18 @@ minecraft {
                     file("src/main/resources/")
                 )
             }
+            with("genData") {
+                workingDir.convention(layout.projectDirectory.dir("run-server"))
+                args(
+                    "--mod",
+                    modId,
+                    "--all",
+                    "--output",
+                    file("src/generated/resources/"),
+                    "--existing",
+                    file("src/main/resources/")
+                )
+            }
             with("runGame") {
                 workingDir.convention(layout.projectDirectory.dir("run-server"))
                 args(

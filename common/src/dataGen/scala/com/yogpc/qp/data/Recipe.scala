@@ -211,7 +211,7 @@ class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeO
 
     FilterModuleExpandRecipe.builder()
       .unlockedBy("has_filter_module", has(filterModule))
-      .save(ip.filterModuleRecipeOutput(recipeOutput), FilterModuleExpandRecipe.LOCATION.toString)
+      .save(ip.filterModuleRecipeOutput(recipeOutput))
 
     shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().placerBlock().get())
       .define('D', Items.DISPENSER)

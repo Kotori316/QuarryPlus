@@ -7,7 +7,7 @@
     "h": "minecraft:dragon_head",
     "i": "minecraft:ender_eye",
     "q": "quarryplus:quarry",
-    "s": "#forge:nether_stars"
+    "s": "#c:nether_stars"
   },
   "pattern": [
     "dhd",
@@ -15,7 +15,6 @@
     "eie"
   ],
   "result": {
-    "count": 1,
     "id": "quarryplus:adv_quarry"
   }
 }
