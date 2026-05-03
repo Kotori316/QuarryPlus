@@ -5,6 +5,7 @@ import com.kotori316.testutil.common.TestFunction;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.DebugStorageTest;
 import com.yogpc.qp.machine.advquarry.PlaceAdvQuarryTest;
+import com.yogpc.qp.machine.mover.MoverEntityTest;
 import com.yogpc.qp.machine.mover.PlaceMoverTest;
 import com.yogpc.qp.machine.placer.PlacerTest;
 import com.yogpc.qp.machine.placer.RemotePlacerTest;
@@ -57,6 +58,7 @@ public final class GameTestFunctions {
             CheckBlockDropTest.checkDrops(batchName, structureName),
             PlacerTest.tests(batchName, structureName),
             RemotePlacerTest.tests(batchName, structureName),
+            MoverEntityTest.tests(batchName, structureName),
             fromClass
         ).flatMap(Function.identity()).toList();
     }

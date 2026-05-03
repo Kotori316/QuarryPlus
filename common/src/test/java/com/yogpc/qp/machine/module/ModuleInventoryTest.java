@@ -3,14 +3,18 @@ package com.yogpc.qp.machine.module;
 import com.yogpc.qp.BeforeMC;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.QpItem;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -19,6 +23,23 @@ import static org.junit.jupiter.api.Assertions.*;
 class ModuleInventoryTest extends BeforeMC {
     private final Runnable empty = () -> {
     };
+
+    private static final Map<QuarryModule.Constant, Module1> MODULE1_MAP = new EnumMap<>(QuarryModule.Constant.class);
+    private static Module2 disabledModule2;
+
+    @SuppressWarnings("deprecation")
+    @BeforeAll
+    static void bindItemComponents() {
+        for (var c : QuarryModule.Constant.values()) {
+            var item = new Module1(c);
+            item.builtInRegistryHolder().bindComponents(DataComponentMap.EMPTY);
+            MODULE1_MAP.put(c, item);
+        }
+        disabledModule2 = new Module2(QuarryModule.Constant.DUMMY, false);
+        disabledModule2.builtInRegistryHolder().bindComponents(DataComponentMap.EMPTY);
+        Items.APPLE.builtInRegistryHolder().bindComponents(DataComponentMap.EMPTY);
+    }
+
     @Test
     void instance() {
         var inv = assertDoesNotThrow(() -> new ModuleInventory(5));
@@ -49,50 +70,42 @@ class ModuleInventoryTest extends BeforeMC {
     @EnumSource(QuarryModule.Constant.class)
     void acceptModuleItem(QuarryModule.Constant module) {
         var inv = new ModuleInventory(5);
-        var item = new Module1(module);
-        assertTrue(inv.canPlaceItem(0, new ItemStack(item)));
+        assertTrue(inv.canPlaceItem(0, new ItemStack(MODULE1_MAP.get(module))));
     }
 
     @ParameterizedTest
     @EnumSource(QuarryModule.Constant.class)
     void notAcceptDuplicatedModule(QuarryModule.Constant module) {
         var inv = new ModuleInventory(5, q -> true, m -> Set.of(module), empty);
-        var item = new Module1(module);
-        assertFalse(inv.canPlaceItem(0, new ItemStack(item)));
+        assertFalse(inv.canPlaceItem(0, new ItemStack(MODULE1_MAP.get(module))));
     }
 
     @Test
     void acceptNotDuplicatedModule() {
         var inv = new ModuleInventory(5, q -> true, m -> Set.of(QuarryModule.Constant.PUMP), empty);
-        var item = new Module1(QuarryModule.Constant.DUMMY);
-        assertTrue(inv.canPlaceItem(0, new ItemStack(item)));
+        assertTrue(inv.canPlaceItem(0, new ItemStack(MODULE1_MAP.get(QuarryModule.Constant.DUMMY))));
     }
 
     @ParameterizedTest
     @EnumSource(QuarryModule.Constant.class)
     void staticFilter(QuarryModule.Constant module) {
         var inv = new ModuleInventory(5, q -> false, m -> Set.of(), empty);
-        var item = new Module1(module);
-        assertFalse(inv.canPlaceItem(0, new ItemStack(item)));
+        assertFalse(inv.canPlaceItem(0, new ItemStack(MODULE1_MAP.get(module))));
     }
 
     @Test
     void notAcceptSecond() {
         var inv = new ModuleInventory(5);
-        var item = new Module1(QuarryModule.Constant.DUMMY);
+        var item = MODULE1_MAP.get(QuarryModule.Constant.DUMMY);
         inv.setItem(0, new ItemStack(item));
-
-        var item2 = new Module1(QuarryModule.Constant.DUMMY);
-        assertFalse(inv.canPlaceItem(1, new ItemStack(item2)));
+        assertFalse(inv.canPlaceItem(1, new ItemStack(item)));
     }
 
     @ParameterizedTest
     @EnumSource(QuarryModule.Constant.class)
     void getModule(QuarryModule.Constant module) {
         var inv = new ModuleInventory(5);
-        var item = new Module1(module);
-        inv.setItem(0, new ItemStack(item));
-
+        inv.setItem(0, new ItemStack(MODULE1_MAP.get(module)));
         assertEquals(Set.of(module), inv.getModules());
     }
 
@@ -120,15 +133,13 @@ class ModuleInventoryTest extends BeforeMC {
     @Test
     void disabledItem() {
         var inv = new ModuleInventory(5);
-        var item = new Module2(QuarryModule.Constant.DUMMY, false);
-        inv.setItem(0, new ItemStack(item));
-
+        inv.setItem(0, new ItemStack(disabledModule2));
         assertTrue(inv.getModules().isEmpty());
     }
 
     @Test
     void onUpdate() {
-        var item = new Module1(QuarryModule.Constant.DUMMY);
+        var item = MODULE1_MAP.get(QuarryModule.Constant.DUMMY);
         AtomicInteger integer = new AtomicInteger(0);
         var inv = new ModuleInventory(5, q -> true, m -> Set.of(), integer::getAndIncrement);
         inv.setItem(0, new ItemStack(item));
