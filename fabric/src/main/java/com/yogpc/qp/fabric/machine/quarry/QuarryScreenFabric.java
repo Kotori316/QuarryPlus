@@ -4,7 +4,7 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.misc.SmallCheckBox;
 import com.yogpc.qp.machine.misc.StringWidgetNoShadow;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -23,13 +23,8 @@ public final class QuarryScreenFabric extends AbstractContainerScreen<QuarryMenu
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.render(graphics, mouseX, mouseY, delta);
-        this.renderTooltip(graphics, mouseX, mouseY);
-    }
-
-    @Override
-    protected void renderBg(GuiGraphics graphics, float f, int i, int j) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int i, int j, float f) {
+        super.extractBackground(graphics, i, j, f);
         graphics.blit(RenderPipelines.GUI_TEXTURED, texture, leftPos, topPos, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
     }
 

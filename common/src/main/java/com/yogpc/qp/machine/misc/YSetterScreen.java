@@ -2,7 +2,7 @@ package com.yogpc.qp.machine.misc;
 
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -20,22 +20,17 @@ public final class YSetterScreen extends AbstractContainerScreen<YSetterContaine
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.render(graphics, mouseX, mouseY, delta);
-        this.renderTooltip(graphics, mouseX, mouseY);
-    }
-
-    @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        super.renderLabels(graphics, mouseX, mouseY);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractLabels(graphics, mouseX, mouseY);
         if (getMenu().yAccessor != null) {
             var level = String.valueOf(getMenu().yAccessor.getDigMinY());
-            graphics.drawString(font, level, (this.imageWidth - font.width(level)) / 2, tp + 23, ARGB.opaque(0x404040), false);
+            graphics.text(font, level, (this.imageWidth - font.width(level)) / 2, tp + 23, ARGB.opaque(0x404040), false);
         }
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        super.extractBackground(graphics, mouseX, mouseY, delta);
         int pX = leftPos;
         int pY = topPos;
         graphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, pX, pY, 0, 0, imageWidth, imageHeight, 256, 256);

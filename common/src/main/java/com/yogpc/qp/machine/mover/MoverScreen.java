@@ -3,7 +3,7 @@ package com.yogpc.qp.machine.mover;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.misc.IndexedButton;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -25,29 +25,21 @@ public final class MoverScreen extends AbstractContainerScreen<MoverContainer> {
     private int currentIndex = 0;
 
     public MoverScreen(MoverContainer menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
-        // 176, 186
-        this.imageWidth = 176;
-        this.imageHeight = 186;
+        super(menu, playerInventory, title, 176, 186);
         this.inventoryLabelY = this.imageHeight - 94;
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.render(graphics, mouseX, mouseY, delta);
-        this.renderTooltip(graphics, mouseX, mouseY);
-    }
-
-    @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(guiGraphics, mouseX, mouseY, partialTick);
         int pX = leftPos;
         int pY = topPos;
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, pX, pY, 0, 0, imageWidth, imageHeight, 256, 256);
     }
 
     @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        super.renderLabels(guiGraphics, mouseX, mouseY);
+    protected void extractLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+        super.extractLabels(guiGraphics, mouseX, mouseY);
     }
 
     @Override
@@ -108,7 +100,7 @@ public final class MoverScreen extends AbstractContainerScreen<MoverContainer> {
         }
 
         @Override
-        public void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        public void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
             var spriteIdentifier = this.sprites.get(state, isHovered());
             guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, spriteIdentifier, this.getX(), this.getY(), this.width, this.height);
         }

@@ -2,7 +2,7 @@ package com.yogpc.qp.machine.marker;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -27,22 +27,14 @@ public final class FlexibleMarkerScreen extends AbstractContainerScreen<MarkerCo
     private final List<DiffPosition> diffPositions = new ArrayList<>();
 
     public FlexibleMarkerScreen(MarkerContainer menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
-        //217, 188
-        this.imageWidth = 217;
-        this.imageHeight = 220;
-        this.inventoryLabelY = this.imageHeight - 96 + 2; // y position of text, inventory
+        super(menu, playerInventory, title, 217, 220);
+        this.inventoryLabelY = this.imageHeight - 96 + 2;
         marker = (FlexibleMarkerEntity) playerInventory.player.level().getBlockEntity(menu.pos);
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.render(graphics, mouseX, mouseY, delta);
-        this.renderTooltip(graphics, mouseX, mouseY);
-    }
-
-    @Override
-    protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        super.extractBackground(graphics, mouseX, mouseY, delta);
         int pX = leftPos;
         int pY = topPos;
         graphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, pX, pY, 0, 0, imageWidth, imageHeight, 256, 256);
@@ -76,8 +68,8 @@ public final class FlexibleMarkerScreen extends AbstractContainerScreen<MarkerCo
     }
 
     @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        super.renderLabels(guiGraphics, mouseX, mouseY);
+    protected void extractLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+        super.extractLabels(guiGraphics, mouseX, mouseY);
         final var heightOffset = buttonHeight + 12;
 
         for (var movablePosition : movablePositions) {
@@ -85,14 +77,14 @@ public final class FlexibleMarkerScreen extends AbstractContainerScreen<MarkerCo
                 // Label
                 var text = Component.translatable(movablePosition.movable.transName);
                 var textLength = font.width(text);
-                guiGraphics.drawString(font, text, movablePosition.baseX - textLength / 2, movablePosition.baseY, ARGB.opaque(0x404040), false);
+                guiGraphics.text(font, text, movablePosition.baseX - textLength / 2, movablePosition.baseY, ARGB.opaque(0x404040), false);
             }
             {
                 // distance
                 int distance = movablePosition.movable.distanceFromOrigin(marker.getBlockPos(), marker.min, marker.max, marker.direction);
                 var text = String.valueOf(distance);
                 var textLength = font.width(text);
-                guiGraphics.drawString(font, text, movablePosition.baseX - textLength / 2, movablePosition.baseY + heightOffset, ARGB.opaque(0x404040), false);
+                guiGraphics.text(font, text, movablePosition.baseX - textLength / 2, movablePosition.baseY + heightOffset, ARGB.opaque(0x404040), false);
             }
         }
     }

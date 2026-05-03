@@ -2,7 +2,7 @@ package com.yogpc.qp.machine.placer;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -21,14 +21,8 @@ public final class RemotePlacerScreen extends AbstractContainerScreen<PlacerCont
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        this.renderBackground(graphics, mouseX, mouseY, delta);
-        super.render(graphics, mouseX, mouseY, delta);
-        this.renderTooltip(graphics, mouseX, mouseY);
-    }
-
-    @Override
-    protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        super.extractBackground(graphics, mouseX, mouseY, delta);
         graphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
         {
             int oneBox = 18;
@@ -41,15 +35,15 @@ public final class RemotePlacerScreen extends AbstractContainerScreen<PlacerCont
     }
 
     @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        super.renderLabels(guiGraphics, mouseX, mouseY);
+    protected void extractLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+        super.extractLabels(guiGraphics, mouseX, mouseY);
         var targetPos = getMenu().tile.getTargetPos();
         var color = targetPos.equals(getMenu().tile.getBlockPos()) ? 0xFF4040 : 0x404040;
         var x = 99;
         // 118, 22
-        guiGraphics.drawString(font, "X: " + targetPos.getX(), x, 22, ARGB.opaque(color), false);
-        guiGraphics.drawString(font, "Y: " + targetPos.getY(), x, 40, ARGB.opaque(color), false);
-        guiGraphics.drawString(font, "Z: " + targetPos.getZ(), x, 58, ARGB.opaque(color), false);
+        guiGraphics.text(font, "X: " + targetPos.getX(), x, 22, ARGB.opaque(color), false);
+        guiGraphics.text(font, "Y: " + targetPos.getY(), x, 40, ARGB.opaque(color), false);
+        guiGraphics.text(font, "Z: " + targetPos.getZ(), x, 58, ARGB.opaque(color), false);
     }
 
     @Override

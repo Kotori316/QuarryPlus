@@ -6,7 +6,7 @@ import com.yogpc.qp.machine.Area;
 import com.yogpc.qp.machine.misc.IndexedButton;
 import com.yogpc.qp.machine.misc.SmallCheckBox;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -28,33 +28,26 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryContainer>
     private final List<MovablePosition> movablePositions = new ArrayList<>();
 
     public AdvQuarryScreen(AdvQuarryContainer c, Inventory inventory, Component component) {
-        super(c, inventory, component);
-        this.imageWidth = c.imageWidth;
-        this.imageHeight = c.imageHeight;
-        this.inventoryLabelY = this.imageHeight - 96 + 2; // y position of text, inventory
+        super(c, inventory, component, c.imageWidth, c.imageHeight);
+        this.inventoryLabelY = this.imageHeight - 96 + 2;
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.render(graphics, mouseX, mouseY, delta);
-        this.renderTooltip(graphics, mouseX, mouseY);
-    }
-
-    @Override
-    protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        super.extractBackground(graphics, mouseX, mouseY, delta);
         int pX = leftPos;
         int pY = topPos;
         graphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, pX, pY, 0, 0, imageWidth, imageHeight, 256, 256);
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        super.renderLabels(graphics, mouseX, mouseY);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractLabels(graphics, mouseX, mouseY);
         var range = getMenu().quarry.getArea();
         if (range != null) {
-            var chunkPos = new ChunkPos(getMenu().quarry.getBlockPos());
+            var chunkPos = ChunkPos.containing(getMenu().quarry.getBlockPos());
             for (MovablePosition movablePosition : movablePositions) {
-                graphics.drawString(this.font, String.valueOf(movablePosition.distance(chunkPos, range) / 16), movablePosition.baseX, movablePosition.baseY, ARGB.opaque(0x404040), false);
+                graphics.text(this.font, String.valueOf(movablePosition.distance(chunkPos, range) / 16), movablePosition.baseX, movablePosition.baseY, ARGB.opaque(0x404040), false);
             }
         }
     }
