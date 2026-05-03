@@ -1,5 +1,8 @@
 *
 !.gitignore
 !gameteststructures
-!gameteststructures/*.snbt
+!gameteststructures/data
+!gameteststructures/data/quarryplus
+!gameteststructures/data/quarryplus/structure
+!gameteststructures/data/quarryplus/structure/*.snbt
 !server.properties
