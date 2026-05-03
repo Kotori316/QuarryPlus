@@ -15,8 +15,9 @@ public final class YSetterItemFabric extends YSetterItem implements UseBlockCall
 
     @Override
     public InteractionResult interact(Player player, Level world, InteractionHand hand, BlockHitResult hitResult) {
-        if (player.isSpectator() || player.getItemInHand(hand).getItem() != this) return InteractionResult.PASS;
+        var itemInHand = player.getItemInHand(hand);
+        if (player.isSpectator() || itemInHand.getItem() != this) return InteractionResult.PASS;
 
-        return interact(world, hitResult.getBlockPos(), player);
+        return interact(world, hitResult.getBlockPos(), player, itemInHand);
     }
 }

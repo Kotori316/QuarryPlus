@@ -15,7 +15,8 @@ public final class CheckerItemFabric extends CheckerItem implements UseBlockCall
 
     @Override
     public InteractionResult interact(Player player, Level world, InteractionHand hand, BlockHitResult hitResult) {
-        if (player.isSpectator() || player.getItemInHand(hand).getItem() != this) return InteractionResult.PASS;
-        return outputLog(world, hitResult.getBlockPos(), player);
+        var itemInHand = player.getItemInHand(hand);
+        if (player.isSpectator() || itemInHand.getItem() != this) return InteractionResult.PASS;
+        return outputLog(world, hitResult.getBlockPos(), player, itemInHand);
     }
 }
