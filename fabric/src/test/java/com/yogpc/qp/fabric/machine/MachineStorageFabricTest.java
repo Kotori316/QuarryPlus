@@ -1,22 +1,33 @@
 package com.yogpc.qp.fabric.machine;
 
+import com.yogpc.qp.BeforeMC;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.MachineStorageHolder;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MachineStorageFabricTest {
+class MachineStorageFabricTest extends BeforeMC {
     private static final MachineStorageHolder<MachineStorageHolder.Constant> ACCESSOR = new MachineStorageHolder.ForConstant();
+
+    @SuppressWarnings("deprecation")
+    @BeforeAll
+    static void bindItemComponents() {
+        Items.APPLE.builtInRegistryHolder().bindComponents(DataComponentMap.EMPTY);
+    }
 
     @Test
     void instance() {
@@ -26,6 +37,13 @@ class MachineStorageFabricTest {
 
     @Nested
     class ItemTest {
+        private Item apple;
+
+        @BeforeEach
+        void setup() {
+            apple = Items.APPLE;
+        }
+
         @Test
         void addItemSimulate() {
             var storage = new MachineStorageFabric();
@@ -34,12 +52,12 @@ class MachineStorageFabricTest {
 
             assertTrue(s.supportsInsertion());
             try (Transaction transaction = Transaction.openOuter()) {
-                var inserted = s.insert(ItemVariant.of(Items.APPLE), 4, transaction);
+                var inserted = s.insert(ItemVariant.of(apple), 4, transaction);
                 assertEquals(4, inserted);
-                assertEquals(4, storage.getItemCount(Items.APPLE, DataComponentPatch.EMPTY));
+                assertEquals(4, storage.getItemCount(apple, DataComponentPatch.EMPTY));
             }
 
-            assertEquals(0, storage.getItemCount(Items.APPLE, DataComponentPatch.EMPTY));
+            assertEquals(0, storage.getItemCount(apple, DataComponentPatch.EMPTY));
         }
 
         @Test
@@ -49,13 +67,13 @@ class MachineStorageFabricTest {
             var s = new MachineStorageFabric.ItemStorageImpl<>(ACCESSOR, holder);
 
             try (Transaction transaction = Transaction.openOuter()) {
-                var inserted = s.insert(ItemVariant.of(Items.APPLE), 4, transaction);
+                var inserted = s.insert(ItemVariant.of(apple), 4, transaction);
                 assertEquals(4, inserted);
-                assertEquals(4, storage.getItemCount(Items.APPLE, DataComponentPatch.EMPTY));
+                assertEquals(4, storage.getItemCount(apple, DataComponentPatch.EMPTY));
                 transaction.commit();
             }
 
-            assertEquals(4, storage.getItemCount(Items.APPLE, DataComponentPatch.EMPTY));
+            assertEquals(4, storage.getItemCount(apple, DataComponentPatch.EMPTY));
         }
 
         @Test
@@ -63,15 +81,15 @@ class MachineStorageFabricTest {
             var storage = new MachineStorageFabric();
             var holder = new MachineStorageHolder.Constant(storage);
             var s = new MachineStorageFabric.ItemStorageImpl<>(ACCESSOR, holder);
-            storage.addItem(new ItemStack(Items.APPLE, 5));
+            storage.addItem(new ItemStack(apple, 5));
 
             try (Transaction transaction = Transaction.openOuter()) {
-                var inserted = s.insert(ItemVariant.of(Items.APPLE), 4, transaction);
+                var inserted = s.insert(ItemVariant.of(apple), 4, transaction);
                 assertEquals(4, inserted);
-                assertEquals(9, storage.getItemCount(Items.APPLE, DataComponentPatch.EMPTY));
+                assertEquals(9, storage.getItemCount(apple, DataComponentPatch.EMPTY));
             }
 
-            assertEquals(5, storage.getItemCount(Items.APPLE, DataComponentPatch.EMPTY));
+            assertEquals(5, storage.getItemCount(apple, DataComponentPatch.EMPTY));
         }
 
         @Test
@@ -79,16 +97,16 @@ class MachineStorageFabricTest {
             var storage = new MachineStorageFabric();
             var holder = new MachineStorageHolder.Constant(storage);
             var s = new MachineStorageFabric.ItemStorageImpl<>(ACCESSOR, holder);
-            storage.addItem(new ItemStack(Items.APPLE, 5));
+            storage.addItem(new ItemStack(apple, 5));
 
             try (Transaction transaction = Transaction.openOuter()) {
-                var inserted = s.insert(ItemVariant.of(Items.APPLE), 4, transaction);
+                var inserted = s.insert(ItemVariant.of(apple), 4, transaction);
                 assertEquals(4, inserted);
-                assertEquals(9, storage.getItemCount(Items.APPLE, DataComponentPatch.EMPTY));
+                assertEquals(9, storage.getItemCount(apple, DataComponentPatch.EMPTY));
                 transaction.commit();
             }
 
-            assertEquals(9, storage.getItemCount(Items.APPLE, DataComponentPatch.EMPTY));
+            assertEquals(9, storage.getItemCount(apple, DataComponentPatch.EMPTY));
         }
     }
 

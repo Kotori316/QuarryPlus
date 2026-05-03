@@ -27,3 +27,4 @@ classes/
 .DS_Store
 .architectury-transformer
 .kotlin
+.fabric
