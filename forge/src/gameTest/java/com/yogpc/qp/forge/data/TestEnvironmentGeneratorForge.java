@@ -15,26 +15,26 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-final class TestEnvironmentGeneratorForge extends AbstractTestGenerator<TestEnvironmentDefinition> {
+final class TestEnvironmentGeneratorForge extends AbstractTestGenerator<TestEnvironmentDefinition<?>> {
 
     public TestEnvironmentGeneratorForge(@NotNull PackOutput packOutput, @NotNull CompletableFuture<HolderLookup.Provider> lookupProvider) {
         super("TestEnvironmentGeneratorForge", packOutput, "test_environment", lookupProvider);
     }
 
     @Override
-    protected @NotNull Map<Identifier, TestEnvironmentDefinition> getValueMap(HolderLookup.Provider lookup) {
+    protected @NotNull Map<Identifier, TestEnvironmentDefinition<?>> getValueMap(HolderLookup.Provider lookup) {
         return Map.of(
             Identifier.fromNamespaceAndPath(QuarryPlus.modID, "test"), new TestEnvironmentDefinition.AllOf()
         );
     }
 
     @Override
-    protected @NotNull Codec<TestEnvironmentDefinition> codec() {
+    protected @NotNull Codec<TestEnvironmentDefinition<?>> codec() {
         return TestEnvironmentDefinition.DIRECT_CODEC;
     }
 
     @Override
-    protected @NotNull ResourceKey<? extends Registry<TestEnvironmentDefinition>> targetKey() {
+    protected @NotNull ResourceKey<? extends Registry<TestEnvironmentDefinition<?>>> targetKey() {
         return Registries.TEST_ENVIRONMENT;
     }
 }

@@ -93,7 +93,7 @@ public final class LoadRecipeTest {
             m, m, m
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals(
             PlatformAccess.getAccess().registerObjects().flexibleMarkerBlock().get().blockItem,
             result.getItem()
@@ -113,7 +113,7 @@ public final class LoadRecipeTest {
             e, m, e
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals(
             PlatformAccess.getAccess().registerObjects().flexibleMarkerBlock().get().blockItem,
             result.getItem()
@@ -132,7 +132,7 @@ public final class LoadRecipeTest {
             m, m, m
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals(
             PlatformAccess.getAccess().registerObjects().chunkMarkerBlock().get().blockItem,
             result.getItem()
@@ -152,7 +152,7 @@ public final class LoadRecipeTest {
             e, m, e
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals(
             PlatformAccess.getAccess().registerObjects().chunkMarkerBlock().get().blockItem,
             result.getItem()
@@ -182,7 +182,7 @@ public final class LoadRecipeTest {
             i, R, m
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals(
             PlatformAccess.getAccess().registerObjects().quarryBlock().get().blockItem,
             result.getItem()
@@ -203,7 +203,7 @@ public final class LoadRecipeTest {
             l, r, l
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals("status_checker", BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
 
         helper.succeed();
@@ -221,7 +221,7 @@ public final class LoadRecipeTest {
             l, r, l
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals("y_setter", BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
 
         helper.succeed();
@@ -242,7 +242,7 @@ public final class LoadRecipeTest {
             a, o, a
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals("mover", BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
 
         helper.succeed();
@@ -271,7 +271,7 @@ public final class LoadRecipeTest {
         ));
 
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals(name, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
         helper.succeed();
     }
@@ -295,7 +295,7 @@ public final class LoadRecipeTest {
         ));
 
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals(name, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
         helper.succeed();
     }
@@ -323,7 +323,7 @@ public final class LoadRecipeTest {
                 G, h, G
             ));
             assertTrue(recipe.matches(input, helper.getLevel()));
-            var result = recipe.assemble(input, helper.getLevel().registryAccess());
+            var result = recipe.assemble(input);
             assertEquals(ExpModuleItem.NAME, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
         }
         helper.succeed();
@@ -351,7 +351,7 @@ public final class LoadRecipeTest {
             G, h, D
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals(ExpModuleItem.NAME, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
         helper.succeed();
     }
@@ -375,7 +375,7 @@ public final class LoadRecipeTest {
             q, m
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         var condition = result.get(QuarryDataComponents.QUARRY_REMOVE_BEDROCK_COMPONENT);
         assertNotNull(condition);
         assertTrue(condition);
@@ -433,7 +433,7 @@ public final class LoadRecipeTest {
         ));
 
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals(name, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
         helper.succeed();
     }
@@ -458,7 +458,7 @@ public final class LoadRecipeTest {
         ));
 
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals(name, BuiltInRegistries.ITEM.getKey(result.getItem()).getPath());
         helper.succeed();
     }
@@ -479,7 +479,7 @@ public final class LoadRecipeTest {
             e, i, e
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals(
             PlatformAccess.getAccess().registerObjects().advQuarryBlock().get().blockItem,
             result.getItem()
@@ -503,7 +503,7 @@ public final class LoadRecipeTest {
             M, I, m
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals(
             PlatformAccess.getAccess().registerObjects().placerBlock().get().blockItem,
             result.getItem()
@@ -524,7 +524,7 @@ public final class LoadRecipeTest {
             d, p, d
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals(
             PlatformAccess.getAccess().registerObjects().remotePlacerBlock().get().blockItem,
             result.getItem()

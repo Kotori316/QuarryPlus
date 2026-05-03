@@ -63,7 +63,7 @@ public final class LoadTest {
     @SubscribeEvent
     public static void registerTests(RegisterGameTestsEvent event) {
         QuarryPlus.LOGGER.info("registerTests {}", event);
-        Map<Identifier, @NotNull Holder<TestEnvironmentDefinition>> environments = TESTS.stream().map(TestFunction::environmentName).distinct()
+        Map<Identifier, @NotNull Holder<TestEnvironmentDefinition<?>>> environments = TESTS.stream().map(TestFunction::environmentName).distinct()
             .collect(Collectors.toMap(Function.identity(), event::registerEnvironment));
         TESTS.forEach(testFunction -> {
             var Identifier = testFunction.name();

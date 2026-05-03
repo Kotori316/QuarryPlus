@@ -15,21 +15,21 @@ public interface GatherGameTest {
     Collection<GameTestProperty> gather();
 
     record GameTestProperty(Identifier id,
-                            Function<Holder<TestEnvironmentDefinition>, TestData<Holder<TestEnvironmentDefinition>>> testData,
+                            Function<Holder<TestEnvironmentDefinition<?>>, TestData<Holder<TestEnvironmentDefinition<?>>>> testData,
                             Consumer<GameTestHelper> test) {
         public GameTestProperty(TestFunction testFunction) {
             this(testFunction.name(), fromTestFunction(testFunction), testFunction.test());
         }
 
-        static Function<Holder<TestEnvironmentDefinition>, TestData<Holder<TestEnvironmentDefinition>>> fromTestFunction(TestFunction testFunction) {
+        static Function<Holder<TestEnvironmentDefinition<?>>, TestData<Holder<TestEnvironmentDefinition<?>>>> fromTestFunction(TestFunction testFunction) {
             return def -> new TestData<>(def, testFunction.structureName(), testFunction.maxTicks(), testFunction.setupTicks(), true);
         }
 
-        public static Function<Holder<TestEnvironmentDefinition>, TestData<Holder<TestEnvironmentDefinition>>> empty() {
+        public static Function<Holder<TestEnvironmentDefinition<?>>, TestData<Holder<TestEnvironmentDefinition<?>>>> empty() {
             return withStructure(Identifier.fromNamespaceAndPath("minecraft", "empty"));
         }
 
-        public static Function<Holder<TestEnvironmentDefinition>, TestData<Holder<TestEnvironmentDefinition>>> withStructure(Identifier structureName) {
+        public static Function<Holder<TestEnvironmentDefinition<?>>, TestData<Holder<TestEnvironmentDefinition<?>>>> withStructure(Identifier structureName) {
             return def -> new TestData<>(def, structureName, 1, 0, true);
         }
     }

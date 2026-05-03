@@ -34,7 +34,7 @@ public final class TestInstanceGeneratorForge extends AbstractTestGenerator<Game
         Map<Identifier, GameTestInstance> map = new HashMap<>();
         {
             // dummy test
-            var testData = new TestData<Holder<TestEnvironmentDefinition>>(def, Identifier.fromNamespaceAndPath("minecraft", "empty"), 1, 0, true);
+            var testData = new TestData<Holder<TestEnvironmentDefinition<?>>>(def, Identifier.fromNamespaceAndPath("minecraft", "empty"), 1, 0, true);
             map.put(
                 Identifier.fromNamespaceAndPath(QuarryPlus.modID, "test"),
                 new FunctionGameTestInstance(ResourceKey.create(Registries.TEST_FUNCTION, Identifier.fromNamespaceAndPath("minecraft", "always_pass")), testData)
