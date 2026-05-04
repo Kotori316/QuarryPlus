@@ -22,18 +22,12 @@ jobs:
           cache-read-only: true
       - name: JUnit
         run: ./gradlew test
-      - name: Get run resources
-        run: |
-          (./gradlew downloadMCMeta downloadAssets writeMinecraftClasspathGameTestServer) || \
-            (sleep 5 && ./gradlew downloadMCMeta downloadAssets writeMinecraftClasspathGameTestServer) || \
-            (sleep 5 && ./gradlew downloadMCMeta downloadAssets writeMinecraftClasspathGameTestServer) || true
       - name: GameTest
-        run: ./gradlew runGameTestServer
+        run: ./gradlew runGameTestServer runRunGameGameTestServer
         env:
           TEST_UTILITY_LOG_ALL_TEST: false
           IGNORE_OTHER_MODS_IN_RUNTIME: true
           RUN_GAME_TEST: true
-          DISABLE_FORGE: true
       - name: Check version
         run: ./gradlew checkReleaseVersion
         env:
