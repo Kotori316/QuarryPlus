@@ -248,7 +248,15 @@ tasks.named("jar", Jar::class) {
 tasks.register("jksSignJar", com.kotori316.common.JarSignTask::class) {
     description = "Add jks signature to Forge jar"
     dependsOn(tasks.jar)
-    jarTask = tasks.jar
+    onlyIf {
+        project.hasProperty("jarSign.keyAlias") &&
+                project.hasProperty("jarSign.keyLocation") &&
+                project.hasProperty("jarSign.storePass")
+    }
+    jarFile = tasks.jar.flatMap { it.archiveFile }
+    keyAlias = project.findProperty("jarSign.keyAlias") as? String ?: ""
+    keyStore = project.findProperty("jarSign.keyLocation") as? String ?: ""
+    storePass = project.findProperty("jarSign.storePass") as? String ?: ""
 }
 
 ext {
