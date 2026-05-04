@@ -19,12 +19,12 @@ jobs:
   assemble:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           distribution: 'temurin'
           java-version: '25'
-      - uses: gradle/actions/wrapper-validation@v6
+      - uses: gradle/actions/wrapper-validation@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
       - run: chmod +x ./gradlew
       - run: ./gradlew assemble --scan
       - run: ./gradlew data checkReleaseVersion --no-parallel
@@ -50,16 +50,16 @@ jobs:
       DISABLE_FABRIC: ${{ matrix.platform != 'fabric' }}
       DISABLE_NEOFORGE: ${{ matrix.platform != 'neoforge' }}
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           distribution: 'temurin'
           java-version: '25'
-      - uses: gradle/actions/setup-gradle@v6
+      - uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
         with:
           add-job-summary: 'never'
           cache-read-only: 'false'
-      - uses: gradle/actions/wrapper-validation@v6
+      - uses: gradle/actions/wrapper-validation@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
       - run: ls -al && whoami
       - name: Compile main ${{ matrix.platform }}
         run: ./gradlew :${{ matrix.platform }}:classes
@@ -110,7 +110,7 @@ jobs:
           ! test -d "${{ matrix.platform }}/game-test/crash-reports"
       - name: Upload failed test report
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           path: |
             ${{ matrix.platform }}/build/reports/tests/*
@@ -122,6 +122,6 @@ jobs:
     needs:
       - assemble
       - platforms
-    uses: 'Kotori316/common-script/.github/workflows/merge-checker.yaml@main'
+    uses: 'Kotori316/common-script/.github/workflows/merge-checker.yaml@cc63e8610e21a91ed102150d078b10d216e02b76' # v2.0.3
     with:
       needs: ${{ toJSON(needs) }}
