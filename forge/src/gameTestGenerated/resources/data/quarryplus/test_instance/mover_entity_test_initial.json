@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "quarryplus:mover_entity_test_initial",
+  "max_ticks": 100,
+  "setup_ticks": 1,
+  "structure": "quarryplus:empty"
+}
