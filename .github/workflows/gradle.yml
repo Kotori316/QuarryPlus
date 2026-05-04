@@ -92,7 +92,12 @@ jobs:
           IGNORE_OTHER_MODS_IN_RUNTIME: true
           RUN_DATA: true
       - name: Check updated files
-        run: git diff
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Error: Uncommitted changes or untracked files detected!"
+            git status
+            exit 1
+          fi
       - name: GameTest ${{ matrix.platform }}
         if: matrix.platform != 'common'
         run: ./gradlew :${{ matrix.platform }}:${{ matrix.gameTest }}
