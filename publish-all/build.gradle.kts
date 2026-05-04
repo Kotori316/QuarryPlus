@@ -64,6 +64,10 @@ fun getReleaseJarFiles(): List<Provider<RegularFile>> {
         list.add(project(":neoforge").tasks.named("sourcesJar", AbstractArchiveTask::class).flatMap { it.archiveFile })
     }
     // Dummy file for the common project, where no artifacts are available
-    list.add(project.layout.file(provider { rootProject.file("changelog/1.21.md") }))
+    list.add(project.layout.file(provider {
+        rootProject.file(
+            project.property("changelog_file") as String
+        )
+    }))
     return list
 }
