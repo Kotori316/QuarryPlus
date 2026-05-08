@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 final class MiningNeoForge implements PlatformAccess.Mining {
     @Override
     public BlockBreakEventResult checkBreakEvent(QpEntity miningEntity, Level level, ServerPlayer fakePlayer, BlockState state, BlockPos target, @Nullable BlockEntity blockEntity) {
-        var breakEvent = new BlockEvent.BreakEvent(level, target, state, fakePlayer);
+        var breakEvent = new BreakBlockEvent(level, target, state, fakePlayer);
         NeoForge.EVENT_BUS.post(breakEvent);
         return new BlockBreakEventResult(breakEvent.isCanceled(), OptionalInt.empty(), List.of());
     }
