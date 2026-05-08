@@ -23,7 +23,7 @@ jobs:
       - name: JUnit
         run: ./gradlew test
       - name: GameTest
-        run: ./gradlew runGameTestServer runRunGameGameTestServer
+        run: ./gradlew runGameTestServer :forge:runRunGameGameTestServer
         env:
           TEST_UTILITY_LOG_ALL_TEST: false
           IGNORE_OTHER_MODS_IN_RUNTIME: true
