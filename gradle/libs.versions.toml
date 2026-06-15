@@ -3,7 +3,7 @@ minecraft = "26.1.2"
 forge = "26.1.2-64.0.8"
 eventbus_forge = "7.0.5"
 fabric_api = "0.150.0+26.1.2"
-fabric_loader = "0.19.2"
+fabric_loader = "0.19.3"
 neoforge = "26.1.2.67-beta"
 fabric_version_checker = "3.0.1"
 
