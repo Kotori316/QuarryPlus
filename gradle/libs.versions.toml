@@ -29,7 +29,7 @@ plugin_cf = "4.0"
 plugin_publish_all = "2.0.0"
 plugin_idea_ext = "1.4.1"
 
-plugin_fabric_loom = "1.16.2"
+plugin_fabric_loom = "1.16.3"
 plugin_forge_gradle = "7.0.27"
 plugin_neoforge_gradle = "7.1.37"
 
