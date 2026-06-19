@@ -26,7 +26,7 @@ mockito_core = "5.23.0"
 mockito_inline = "5.2.0"
 
 plugin_cf = "4.0"
-plugin_publish_all = "2.0.0"
+plugin_publish_all = "2.0.1"
 plugin_idea_ext = "1.4.1"
 
 plugin_fabric_loom = "1.16.3"
