@@ -86,7 +86,7 @@ public final class LoadRecipeTest {
     public static void createFlexibleMarker(GameTestHelper helper) {
         var recipe = findRecipe(helper, FlexibleMarkerBlock.NAME);
 
-        var d = Items.GREEN_DYE.getDefaultInstance();
+        var d = Items.DYE.green().getDefaultInstance();
         var m = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
         var input = CraftingInput.of(3, 2, List.of(
             d, d, d,
@@ -106,7 +106,7 @@ public final class LoadRecipeTest {
         var recipe = findRecipe(helper, FlexibleMarkerBlock.NAME + "_from_" + ChunkMarkerBlock.NAME);
 
         var e = ItemStack.EMPTY;
-        var d = Items.GREEN_DYE.getDefaultInstance();
+        var d = Items.DYE.green().getDefaultInstance();
         var m = PlatformAccess.getAccess().registerObjects().chunkMarkerBlock().get().blockItem.getDefaultInstance();
         var input = CraftingInput.of(3, 2, List.of(
             d, d, d,
@@ -258,7 +258,7 @@ public final class LoadRecipeTest {
         }
         assertNotNull(recipe, "Recipe not found");
 
-        var d = Items.GREEN_DYE.getDefaultInstance();
+        var d = Items.DYE.green().getDefaultInstance();
         var g = Items.GLASS.getDefaultInstance();
         var b = Items.LAVA_BUCKET.getDefaultInstance();
         var r = Items.REDSTONE.getDefaultInstance();

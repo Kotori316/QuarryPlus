@@ -63,7 +63,7 @@ public final class DebugStorageEntity extends QpEntity implements ClientSync {
      */
     void updateScreenList() {
         var mc = Minecraft.getInstance();
-        if (mc.screen instanceof DebugStorageScreen screen && screen.itemCountList != null) {
+        if (mc.gui.screen() instanceof DebugStorageScreen screen && screen.itemCountList != null) {
             screen.itemCountList.refreshEntries();
         }
     }

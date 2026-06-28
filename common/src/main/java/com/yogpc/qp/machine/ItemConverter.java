@@ -2,6 +2,7 @@ package com.yogpc.qp.machine;
 
 import com.yogpc.qp.PlatformAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.tags.BlockItemTags;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.BlockItem;
@@ -107,7 +108,7 @@ public record ItemConverter(List<Conversion> conversions) {
             // Check item tag
             if (
                 stack.is(ItemTags.DIRT)
-                    || stack.is(ItemTags.GRASS_BLOCKS)
+                    || stack.is(BlockItemTags.GRASS_BLOCKS.item())
                     || stack.is(Items.COBBLESTONE)
                     || stack.is(Items.SANDSTONE)
                     || stack.is(Items.RED_SANDSTONE)

@@ -2,8 +2,10 @@ package com.yogpc.qp.common.data
 
 import com.yogpc.qp.{PlatformAccess, QuarryPlus}
 import net.minecraft.core.HolderLookup
+import net.minecraft.core.registries.Registries
 import net.minecraft.data.PackOutput
-import net.minecraft.world.item.Items
+import net.minecraft.references.ItemIds
+import net.minecraft.resources.ResourceKey
 import net.neoforged.neoforge.common.data.ItemTagsProvider
 
 import java.util.concurrent.CompletableFuture
@@ -14,9 +16,9 @@ class QuarryItemTagProvider(output: PackOutput, lookupProvider: CompletableFutur
   override def addTags(provider: HolderLookup.Provider): Unit = {
     val holder = PlatformAccess.getAccess.registerObjects()
     tag(markerItemTag)
-      .add(holder.markerBlock().get().blockItem)
-      .add(holder.flexibleMarkerBlock().get().blockItem)
-      .add(holder.chunkMarkerBlock().get().blockItem)
-    tag(quarryPickaxeTag).add(Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE)
+      .add(ResourceKey.create(Registries.ITEM, holder.markerBlock().get().name))
+      .add(ResourceKey.create(Registries.ITEM, holder.flexibleMarkerBlock().get().name))
+      .add(ResourceKey.create(Registries.ITEM, holder.chunkMarkerBlock().get().name))
+    tag(quarryPickaxeTag).add(ItemIds.DIAMOND_PICKAXE, ItemIds.NETHERITE_PICKAXE)
   }
 }

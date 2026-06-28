@@ -27,21 +27,21 @@ class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeO
       .save(recipeOutput)
 
     shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().flexibleMarkerBlock().get())
-      .define('g', Items.GREEN_DYE)
+      .define('g', Items.DYE.green())
       .define('m', PlatformAccess.getAccess.registerObjects.markerBlock.get)
       .pattern("ggg")
       .pattern("mmm")
       .unlockedBy(PlatformAccess.getAccess.registerObjects.markerBlock.get)
-      .unlockedBy(Items.GREEN_DYE)
+      .unlockedBy(Items.DYE.green())
       .save(recipeOutput)
 
     shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().flexibleMarkerBlock().get())
-      .define('g', Items.GREEN_DYE)
+      .define('g', Items.DYE.green())
       .define('m', PlatformAccess.getAccess.registerObjects.chunkMarkerBlock.get)
       .pattern("ggg")
       .pattern(" m ")
       .unlockedBy(PlatformAccess.getAccess.registerObjects.chunkMarkerBlock.get)
-      .unlockedBy(Items.GREEN_DYE)
+      .unlockedBy(Items.DYE.green())
       .save(recipeOutput, modLocKey(FlexibleMarkerBlock.NAME + "_from_" + ChunkMarkerBlock.NAME))
 
     shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().chunkMarkerBlock().get())
@@ -110,7 +110,7 @@ class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeO
 
     shaped(RecipeCategory.MISC, quarryItem("pump_module"))
       .define('g', ip.glass)
-      .define('d', Items.GREEN_DYE)
+      .define('d', Items.DYE.green())
       .define('b', Items.LAVA_BUCKET)
       .define('r', ip.redStoneDust)
       .define('G', ip.goldBlock)
@@ -118,7 +118,7 @@ class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeO
       .pattern("dgd")
       .pattern("gbg")
       .pattern("rGm")
-      .unlockedBy(Items.GREEN_DYE)
+      .unlockedBy(Items.DYE.green())
       .unlockedBy(ip.markerTag)
       .save(ip.pumpModuleRecipeOutput(recipeOutput))
 
