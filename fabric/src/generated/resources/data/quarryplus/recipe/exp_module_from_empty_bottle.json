@@ -8,7 +8,6 @@
     }
   ],
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
     "D": "#c:storage_blocks/diamond",
     "G": "#c:storage_blocks/gold",

@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
     "m": "quarryplus:flexible_marker",
     "r": "#c:dusts/redstone"

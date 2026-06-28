@@ -8,7 +8,6 @@
     }
   ],
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
     "a": "#c:gems/amethyst",
     "m": "#quarryplus:markers",

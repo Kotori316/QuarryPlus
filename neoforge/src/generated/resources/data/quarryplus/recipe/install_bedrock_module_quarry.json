@@ -5,7 +5,6 @@
     }
   ],
   "type": "quarryplus:install_bedrock_module_recipe",
-  "category": "misc",
   "group": "quarryplus:install_bedrock_module_recipe",
   "show_notification": false,
   "target": "quarryplus:quarry"

@@ -8,7 +8,6 @@
     }
   ],
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
     "G": "#c:storage_blocks/gold",
     "e": "#c:ender_pearls",

@@ -1,6 +1,5 @@
 {
   "type": "quarryplus:install_bedrock_module_recipe",
-  "category": "misc",
   "forge:condition": {
     "type": "forge:false"
   },

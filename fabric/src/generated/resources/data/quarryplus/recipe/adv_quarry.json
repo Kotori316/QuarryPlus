@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
     "d": "#c:storage_blocks/diamond",
     "e": "#c:storage_blocks/emerald",
