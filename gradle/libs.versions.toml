@@ -30,7 +30,7 @@ plugin_publish_all = "1.+"
 plugin_github_release = "2.5.2"
 plugin_idea_ext = "1.4.1"
 
-plugin_fabric_loom = "1.16.1"
+plugin_fabric_loom = "1.17.13"
 plugin_forge_gradle = "7.0.25"
 plugin_neoforge_gradle = "7.1.26"
 
