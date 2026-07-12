@@ -32,7 +32,7 @@ base {
     val year = mcVersionSplit[0]
     val release = mcVersionSplit[1]
     val patch = mcVersionSplit.getOrElse(2) { _ -> "0" }
-    val versionMinor: String? by project
+    val versionMinor = project.findProperty("versionMinor") as? String
     val build = System.getenv("GITHUB_RUN_NUMBER") ?: versionMinor ?: "0"
     version = "${year}.${release}${patch}.${build}"
 }

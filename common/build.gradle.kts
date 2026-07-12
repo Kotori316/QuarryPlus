@@ -53,4 +53,6 @@ dependencies {
     "gameTestImplementation"(libs.du.common)
 }
 
-tasks.register("runGameTestServer")
+tasks.register("runGameTestServer") {
+    description = "Dummy task for common module"
+}
