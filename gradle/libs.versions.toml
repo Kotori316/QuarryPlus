@@ -16,8 +16,8 @@ slp_forge = "5.0.3-mc26.2-3.8.4"
 slp_fabric = "5.0.0"
 slp_neoforge = "5.0.3-mc26.2-3.8.4"
 jei_forge = "19.27.0.343"
-jei_fabric = "29.6.2.38"
-jei_neoforge = "29.6.2.38"
+jei_fabric = "30.9.0.57"
+jei_neoforge = "30.9.0.57"
 
 night-config = "3.7.3"
 
@@ -58,14 +58,14 @@ du_fabric = { group = "com.kotori316", name = "debug-utility-fabric", version.re
 fabric_version_checker = { group = "com.kotori316", name = "VersionCheckerMod", version.ref = "fabric_version_checker" }
 slp_fabric = { group = "com.kotori316", name = "scalable-cats-force-fabric", version.ref = "slp_fabric" }
 teamreborn_energy = { group = "teamreborn", name = "energy", version.ref = "teamreborn_energy" }
-jei_fabric = { group = "mezz.jei", name = "jei-26.1.2-fabric", version.ref = "jei_fabric" }
+jei_fabric = { group = "mezz.jei", name = "jei-26.2-fabric", version.ref = "jei_fabric" }
 config_core = { group = "com.electronwill.night-config", name = "core", version.ref = "night-config" }
 config_toml = { group = "com.electronwill.night-config", name = "toml", version.ref = "night-config" }
 # NeoForge
 neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
 du_neoforge = { group = "com.kotori316", name = "debug-utility-neoforge", version.ref = "du" }
 slp_neoforge = { group = "com.kotori316", name = "scalablecatsforce-neoforge", version.ref = "slp_neoforge" }
-jei_neoforge = { group = "mezz.jei", name = "jei-26.1.2-neoforge", version.ref = "jei_neoforge" }
+jei_neoforge = { group = "mezz.jei", name = "jei-26.2-neoforge", version.ref = "jei_neoforge" }
 
 [bundles]
 mockito = ["mockito_core", "mockito_inline"]
