@@ -68,6 +68,8 @@ publishMods {
                 ) as String
         minecraftVersions = listOf(minecraft)
         projectSlug = "additional-enchanted-miner"
+        client = true
+        server = true
         requires {
             slug = "scalable-cats-force"
         }
