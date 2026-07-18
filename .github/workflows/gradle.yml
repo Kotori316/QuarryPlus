@@ -60,9 +60,9 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ github.ref_name }}-gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle.kts', '**/*.gradle', 'gradle/**/*', 'gradle.properties') }}
+          key: ${{ github.ref_name }}-${{ matrix.platform }}-gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle.kts', '**/*.gradle', 'gradle/**/*', 'gradle.properties') }}
           restore-keys: |
-            ${{ github.ref_name }}-gradle-${{ runner.os }}-
+            ${{ github.ref_name }}-${{ matrix.platform }}-gradle-${{ runner.os }}-
       - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
         with:
           add-job-summary: 'never'
