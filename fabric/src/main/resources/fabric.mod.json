@@ -38,7 +38,8 @@
   "depends": {
     "fabricloader": ">=0.19.0",
     "fabric-api": ">=0.147.0+26.1.2",
-    "minecraft": "26.1.x"
+    "minecraft": "26.1.x",
+    "kotori_scala": ">=5.0.0"
   },
   "custom": {
     "kotori316_version_checker": "${update_url}"
