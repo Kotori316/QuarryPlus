@@ -1,5 +1,5 @@
 modLoader = "kotori_scala"
-loaderVersion = "[4.0.0, ),[45,)"
+loaderVersion = "[5.0.0, ),[45,)"
 issueTrackerURL = "https://github.com/Kotori316/QuarryPlus/issues"
 license = "GNU Lesser General Public License v3.0"
 [[mods]]
