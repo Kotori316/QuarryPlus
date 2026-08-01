@@ -36,7 +36,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BucketPickup;
-import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -671,19 +670,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
     }
 
     void removeFluidAt(@NotNull Level level, BlockPos pos, ServerPlayer player, BlockState newState) {
-        var state = level.getBlockState(pos);
-        if (state.getBlock() instanceof LiquidBlock) {
-            var f = level.getFluidState(pos);
-            if (!f.isEmpty() && f.isSource()) {
-                storage.addFluid(f.getType(), MachineStorage.ONE_BUCKET);
-            }
-            level.setBlock(pos, newState, Block.UPDATE_ALL);
-        } else if (state.getBlock() instanceof BucketPickup bucketPickup) {
-            var picked = bucketPickup.pickupBlock(player, level, pos, state);
-            storage.addBucketFluid(picked);
-        } else {
-            level.setBlock(pos, newState, Block.UPDATE_ALL);
-        }
+        FluidDrain.drainSourceInto(level, pos, player, newState, storage, false);
     }
 
     void removeEdgeFluid(int x, int z, ServerLevel targetWorld, ServerPlayer player) {
