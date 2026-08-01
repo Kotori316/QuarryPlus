@@ -10,8 +10,8 @@ val modId = "QuarryPlus".lowercase()
 val minecraftVersion = libs.versions.minecraft.get()
 
 sourceSets {
-    val mainSourceSet by main
-    val gameTestSourceSet by gameTest
+    val mainSourceSet = main.get()
+    val gameTestSourceSet = gameTest.get()
     create("runGame") {
         val sourceSet = this
         project.configurations {
@@ -28,7 +28,7 @@ sourceSets {
             }
         }
     }
-    val dataGenSourceSet by dataGen
+    val dataGenSourceSet = dataGen.get()
     create("genData") {
         val sourceSet = this
         project.configurations {
