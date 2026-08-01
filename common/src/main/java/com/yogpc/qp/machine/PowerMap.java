@@ -7,7 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 /**
  * Unit is FE, not microFE, so I use double in this class
  */
-public record PowerMap(Quarry quarry, AdvQuarry advQuarry) {
+public record PowerMap(Quarry quarry, AdvQuarry advQuarry, AdvPump advPump) {
     public record Quarry(
         double maxEnergy,
         double makeFrame,
@@ -66,6 +66,38 @@ public record PowerMap(Quarry quarry, AdvQuarry advQuarry) {
         }
     }
 
+    /**
+     * Unit is FE, not microFE, so I use double in this class
+     */
+    public record AdvPump(
+        double maxEnergy,
+        double fluidCapacity,
+        double range,
+        double baseEnergyLevel0,
+        double baseEnergyLevel1,
+        double baseEnergyLevel2,
+        double baseEnergyLevel3
+    ) {
+        public static final MapCodec<AdvPump> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+            Codec.DOUBLE.fieldOf("maxEnergy").forGetter(AdvPump::maxEnergy),
+            Codec.DOUBLE.fieldOf("fluidCapacity").forGetter(AdvPump::fluidCapacity),
+            Codec.DOUBLE.fieldOf("range").forGetter(AdvPump::range),
+            Codec.DOUBLE.fieldOf("baseEnergyLevel0").forGetter(AdvPump::baseEnergyLevel0),
+            Codec.DOUBLE.fieldOf("baseEnergyLevel1").forGetter(AdvPump::baseEnergyLevel1),
+            Codec.DOUBLE.fieldOf("baseEnergyLevel2").forGetter(AdvPump::baseEnergyLevel2),
+            Codec.DOUBLE.fieldOf("baseEnergyLevel3").forGetter(AdvPump::baseEnergyLevel3)
+        ).apply(i, AdvPump::new));
+
+        /**
+         * @param unbreaking Level of Unbreaking enchantment. Clamped to [0, 3].
+         * @return Energy in FE required to drain one fluid source block.
+         */
+        public long baseEnergyFor(int unbreaking) {
+            var table = new double[]{baseEnergyLevel0, baseEnergyLevel1, baseEnergyLevel2, baseEnergyLevel3};
+            return (long) (table[Math.clamp(unbreaking, 0, 3)] * PowerEntity.ONE_FE);
+        }
+    }
+
     private static long getBreakEnergy(float hardness, int efficiency, int unbreaking, int fortune, boolean silktouch, double breakBlockBase, double breakFortuneCoefficient, double breakEfficiencyCoefficient, double breakSilktouchCoefficient) {
         if (Float.isNaN(hardness) || hardness == 0) return 0;
 
@@ -102,6 +134,15 @@ public record PowerMap(Quarry quarry, AdvQuarry advQuarry) {
             1.379729661461215,
             1.5874010519681996,
             4.0
+        );
+        AdvPump ADV_PUMP = new AdvPump(
+            1024,
+            512,
+            32,
+            100,
+            80,
+            50,
+            20
         );
     }
 }
