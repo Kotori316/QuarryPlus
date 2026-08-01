@@ -5,6 +5,7 @@ import com.yogpc.qp.*;
 import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.fabric.machine.advpump.AdvPumpEntityFabric;
 import com.yogpc.qp.fabric.machine.advquarry.AdvQuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.advquarry.AdvQuarryEntityFabric;
 import com.yogpc.qp.fabric.machine.misc.CheckerItemFabric;
@@ -17,6 +18,8 @@ import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpItem;
+import com.yogpc.qp.machine.advpump.AdvPumpBlock;
+import com.yogpc.qp.machine.advpump.AdvPumpContainer;
 import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import com.yogpc.qp.machine.advquarry.AdvQuarryContainer;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
@@ -81,6 +84,9 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final AdvQuarryBlockFabric ADV_QUARRY_BLOCK = new AdvQuarryBlockFabric();
         public static final BlockEntityType<AdvQuarryEntityFabric> ADV_QUARRY_ENTITY_TYPE = BlockEntityType.Builder.of(AdvQuarryEntityFabric::new, ADV_QUARRY_BLOCK).build(DSL.emptyPartType());
         public static final MenuType<AdvQuarryContainer> ADV_QUARRY_MENU = new ExtendedScreenHandlerType<>(AdvQuarryContainer::new, BlockPos.STREAM_CODEC);
+        public static final AdvPumpBlock ADV_PUMP_BLOCK = new AdvPumpBlock();
+        public static final BlockEntityType<AdvPumpEntityFabric> ADV_PUMP_ENTITY_TYPE = BlockEntityType.Builder.of(AdvPumpEntityFabric::new, ADV_PUMP_BLOCK).build(DSL.emptyPartType());
+        public static final MenuType<AdvPumpContainer> ADV_PUMP_MENU = new ExtendedScreenHandlerType<>(AdvPumpContainer::new, BlockPos.STREAM_CODEC);
         public static final FrameBlock FRAME_BLOCK = new FrameBlock();
         public static final SoftBlock SOFT_BLOCK = new SoftBlock();
         public static final GeneratorBlock GENERATOR_BLOCK = new GeneratorBlock();
@@ -131,6 +137,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             // Machine
             registerEntityBlock(QUARRY_BLOCK, QUARRY_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             registerEntityBlock(ADV_QUARRY_BLOCK, ADV_QUARRY_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
+            registerEntityBlock(ADV_PUMP_BLOCK, ADV_PUMP_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             registerEntityBlock(GENERATOR_BLOCK, GENERATOR_ENTITY_TYPE, EnableMap.EnableOrNot.ALWAYS_ON);
             registerEntityBlock(MOVER_BLOCK, MOVER_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             registerEntityBlock(PLACER_BLOCK, PLACER_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
@@ -159,6 +166,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             Registry.register(BuiltInRegistries.MENU, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, MarkerContainer.CHUNK_NAME), CHUNK_MARKER_MENU);
             Registry.register(BuiltInRegistries.MENU, ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, DebugStorageContainer.NAME), DEBUG_STORAGE_MENU);
             Registry.register(BuiltInRegistries.MENU, AdvQuarryContainer.GUI_ID, ADV_QUARRY_MENU);
+            Registry.register(BuiltInRegistries.MENU, AdvPumpContainer.GUI_ID, ADV_PUMP_MENU);
             Registry.register(BuiltInRegistries.MENU, FilterModuleContainer.GUI_ID, FILTER_MODULE_MENU);
             Registry.register(BuiltInRegistries.MENU, PlacerContainer.PLACER_GUI_ID, PLACER_MENU_TYPE);
             Registry.register(BuiltInRegistries.MENU, PlacerContainer.REMOTE_PLACER_GUI_ID, REMOTE_PLACER_MENU_TYPE);
@@ -249,6 +257,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         }
 
         @Override
+        public Supplier<? extends AdvPumpBlock> advPumpBlock() {
+            return Lazy.value(ADV_PUMP_BLOCK);
+        }
+
+        @Override
         public Supplier<? extends SoftBlock> softBlock() {
             return Lazy.value(SOFT_BLOCK);
         }
@@ -326,6 +339,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         @Override
         public Supplier<MenuType<? extends AdvQuarryContainer>> advQuarryContainer() {
             return Lazy.value(ADV_QUARRY_MENU);
+        }
+
+        @Override
+        public Supplier<MenuType<? extends AdvPumpContainer>> advPumpContainer() {
+            return Lazy.value(ADV_PUMP_MENU);
         }
 
         @Override

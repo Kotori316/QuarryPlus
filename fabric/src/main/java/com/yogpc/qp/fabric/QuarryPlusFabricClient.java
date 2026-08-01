@@ -3,6 +3,7 @@ package com.yogpc.qp.fabric;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.fabric.machine.quarry.QuarryScreenFabric;
 import com.yogpc.qp.fabric.packet.PacketHandler;
+import com.yogpc.qp.machine.advpump.AdvPumpScreen;
 import com.yogpc.qp.machine.advquarry.AdvQuarryScreen;
 import com.yogpc.qp.machine.marker.ChunkMarkerScreen;
 import com.yogpc.qp.machine.marker.FlexibleMarkerScreen;
@@ -40,6 +41,7 @@ public final class QuarryPlusFabricClient implements ClientModInitializer {
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.CHUNK_MARKER_MENU, ChunkMarkerScreen::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.DEBUG_STORAGE_MENU, DebugStorageScreen::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.ADV_QUARRY_MENU, AdvQuarryScreen::new);
+        MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.ADV_PUMP_MENU, AdvPumpScreen::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.FILTER_MODULE_MENU, FilterModuleScreen::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.PLACER_MENU_TYPE, PlacerScreen::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.REMOTE_PLACER_MENU_TYPE, RemotePlacerScreen::new);
