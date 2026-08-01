@@ -26,7 +26,7 @@ public class AdvPumpContainer extends AbstractContainerMenu {
         pump = Objects.requireNonNull((AdvPumpEntity) player.level().getBlockEntity(pos),
             "Tile at %s in %s is null".formatted(pos, player.level().dimension()));
         this.imageWidth = 176;
-        this.imageHeight = 172;
+        this.imageHeight = 166;
 
         for (int k = 0; k < 3; ++k) {
             for (int i1 = 0; i1 < 9; ++i1) {
