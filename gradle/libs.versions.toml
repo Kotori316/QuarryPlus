@@ -1,10 +1,10 @@
 [versions]
 minecraft = "1.21.1"
-forge = "1.21.1-52.1.14"
+forge = "1.21.1-52.1.16"
 eventbus_forge = "7.0.5"
-fabric_api = "0.116.13+1.21.1"
+fabric_api = "0.116.15+1.21.1"
 fabric_loader = "0.19.3"
-neoforge = "21.1.235"
+neoforge = "21.1.244"
 fabric_version_checker = "2.6.1"
 
 du = "21.1.99-SNAPSHOT"
@@ -21,7 +21,7 @@ jei_neoforge = "19.27.0.340"
 
 night-config = "3.7.3"
 
-jupiter_api = "6.1.1"
+jupiter_api = "6.1.2"
 mockito_core = "5.23.0"
 mockito_inline = "5.2.0"
 
@@ -30,7 +30,7 @@ plugin_publish_all = "2.1.1"
 plugin_github_release = "2.5.2"
 plugin_idea_ext = "1.4.1"
 
-plugin_fabric_loom = "1.17.13"
+plugin_fabric_loom = "1.17.17"
 plugin_forge_gradle = "7.0.31"
 plugin_neoforge_gradle = "7.1.38"
 
