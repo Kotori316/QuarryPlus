@@ -40,12 +40,11 @@ final class AdvPumpTarget implements Iterator<BlockPos> {
     }
 
     /**
-     * Rechecks every originally-found position and the block directly above each for leftover/refilled fluid
-     * (e.g. a higher connected source flowing back in). If any is found, iteration resumes over that subset at
-     * the same Y layer and this method returns {@code true}; otherwise it returns {@code false} and the caller
-     * should move on to the next Y layer.
+     * Resumes the iterator over any refilled fluid found near the already-processed positions.
+     *
+     * @return {@code true} if the iterator is empty; {@code false} if there is still fluids in area.
      */
-    boolean checkAllFluidsRemoved(Level level, BlockPos center) {
+    boolean updateToRemainingIterator(Level level, BlockPos center) {
         var stillFluid = posList.stream().<BlockPos>mapMulti((pos, consumer) -> {
                 consumer.accept(pos);
                 consumer.accept(pos.above());
@@ -57,10 +56,10 @@ final class AdvPumpTarget implements Iterator<BlockPos> {
                 .thenComparing(Comparator.comparingInt(center::distManhattan).reversed()))
             .toList();
         if (stillFluid.isEmpty()) {
-            return false;
+            return true;
         } else {
             this.iterator = stillFluid.listIterator();
-            return true;
+            return false;
         }
     }
 

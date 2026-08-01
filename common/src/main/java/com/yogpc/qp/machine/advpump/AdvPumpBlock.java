@@ -64,11 +64,10 @@ public class AdvPumpBlock extends QpEntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        var entity = this.<AdvPumpEntity>getBlockEntityType().map(t -> t.getBlockEntity(level, pos)).orElse(null);
-        if (entity != null) {
+        if (level.getBlockEntity(pos) instanceof AdvPumpEntity pump) {
             if (!level.isClientSide()) {
-                if (entity.enabled) {
-                    PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, AdvPumpContainer::new));
+                if (pump.enabled) {
+                    PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(pump, AdvPumpContainer::new));
                 } else {
                     player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
                 }

@@ -102,7 +102,7 @@ public abstract class AdvPumpEntity extends PowerEntity implements ClientSync {
             }
         } else {
             // Go to the next Y, unless fluid flowed back in.
-            if (!target.checkAllFluidsRemoved(level, pos.atY(currentY))) {
+            if (target.updateToRemainingIterator(level, pos.atY(currentY))) {
                 currentY -= 1;
                 var nextPos = pos.atY(currentY);
                 if (shouldFinish(level, nextPos)) {

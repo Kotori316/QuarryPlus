@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Objects;
 
@@ -73,6 +74,7 @@ public final class AdvPumpSettingsMessage implements CustomPacketPayload, OnRece
         return TYPE;
     }
 
+    @VisibleForTesting
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -81,6 +83,7 @@ public final class AdvPumpSettingsMessage implements CustomPacketPayload, OnRece
             && Objects.equals(pos, that.pos) && Objects.equals(dim, that.dim);
     }
 
+    @VisibleForTesting
     @Override
     public int hashCode() {
         return Objects.hash(pos, dim, placeFrame, deleteFluid);
