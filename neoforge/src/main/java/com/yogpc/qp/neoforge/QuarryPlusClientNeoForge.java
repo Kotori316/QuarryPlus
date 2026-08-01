@@ -1,6 +1,7 @@
 package com.yogpc.qp.neoforge;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.advpump.AdvPumpScreen;
 import com.yogpc.qp.machine.advquarry.AdvQuarryScreen;
 import com.yogpc.qp.machine.marker.ChunkMarkerScreen;
 import com.yogpc.qp.machine.marker.FlexibleMarkerScreen;
@@ -42,6 +43,7 @@ public final class QuarryPlusClientNeoForge {
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.CHUNK_MARKER_MENU_TYPE.get(), ChunkMarkerScreen::new);
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.DEBUG_STORAGE_MENU_TYPE.get(), DebugStorageScreen::new);
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.ADV_QUARRY_MENU_TYPE.get(), AdvQuarryScreen::new);
+        event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.ADV_PUMP_MENU_TYPE.get(), AdvPumpScreen::new);
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.FILTER_MODULE_MENU_TYPE.get(), FilterModuleScreen::new);
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.PLACER_MENU_TYPE.get(), PlacerScreen::new);
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.REMOTE_PLACER_MENU_TYPE.get(), RemotePlacerScreen::new);
