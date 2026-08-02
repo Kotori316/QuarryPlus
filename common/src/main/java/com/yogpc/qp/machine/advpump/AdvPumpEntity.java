@@ -12,15 +12,12 @@ import com.yogpc.qp.packet.ClientSync;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -30,6 +27,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -179,18 +178,18 @@ public abstract class AdvPumpEntity extends PowerEntity implements ClientSync {
 
     @Override
     public final void updateMaxEnergyWithEnchantment(Level level) {
-        var efficiency = enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, level.registryAccess().asGetterLookup());
+        var efficiency = enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, level.registryAccess());
         setMaxEnergy((long) (powerMap().maxEnergy() * Math.pow(2, efficiency) * ONE_FE));
     }
 
     long fluidCapacity(Level level) {
-        var efficiency = enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, level.registryAccess().asGetterLookup());
+        var efficiency = enchantmentCache.getLevel(getEnchantments(), Enchantments.EFFICIENCY, level.registryAccess());
         return (long) (powerMap().fluidCapacity() * (efficiency + 1)) * MachineStorage.ONE_BUCKET;
     }
 
     @VisibleForTesting
     int range(Level level) {
-        var lookup = level.registryAccess().asGetterLookup();
+        var lookup = level.registryAccess();
         var fortune = enchantmentCache.getLevel(getEnchantments(), Enchantments.FORTUNE, lookup);
         var silkTouch = enchantmentCache.getLevel(getEnchantments(), Enchantments.SILK_TOUCH, lookup);
         var rangeLevel = Math.max(fortune, silkTouch > 0 ? 3 : 0);
@@ -198,61 +197,45 @@ public abstract class AdvPumpEntity extends PowerEntity implements ClientSync {
     }
 
     long baseEnergyPerSource(Level level) {
-        var unbreaking = enchantmentCache.getLevel(getEnchantments(), Enchantments.UNBREAKING, level.registryAccess().asGetterLookup());
+        var unbreaking = enchantmentCache.getLevel(getEnchantments(), Enchantments.UNBREAKING, level.registryAccess());
         return powerMap().baseEnergyFor(unbreaking);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        fromClientTag(tag, registries);
-        currentY = tag.getInt("currentY");
-        finished = tag.getBoolean("finished");
-        storage = MachineStorage.CODEC.codec().parse(NbtOps.INSTANCE, tag.get("storage")).result().orElseGet(MachineStorage::of);
-        moduleInventory.fromTag(tag.getList("moduleInventory", Tag.TAG_COMPOUND), registries);
-        chunkLoader = QuarryChunkLoader.CODEC.parse(NbtOps.INSTANCE, tag.get("chunkLoader")).result().orElse(QuarryChunkLoader.None.INSTANCE);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        fromClientTag(input);
+        currentY = input.getIntOr("currentY", currentY);
+        finished = input.getBooleanOr("finished", false);
+        storage = input.read("storage", MachineStorage.CODEC.codec()).orElseGet(MachineStorage::of);
+        moduleInventory.fromItemList(input.listOrEmpty("moduleInventory", ItemStack.CODEC));
+        chunkLoader = input.read("chunkLoader", QuarryChunkLoader.CODEC).orElse(QuarryChunkLoader.None.INSTANCE);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        toClientTag(tag, registries);
-        tag.putInt("currentY", currentY);
-        tag.putBoolean("finished", finished);
-        tag.put("storage", MachineStorage.CODEC.codec().encodeStart(NbtOps.INSTANCE, storage).getOrThrow());
-        tag.put("moduleInventory", moduleInventory.createTag(registries));
-        tag.put("chunkLoader", QuarryChunkLoader.CODEC.encodeStart(NbtOps.INSTANCE, chunkLoader).getOrThrow());
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        toClientTag(output);
+        output.putInt("currentY", currentY);
+        output.putBoolean("finished", finished);
+        output.store("storage", MachineStorage.CODEC.codec(), storage);
+        moduleInventory.storeAsItemList(output.list("moduleInventory", ItemStack.CODEC));
+        output.store("chunkLoader", QuarryChunkLoader.CODEC, chunkLoader);
     }
 
     @Override
-    public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        placeFrame = tag.getBoolean("placeFrame");
-        deleteFluid = tag.getBoolean("deleteFluid");
-        searchDownward = tag.getBoolean("searchDownward");
+    public void fromClientTag(ValueInput input) {
+        placeFrame = input.getBooleanOr("placeFrame", placeFrame);
+        deleteFluid = input.getBooleanOr("deleteFluid", deleteFluid);
+        searchDownward = input.getBooleanOr("searchDownward", searchDownward);
     }
 
     @Override
-    public CompoundTag toClientTag(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.putBoolean("placeFrame", placeFrame);
-        tag.putBoolean("deleteFluid", deleteFluid);
-        tag.putBoolean("searchDownward", searchDownward);
-        return tag;
-    }
-
-    @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
-        super.applyImplicitComponents(componentInput);
-    }
-
-    @Override
-    protected void collectImplicitComponents(DataComponentMap.Builder components) {
-        super.collectImplicitComponents(components);
-    }
-
-    @Override
-    public void saveToItem(ItemStack stack, HolderLookup.Provider registries) {
-        // Not to save NBT, as it causes crash
-        stack.applyComponents(this.collectComponents());
+    public ValueOutput toClientTag(ValueOutput output) {
+        output.putBoolean("placeFrame", placeFrame);
+        output.putBoolean("deleteFluid", deleteFluid);
+        output.putBoolean("searchDownward", searchDownward);
+        return output;
     }
 
     @Override
@@ -266,6 +249,13 @@ public abstract class AdvPumpEntity extends PowerEntity implements ClientSync {
         super.setRemoved();
         if (level instanceof ServerLevel s) {
             this.chunkLoader.makeChunkUnLoaded(s);
+        }
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState blockState) {
+        if (level != null) {
+            Containers.dropContents(level, pos, moduleInventory);
         }
     }
 

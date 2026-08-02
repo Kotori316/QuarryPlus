@@ -8,10 +8,11 @@ import com.yogpc.qp.packet.OnReceiveWithLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -22,9 +23,9 @@ import java.util.Objects;
  * Client to server only. Sent when the "Modules" button in {@link AdvPumpScreen} is pressed.
  */
 public final class AdvPumpOpenModuleMessage implements CustomPacketPayload, OnReceiveWithLevel {
-    public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "adv_pump_open_module_message");
+    public static final Identifier NAME = Identifier.fromNamespaceAndPath(QuarryPlus.modID, "adv_pump_open_module_message");
     public static final CustomPacketPayload.Type<AdvPumpOpenModuleMessage> TYPE = new Type<>(NAME);
-    public static final StreamCodec<FriendlyByteBuf, AdvPumpOpenModuleMessage> STREAM_CODEC = CustomPacketPayload.codec(
+    public static final StreamCodec<RegistryFriendlyByteBuf, AdvPumpOpenModuleMessage> STREAM_CODEC = CustomPacketPayload.codec(
         AdvPumpOpenModuleMessage::write, AdvPumpOpenModuleMessage::new
     );
     private final BlockPos pos;

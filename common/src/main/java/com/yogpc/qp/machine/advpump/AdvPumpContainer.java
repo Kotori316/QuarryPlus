@@ -37,7 +37,7 @@ public class AdvPumpContainer extends AbstractContainerMenu {
         for (int l = 0; l < 9; ++l) {
             this.addSlot(new Slot(player.getInventory(), l, 8 + l * 18, this.imageHeight - 24));
         }
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             PlatformAccess.getAccess().packetHandler().sendToClientPlayer(new ClientSyncMessage(pump), (ServerPlayer) player);
         }
     }

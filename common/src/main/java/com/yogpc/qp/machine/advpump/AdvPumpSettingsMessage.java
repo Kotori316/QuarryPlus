@@ -5,10 +5,11 @@ import com.yogpc.qp.packet.OnReceiveWithLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -19,9 +20,9 @@ import java.util.Objects;
  * Client to server only. Carries the Frame/Delete toggle state from {@link AdvPumpScreen}'s buttons.
  */
 public final class AdvPumpSettingsMessage implements CustomPacketPayload, OnReceiveWithLevel {
-    public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "adv_pump_settings_message");
+    public static final Identifier NAME = Identifier.fromNamespaceAndPath(QuarryPlus.modID, "adv_pump_settings_message");
     public static final CustomPacketPayload.Type<AdvPumpSettingsMessage> TYPE = new Type<>(NAME);
-    public static final StreamCodec<FriendlyByteBuf, AdvPumpSettingsMessage> STREAM_CODEC = CustomPacketPayload.codec(
+    public static final StreamCodec<RegistryFriendlyByteBuf, AdvPumpSettingsMessage> STREAM_CODEC = CustomPacketPayload.codec(
         AdvPumpSettingsMessage::write, AdvPumpSettingsMessage::new
     );
     private final BlockPos pos;

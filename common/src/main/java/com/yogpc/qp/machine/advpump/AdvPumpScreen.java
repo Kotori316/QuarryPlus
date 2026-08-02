@@ -7,12 +7,13 @@ import com.yogpc.qp.machine.misc.SmallCheckBox;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 public class AdvPumpScreen extends AbstractContainerScreen<AdvPumpContainer> {
-    private static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/adv_pump.png");
+    private static final Identifier LOCATION = Identifier.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/adv_pump.png");
     private SmallCheckBox placeFrameCheckBox;
     private SmallCheckBox deleteFluidCheckBox;
     private SmallCheckBox searchDownwardCheckBox;
@@ -32,7 +33,7 @@ public class AdvPumpScreen extends AbstractContainerScreen<AdvPumpContainer> {
 
     @Override
     protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
-        graphics.blit(LOCATION, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
     }
 
     @Override

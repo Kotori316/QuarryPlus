@@ -4,8 +4,8 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -52,7 +52,7 @@ public class AdvPumpBlock extends QpEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return null;
         }
         return createTickerHelper(blockEntityType, this.<AdvPumpEntity>getBlockEntityType().orElse(null), CombinedBlockEntityTicker.of(this, level,
@@ -72,7 +72,7 @@ public class AdvPumpBlock extends QpEntityBlock {
                     player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
                 }
             }
-            return InteractionResult.sidedSuccess(level.isClientSide());
+            return InteractionResult.SUCCESS_SERVER;
         }
         return super.useWithoutItem(state, level, pos, player, hitResult);
     }
@@ -80,19 +80,16 @@ public class AdvPumpBlock extends QpEntityBlock {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof AdvPumpEntity pump) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof AdvPumpEntity pump) {
             pump.updateMaxEnergyWithEnchantment(level);
         }
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
-            if (level.getBlockEntity(pos) instanceof AdvPumpEntity entity) {
-                Containers.dropContents(level, pos, entity.moduleInventory);
-                level.updateNeighbourForOutputSignal(pos, state.getBlock());
-            }
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean isMoving) {
+        super.affectNeighborsAfterRemoval(state, level, pos, isMoving);
+        if (level.getBlockEntity(pos) instanceof AdvPumpEntity) {
+            level.updateNeighbourForOutputSignal(pos, state.getBlock());
         }
-        super.onRemove(state, level, pos, newState, isMoving);
     }
 }

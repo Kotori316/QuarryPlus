@@ -1,10 +1,10 @@
 package com.yogpc.qp.machine.advpump;
 
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.level.block.Block;
+import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.QpBlockItem;
 
-public class AdvPumpItem extends BlockItem {
-    public AdvPumpItem(Block block) {
+public class AdvPumpItem extends QpBlockItem {
+    public AdvPumpItem(QpBlock block) {
         super(block, new Properties().fireResistant());
     }
 }

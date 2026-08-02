@@ -51,9 +51,8 @@ public final class SoftBlock extends TransparentBlock implements InCreativeTabs 
     @Override
     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean isMoving) {
         super.affectNeighborsAfterRemoval(state, level, pos, isMoving);
-        if (!breaking&& !world.isClientSide()) {
-            ChainBreakTask.schedule(level, List.of(pos), b -> this.
-            breaking = b, new HashSet<>(), Predicate.isEqual(this));
+        if (!breaking && !level.isClientSide()) {
+            ChainBreakTask.schedule(level, List.of(pos), b -> this.breaking = b, new HashSet<>(), Predicate.isEqual(this));
         }
     }
 
