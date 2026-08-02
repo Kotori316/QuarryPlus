@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "quarryplus:place_adv_pump_test_drain_lava_source",
+  "max_ticks": 100,
+  "setup_ticks": 1,
+  "structure": "quarryplus:empty"
+}

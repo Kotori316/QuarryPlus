@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "quarryplus:adv_pump_fluid_handler_tank_count_matches_distinct_fluids_held",
+  "max_ticks": 1,
+  "structure": "minecraft:empty"
+}

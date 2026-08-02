@@ -1,27 +1,29 @@
 package com.yogpc.qp.forge.gametest;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.data.GatherGameTest;
 import com.yogpc.qp.forge.integration.AdvPumpFluidHandler;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.MachineStorageHolder;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.GameTest;
 
-import static com.yogpc.qp.forge.gametest.LoadTest.STRUCTURE;
+import java.util.Collection;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-@GameTestHolder(QuarryPlus.modID)
-public final class AdvPumpFluidHandlerTest {
+public final class AdvPumpFluidHandlerTest implements GatherGameTest {
     private static final MachineStorageHolder<MachineStorageHolder.Constant> ACCESSOR = new MachineStorageHolder.ForConstant();
 
-    @GameTest(template = STRUCTURE)
+    @GameTest()
     public void loadHandler(GameTestHelper helper) {
         var storage = MachineStorage.of();
         var handler = assertDoesNotThrow(() -> new AdvPumpFluidHandler<>(ACCESSOR, new MachineStorageHolder.Constant(storage)));
@@ -29,7 +31,7 @@ public final class AdvPumpFluidHandlerTest {
         helper.succeed();
     }
 
-    @GameTest(template = STRUCTURE)
+    @GameTest()
     public void tankCountMatchesDistinctFluidsHeld(GameTestHelper helper) {
         var storage = MachineStorage.of();
         var handler = new AdvPumpFluidHandler<>(ACCESSOR, new MachineStorageHolder.Constant(storage));
@@ -41,7 +43,7 @@ public final class AdvPumpFluidHandlerTest {
         helper.succeed();
     }
 
-    @GameTest(template = STRUCTURE)
+    @GameTest()
     public void isFluidValidAlwaysFalse(GameTestHelper helper) {
         var storage = MachineStorage.of();
         var handler = new AdvPumpFluidHandler<>(ACCESSOR, new MachineStorageHolder.Constant(storage));
@@ -49,7 +51,7 @@ public final class AdvPumpFluidHandlerTest {
         helper.succeed();
     }
 
-    @GameTest(template = STRUCTURE)
+    @GameTest()
     public void insertionIsRefused(GameTestHelper helper) {
         var storage = MachineStorage.of();
         var handler = new AdvPumpFluidHandler<>(ACCESSOR, new MachineStorageHolder.Constant(storage));
@@ -61,7 +63,7 @@ public final class AdvPumpFluidHandlerTest {
         helper.succeed();
     }
 
-    @GameTest(template = STRUCTURE)
+    @GameTest()
     public void extractionIsAllowed(GameTestHelper helper) {
         var storage = MachineStorage.of();
         storage.addBucketFluid(new ItemStack(Items.WATER_BUCKET));
@@ -75,7 +77,7 @@ public final class AdvPumpFluidHandlerTest {
         helper.succeed();
     }
 
-    @GameTest(template = STRUCTURE)
+    @GameTest()
     public void extractionByIndexIsAllowed(GameTestHelper helper) {
         var storage = MachineStorage.of();
         storage.addBucketFluid(new ItemStack(Items.WATER_BUCKET));
@@ -87,5 +89,19 @@ public final class AdvPumpFluidHandlerTest {
         assertEquals(FluidType.BUCKET_VOLUME, drained.getAmount());
         assertEquals(0, storage.getFluidCount(Fluids.WATER));
         helper.succeed();
+    }
+
+    @Override
+    public Collection<GameTestProperty> gather() {
+        var testData = GameTestProperty.empty();
+        var prefix = "adv_pump_fluid_handler";
+        return List.of(
+            new GameTestProperty(Identifier.fromNamespaceAndPath(QuarryPlus.modID, prefix + "_load_handler"), testData, this::loadHandler),
+            new GameTestProperty(Identifier.fromNamespaceAndPath(QuarryPlus.modID, prefix + "_tank_count_matches_distinct_fluids_held"), testData, this::tankCountMatchesDistinctFluidsHeld),
+            new GameTestProperty(Identifier.fromNamespaceAndPath(QuarryPlus.modID, prefix + "_is_fluid_valid_always_false"), testData, this::isFluidValidAlwaysFalse),
+            new GameTestProperty(Identifier.fromNamespaceAndPath(QuarryPlus.modID, prefix + "_insertion_is_refused"), testData, this::insertionIsRefused),
+            new GameTestProperty(Identifier.fromNamespaceAndPath(QuarryPlus.modID, prefix + "_extraction_is_allowed"), testData, this::extractionIsAllowed),
+            new GameTestProperty(Identifier.fromNamespaceAndPath(QuarryPlus.modID, prefix + "_extraction_by_index_is_allowed"), testData, this::extractionByIndexIsAllowed)
+        );
     }
 }

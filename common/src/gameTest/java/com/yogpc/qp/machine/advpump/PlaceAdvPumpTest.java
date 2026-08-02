@@ -22,7 +22,7 @@ public final class PlaceAdvPumpTest {
     public static void place(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().advPumpBlock().get());
         assertInstanceOf(AdvPumpBlock.class, helper.getBlockState(base).getBlock());
-        assertInstanceOf(AdvPumpEntity.class, helper.getBlockEntity(base));
+        assertInstanceOf(AdvPumpEntity.class, helper.getBlockEntity(base, AdvPumpEntity.class));
         helper.succeed();
     }
 
@@ -34,7 +34,7 @@ public final class PlaceAdvPumpTest {
         helper.placeAt(player, stack, base.below(), Direction.UP);
         helper.assertBlockPresent(PlatformAccess.getAccess().registerObjects().advPumpBlock().get(), base);
 
-        AdvPumpEntity pump = helper.getBlockEntity(base);
+        AdvPumpEntity pump = helper.getBlockEntity(base, AdvPumpEntity.class);
         assertTrue(pump.getEnchantments().isEmpty());
         assertEquals(PowerEntity.ONE_FE * PlatformAccess.config().powerMap().advPump().maxEnergy(), pump.getMaxEnergy());
         helper.succeed();
@@ -47,7 +47,7 @@ public final class PlaceAdvPumpTest {
         player.setItemInHand(InteractionHand.MAIN_HAND, stack);
         helper.placeAt(player, stack, base.below(), Direction.UP);
 
-        AdvPumpEntity pump = helper.getBlockEntity(base);
+        AdvPumpEntity pump = helper.getBlockEntity(base, AdvPumpEntity.class);
         assertFalse(pump.getEnchantments().isEmpty());
         assertEquals(4 * PowerEntity.ONE_FE * PlatformAccess.config().powerMap().advPump().maxEnergy(), pump.getMaxEnergy(),
             "maxEnergy scales as base * 2^efficiency (efficiency=2 -> x4), unlike AdvQuarry's linear (1+efficiency)");
@@ -61,7 +61,7 @@ public final class PlaceAdvPumpTest {
         player.setItemInHand(InteractionHand.MAIN_HAND, stack);
         helper.placeAt(player, stack, base.below(), Direction.UP);
 
-        AdvPumpEntity pump = helper.getBlockEntity(base);
+        AdvPumpEntity pump = helper.getBlockEntity(base, AdvPumpEntity.class);
         assertEquals((int) (PlatformAccess.config().powerMap().advPump().range() * 3), pump.range(helper.getLevel()),
             "rangeLevel = max(fortune, 0) = 2 -> range = base * 3");
         helper.succeed();
@@ -74,7 +74,7 @@ public final class PlaceAdvPumpTest {
         player.setItemInHand(InteractionHand.MAIN_HAND, stack);
         helper.placeAt(player, stack, base.below(), Direction.UP);
 
-        AdvPumpEntity pump = helper.getBlockEntity(base);
+        AdvPumpEntity pump = helper.getBlockEntity(base, AdvPumpEntity.class);
         assertEquals((int) (PlatformAccess.config().powerMap().advPump().range() * 4), pump.range(helper.getLevel()),
             "Silk Touch always maps to rangeLevel 3, regardless of level, and doesn't stack with Fortune");
         helper.succeed();
@@ -87,7 +87,7 @@ public final class PlaceAdvPumpTest {
 
         var absolutePos = helper.absolutePos(base);
         var absoluteWaterPos = helper.absolutePos(waterRelative);
-        AdvPumpEntity pump = helper.getBlockEntity(base);
+        AdvPumpEntity pump = helper.getBlockEntity(base, AdvPumpEntity.class);
         pump.addEnergy(PowerEntity.ONE_FE * 1_000_000L, false);
 
         pump.drainOnce(helper.getLevel(), absolutePos, helper.getLevel().getBlockState(absolutePos));
@@ -107,7 +107,7 @@ public final class PlaceAdvPumpTest {
 
         var absolutePos = helper.absolutePos(base);
         var absoluteWaterPos = helper.absolutePos(waterRelative);
-        AdvPumpEntity pump = helper.getBlockEntity(base);
+        AdvPumpEntity pump = helper.getBlockEntity(base, AdvPumpEntity.class);
         pump.addEnergy(PowerEntity.ONE_FE * 1_000_000L, false);
         pump.deleteFluid = true;
 
@@ -126,7 +126,7 @@ public final class PlaceAdvPumpTest {
 
         var absolutePos = helper.absolutePos(base);
         var absoluteLavaPos = helper.absolutePos(lavaRelative);
-        AdvPumpEntity pump = helper.getBlockEntity(base);
+        AdvPumpEntity pump = helper.getBlockEntity(base, AdvPumpEntity.class);
         pump.addEnergy(PowerEntity.ONE_FE * 1_000_000L, false);
 
         pump.drainOnce(helper.getLevel(), absolutePos, helper.getLevel().getBlockState(absolutePos));

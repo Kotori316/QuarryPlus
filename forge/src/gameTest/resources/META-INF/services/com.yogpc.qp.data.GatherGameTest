@@ -1,3 +1,4 @@
 com.yogpc.qp.forge.gametest.LoadTest
 com.yogpc.qp.forge.gametest.MachineEnergyHandlerTest
 com.yogpc.qp.forge.gametest.MachineStorageHandlerTest
+com.yogpc.qp.forge.gametest.AdvPumpFluidHandlerTest
