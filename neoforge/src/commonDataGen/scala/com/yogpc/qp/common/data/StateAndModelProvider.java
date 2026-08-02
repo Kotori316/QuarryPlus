@@ -55,7 +55,7 @@ final class StateAndModelProvider extends ModelProvider {
         // simpleBlockAndItemCubeAll(blockModels, itemModels,Holder.BLOCK_CONTROLLER);
         simpleBlockAndItemCubeAll(blockModels, PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_REMOTE_PLACER.get());
         simpleBlockAndItemCubeAll(blockModels, PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_DEBUG_STORAGE.get());
-        // workBlockAndItem(blockModels, itemModels, Holder.BLOCK_ADV_PUMP);
+        workBlockAndItem(blockModels, holder.advPumpBlock().get());
         // workBlockAndItem(blockModels, itemModels, Holder.BLOCK_EXP_PUMP);
         simpleBlockAndItemCubeBottomTop(blockModels, holder.moverBlock().get(), blockTexture(holder.moverBlock().get().name.getPath()), blockTexture("mover_top"), blockTexture("mover_bottom"));
         // simpleBlockAndItemCubeBottomTop(blockModels, itemModels, Holder.BLOCK_PUMP, blockTexture("pump_side"), blockTexture("pump_top"), blockTexture("pump_bottom"));
@@ -175,10 +175,10 @@ final class StateAndModelProvider extends ModelProvider {
     void workBlockAndItem(BlockModelGenerators blockModels, QpBlock block) {
         var basePath = block.name.getPath();
         var normalModel = TexturedModel.CUBE_TOP_BOTTOM.create(block, blockModels.modelOutput);
-        var workingModel = TexturedModel.CUBE_TOP_BOTTOM.updateTexture(m -> m.put(TextureSlot.TOP, blockTexture(basePath + "_top_w"))).create(block, blockModels.modelOutput);
+        var workingModel = TexturedModel.CUBE_TOP_BOTTOM.updateTexture(m -> m.put(TextureSlot.TOP, blockTexture(basePath + "_top_w"))).createWithSuffix(block, "_working", blockModels.modelOutput);
 
-        var workingProperty = PropertyDispatch.initial(BlockStateProperties.FACING, QpBlockProperty.WORKING)
-            .generate((direction, working) -> {
+        var workingProperty = PropertyDispatch.initial(QpBlockProperty.WORKING)
+            .generate(working -> {
                 if (working) {
                     return BlockModelGenerators.plainVariant(workingModel);
                 } else {

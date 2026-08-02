@@ -1,2 +1,3 @@
 com.yogpc.qp.machine.quarry.QuarryModuleInventoryHolder
 com.yogpc.qp.machine.advquarry.AdvQuarryModuleInventoryHolder
+com.yogpc.qp.machine.advpump.AdvPumpModuleInventoryHolder

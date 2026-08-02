@@ -26,5 +26,11 @@ class MachineStorageRegister {
                     .orElse(null),
             PlatformAccessFabric.RegisterObjectsFabric.DEBUG_STORAGE_TYPE
         );
+        FluidStorage.SIDED.registerForBlockEntities((blockEntity, context) ->
+                MachineStorageHolder.getHolder(blockEntity)
+                    .map(h -> new MachineStorageFabric.ExtractOnlyFluidStorageImpl<>(h, blockEntity))
+                    .orElse(null),
+            PlatformAccessFabric.RegisterObjectsFabric.ADV_PUMP_ENTITY_TYPE
+        );
     }
 }

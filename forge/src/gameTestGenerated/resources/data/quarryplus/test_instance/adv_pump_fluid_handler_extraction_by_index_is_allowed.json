@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "quarryplus:adv_pump_fluid_handler_extraction_by_index_is_allowed",
+  "max_ticks": 1,
+  "structure": "minecraft:empty"
+}

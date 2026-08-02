@@ -2,6 +2,8 @@ package com.yogpc.qp.fabric.packet;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.fabric.machine.quarry.QuarryConfigSyncMessage;
+import com.yogpc.qp.machine.advpump.AdvPumpOpenModuleMessage;
+import com.yogpc.qp.machine.advpump.AdvPumpSettingsMessage;
 import com.yogpc.qp.machine.advquarry.AdvActionActionMessage;
 import com.yogpc.qp.machine.advquarry.AdvActionSyncMessage;
 import com.yogpc.qp.machine.advquarry.AdvQuarryInitialAskMessage;
@@ -37,6 +39,8 @@ public final class PacketHandler implements PlatformAccess.Packet {
             PayloadTypeRegistry.serverboundPlay().register(AdvActionSyncMessage.TYPE, AdvActionSyncMessage.STREAM_CODEC);
             PayloadTypeRegistry.clientboundPlay().register(AdvQuarryInitialAskMessage.TYPE, AdvQuarryInitialAskMessage.STREAM_CODEC);
             PayloadTypeRegistry.serverboundPlay().register(RemotePlacerMessage.TYPE, RemotePlacerMessage.STREAM_CODEC);
+            PayloadTypeRegistry.serverboundPlay().register(AdvPumpSettingsMessage.TYPE, AdvPumpSettingsMessage.STREAM_CODEC);
+            PayloadTypeRegistry.serverboundPlay().register(AdvPumpOpenModuleMessage.TYPE, AdvPumpOpenModuleMessage.STREAM_CODEC);
         }
 
         public static void initServer() {
@@ -48,6 +52,8 @@ public final class PacketHandler implements PlatformAccess.Packet {
             ServerPlayNetworking.registerGlobalReceiver(AdvActionActionMessage.TYPE, Server::onReceive);
             ServerPlayNetworking.registerGlobalReceiver(AdvActionSyncMessage.TYPE, Server::onReceive);
             ServerPlayNetworking.registerGlobalReceiver(RemotePlacerMessage.TYPE, Server::onReceive);
+            ServerPlayNetworking.registerGlobalReceiver(AdvPumpSettingsMessage.TYPE, Server::onReceive);
+            ServerPlayNetworking.registerGlobalReceiver(AdvPumpOpenModuleMessage.TYPE, Server::onReceive);
         }
 
         private static void onReceive(OnReceiveWithLevel message, ServerPlayNetworking.Context context) {

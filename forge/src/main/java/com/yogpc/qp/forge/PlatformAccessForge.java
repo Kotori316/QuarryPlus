@@ -5,6 +5,7 @@ import com.yogpc.qp.*;
 import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.forge.machine.advpump.AdvPumpEntityForge;
 import com.yogpc.qp.forge.machine.advquarry.AdvQuarryEntityForge;
 import com.yogpc.qp.forge.machine.marker.ChunkMarkerEntityForge;
 import com.yogpc.qp.forge.machine.marker.FlexibleMarkerEntityForge;
@@ -17,6 +18,8 @@ import com.yogpc.qp.forge.packet.PacketHandler;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
 import com.yogpc.qp.machine.QpBlock;
+import com.yogpc.qp.machine.advpump.AdvPumpBlock;
+import com.yogpc.qp.machine.advpump.AdvPumpContainer;
 import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import com.yogpc.qp.machine.advquarry.AdvQuarryContainer;
 import com.yogpc.qp.machine.exp.ExpModuleItem;
@@ -95,6 +98,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         // Machine
         public static final RegistryObject<QuarryBlockForge> BLOCK_QUARRY = registerBlock(QuarryBlockForge.NAME, QuarryBlockForge::new);
         public static final RegistryObject<AdvQuarryBlock> BLOCK_ADV_QUARRY = registerBlock(AdvQuarryBlock.NAME, AdvQuarryBlock::new);
+        public static final RegistryObject<AdvPumpBlock> BLOCK_ADV_PUMP = registerBlock(AdvPumpBlock.NAME, AdvPumpBlock::new);
         public static final RegistryObject<GeneratorBlock> BLOCK_GENERATOR = registerBlock(GeneratorBlock.NAME, GeneratorBlock::new);
         public static final RegistryObject<MoverBlock> BLOCK_MOVER = registerBlock(MoverBlock.NAME, MoverBlock::new);
         public static final RegistryObject<PlacerBlock> BLOCK_PLACER = registerBlock(PlacerBlock.NAME, PlacerBlock::new);
@@ -125,6 +129,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<BlockEntityType<ChunkMarkerEntityForge>> CHUNK_MARKER_ENTITY_TYPE = registerBlockEntity(ChunkMarkerBlock.NAME, BLOCK_CHUNK_MARKER, ChunkMarkerEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final RegistryObject<BlockEntityType<DebugStorageEntity>> DEBUG_STORAGE_TYPE = registerBlockEntity(DebugStorageBlock.NAME, BLOCK_DEBUG_STORAGE, DebugStorageEntity::new, EnableMap.EnableOrNot.ALWAYS_ON);
         public static final RegistryObject<BlockEntityType<AdvQuarryEntityForge>> ADV_QUARRY_ENTITY_TYPE = registerBlockEntity(AdvQuarryBlock.NAME, BLOCK_ADV_QUARRY, AdvQuarryEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
+        public static final RegistryObject<BlockEntityType<AdvPumpEntityForge>> ADV_PUMP_ENTITY_TYPE = registerBlockEntity(AdvPumpBlock.NAME, BLOCK_ADV_PUMP, AdvPumpEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final RegistryObject<BlockEntityType<PlacerEntity>> PLACER_ENTITY_TYPE = registerBlockEntity(PlacerBlock.NAME, BLOCK_PLACER, PlacerEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final RegistryObject<BlockEntityType<RemotePlacerEntity>> REMOTE_PLACER_ENTITY_TYPE = registerBlockEntity(RemotePlacerBlock.NAME, BLOCK_REMOTE_PLACER, RemotePlacerEntity::new, EnableMap.EnableOrNot.CONFIG_OFF);
 
@@ -135,6 +140,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<MenuType<? extends MarkerContainer>> CHUNK_MARKER_MENU_TYPE = registerMenu(MarkerContainer.CHUNK_NAME, MarkerContainer::createChunkMarkerContainer);
         public static final RegistryObject<MenuType<? extends DebugStorageContainer>> DEBUG_STORAGE_MENU_TYPE = registerMenu(DebugStorageContainer.NAME, DebugStorageContainer::new);
         public static final RegistryObject<MenuType<? extends AdvQuarryContainer>> ADV_QUARRY_MENU_TYPE = registerMenu(AdvQuarryContainer.NAME, AdvQuarryContainer::new);
+        public static final RegistryObject<MenuType<? extends AdvPumpContainer>> ADV_PUMP_MENU_TYPE = registerMenu(AdvPumpContainer.NAME, AdvPumpContainer::new);
         public static final RegistryObject<MenuType<? extends FilterModuleContainer>> FILTER_MODULE_MENU_TYPE = MENU_TYPE_REGISTER.register(FilterModuleContainer.NAME, () ->
             IForgeMenuType.create((windowId, inv, data) -> new FilterModuleContainer(windowId, inv, inv.getSelectedItem())));
         public static final RegistryObject<MenuType<? extends PlacerContainer>> PLACER_MENU_TYPE = registerMenu(PlacerContainer.PLACER_GUI_NAME, PlacerContainer::createPlacerContainer);
@@ -236,6 +242,11 @@ public final class PlatformAccessForge implements PlatformAccess {
         }
 
         @Override
+        public Supplier<? extends AdvPumpBlock> advPumpBlock() {
+            return BLOCK_ADV_PUMP;
+        }
+
+        @Override
         public Supplier<? extends SoftBlock> softBlock() {
             return BLOCK_SOFT;
         }
@@ -313,6 +324,11 @@ public final class PlatformAccessForge implements PlatformAccess {
         @Override
         public Supplier<MenuType<? extends AdvQuarryContainer>> advQuarryContainer() {
             return ADV_QUARRY_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<MenuType<? extends AdvPumpContainer>> advPumpContainer() {
+            return ADV_PUMP_MENU_TYPE;
         }
 
         @Override

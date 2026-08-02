@@ -341,8 +341,8 @@ public class MachineStorage {
         var e = Iterators.get(items.object2LongEntrySet().iterator(), i);
         var toExtractAmount = Math.min(amount, e.getLongValue());
         if (execute) {
-            if (amount - toExtractAmount > 0) {
-                items.put(e.getKey(), amount - toExtractAmount);
+            if (e.getLongValue() - toExtractAmount > 0) {
+                items.put(e.getKey(), e.getLongValue() - toExtractAmount);
             } else {
                 items.removeLong(e.getKey());
             }
