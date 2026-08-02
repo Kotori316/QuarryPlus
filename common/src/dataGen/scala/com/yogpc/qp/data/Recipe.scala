@@ -9,7 +9,7 @@ import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.{BuiltInRegistries, Registries}
 import net.minecraft.data.recipes.{RecipeCategory, RecipeOutput, RecipeProvider}
 import net.minecraft.resources.{Identifier, ResourceKey}
-import net.minecraft.world.item.crafting.{Ingredient, Recipe as McRecipe}
+import net.minecraft.world.item.crafting.{Ingredient, McRecipe}
 import net.minecraft.world.item.{Item, Items}
 
 class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeOutput, registries: HolderLookup.Provider) extends RecipeProvider(registries, recipeOutput) {
@@ -199,7 +199,7 @@ class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeO
       .unlockedBy(PlatformAccess.getAccess.registerObjects().quarryBlock().get())
       .save(recipeOutput)
 
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().advPumpBlock().get())
+    shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().advPumpBlock().get())
       .define('i', ip.ironIngot)
       .define('b', Items.BUCKET)
       .define('r', ip.redStoneDust)
