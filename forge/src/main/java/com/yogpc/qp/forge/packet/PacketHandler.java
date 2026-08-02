@@ -59,15 +59,9 @@ public final class PacketHandler implements PlatformAccess.Packet {
             // RemotePlacerMessage
             .addMain(RemotePlacerMessage.class, RemotePlacerMessage.STREAM_CODEC, PacketHandler::onReceive)
             // AdvPumpSettingsMessage
-            .messageBuilder(AdvPumpSettingsMessage.class)
-            .codec(AdvPumpSettingsMessage.STREAM_CODEC)
-            .consumerMainThread(PacketHandler::onReceive)
-            .add()
+            .addMain(AdvPumpSettingsMessage.class, AdvPumpSettingsMessage.STREAM_CODEC, PacketHandler::onReceive)
             // AdvPumpOpenModuleMessage
-            .messageBuilder(AdvPumpOpenModuleMessage.class)
-            .codec(AdvPumpOpenModuleMessage.STREAM_CODEC)
-            .consumerMainThread(PacketHandler::onReceive)
-            .add()
+            .addMain(AdvPumpOpenModuleMessage.class, AdvPumpOpenModuleMessage.STREAM_CODEC, PacketHandler::onReceive)
             // END
             .build()
         ;

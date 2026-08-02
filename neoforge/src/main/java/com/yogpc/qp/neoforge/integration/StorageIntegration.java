@@ -16,7 +16,7 @@ public final class StorageIntegration {
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, PlatformAccessNeoForge.RegisterObjectsNeoForge.DEBUG_STORAGE_TYPE.get(), (t, ignored) ->
             MachineStorageHolder.getHolder(t).map(h -> MachineStorageNeoForge.createFluidHandler(h, t)).orElse(null)
         );
-        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, PlatformAccessNeoForge.RegisterObjectsNeoForge.ADV_PUMP_ENTITY_TYPE.get(), (t, ignored) ->
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, PlatformAccessNeoForge.RegisterObjectsNeoForge.ADV_PUMP_ENTITY_TYPE.get(), (t, ignored) ->
             MachineStorageHolder.getHolder(t).map(h -> new AdvPumpFluidHandler<>(h, t)).orElse(null)
         );
     }

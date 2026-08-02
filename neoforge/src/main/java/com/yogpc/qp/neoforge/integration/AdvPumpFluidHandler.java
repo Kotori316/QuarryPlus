@@ -1,54 +1,53 @@
 package com.yogpc.qp.neoforge.integration;
 
-import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.MachineStorageHolder;
-import com.yogpc.qp.neoforge.TransferNeoForge;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import org.jetbrains.annotations.NotNull;
+import com.yogpc.qp.neoforge.machine.MachineStorageNeoForge;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * Exposes a machine's {@link MachineStorage} for external extraction only; insertion is always refused.
+ * Exposes a machine's {@link com.yogpc.qp.machine.MachineStorage} for external extraction only; insertion is always refused.
  */
-public record AdvPumpFluidHandler<T>(MachineStorageHolder<T> holder, T object) implements IFluidHandler {
-    private MachineStorage storage() {
-        return holder.getMachineStorage(object);
+public final class AdvPumpFluidHandler<T> implements ResourceHandler<FluidResource> {
+    private final ResourceHandler<FluidResource> delegate;
+
+    public AdvPumpFluidHandler(MachineStorageHolder<T> holder, T object) {
+        this.delegate = MachineStorageNeoForge.createFluidHandler(holder, object);
     }
 
     @Override
-    public int getTanks() {
-        return storage().fluidTanks();
+    public int size() {
+        return delegate.size();
     }
 
     @Override
-    public @NotNull FluidStack getFluidInTank(int tank) {
-        return TransferNeoForge.toNeoForge(storage().getFluidByIndex(tank));
+    public FluidResource getResource(int index) {
+        return delegate.getResource(index);
     }
 
     @Override
-    public int getTankCapacity(int tank) {
-        return Integer.MAX_VALUE;
+    public long getAmountAsLong(int index) {
+        return delegate.getAmountAsLong(index);
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-        return false;
+    public long getCapacityAsLong(int index, FluidResource resource) {
+        return delegate.getCapacityAsLong(index, resource);
     }
 
     @Override
-    public int fill(FluidStack resource, FluidAction action) {
+    public boolean isValid(int index, FluidResource resource) {
+        return delegate.isValid(index, resource);
+    }
+
+    @Override
+    public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
         return 0;
     }
 
     @Override
-    public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
-        var drained = storage().drainFluid(TransferNeoForge.toCommon(resource), action.execute());
-        return TransferNeoForge.toNeoForge(drained);
-    }
-
-    @Override
-    public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
-        var drained = storage().drainFluidByIndex(0, TransferNeoForge.toCommonAmount(maxDrain), action.execute());
-        return TransferNeoForge.toNeoForge(drained);
+    public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
+        return delegate.extract(index, resource, amount, transaction);
     }
 }
