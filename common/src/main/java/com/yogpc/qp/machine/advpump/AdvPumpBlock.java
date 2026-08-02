@@ -69,7 +69,7 @@ public class AdvPumpBlock extends QpEntityBlock {
                 if (pump.enabled) {
                     PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(pump, AdvPumpContainer::new));
                 } else {
-                    player.displayClientMessage(Component.translatable("quarryplus.chat.disable_message", getName()), true);
+                    player.sendOverlayMessage(Component.translatable("quarryplus.chat.disable_message", getName()));
                 }
             }
             return InteractionResult.SUCCESS_SERVER;

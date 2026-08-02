@@ -89,7 +89,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final MenuType<AdvQuarryContainer> ADV_QUARRY_MENU = new ExtendedMenuType<>(AdvQuarryContainer::new, BlockPos.STREAM_CODEC);
         public static final AdvPumpBlock ADV_PUMP_BLOCK = new AdvPumpBlock();
         public static final BlockEntityType<AdvPumpEntityFabric> ADV_PUMP_ENTITY_TYPE = FabricBlockEntityTypeBuilder.create(AdvPumpEntityFabric::new, ADV_PUMP_BLOCK).build();
-        public static final MenuType<AdvPumpContainer> ADV_PUMP_MENU = new ExtendedScreenHandlerType<>(AdvPumpContainer::new, BlockPos.STREAM_CODEC);
+        public static final MenuType<AdvPumpContainer> ADV_PUMP_MENU = new ExtendedMenuType<>(AdvPumpContainer::new, BlockPos.STREAM_CODEC);
         public static final FrameBlock FRAME_BLOCK = new FrameBlock();
         public static final SoftBlock SOFT_BLOCK = new SoftBlock();
         public static final GeneratorBlock GENERATOR_BLOCK = new GeneratorBlock();

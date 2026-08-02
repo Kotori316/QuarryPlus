@@ -2,21 +2,11 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "b": {
-      "item": "minecraft:bucket"
-    },
-    "d": {
-      "tag": "c:gems/diamond"
-    },
-    "i": {
-      "tag": "c:ingots/iron"
-    },
-    "m": {
-      "tag": "quarryplus:markers"
-    },
-    "r": {
-      "tag": "c:dusts/redstone"
-    }
+    "b": "minecraft:bucket",
+    "d": "#c:gems/diamond",
+    "i": "#c:ingots/iron",
+    "m": "#quarryplus:markers",
+    "r": "#c:dusts/redstone"
   },
   "pattern": [
     "ibi",
@@ -24,7 +14,6 @@
     "imi"
   ],
   "result": {
-    "count": 1,
     "id": "quarryplus:adv_pump"
   }
 }

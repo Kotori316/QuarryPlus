@@ -4,7 +4,7 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.misc.IndexedButton;
 import com.yogpc.qp.machine.misc.SmallCheckBox;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -19,21 +19,14 @@ public class AdvPumpScreen extends AbstractContainerScreen<AdvPumpContainer> {
     private SmallCheckBox searchDownwardCheckBox;
 
     public AdvPumpScreen(AdvPumpContainer c, Inventory inventory, Component component) {
-        super(c, inventory, component);
-        this.imageWidth = c.imageWidth;
-        this.imageHeight = c.imageHeight;
+        super(c, inventory, component, c.imageWidth, c.imageHeight);
         this.inventoryLabelY = this.imageHeight - 96 + 2;
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.render(graphics, mouseX, mouseY, delta);
-        this.renderTooltip(graphics, mouseX, mouseY);
-    }
-
-    @Override
-    protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
-        graphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
+    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
     }
 
     @Override
