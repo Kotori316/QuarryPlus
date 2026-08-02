@@ -9,7 +9,7 @@ import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.{BuiltInRegistries, Registries}
 import net.minecraft.data.recipes.{RecipeCategory, RecipeOutput, RecipeProvider}
 import net.minecraft.resources.{Identifier, ResourceKey}
-import net.minecraft.world.item.crafting.{Ingredient, McRecipe}
+import net.minecraft.world.item.crafting.{Ingredient, Recipe as McRecipe}
 import net.minecraft.world.item.{Item, Items}
 
 class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeOutput, registries: HolderLookup.Provider) extends RecipeProvider(registries, recipeOutput) {
