@@ -177,6 +177,11 @@ public final class MachineStorageFabric extends MachineStorage {
         }
 
         @Override
+        public boolean supportsInsertion() {
+            return false;
+        }
+
+        @Override
         public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
             return 0;
         }
