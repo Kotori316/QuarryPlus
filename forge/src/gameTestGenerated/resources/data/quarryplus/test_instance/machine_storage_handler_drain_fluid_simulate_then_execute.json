@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "quarryplus:machine_storage_handler_drain_fluid_simulate_then_execute",
+  "max_ticks": 1,
+  "structure": "minecraft:empty"
+}

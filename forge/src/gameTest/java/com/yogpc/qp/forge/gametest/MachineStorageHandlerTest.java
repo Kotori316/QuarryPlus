@@ -6,7 +6,6 @@ import com.yogpc.qp.forge.integration.MachineStorageHandler;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.MachineStorageHolder;
 import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -49,7 +48,7 @@ public final class MachineStorageHandlerTest implements GatherGameTest {
         helper.succeed();
     }
 
-    @GameTest(template = STRUCTURE)
+    @GameTest()
     public void extractItemSimulateThenExecute(GameTestHelper helper) {
         var storage = MachineStorage.of();
         storage.addItem(new ItemStack(Items.DIAMOND, 64));
@@ -67,7 +66,7 @@ public final class MachineStorageHandlerTest implements GatherGameTest {
         helper.succeed();
     }
 
-    @GameTest(template = STRUCTURE)
+    @GameTest()
     public void drainFluidSimulateThenExecute(GameTestHelper helper) {
         var storage = MachineStorage.of();
         storage.addBucketFluid(new ItemStack(Items.WATER_BUCKET));
@@ -91,7 +90,9 @@ public final class MachineStorageHandlerTest implements GatherGameTest {
         var prefix = "machine_storage_handler";
         return List.of(
             new GameTestProperty(Identifier.fromNamespaceAndPath(QuarryPlus.modID, prefix + "_load_handler"), testData, this::loadHandler),
-            new GameTestProperty(Identifier.fromNamespaceAndPath(QuarryPlus.modID, prefix + "_fluid_content"), testData, this::fluidContent)
+            new GameTestProperty(Identifier.fromNamespaceAndPath(QuarryPlus.modID, prefix + "_fluid_content"), testData, this::fluidContent),
+            new GameTestProperty(Identifier.fromNamespaceAndPath(QuarryPlus.modID, prefix + "_extract_item_simulate_then_execute"), testData, this::extractItemSimulateThenExecute),
+            new GameTestProperty(Identifier.fromNamespaceAndPath(QuarryPlus.modID, prefix + "_drain_fluid_simulate_then_execute"), testData, this::drainFluidSimulateThenExecute)
         );
     }
 }
