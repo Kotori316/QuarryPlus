@@ -1,6 +1,6 @@
 [versions]
 minecraft = "1.21.11"
-forge = "1.21.11-61.1.5"
+forge = "1.21.11-61.1.14"
 eventbus_forge = "7.0.5"
 fabric_api = "0.141.3+1.21.11"
 fabric_loader = "0.19.2"
