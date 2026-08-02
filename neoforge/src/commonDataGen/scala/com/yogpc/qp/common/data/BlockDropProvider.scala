@@ -29,6 +29,7 @@ class BlockDropProvider(registries: HolderLookup.Provider) extends BlockLootSubP
     Seq(
       holder.quarryBlock().get(),
       holder.advQuarryBlock().get(),
+      holder.advPumpBlock().get(),
     ).foreach(b => add(b, createSingleItemTable(b).apply(MachineLootFunction.builder())))
   }
 

@@ -49,7 +49,7 @@ final class StateAndModelProvider extends ModelProvider {
         // simpleBlockAndItemCubeAll(blockModels, itemModels,Holder.BLOCK_CONTROLLER);
         simpleBlockAndItemCubeAll(blockModels, PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_REMOTE_PLACER.get());
         simpleBlockAndItemCubeAll(blockModels, PlatformAccessNeoForge.RegisterObjectsNeoForge.BLOCK_DEBUG_STORAGE.get());
-        // workBlockAndItem(blockModels, itemModels, Holder.BLOCK_ADV_PUMP);
+        workBlockAndItem(blockModels, itemModels, Holder.BLOCK_ADV_PUMP);
         // workBlockAndItem(blockModels, itemModels, Holder.BLOCK_EXP_PUMP);
         simpleBlockAndItemCubeBottomTop(blockModels, holder.moverBlock().get(), blockTexture(holder.moverBlock().get().name.getPath()), blockTexture("mover_top"), blockTexture("mover_bottom"));
         // simpleBlockAndItemCubeBottomTop(blockModels, itemModels, Holder.BLOCK_PUMP, blockTexture("pump_side"), blockTexture("pump_top"), blockTexture("pump_bottom"));

@@ -12,45 +12,44 @@ loom {
 
     runs {
         configureEach {
-            property("mixin.debug.export", "true")
+            systemProperties.put("mixin.debug.export", "true")
         }
         getByName("client") {
-            configName = "Client"
-            runDir = "Minecraft"
-            programArgs("--username", "Kotori")
-            property("fabric-tag-conventions-v2.missingTagTranslationWarning", "VERBOSE")
-            source(sourceSets["gameTest"])
+            displayName = "Client"
+            runDirectory = project.file("Minecraft")
+            programArguments.addAll("--username", "Kotori")
+            systemProperties.put("fabric-tag-conventions-v2.missingTagTranslationWarning", "VERBOSE")
+            sourceSet = "gameTest"
         }
         getByName("server") {
-            configName = "Server"
-            runDir = "run-server"
+            displayName = "Server"
+            runDirectory = project.file("run-server")
         }
         create("data") {
             client()
-            configName = "Data"
-            runDir = "run-server"
-            property("fabric-api.datagen")
-            property("fabric-api.datagen.output-dir", "${file("src/generated/resources")}")
-            property("fabric-api.datagen.strict-validation")
-
-            isIdeConfigGenerated = true
-            source(sourceSets["dataGen"])
+            displayName = "Data"
+            runDirectory = project.file("run-server")
+            systemProperties.put("fabric-api.datagen", "")
+            systemProperties.put("fabric-api.datagen.output-dir", "${file("src/generated/resources")}")
+            systemProperties.put("fabric-api.datagen.strict-validation", "")
+            generateRunConfig = true
+            sourceSet = "dataGen"
         }
         create("gameTestServer") {
-            configName = "GameTest"
-            runDir = "game-test"
+            displayName = "GameTest"
+            runDirectory = project.file("game-test")
             server()
-            vmArg("-ea")
-            property("fabric-api.gametest")
-            property(
+            jvmArguments.add("-ea")
+            systemProperties.put("fabric-api.gametest", "")
+            systemProperties.put(
                 "fabric-api.gametest.report-file",
                 "${project.layout.buildDirectory.dir("test-results/test/game_test.xml").get()}"
             )
-            property(
+            systemProperties.put(
                 "fabric-tag-conventions-v2.missingTagTranslationWarning",
                 "SILENCED",
             )
-            source(sourceSets["gameTest"])
+            sourceSet = "gameTest"
         }
     }
 }

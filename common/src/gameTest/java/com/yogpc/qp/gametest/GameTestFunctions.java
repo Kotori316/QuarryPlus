@@ -4,6 +4,7 @@ import com.google.common.base.CaseFormat;
 import com.kotori316.testutil.common.TestFunction;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.DebugStorageTest;
+import com.yogpc.qp.machine.advpump.PlaceAdvPumpTest;
 import com.yogpc.qp.machine.advquarry.PlaceAdvQuarryTest;
 import com.yogpc.qp.machine.mover.PlaceMoverTest;
 import com.yogpc.qp.machine.placer.PlacerTest;
@@ -49,7 +50,8 @@ public final class GameTestFunctions {
             PlaceQuarryTest.class,
             PlaceMoverTest.class,
             DebugStorageTest.class,
-            PlaceAdvQuarryTest.class
+            PlaceAdvQuarryTest.class,
+            PlaceAdvPumpTest.class
         );
         var fromClass = getTestFunctionStream(batchName, structureName, classes, 100);
         return Stream.of(

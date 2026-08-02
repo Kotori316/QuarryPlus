@@ -1,6 +1,7 @@
 package com.yogpc.qp.forge;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.advpump.AdvPumpScreen;
 import com.yogpc.qp.machine.advquarry.AdvQuarryScreen;
 import com.yogpc.qp.machine.marker.ChunkMarkerScreen;
 import com.yogpc.qp.machine.marker.FlexibleMarkerScreen;
@@ -40,6 +41,7 @@ public final class QuarryPlusClientForge {
         MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.CHUNK_MARKER_MENU_TYPE.get(), ChunkMarkerScreen::new);
         MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.DEBUG_STORAGE_MENU_TYPE.get(), DebugStorageScreen::new);
         MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.ADV_QUARRY_MENU_TYPE.get(), AdvQuarryScreen::new);
+        MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.ADV_PUMP_MENU_TYPE.get(), AdvPumpScreen::new);
         MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.FILTER_MODULE_MENU_TYPE.get(), FilterModuleScreen::new);
         MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.PLACER_MENU_TYPE.get(), PlacerScreen::new);
         MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.REMOTE_PLACER_MENU_TYPE.get(), RemotePlacerScreen::new);

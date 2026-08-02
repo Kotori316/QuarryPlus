@@ -92,7 +92,8 @@ public final class MoverEntity extends QpEntity implements ClientSync {
                     yield stack.has(DataComponents.TOOL) && stack.getMaxDamage() >= ToolMaterial.DIAMOND.durability();
                 }
                 case 1 -> stack.is(PlatformAccess.getAccess().registerObjects().quarryBlock().get().blockItem)
-                    || stack.is(PlatformAccess.getAccess().registerObjects().advQuarryBlock().get().blockItem);
+                    || stack.is(PlatformAccess.getAccess().registerObjects().advQuarryBlock().get().blockItem)
+                    || stack.is(PlatformAccess.getAccess().registerObjects().advPumpBlock().get().blockItem);
                 default -> false;
             };
         }
