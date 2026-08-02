@@ -187,6 +187,7 @@ public abstract class AdvPumpEntity extends PowerEntity implements ClientSync {
         return (long) (powerMap().fluidCapacity() * (efficiency + 1)) * MachineStorage.ONE_BUCKET;
     }
 
+    @VisibleForTesting
     int range(Level level) {
         var lookup = level.registryAccess().asGetterLookup();
         var fortune = enchantmentCache.getLevel(getEnchantments(), Enchantments.FORTUNE, lookup);

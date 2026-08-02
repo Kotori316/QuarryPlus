@@ -2,6 +2,7 @@ package com.yogpc.qp.machine.advpump;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.gametest.GameTestFunctions;
+import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.PowerEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -48,8 +49,8 @@ public final class PlaceAdvPumpTest {
 
         AdvPumpEntity pump = helper.getBlockEntity(base);
         assertFalse(pump.getEnchantments().isEmpty());
-        // maxEnergy scales as base * 2^efficiency (efficiency=2 -> x4), unlike AdvQuarry's linear (1+efficiency).
-        assertEquals(4 * PowerEntity.ONE_FE * PlatformAccess.config().powerMap().advPump().maxEnergy(), pump.getMaxEnergy());
+        assertEquals(4 * PowerEntity.ONE_FE * PlatformAccess.config().powerMap().advPump().maxEnergy(), pump.getMaxEnergy(),
+            "maxEnergy scales as base * 2^efficiency (efficiency=2 -> x4), unlike AdvQuarry's linear (1+efficiency)");
         helper.succeed();
     }
 
@@ -61,8 +62,8 @@ public final class PlaceAdvPumpTest {
         helper.placeAt(player, stack, base.below(), Direction.UP);
 
         AdvPumpEntity pump = helper.getBlockEntity(base);
-        // rangeLevel = max(fortune, 0) = 2 -> range = base * 3
-        assertEquals((int) (PlatformAccess.config().powerMap().advPump().range() * 3), pump.range(helper.getLevel()));
+        assertEquals((int) (PlatformAccess.config().powerMap().advPump().range() * 3), pump.range(helper.getLevel()),
+            "rangeLevel = max(fortune, 0) = 2 -> range = base * 3");
         helper.succeed();
     }
 
@@ -74,8 +75,8 @@ public final class PlaceAdvPumpTest {
         helper.placeAt(player, stack, base.below(), Direction.UP);
 
         AdvPumpEntity pump = helper.getBlockEntity(base);
-        // Silk Touch always maps to rangeLevel 3, regardless of level, and doesn't stack with Fortune.
-        assertEquals((int) (PlatformAccess.config().powerMap().advPump().range() * 4), pump.range(helper.getLevel()));
+        assertEquals((int) (PlatformAccess.config().powerMap().advPump().range() * 4), pump.range(helper.getLevel()),
+            "Silk Touch always maps to rangeLevel 3, regardless of level, and doesn't stack with Fortune");
         helper.succeed();
     }
 
@@ -85,13 +86,56 @@ public final class PlaceAdvPumpTest {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().advPumpBlock().get());
 
         var absolutePos = helper.absolutePos(base);
+        var absoluteWaterPos = helper.absolutePos(waterRelative);
         AdvPumpEntity pump = helper.getBlockEntity(base);
         pump.addEnergy(PowerEntity.ONE_FE * 1_000_000L, false);
 
         pump.drainOnce(helper.getLevel(), absolutePos, helper.getLevel().getBlockState(absolutePos));
 
-        assertTrue(helper.getLevel().getFluidState(helper.absolutePos(waterRelative)).isEmpty());
-        assertTrue(pump.storage.getFluidCount(Fluids.WATER) > 0);
+        assertTrue(helper.getLevel().getFluidState(absoluteWaterPos).isEmpty());
+        assertEquals(MachineStorage.ONE_BUCKET, pump.storage.getFluidCount(Fluids.WATER),
+            "One source block drained -> exactly one bucket's worth stored, not more, not less");
+        assertTrue(helper.getLevel().getBlockState(absoluteWaterPos).is(PlatformAccess.getAccess().registerObjects().softBlock().get()),
+            "The drained source is replaced with the SoftBlock placeholder, not left as air");
+        helper.succeed();
+    }
+
+    public static void drainWaterSourceWithDeleteFluid(GameTestHelper helper) {
+        var waterRelative = base.below();
+        helper.setBlock(waterRelative, Blocks.WATER);
+        helper.setBlock(base, PlatformAccess.getAccess().registerObjects().advPumpBlock().get());
+
+        var absolutePos = helper.absolutePos(base);
+        var absoluteWaterPos = helper.absolutePos(waterRelative);
+        AdvPumpEntity pump = helper.getBlockEntity(base);
+        pump.addEnergy(PowerEntity.ONE_FE * 1_000_000L, false);
+        pump.deleteFluid = true;
+
+        pump.drainOnce(helper.getLevel(), absolutePos, helper.getLevel().getBlockState(absolutePos));
+
+        assertTrue(helper.getLevel().getFluidState(absoluteWaterPos).isEmpty());
+        assertEquals(0, pump.storage.getFluidCount(Fluids.WATER),
+            "With deleteFluid on, the water disappears from the world but is discarded rather than stored");
+        helper.succeed();
+    }
+
+    public static void drainLavaSource(GameTestHelper helper) {
+        var lavaRelative = base.below();
+        helper.setBlock(lavaRelative, Blocks.LAVA);
+        helper.setBlock(base, PlatformAccess.getAccess().registerObjects().advPumpBlock().get());
+
+        var absolutePos = helper.absolutePos(base);
+        var absoluteLavaPos = helper.absolutePos(lavaRelative);
+        AdvPumpEntity pump = helper.getBlockEntity(base);
+        pump.addEnergy(PowerEntity.ONE_FE * 1_000_000L, false);
+
+        pump.drainOnce(helper.getLevel(), absolutePos, helper.getLevel().getBlockState(absolutePos));
+
+        assertTrue(helper.getLevel().getFluidState(absoluteLavaPos).isEmpty());
+        assertEquals(MachineStorage.ONE_BUCKET, pump.storage.getFluidCount(Fluids.LAVA));
+        assertTrue(helper.getLevel().getBlockState(absoluteLavaPos).isAir(),
+            "Unlike water, a drained lava source is left as plain air, not the SoftBlock placeholder");
+        assertFalse(helper.getLevel().getBlockState(absoluteLavaPos).is(PlatformAccess.getAccess().registerObjects().softBlock().get()));
         helper.succeed();
     }
 }
