@@ -28,12 +28,14 @@ public final class AdvPumpSettingsMessage implements CustomPacketPayload, OnRece
     private final ResourceKey<Level> dim;
     private final boolean placeFrame;
     private final boolean deleteFluid;
+    private final boolean searchDownward;
 
-    AdvPumpSettingsMessage(BlockPos pos, ResourceKey<Level> dim, boolean placeFrame, boolean deleteFluid) {
+    AdvPumpSettingsMessage(BlockPos pos, ResourceKey<Level> dim, boolean placeFrame, boolean deleteFluid, boolean searchDownward) {
         this.pos = pos;
         this.dim = dim;
         this.placeFrame = placeFrame;
         this.deleteFluid = deleteFluid;
+        this.searchDownward = searchDownward;
     }
 
     AdvPumpSettingsMessage(AdvPumpEntity entity) {
@@ -41,7 +43,8 @@ public final class AdvPumpSettingsMessage implements CustomPacketPayload, OnRece
             entity.getBlockPos(),
             Objects.requireNonNull(entity.getLevel()).dimension(),
             entity.placeFrame,
-            entity.deleteFluid
+            entity.deleteFluid,
+            entity.searchDownward
         );
     }
 
@@ -50,12 +53,14 @@ public final class AdvPumpSettingsMessage implements CustomPacketPayload, OnRece
         this.dim = buffer.readResourceKey(Registries.DIMENSION);
         this.placeFrame = buffer.readBoolean();
         this.deleteFluid = buffer.readBoolean();
+        this.searchDownward = buffer.readBoolean();
     }
 
     void write(FriendlyByteBuf buffer) {
         buffer.writeBlockPos(pos).writeResourceKey(dim);
         buffer.writeBoolean(placeFrame);
         buffer.writeBoolean(deleteFluid);
+        buffer.writeBoolean(searchDownward);
     }
 
     @Override
@@ -66,6 +71,7 @@ public final class AdvPumpSettingsMessage implements CustomPacketPayload, OnRece
         if (level.getBlockEntity(pos) instanceof AdvPumpEntity pump && pump.enabled) {
             pump.placeFrame = this.placeFrame;
             pump.deleteFluid = this.deleteFluid;
+            pump.searchDownward = this.searchDownward;
         }
     }
 
@@ -79,13 +85,13 @@ public final class AdvPumpSettingsMessage implements CustomPacketPayload, OnRece
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof AdvPumpSettingsMessage that)) return false;
-        return placeFrame == that.placeFrame && deleteFluid == that.deleteFluid
+        return placeFrame == that.placeFrame && deleteFluid == that.deleteFluid && searchDownward == that.searchDownward
             && Objects.equals(pos, that.pos) && Objects.equals(dim, that.dim);
     }
 
     @VisibleForTesting
     @Override
     public int hashCode() {
-        return Objects.hash(pos, dim, placeFrame, deleteFluid);
+        return Objects.hash(pos, dim, placeFrame, deleteFluid, searchDownward);
     }
 }

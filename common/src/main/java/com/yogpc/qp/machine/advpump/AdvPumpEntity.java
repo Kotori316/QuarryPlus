@@ -48,6 +48,7 @@ public abstract class AdvPumpEntity extends PowerEntity implements ClientSync {
     boolean finished = false;
     public boolean deleteFluid = false;
     public boolean placeFrame = true;
+    public boolean searchDownward = false;
     @NotNull
     final EnchantmentCache enchantmentCache = new EnchantmentCache();
     @NotNull
@@ -84,7 +85,7 @@ public abstract class AdvPumpEntity extends PowerEntity implements ClientSync {
         if (target == null) {
             var initPos = pos.atY(currentY);
             var range = range(level);
-            target = AdvPumpTarget.getTarget(level, initPos, AdvPumpTarget.inRangePredicate(initPos, range), this::isReplaceBlock, AdvPumpTarget.areaSizeHint(range));
+            target = AdvPumpTarget.getTarget(level, initPos, AdvPumpTarget.inRangePredicate(initPos, range), this::isReplaceBlock, AdvPumpTarget.areaSizeHint(range), searchDownward);
             level.setBlock(pos, state.setValue(QpBlockProperty.WORKING, true), Block.UPDATE_ALL);
         }
         if (target.hasNext()) {
@@ -113,7 +114,7 @@ public abstract class AdvPumpEntity extends PowerEntity implements ClientSync {
                     removeLeftoverPlaceholder(level, pos, currentY);
                 } else {
                     var range = range(level);
-                    target = AdvPumpTarget.getTarget(level, nextPos, AdvPumpTarget.inRangePredicate(nextPos, range), this::isReplaceBlock, AdvPumpTarget.areaSizeHint(range));
+                    target = AdvPumpTarget.getTarget(level, nextPos, AdvPumpTarget.inRangePredicate(nextPos, range), this::isReplaceBlock, AdvPumpTarget.areaSizeHint(range), searchDownward);
                 }
             }
         }
@@ -227,12 +228,14 @@ public abstract class AdvPumpEntity extends PowerEntity implements ClientSync {
     public void fromClientTag(CompoundTag tag, HolderLookup.Provider registries) {
         placeFrame = tag.getBoolean("placeFrame");
         deleteFluid = tag.getBoolean("deleteFluid");
+        searchDownward = tag.getBoolean("searchDownward");
     }
 
     @Override
     public CompoundTag toClientTag(CompoundTag tag, HolderLookup.Provider registries) {
         tag.putBoolean("placeFrame", placeFrame);
         tag.putBoolean("deleteFluid", deleteFluid);
+        tag.putBoolean("searchDownward", searchDownward);
         return tag;
     }
 
@@ -275,6 +278,7 @@ public abstract class AdvPumpEntity extends PowerEntity implements ClientSync {
                 detail(ChatFormatting.GREEN, "Finished", String.valueOf(finished)),
                 detail(ChatFormatting.GREEN, "DeleteFluid", String.valueOf(deleteFluid)),
                 detail(ChatFormatting.GREEN, "PlaceFrame", String.valueOf(placeFrame)),
+                detail(ChatFormatting.GREEN, "SearchDownward", String.valueOf(searchDownward)),
                 detail(ChatFormatting.GREEN, "Storage", String.valueOf(storage)),
                 detail(ChatFormatting.GREEN, "Modules", String.valueOf(modules)),
                 detail(ChatFormatting.GREEN, "Enchantment", String.valueOf(enchantmentCache))

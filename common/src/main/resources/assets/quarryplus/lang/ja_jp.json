@@ -132,6 +132,7 @@
   "quarryplus.gui.adv_pump.delete": "削除",
   "quarryplus.gui.adv_pump.frame": "フレーム",
   "quarryplus.gui.adv_pump.modules": "モジュール",
+  "quarryplus.gui.adv_pump.search_downward": "下方向の探索",
   "quarryplus.gui.adv_quarry.area_frame": "エリアフレーム",
   "quarryplus.gui.adv_quarry.chunk_by_chunk": "チャンク毎",
   "quarryplus.gui.adv_quarry.experimental": "Experimental",

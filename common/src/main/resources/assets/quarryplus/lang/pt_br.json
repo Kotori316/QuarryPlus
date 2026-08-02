@@ -132,6 +132,7 @@
   "quarryplus.gui.adv_pump.delete": "Delete",
   "quarryplus.gui.adv_pump.frame": "Frame",
   "quarryplus.gui.adv_pump.modules": "Modules",
+  "quarryplus.gui.adv_pump.search_downward": "Search Downward",
   "quarryplus.gui.adv_quarry.area_frame": "Area Frame",
   "quarryplus.gui.adv_quarry.chunk_by_chunk": "Chunk by Chunk",
   "quarryplus.gui.adv_quarry.experimental": "Experimental",

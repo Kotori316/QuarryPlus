@@ -132,6 +132,7 @@
   "quarryplus.gui.adv_pump.delete": "Удалить",
   "quarryplus.gui.adv_pump.frame": "Рамка",
   "quarryplus.gui.adv_pump.modules": "Модули",
+  "quarryplus.gui.adv_pump.search_downward": "Поиск вниз",
   "quarryplus.gui.adv_quarry.area_frame": "Зона области",
   "quarryplus.gui.adv_quarry.chunk_by_chunk": "По чанкам",
   "quarryplus.gui.adv_quarry.experimental": "Экспериментальный",

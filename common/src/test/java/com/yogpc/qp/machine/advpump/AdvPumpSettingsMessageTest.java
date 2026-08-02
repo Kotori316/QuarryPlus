@@ -17,7 +17,7 @@ class AdvPumpSettingsMessageTest {
 
     @Test
     void createInstance() {
-        assertDoesNotThrow(() -> new AdvPumpSettingsMessage(BlockPos.ZERO, Level.OVERWORLD, true, false));
+        assertDoesNotThrow(() -> new AdvPumpSettingsMessage(BlockPos.ZERO, Level.OVERWORLD, true, false, false));
     }
 
     @ParameterizedTest
@@ -32,10 +32,10 @@ class AdvPumpSettingsMessageTest {
 
     static Stream<AdvPumpSettingsMessage> messages() {
         return Stream.of(
-            new AdvPumpSettingsMessage(BlockPos.ZERO, Level.OVERWORLD, true, false),
-            new AdvPumpSettingsMessage(BlockPos.ZERO, Level.OVERWORLD, false, true),
-            new AdvPumpSettingsMessage(new BlockPos(1, 2, 3), Level.NETHER, false, false),
-            new AdvPumpSettingsMessage(new BlockPos(-4, 64, 100), Level.END, true, true)
+            new AdvPumpSettingsMessage(BlockPos.ZERO, Level.OVERWORLD, true, false, false),
+            new AdvPumpSettingsMessage(BlockPos.ZERO, Level.OVERWORLD, false, true, false),
+            new AdvPumpSettingsMessage(new BlockPos(1, 2, 3), Level.NETHER, false, false, true),
+            new AdvPumpSettingsMessage(new BlockPos(-4, 64, 100), Level.END, true, true, true)
         );
     }
 }

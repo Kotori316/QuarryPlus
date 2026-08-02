@@ -15,6 +15,7 @@ public class AdvPumpScreen extends AbstractContainerScreen<AdvPumpContainer> {
     private static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/adv_pump.png");
     private SmallCheckBox placeFrameCheckBox;
     private SmallCheckBox deleteFluidCheckBox;
+    private SmallCheckBox searchDownwardCheckBox;
 
     public AdvPumpScreen(AdvPumpContainer c, Inventory inventory, Component component) {
         super(c, inventory, component);
@@ -43,17 +44,19 @@ public class AdvPumpScreen extends AbstractContainerScreen<AdvPumpContainer> {
         deleteFluidCheckBox = new SmallCheckBox(leftPos + 8, topPos + 31, 140, 10, 10, 10,
             Component.translatable("quarryplus.gui.adv_pump.delete"), getMenu().pump.deleteFluid, this::checkBoxOnPress);
         this.addRenderableWidget(deleteFluidCheckBox);
+        searchDownwardCheckBox = new SmallCheckBox(leftPos + 8, topPos + 42, 140, 10, 10, 10,
+            Component.translatable("quarryplus.gui.adv_pump.search_downward"), getMenu().pump.searchDownward, this::checkBoxOnPress);
+        this.addRenderableWidget(searchDownwardCheckBox);
         if (!PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
-            this.addRenderableWidget(new IndexedButton(0, leftPos + 8, topPos + 45, 50, 12, Component.translatable("quarryplus.gui.adv_pump.modules"), this::openModuleOnPress));
+            this.addRenderableWidget(new IndexedButton(0, leftPos + 8, topPos + 56, 50, 12, Component.translatable("quarryplus.gui.adv_pump.modules"), this::openModuleOnPress));
         }
     }
 
     private void checkBoxOnPress(Button b) {
         var pump = getMenu().pump;
-        var placeFrame = placeFrameCheckBox.isSelected();
-        var deleteFluid = deleteFluidCheckBox.isSelected();
-        pump.placeFrame = placeFrame;
-        pump.deleteFluid = deleteFluid;
+        pump.placeFrame = placeFrameCheckBox.isSelected();
+        pump.deleteFluid = deleteFluidCheckBox.isSelected();
+        pump.searchDownward = searchDownwardCheckBox.isSelected();
         PlatformAccess.getAccess().packetHandler().sendToServer(new AdvPumpSettingsMessage(pump));
     }
 

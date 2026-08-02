@@ -63,18 +63,26 @@ final class AdvPumpTarget implements Iterator<BlockPos> {
         }
     }
 
-    static AdvPumpTarget getTarget(Level level, BlockPos initPos, Predicate<BlockPos> inRange, Predicate<BlockState> isReplaceBlock, int sizeHint) {
-        var result = search(level, Set.of(initPos), inRange, isReplaceBlock, sizeHint);
+    private static final Set<Direction> DIRECTIONS_UP_ONLY = EnumSet.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP);
+    private static final Set<Direction> DIRECTIONS_UP_AND_DOWN = EnumSet.allOf(Direction.class);
+
+    /**
+     * @param searchDownward if {@code true}, the flood fill may also step downward, but never below
+     *                       {@code initPos}'s Y -- letting it reach pockets that dip below a horizontal
+     *                       neighbor without ever cascading past the layer this search started at.
+     */
+    static AdvPumpTarget getTarget(Level level, BlockPos initPos, Predicate<BlockPos> inRange, Predicate<BlockState> isReplaceBlock, int sizeHint, boolean searchDownward) {
+        var result = search(level, Set.of(initPos), inRange, isReplaceBlock, sizeHint, searchDownward, initPos.getY());
         result.sort(Comparator.comparingInt(Vec3i::getY).reversed()
             .thenComparing(Comparator.comparingInt(initPos::distManhattan).reversed()));
         return new AdvPumpTarget(result, inRange);
     }
 
-    private static List<BlockPos> search(Level level, Set<BlockPos> initialPoses, Predicate<BlockPos> inRange, Predicate<BlockState> isReplaceBlock, int sizeHint) {
+    private static List<BlockPos> search(Level level, Set<BlockPos> initialPoses, Predicate<BlockPos> inRange, Predicate<BlockState> isReplaceBlock, int sizeHint, boolean searchDownward, int floorY) {
         Set<BlockPos> counted = new HashSet<>(sizeHint);
         Set<BlockPos> checked = new HashSet<>(sizeHint);
         List<BlockPos> result = new ArrayList<>(sizeHint);
-        Set<Direction> directions = EnumSet.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP);
+        Set<Direction> directions = searchDownward ? DIRECTIONS_UP_AND_DOWN : DIRECTIONS_UP_ONLY;
         Set<BlockPos> search = initialPoses;
         while (!search.isEmpty()) {
             Set<BlockPos> nextSearch = new HashSet<>(sizeHint);
@@ -86,6 +94,7 @@ final class AdvPumpTarget implements Iterator<BlockPos> {
                         if (isFluid) result.add(pos);
                         directions.stream()
                             .map(pos::relative)
+                            .filter(p -> p.getY() >= floorY)
                             .filter(inRange)
                             .filter(Predicate.not(checked::contains))
                             .forEach(nextSearch::add);
