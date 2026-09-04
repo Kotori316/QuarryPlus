@@ -36,10 +36,23 @@ public class MachineStorage {
     protected final Object2LongLinkedOpenHashMap<FluidKey> fluids = new Object2LongLinkedOpenHashMap<>();
     List<Runnable> onUpdate = new ArrayList<>();
 
+    /**
+     * The implementation is provided via a static service file, so it is resolved once and reused.
+     * This method is called for every machine and for every entry decoded from NBT, so the
+     * {@link ServiceLoader} scan it used to perform was far from free.
+     */
+    private static final class FactoryHolder {
+        private FactoryHolder() {
+        }
+
+        static final MachineStorageFactory FACTORY =
+            ServiceLoader.load(MachineStorageFactory.class, MachineStorageFactory.class.getClassLoader())
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Could not find Machine Storage implementation"));
+    }
+
     public static MachineStorage of() {
-        var factory = ServiceLoader.load(MachineStorageFactory.class, MachineStorageFactory.class.getClassLoader())
-            .findFirst().orElseThrow(() -> new IllegalStateException("Could not find Machine Storage implementation"));
-        return factory.createMachineStorage();
+        return FactoryHolder.FACTORY.createMachineStorage();
     }
 
     static MachineStorage of(Map<ItemKey, Long> items, Map<FluidKey, Long> fluids) {
