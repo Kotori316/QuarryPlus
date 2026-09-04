@@ -72,15 +72,15 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
     public DigMinY digMinY = new DigMinY();
     @NotNull
     final EnchantmentCache enchantmentCache = new EnchantmentCache();
+    @Nullable
+    private Set<QuarryModule> moduleCache = null;
+    @Nullable
+    private ItemConverter itemConverterCache = null;
     @NotNull
-    Set<QuarryModule> modules = Collections.emptySet();
-    @NotNull
-    final ModuleInventory moduleInventory = new ModuleInventory(5, AdvQuarryEntity::moduleFilter, m -> modules, this::setChanged);
+    final ModuleInventory moduleInventory = new ModuleInventory(5, AdvQuarryEntity::moduleFilter, m -> getModules(), this::onModuleInventoryChanged);
     boolean searchEnergyConsumed = false;
     @NotNull
     QuarryChunkLoader chunkLoader = QuarryChunkLoader.None.INSTANCE;
-    @NotNull
-    ItemConverter itemConverter = defaultItemConverter();
 
     protected AdvQuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -93,6 +93,8 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
 
     @SuppressWarnings("unused")
     static void serverTick(Level level, BlockPos pos, BlockState state, AdvQuarryEntity quarry) {
+        // Modules can be supplied by blocks adjacent to this machine, so refresh the cached set once per tick.
+        quarry.invalidateModuleCache();
         for (int i = 0; i < quarry.repeatCount(); i++) {
             if (!quarry.hasEnoughEnergy()) {
                 return;
@@ -158,12 +160,6 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
     }
 
     @Override
-    public void setChanged() {
-        super.setChanged();
-        updateModules();
-    }
-
-    @Override
     public void setRemoved() {
         super.setRemoved();
         if (level instanceof ServerLevel s) {
@@ -189,7 +185,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                 detail(ChatFormatting.GREEN, "TargetIterator", targetIterator != null ? targetIterator.getClass().getSimpleName() : "null"),
                 detail(ChatFormatting.GREEN, "Storage", String.valueOf(storage)),
                 detail(ChatFormatting.GREEN, "DigMinY", String.valueOf(digMinY.getMinY(level))),
-                detail(ChatFormatting.GREEN, "Modules", String.valueOf(modules)),
+                detail(ChatFormatting.GREEN, "Modules", String.valueOf(getModules())),
                 detail(ChatFormatting.GREEN, "Enchantment", String.valueOf(enchantmentCache))
             )
         );
@@ -238,30 +234,64 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         };
     }
 
-    void updateModules() {
-        if (level == null) {
-            // In test?
-            this.modules = moduleInventory.getModules();
-        } else {
-            this.modules = Sets.union(
-                moduleInventory.getModules(),
-                QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
-            );
+    /**
+     * Effective module set = modules in the inventory plus modules supplied by adjacent blocks.
+     * <p>
+     * Computing it reads 6 neighbouring block states and rebuilding the item converter allocates a new
+     * converter chain, so the result is cached. The cache is dropped once per server tick (adjacent
+     * blocks can change at any time) and whenever the module inventory content changes, which makes the
+     * expensive part run at most once per tick and only when a caller actually needs the modules —
+     * instead of on every {@link #setChanged()} call, which used to happen on every energy transfer.
+     */
+    @NotNull
+    Set<QuarryModule> getModules() {
+        var cached = moduleCache;
+        if (cached == null) {
+            if (level == null) {
+                // In test?
+                cached = moduleInventory.getModules();
+            } else {
+                cached = Sets.union(
+                    moduleInventory.getModules(),
+                    QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
+                );
+            }
+            moduleCache = cached;
         }
-        this.itemConverter = defaultItemConverter().concat(ConverterModule.findConversions(this.modules));
+        return cached;
+    }
+
+    @NotNull
+    ItemConverter getItemConverter() {
+        var cached = itemConverterCache;
+        if (cached == null) {
+            cached = defaultItemConverter().concat(ConverterModule.findConversions(getModules()));
+            itemConverterCache = cached;
+        }
+        return cached;
+    }
+
+    private void invalidateModuleCache() {
+        moduleCache = null;
+        itemConverterCache = null;
+    }
+
+    private void onModuleInventoryChanged() {
+        invalidateModuleCache();
+        setChanged();
     }
 
     protected int repeatCount() {
-        var repeatTickModule = RepeatTickModuleItem.getModule(modules).orElse(RepeatTickModuleItem.ZERO);
+        var repeatTickModule = RepeatTickModuleItem.getModule(getModules()).orElse(RepeatTickModuleItem.ZERO);
         return repeatTickModule.stackSize() + 1;
     }
 
     protected boolean shouldRemoveBedrock() {
-        return modules.contains(QuarryModule.Constant.BEDROCK);
+        return getModules().contains(QuarryModule.Constant.BEDROCK);
     }
 
     protected @NotNull Optional<ExpModule> getExpModule() {
-        return ExpModule.getModule(modules);
+        return ExpModule.getModule(getModules());
     }
 
     @Nullable
@@ -468,7 +498,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         useEnergy(requiredEnergy, false, true, "breakBlock");
         var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe), pickaxe, stateAfterBreak(serverLevel, target, state));
         if (!afterBreakEventResult.canceled()) {
-            afterBreakEventResult.drops().stream().flatMap(itemConverter::convert).forEach(storage::addItem);
+            afterBreakEventResult.drops().stream().flatMap(getItemConverter()::convert).forEach(storage::addItem);
             var amount = eventResult.exp().orElse(afterBreakEventResult.exp().orElse(0));
             if (amount != 0) {
                 getExpModule().ifPresent(e -> e.addExp(amount));
@@ -499,12 +529,12 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         var aabb = new AABB(x - 5, digMinY.getMinY(serverLevel) - 5, z - 5, x + 5, getBlockPos().getY() - 1, z + 5);
         serverLevel.getEntitiesOfClass(ItemEntity.class, aabb, Predicate.not(i -> i.getItem().isEmpty()))
             .forEach(i -> {
-                itemConverter.convert(i.getItem()).forEach(storage::addItem);
+                getItemConverter().convert(i.getItem()).forEach(storage::addItem);
                 i.kill(serverLevel);
             });
         serverLevel.getEntitiesOfClass(FallingBlockEntity.class, aabb)
             .forEach(i -> {
-                itemConverter.convert(new ItemStack(i.getBlockState().getBlock())).forEach(storage::addItem);
+                getItemConverter().convert(new ItemStack(i.getBlockState().getBlock())).forEach(storage::addItem);
                 i.discard();
             });
         getExpModule().ifPresent(e ->
@@ -518,7 +548,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                 .forEach(chest -> {
                     IntStream.range(0, chest.getContainerSize())
                         .mapToObj(chest::getItem)
-                        .flatMap(itemConverter::convert)
+                        .flatMap(getItemConverter()::convert)
                         .forEach(storage::addItem);
                     chest.clearContent();
                     chest.kill(serverLevel);
@@ -604,7 +634,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
             try {
                 var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe), pickaxe, stateAfterBreak(serverLevel, target, state));
                 if (!afterBreakEventResult.canceled()) {
-                    afterBreakEventResult.drops().stream().flatMap(itemConverter::convert).forEach(storage::addItem);
+                    afterBreakEventResult.drops().stream().flatMap(getItemConverter()::convert).forEach(storage::addItem);
                     var amount = resultMap.getOrDefault(target, BlockBreakEventResult.EMPTY).exp().orElse(afterBreakEventResult.exp().orElse(0));
                     exp.addAndGet(amount);
                 }

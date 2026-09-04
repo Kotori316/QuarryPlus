@@ -76,14 +76,17 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     public DigMinY digMinY = new DigMinY();
     @NotNull
     final EnchantmentCache enchantmentCache = new EnchantmentCache();
+    /**
+     * Lazily rebuilt module set. See {@link #getModules()}.
+     */
+    @Nullable
+    private Set<QuarryModule> moduleCache = null;
+    @Nullable
+    private ItemConverter itemConverterCache = null;
     @NotNull
-    Set<QuarryModule> modules = Collections.emptySet();
-    @NotNull
-    final ModuleInventory moduleInventory = new ModuleInventory(5, _ -> true, _ -> modules, this::setChanged);
+    final ModuleInventory moduleInventory = new ModuleInventory(5, _ -> true, _ -> getModules(), this::onModuleInventoryChanged);
     @NotNull
     QuarryChunkLoader chunkLoader = QuarryChunkLoader.None.INSTANCE;
-    @NotNull
-    ItemConverter itemConverter = defaultItemConverter();
 
     protected QuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -108,13 +111,15 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 detail(ChatFormatting.GREEN, "Head", String.valueOf(head)),
                 detail(ChatFormatting.GREEN, "Storage", String.valueOf(storage)),
                 detail(ChatFormatting.GREEN, "DigMinY", String.valueOf(digMinY.getMinY(level))),
-                detail(ChatFormatting.GREEN, "Modules", String.valueOf(modules))
+                detail(ChatFormatting.GREEN, "Modules", String.valueOf(getModules()))
             )
         );
     }
 
     @SuppressWarnings("unused")
     static void serverTick(Level level, BlockPos pos, BlockState state, QuarryEntity quarryEntity) {
+        // Modules can be supplied by blocks adjacent to this machine, so refresh the cached set once per tick.
+        quarryEntity.invalidateModuleCache();
         for (int i = 0; i < quarryEntity.repeatCount(); i++) {
             if (!quarryEntity.hasEnoughEnergy()) {
                 return;
@@ -191,12 +196,6 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     @Override
-    public void setChanged() {
-        super.setChanged();
-        updateModules();
-    }
-
-    @Override
     public void setRemoved() {
         super.setRemoved();
         if (level instanceof ServerLevel s) {
@@ -250,17 +249,51 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         }
     }
 
-    void updateModules() {
-        if (level == null) {
-            // In test?
-            this.modules = moduleInventory.getModules();
-        } else {
-            this.modules = Sets.union(
-                moduleInventory.getModules(),
-                QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
-            );
+    /**
+     * Effective module set = modules in the inventory plus modules supplied by adjacent blocks.
+     * <p>
+     * Computing it reads 6 neighbouring block states and rebuilding the item converter allocates a new
+     * converter chain, so the result is cached. The cache is dropped once per server tick (adjacent
+     * blocks can change at any time) and whenever the module inventory content changes, which makes the
+     * expensive part run at most once per tick and only when a caller actually needs the modules —
+     * instead of on every {@link #setChanged()} call, which used to happen on every energy transfer.
+     */
+    @NotNull
+    Set<QuarryModule> getModules() {
+        var cached = moduleCache;
+        if (cached == null) {
+            if (level == null) {
+                // In test?
+                cached = moduleInventory.getModules();
+            } else {
+                cached = Sets.union(
+                    moduleInventory.getModules(),
+                    QuarryModuleProvider.Block.getModulesInWorld(level, getBlockPos())
+                );
+            }
+            moduleCache = cached;
         }
-        this.itemConverter = defaultItemConverter().concat(ConverterModule.findConversions(this.modules));
+        return cached;
+    }
+
+    @NotNull
+    ItemConverter getItemConverter() {
+        var cached = itemConverterCache;
+        if (cached == null) {
+            cached = defaultItemConverter().concat(ConverterModule.findConversions(getModules()));
+            itemConverterCache = cached;
+        }
+        return cached;
+    }
+
+    private void invalidateModuleCache() {
+        moduleCache = null;
+        itemConverterCache = null;
+    }
+
+    private void onModuleInventoryChanged() {
+        invalidateModuleCache();
+        setChanged();
     }
 
     public String renderMode() {
@@ -535,7 +568,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         if (target.getX() % 3 == 0 && target.getZ() % 3 == 0) {
             serverLevel.getEntitiesOfClass(ItemEntity.class, new AABB(target).inflate(5), Predicate.not(i -> i.getItem().isEmpty()))
                 .forEach(i -> {
-                    itemConverter.convert(i.getItem()).forEach(storage::addItem);
+                    getItemConverter().convert(i.getItem()).forEach(storage::addItem);
                     i.kill(serverLevel);
                 });
             if (shouldCollectExp()) {
@@ -550,7 +583,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 var minecarts = serverLevel.getEntitiesOfClass(MinecartChest.class, new AABB(target).inflate(5), EntitySelector.ENTITY_STILL_ALIVE);
                 minecarts.stream()
                     .flatMap(c -> IntStream.range(0, c.getContainerSize()).mapToObj(c::getItem))
-                    .flatMap(itemConverter::convert)
+                    .flatMap(getItemConverter()::convert)
                     .forEach(storage::addItem);
                 minecarts.forEach(c -> {
                     c.clearContent(); // remove items in inventory as they are already added to storage
@@ -598,7 +631,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             try {
                 var afterBreakEventResult = afterBreak(serverLevel, player, state, target, blockEntity, Block.getDrops(state, serverLevel, target, blockEntity, player, pickaxe), pickaxe, stateAfterBreak(serverLevel, target, state));
                 if (!afterBreakEventResult.canceled()) {
-                    afterBreakEventResult.drops().stream().flatMap(itemConverter::convert).forEach(storage::addItem);
+                    afterBreakEventResult.drops().stream().flatMap(getItemConverter()::convert).forEach(storage::addItem);
                     var amount = eventResult.exp().orElse(afterBreakEventResult.exp().orElse(0));
                     if (amount != 0) {
                         getExpModule().ifPresent(e -> e.addExp(amount));
@@ -667,7 +700,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     protected boolean shouldRemoveFluid() {
-        return modules.contains(QuarryModule.Constant.PUMP);
+        return getModules().contains(QuarryModule.Constant.PUMP);
     }
 
     protected BlockState stateAfterBreak(Level level, BlockPos pos, BlockState before) {
@@ -675,19 +708,19 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     }
 
     protected boolean shouldRemoveBedrock() {
-        return modules.contains(QuarryModule.Constant.BEDROCK);
+        return getModules().contains(QuarryModule.Constant.BEDROCK);
     }
 
     protected boolean shouldCollectExp() {
-        return modules.stream().anyMatch(ExpModule.class::isInstance);
+        return getModules().stream().anyMatch(ExpModule.class::isInstance);
     }
 
     protected @NotNull Optional<ExpModule> getExpModule() {
-        return ExpModule.getModule(modules);
+        return ExpModule.getModule(getModules());
     }
 
     protected int repeatCount() {
-        var repeatTickModule = RepeatTickModuleItem.getModule(modules).orElse(RepeatTickModuleItem.ZERO);
+        var repeatTickModule = RepeatTickModuleItem.getModule(getModules()).orElse(RepeatTickModuleItem.ZERO);
         return repeatTickModule.stackSize() + 1;
     }
 
