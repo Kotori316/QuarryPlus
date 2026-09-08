@@ -58,9 +58,9 @@ dependencies {
     minecraft(libs.minecraft)
     mappings(loom.layered {
         officialMojangMappings()
-        val parchmentMC = project.property("parchment.minecraft")
-        val parchmentDate = project.property("parchment.mapping")
-        parchment("org.parchmentmc.data:parchment-$parchmentMC:$parchmentDate@zip")
+        // val parchmentMC = project.property("parchment.minecraft")
+        // val parchmentDate = project.property("parchment.mapping")
+        // parchment("org.parchmentmc.data:parchment-$parchmentMC:$parchmentDate@zip")
     })
 
     modImplementation(libs.fabric.loader)

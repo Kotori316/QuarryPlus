@@ -9,10 +9,10 @@ plugins {
 val modId = "QuarryPlus".lowercase()
 
 subsystems {
-    parchment {
+    /*parchment {
         minecraftVersion = project.property("parchment.minecraft").toString()
         mappingsVersion = project.property("parchment.mapping").toString()
-    }
+    }*/
 }
 
 configurations.all {
