@@ -455,6 +455,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         // First check event
         var eventResult = checkBreakEvent(serverLevel, player, state, target, blockEntity);
         if (eventResult.canceled()) {
+            QuarryPlus.LOGGER.debug("An BreakEvent canceled removing block({}) at {} by {}", state, target, getClass().getSimpleName());
             return WorkResult.FAIL_EVENT;
         }
         // Second, check modules
