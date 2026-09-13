@@ -8,6 +8,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
  * Unit is FE, not microFE, so I use double in this class
  */
 public record PowerMap(Quarry quarry, AdvQuarry advQuarry, AdvPump advPump) {
+    public static final MapCodec<PowerMap> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+        PowerMap.Quarry.CODEC.fieldOf("quarry").forGetter(PowerMap::quarry),
+        PowerMap.AdvQuarry.CODEC.fieldOf("advQuarry").forGetter(PowerMap::advQuarry),
+        PowerMap.AdvPump.CODEC.fieldOf("advPump").forGetter(PowerMap::advPump)
+    ).apply(i, PowerMap::new));
+
     public record Quarry(
         double maxEnergy,
         double makeFrame,
