@@ -30,7 +30,7 @@ public final class QuarryLogger {
     static {
         try {
             Logger logger;
-            final var configUri = QuarryLogger.class.getResource("quarryplus-log4j2.xml").toURI();
+            final var configUri = QuarryLogger.class.getResource("/quarryplus-log4j2.xml").toURI();
             LOGGER_CONTEXT = Configurator.initialize(QuarryPlus.modID + "-config", new DummyClassLoader(), configUri);
             final var logName = QuarryPlus.MOD_NAME + "Debug";
             if (LOGGER_CONTEXT != null) {
