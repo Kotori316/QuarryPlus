@@ -31,7 +31,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
-import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -40,7 +39,7 @@ import java.util.stream.Stream;
 
 public abstract class QuarryBlock extends QpEntityBlock {
     public static final String NAME = "quarry";
-    private static final org.apache.logging.log4j.Marker LOGGER_MARKER = MarkerManager.getMarker("quarry");
+
 
     protected QuarryBlock(Function<QpBlock, ? extends BlockItem> itemGenerator) {
         super(Properties.of()
@@ -126,12 +125,12 @@ public abstract class QuarryBlock extends QpEntityBlock {
                     var area = Area.assumeY(markerLink.area());
                     if (!area.quarryDigPosIterator(pos.getY()).hasNext()) {
                         // Invalid area
-                        QuarryPlus.LOGGER.warn(QuarryEntity.MARKER,
+                        QuarryPlus.LOGGER.warn(QuarryLogger.SLF4J_QUARRY,
                             "The area for quarry({}) doesn't have enough space for work. Area: {}",
                             pos.toShortString(),
                             area
                         );
-                        QuarryLogger.LOGGER.warn(LOGGER_MARKER,
+                        QuarryLogger.LOGGER.warn(QuarryLogger.LOG4J_QUARRY,
                             "The area for quarry({}) doesn't have enough space for work. Area: {}",
                             pos.toShortString(),
                             area

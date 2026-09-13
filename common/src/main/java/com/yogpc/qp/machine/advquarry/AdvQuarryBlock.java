@@ -31,7 +31,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
-import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -44,7 +43,7 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 
 public class AdvQuarryBlock extends QpEntityBlock {
     public static final String NAME = "adv_quarry";
-    private static final org.apache.logging.log4j.Marker LOGGER_MARKER = MarkerManager.getMarker("advQuarry");
+
 
     public AdvQuarryBlock() {
         super(Properties.of()
@@ -131,7 +130,7 @@ public class AdvQuarryBlock extends QpEntityBlock {
                             pos.toShortString(),
                             area
                         );
-                        QuarryLogger.LOGGER.warn(LOGGER_MARKER,
+                        QuarryLogger.LOGGER.warn(QuarryLogger.LOG4J_ADV_QUARRY,
                             "The area for machine({}) doesn't have enough space for work. Area: {}",
                             pos.toShortString(),
                             area

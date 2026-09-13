@@ -42,12 +42,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -56,8 +53,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync {
-    public static final Marker MARKER = MarkerFactory.getMarker("advQuarry");
-    private static final org.apache.logging.log4j.Marker LOGGER_MARKER = MarkerManager.getMarker("advQuarry");
 
     @NotNull
     AdvQuarryState currentState = AdvQuarryState.FINISHED;
@@ -458,7 +453,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         // First check event
         var eventResult = checkBreakEvent(serverLevel, player, state, target, blockEntity);
         if (eventResult.canceled()) {
-            QuarryLogger.LOGGER.debug(LOGGER_MARKER, "An BreakEvent canceled removing block({}) at {} by {}", state, target, getClass().getSimpleName());
+            QuarryLogger.LOGGER.debug(QuarryLogger.LOG4J_ADV_QUARRY, "An BreakEvent canceled removing block({}) at {} by {}", state, target, getClass().getSimpleName());
             return WorkResult.FAIL_EVENT;
         }
         // Second, check modules
@@ -623,8 +618,8 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                 }
             } catch (Exception e) {
                 // Sometimes Block.getDrops will throw an exception...
-                QuarryPlus.LOGGER.warn(MARKER, "Error occurred while processing block {} at ({})", state.getBlock(), target.toShortString(), e);
-                QuarryLogger.LOGGER.warn(LOGGER_MARKER, "Error occurred while processing block {} at ({})", state.getBlock(), target.toShortString(), e);
+                QuarryPlus.LOGGER.warn(QuarryLogger.SLF4J_ADV_QUARRY, "Error occurred while processing block {} at ({})", state.getBlock(), target.toShortString(), e);
+                QuarryLogger.LOGGER.warn(QuarryLogger.LOG4J_ADV_QUARRY, "Error occurred while processing block {} at ({})", state.getBlock(), target.toShortString(), e);
             }
         }
         // Remove blocks
