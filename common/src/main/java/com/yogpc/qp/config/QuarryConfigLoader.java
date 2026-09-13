@@ -5,9 +5,11 @@ import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.ConfigSpec;
 import com.electronwill.nightconfig.core.InMemoryFormat;
 import com.mojang.serialization.JavaOps;
+import com.yogpc.qp.QuarryLogger;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.PowerMap;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.RecordComponent;
 import java.util.HashMap;
@@ -52,7 +54,9 @@ final class QuarryConfigLoader {
         var flexibleMarkerRange = config.<Integer>get("flexibleMarkerRange");
         var digFromMaxY = config.<Boolean>get("digFromMaxY");
 
-        return new QuarryConfigImpl(debug, noEnergy, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop, enableChunkLoader, convertDeepslateOres, removeCommonMaterialsByChunkDestroyer, customPlayer, removeMinecartWithChest, markerPlusRange, flexibleMarkerRange, digFromMaxY);
+        var quarryConfig = new QuarryConfigImpl(debug, noEnergy, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop, enableChunkLoader, convertDeepslateOres, removeCommonMaterialsByChunkDestroyer, customPlayer, removeMinecartWithChest, markerPlusRange, flexibleMarkerRange, digFromMaxY);
+        onConfigLoad(quarryConfig);
+        return quarryConfig;
     }
 
     record QuarryConfigImpl(
@@ -155,5 +159,9 @@ final class QuarryConfigLoader {
                 commentMap.setComment(key, "%s Default: %b".formatted(e.getKey(), e.getValue()));
             }
         }
+    }
+
+    static void onConfigLoad(@NotNull QuarryConfig newConfig) {
+        QuarryLogger.applyLogLevel(newConfig.debug());
     }
 }
