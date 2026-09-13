@@ -250,6 +250,9 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                     this.chunkLoader = QuarryChunkLoader.None.INSTANCE;
                 }
             }
+            if (QuarryState.isWorking(state) ^ QuarryState.isWorking(currentState)) {
+                QuarryLogger.LOGGER.debug(QuarryLogger.LOG4J_QUARRY, "{}: Change state to {} from {} with current target {}", logName(), state, currentState, targetPos);
+            }
             this.currentState = state;
             syncToClient();
             level.setBlock(getBlockPos(), blockState.setValue(QpBlockProperty.WORKING, QuarryState.isWorking(state)), Block.UPDATE_ALL);
@@ -435,7 +438,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     private boolean setNextDigTargetIterator() {
         if (targetPos == null) {
             QuarryPlus.LOGGER.error("setNextDigTargetIterator: targetPos is null. Area: {}, Iterator: {}", this.area, this.targetIterator);
-            QuarryLogger.LOGGER.error(QuarryLogger.LOG4J_QUARRY, "setNextDigTargetIterator: targetPos is null. Area: {}, Iterator: {}", this.area, this.targetIterator);
+            QuarryLogger.LOGGER.error(QuarryLogger.LOG4J_QUARRY, "{}: setNextDigTargetIterator: targetPos is null. Area: {}, Iterator: {}", logName(), this.area, this.targetIterator);
             // Finish this invalid work
             setState(QuarryState.FINISHED, getBlockState());
             return true;
@@ -476,9 +479,11 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         }
         var minY = this.digMinY.getMinY(level);
         if (minY < targetPos.getY()) {
+            var skippedSize = skipped.size();
             skipped.removeIf(p -> p.getY() > targetPos.getY());
             // Go next y
             targetIterator = area.quarryDigPosIterator(targetPos.getY() - 1);
+            QuarryLogger.LOGGER.debug(QuarryLogger.LOG4J_QUARRY, "{}: Going to y={} with previousSkipped={}, skipped={}", logName(), targetPos.getY() - 1, skippedSize, skipped.size());
             return false;
         } else {
             // Finish
@@ -585,7 +590,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         // First check event
         var eventResult = checkBreakEvent(serverLevel, player, state, target, blockEntity);
         if (eventResult.canceled()) {
-            QuarryLogger.LOGGER.debug(QuarryLogger.LOG4J_QUARRY, "An BreakEvent canceled removing block({}) at {} by {}", state, target, getClass().getSimpleName());
+            QuarryLogger.LOGGER.debug(QuarryLogger.LOG4J_QUARRY, "{}: An BreakEvent canceled removing block({}) at {} by {}", logName(), state, target, getClass().getSimpleName());
             return WorkResult.FAIL_EVENT;
         }
         // Second, check modules
@@ -618,7 +623,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             } catch (Exception e) {
                 // Sometimes Block.getDrops will throw an exception...
                 QuarryPlus.LOGGER.warn(QuarryLogger.SLF4J_QUARRY, "Error occurred while processing block {} at ({})", state.getBlock(), target.toShortString(), e);
-                QuarryLogger.LOGGER.warn(QuarryLogger.LOG4J_QUARRY, "Error occurred while processing block {} at ({})", state.getBlock(), target.toShortString(), e);
+                QuarryLogger.LOGGER.warn(QuarryLogger.LOG4J_QUARRY, "{}: Error occurred while processing block {} at ({})", logName(), state.getBlock(), target.toShortString(), e);
             }
 
             if (shouldRemoveFluid()) {
@@ -755,8 +760,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             targetIterator,
             targetPos
         );
-        QuarryLogger.LOGGER.error(QuarryLogger.LOG4J_QUARRY, "Quarry at {} can't find next target. Itr: {}, Pos: {}",
-            getBlockPos().toShortString(),
+        QuarryLogger.LOGGER.error(QuarryLogger.LOG4J_QUARRY, "{}: Quarry can't find next target. Itr: {}, Pos: {}",
+            logName(),
             targetIterator,
             targetPos
         );
