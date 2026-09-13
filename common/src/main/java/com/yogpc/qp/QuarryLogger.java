@@ -14,15 +14,16 @@ public final class QuarryLogger {
     public static final Logger LOGGER;
 
     // log4j2 Markers — for use with QuarryLogger.LOGGER
-    public static final org.apache.logging.log4j.Marker LOG4J_QUARRY = org.apache.logging.log4j.MarkerManager.getMarker("quarry");
-    public static final org.apache.logging.log4j.Marker LOG4J_ADV_QUARRY = org.apache.logging.log4j.MarkerManager.getMarker("advQuarry");
+    public static final org.apache.logging.log4j.Marker LOG4J_CONFIG = org.apache.logging.log4j.MarkerManager.getMarker("Config");
+    public static final org.apache.logging.log4j.Marker LOG4J_QUARRY = org.apache.logging.log4j.MarkerManager.getMarker("Quarry");
+    public static final org.apache.logging.log4j.Marker LOG4J_ADV_QUARRY = org.apache.logging.log4j.MarkerManager.getMarker("AdvQuarry");
     public static final org.apache.logging.log4j.Marker LOG4J_ENERGY_TICK = org.apache.logging.log4j.MarkerManager.getMarker("TickLog");
     public static final org.apache.logging.log4j.Marker LOG4J_ENERGY_TOTAL = org.apache.logging.log4j.MarkerManager.getMarker("Total");
     public static final org.apache.logging.log4j.Marker LOG4J_CHUNK_LOADER = org.apache.logging.log4j.MarkerManager.getMarker("QuarryChunkLoader");
 
     // SLF4j Markers — for use with QuarryPlus.LOGGER
-    public static final org.slf4j.Marker SLF4J_QUARRY = org.slf4j.MarkerFactory.getMarker("quarry");
-    public static final org.slf4j.Marker SLF4J_ADV_QUARRY = org.slf4j.MarkerFactory.getMarker("advQuarry");
+    public static final org.slf4j.Marker SLF4J_QUARRY = org.slf4j.MarkerFactory.getMarker("Quarry");
+    public static final org.slf4j.Marker SLF4J_ADV_QUARRY = org.slf4j.MarkerFactory.getMarker("AdvQuarry");
 
     private static final class DummyClassLoader extends SecureClassLoader {
     }
