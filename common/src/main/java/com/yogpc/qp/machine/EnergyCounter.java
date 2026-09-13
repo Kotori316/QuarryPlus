@@ -1,9 +1,9 @@
 package com.yogpc.qp.machine;
 
-import com.yogpc.qp.QuarryPlus;
-import org.slf4j.Logger;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
+import com.yogpc.qp.QuarryLogger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,9 +11,9 @@ import java.util.function.LongSupplier;
 import java.util.stream.Collectors;
 
 public abstract class EnergyCounter {
-    private static final Logger LOGGER = QuarryPlus.LOGGER;
-    private static final Marker MARKER_TICK = MarkerFactory.getMarker("TickLog");
-    private static final Marker MARKER_FINAL = MarkerFactory.getMarker("Total");
+    private static final Logger LOGGER = QuarryLogger.LOGGER;
+    private static final Marker MARKER_TICK = MarkerManager.getMarker("TickLog");
+    private static final Marker MARKER_FINAL = MarkerManager.getMarker("Total");
     final String name;
     final long logInterval;
 

@@ -2,6 +2,7 @@ package com.yogpc.qp.machine.quarry;
 
 import com.google.common.collect.Sets;
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.QuarryLogger;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.*;
 import com.yogpc.qp.machine.exp.ExpModule;
@@ -42,6 +43,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -57,6 +59,7 @@ import java.util.stream.Stream;
 
 public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     public static final Marker MARKER = MarkerFactory.getMarker("quarry");
+    private static final org.apache.logging.log4j.Marker LOGGER_MARKER = MarkerManager.getMarker("quarry");
     @NotNull
     public Vec3 head;
     @NotNull
@@ -437,6 +440,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     private boolean setNextDigTargetIterator() {
         if (targetPos == null) {
             QuarryPlus.LOGGER.error("setNextDigTargetIterator: targetPos is null. Area: {}, Iterator: {}", this.area, this.targetIterator);
+            QuarryLogger.LOGGER.error(LOGGER_MARKER, "setNextDigTargetIterator: targetPos is null. Area: {}, Iterator: {}", this.area, this.targetIterator);
             // Finish this invalid work
             setState(QuarryState.FINISHED, getBlockState());
             return true;
@@ -586,9 +590,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         // First check event
         var eventResult = checkBreakEvent(serverLevel, player, state, target, blockEntity);
         if (eventResult.canceled()) {
-            if (PlatformAccess.config().debug()) {
-                QuarryPlus.LOGGER.info(MARKER, "An BreakEvent canceled removing block({}) at {} by {}", state, target, getClass().getSimpleName());
-            }
+            QuarryLogger.LOGGER.debug(LOGGER_MARKER, "An BreakEvent canceled removing block({}) at {} by {}", state, target, getClass().getSimpleName());
             return WorkResult.FAIL_EVENT;
         }
         // Second, check modules
@@ -621,6 +623,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
             } catch (Exception e) {
                 // Sometimes Block.getDrops will throw an exception...
                 QuarryPlus.LOGGER.warn(MARKER, "Error occurred while processing block {} at ({})", state.getBlock(), target.toShortString(), e);
+                QuarryLogger.LOGGER.warn(LOGGER_MARKER, "Error occurred while processing block {} at ({})", state.getBlock(), target.toShortString(), e);
             }
 
             if (shouldRemoveFluid()) {
@@ -753,6 +756,11 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         }
         // maybe bug
         QuarryPlus.LOGGER.error("Quarry at {} can't find next target. Itr: {}, Pos: {}",
+            getBlockPos().toShortString(),
+            targetIterator,
+            targetPos
+        );
+        QuarryLogger.LOGGER.error(LOGGER_MARKER, "Quarry at {} can't find next target. Itr: {}, Pos: {}",
             getBlockPos().toShortString(),
             targetIterator,
             targetPos
