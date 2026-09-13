@@ -16,8 +16,8 @@
         </RollingRandomAccessFile>
     </Appenders>
     <Loggers>
-        <Root level="all">
-            <AppenderRef ref="DebugFile" level="debug"/>
+        <Root level="debug">
+            <AppenderRef ref="DebugFile"/>
         </Root>
     </Loggers>
 </Configuration>
