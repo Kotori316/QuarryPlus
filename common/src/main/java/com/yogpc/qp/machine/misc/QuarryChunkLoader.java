@@ -4,21 +4,18 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.yogpc.qp.PlatformAccess;
-import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.QuarryLogger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 
 public sealed interface QuarryChunkLoader {
-    Marker MARKER = MarkerFactory.getMarker(QuarryChunkLoader.class.getSimpleName());
     Codec<QuarryChunkLoader> CODEC = Codec.STRING.dispatch(QuarryChunkLoader::type, QuarryChunkLoader::codec);
 
     static boolean isChunkLoaded(ServerLevel level, BlockPos pos) {
         var chunkPos = new ChunkPos(pos);
         var result = level.getForcedChunks().contains(chunkPos.toLong());
-        QuarryPlus.LOGGER.info(MARKER, "Check state of chunk loading x={}, z={}, loaded={}", chunkPos.x, chunkPos.z, result);
+        QuarryLogger.LOGGER.info(QuarryLogger.LOG4J_CHUNK_LOADER, "Check state of chunk loading x={}, z={}, loaded={}", chunkPos.x, chunkPos.z, result);
         return result;
     }
 
@@ -74,14 +71,14 @@ public sealed interface QuarryChunkLoader {
         public void makeChunkLoaded(ServerLevel level) {
             var chunkPos = new ChunkPos(pos);
             level.setChunkForced(chunkPos.x, chunkPos.z, true);
-            QuarryPlus.LOGGER.info(MARKER, "Force chunk load at x={}, z={}", chunkPos.x, chunkPos.z);
+            QuarryLogger.LOGGER.info(QuarryLogger.LOG4J_CHUNK_LOADER, "Force chunk load at x={}, z={}", chunkPos.x, chunkPos.z);
         }
 
         @Override
         public void makeChunkUnLoaded(ServerLevel level) {
             var chunkPos = new ChunkPos(pos);
             level.setChunkForced(chunkPos.x, chunkPos.z, false);
-            QuarryPlus.LOGGER.info(MARKER, "Remove chunk loading at x={}, z={}", chunkPos.x, chunkPos.z);
+            QuarryLogger.LOGGER.info(QuarryLogger.LOG4J_CHUNK_LOADER, "Remove chunk loading at x={}, z={}", chunkPos.x, chunkPos.z);
         }
 
         @Override

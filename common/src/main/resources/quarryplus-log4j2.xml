@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" shutdownHook="disable">
+    <filters>
+    </filters>
+    <Appenders>
+        <RollingRandomAccessFile name="DebugFile" fileName="logs/quarryplus-debug.log"
+                                 filePattern="logs/quarryplus-debug/quarryplus-debug-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout
+                    pattern="[%d{yyyy-MM-dd'T'HH:mm:ss.SSS}][%level{length=1}][%logger/%markerSimpleName]: %m%n%xEx"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="200MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10" fileIndex="min"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="DebugFile"/>
+        </Root>
+    </Loggers>
+</Configuration>
