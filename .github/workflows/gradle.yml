@@ -130,6 +130,6 @@ jobs:
     needs:
       - assemble
       - platforms
-    uses: 'Kotori316/common-script/.github/workflows/merge-checker.yaml@cc63e8610e21a91ed102150d078b10d216e02b76' # v2.0.3
+    uses: 'Kotori316/common-script/.github/workflows/merge-checker.yaml@f68c456ce9aa44130e67f05234bc68db848e9a54' # v2.0.5
     with:
       needs: ${{ toJSON(needs) }}
