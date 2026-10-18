@@ -51,4 +51,9 @@ public abstract class QpEntity extends BlockEntity {
             .append(": ")
             .append(content);
     }
+
+    protected String logName() {
+        var pos = getBlockPos();
+        return "%s(%d, %d, %d)".formatted(getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ());
+    }
 }
