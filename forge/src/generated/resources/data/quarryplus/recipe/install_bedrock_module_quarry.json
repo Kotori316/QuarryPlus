@@ -1,9 +1,16 @@
 {
-  "type": "quarryplus:install_bedrock_module_recipe",
+  "type": "forge:conditional",
   "forge:condition": {
     "type": "forge:false"
   },
-  "group": "quarryplus:install_bedrock_module_recipe",
-  "show_notification": false,
-  "target": "quarryplus:quarry"
+  "recipes": [
+    {
+      "recipe": {
+        "type": "quarryplus:install_bedrock_module_recipe",
+        "group": "quarryplus:install_bedrock_module_recipe",
+        "show_notification": false,
+        "target": "quarryplus:quarry"
+      }
+    }
+  ]
 }

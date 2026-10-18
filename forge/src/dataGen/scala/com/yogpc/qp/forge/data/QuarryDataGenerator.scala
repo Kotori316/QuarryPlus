@@ -1,6 +1,8 @@
 package com.yogpc.qp.forge.data
 
 import com.yogpc.qp.QuarryPlus
+import net.minecraft.core.RegistrySetBuilder
+import net.minecraftforge.common.data.RegistryDataBuilder
 import net.minecraftforge.data.event.GatherDataEvent
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
@@ -11,7 +13,9 @@ object QuarryDataGenerator {
   @static
   @SubscribeEvent
   def onEvent(event: GatherDataEvent): Unit = {
-    event.getGenerator.addProvider(event.includeServer, RecipeForge(event.getGenerator.getPackOutput, event.getLookupProvider))
+    val builder = RegistryDataBuilder.of().modid(QuarryPlus.modID)
+    builder.reloadable(new RegistrySetBuilder().add(new RecipeForge()))
+    event.getGenerator.addProvider(event.includeServer(), builder.reloadableGenerator(event.getGenerator.getPackOutput))
   }
 }
 

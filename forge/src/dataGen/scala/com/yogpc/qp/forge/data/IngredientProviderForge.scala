@@ -2,7 +2,7 @@ package com.yogpc.qp.forge.data
 
 import com.yogpc.qp.data.IngredientProvider
 import net.minecraft.core.HolderGetter
-import net.minecraft.data.recipes.RecipeOutput
+import net.minecraft.data.recipes.{RecipeCategory, RecipeOutput}
 import net.minecraft.tags.TagKey
 import net.minecraft.world.item.crafting.Ingredient
 import net.minecraft.world.item.{Item, Items}
@@ -36,10 +36,10 @@ final class IngredientProviderForge(itemRegistry: HolderGetter[Item]) extends In
   override def pickaxeForQuarry: Ingredient = Ingredient.of(Items.DIAMOND_PICKAXE)
 
   override def installBedrockModuleQuarryRecipeOutput(original: RecipeOutput): RecipeOutput = {
-    original match {
-      case recipe: CollectRecipe => recipe.withCondition(Seq(FalseCondition.INSTANCE))
-      case _ => original
-    }
+    val conditionalRecipeOutput = new ConditionalRecipeOutput(original)
+    conditionalRecipeOutput.conditionalRecipeBuilder.condition(FalseCondition.INSTANCE)
+    conditionalRecipeOutput.conditionalRecipeBuilder.category(RecipeCategory.MISC)
+    conditionalRecipeOutput
   }
 
   override def enderPearl: Ingredient = Ingredient.of(itemRegistry.getOrThrow(Tags.Items.ENDER_PEARLS))

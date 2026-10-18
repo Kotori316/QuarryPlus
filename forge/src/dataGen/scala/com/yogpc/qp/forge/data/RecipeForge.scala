@@ -1,63 +1,25 @@
 package com.yogpc.qp.forge.data
 
-import com.google.gson.{JsonElement, JsonObject}
-import com.mojang.serialization.{DynamicOps, JsonOps}
 import com.yogpc.qp.data.Recipe
-import net.minecraft.core.HolderLookup
-import net.minecraft.core.registries.Registries
-import net.minecraft.data.{CachedOutput, DataProvider, PackOutput}
-import net.minecraftforge.common.crafting.conditions.{AndCondition, ICondition}
+import net.minecraft.advancements.Advancement
+import net.minecraft.core.Registry
+import net.minecraft.core.registries.{MultiRegistryBootstrap, Registries}
+import net.minecraft.data.worldgen.BootstrapContext
+import net.minecraft.resources.ResourceKey
+import net.minecraft.world.item.crafting.Recipe as MCRecipe
 
-import java.util.concurrent.CompletableFuture
-import scala.jdk.javaapi.CollectionConverters
+class RecipeForge extends MultiRegistryBootstrap {
+  override def requestedRegistries(): java.util.Set[ResourceKey[? <: Registry[?]]] = java.util.Set.of(Registries.RECIPE, Registries.ADVANCEMENT)
 
-class RecipeForge(output: PackOutput, registries: CompletableFuture[HolderLookup.Provider]) extends DataProvider {
+  override def run(registries: MultiRegistryBootstrap.BootstrapGetter): Unit = {
+    given recipeContext: BootstrapContext[MCRecipe[?]] = registries.get(Registries.RECIPE)
 
-  override def run(pOutput: CachedOutput): CompletableFuture[?] = {
-    val recipePathProvider = output.createRegistryElementsPathProvider(Registries.RECIPE)
-    val advancementPathProvider = output.createRegistryElementsPathProvider(Registries.ADVANCEMENT)
+    given advancementContext: BootstrapContext[Advancement] = registries.get(Registries.ADVANCEMENT)
 
-    registries.thenApplyAsync[CollectRecipe] { provider =>
-      val ip = new IngredientProviderForge(provider.lookupOrThrow(Registries.ITEM))
+    val itemRegistry = recipeContext.lookup(Registries.ITEM)
+    val ingredientProvider = new IngredientProviderForge(itemRegistry)
+    val recipeProvider = new Recipe(ingredientProvider)
 
-      given collector: CollectRecipe = CollectRecipe(provider)
-
-      given p: HolderLookup.Provider = provider
-
-      val internal = Recipe(ip)
-      internal.buildRecipes()
-      collector
-    }.thenCompose { collected =>
-      val registryOps = collected.registry().createSerializationContext(JsonOps.INSTANCE)
-      val recipeFeatures = collected.getSavedRecipes.map { (id, recipe, conditions) =>
-        val json = net.minecraft.world.item.crafting.Recipe.CODEC.encodeStart(registryOps, recipe).getOrThrow().getAsJsonObject
-        saveConditions(registryOps, conditions, json)
-        val path = recipePathProvider.json(id.identifier())
-        DataProvider.saveStable(pOutput, json, path)
-      }
-
-      val advancementFeatures = collected.getSavedAdvancements.map { (id, advancement, conditions) =>
-        val json = advancement.getAsJsonObject
-        saveConditions(registryOps, conditions, json)
-        val path = advancementPathProvider.json(id)
-        DataProvider.saveStable(pOutput, json, path)
-      }
-
-      CompletableFuture.allOf(recipeFeatures ++ advancementFeatures *)
-    }
-  }
-
-  override def getName: String = getClass.getSimpleName
-
-  private def saveConditions(registryOps: DynamicOps[JsonElement], conditions: Seq[ICondition], json: JsonObject): Unit = {
-    if (conditions.nonEmpty) {
-      val singleCondition = if (conditions.sizeIs == 1) {
-        conditions.head
-      } else {
-        new AndCondition(CollectionConverters.asJava(conditions))
-      }
-      val encoded = ICondition.CODEC.encodeStart(registryOps, singleCondition).getOrThrow()
-      json.add(ICondition.DEFAULT_FIELD, encoded)
-    }
+    recipeProvider.buildRecipes()
   }
 }
