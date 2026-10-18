@@ -174,8 +174,8 @@ final class StateAndModelProvider extends ModelProvider {
 
     void workBlockAndItem(BlockModelGenerators blockModels, QpBlock block) {
         var basePath = block.name.getPath();
-        var normalModel = TexturedModel.CUBE_TOP_BOTTOM.create(block, blockModels.modelOutput);
-        var workingModel = TexturedModel.CUBE_TOP_BOTTOM.updateTexture(m -> m.put(TextureSlot.TOP, blockTexture(basePath + "_top_w"))).createWithSuffix(block, "_working", blockModels.modelOutput);
+        var normalModel = TexturedModel.CUBE_BOTTOM_TOP.create(block, blockModels.modelOutput);
+        var workingModel = TexturedModel.CUBE_BOTTOM_TOP.updateTexture(m -> m.put(TextureSlot.TOP, blockTexture(basePath + "_top_w"))).createWithSuffix(block, "_working", blockModels.modelOutput);
 
         var workingProperty = PropertyDispatch.initial(QpBlockProperty.WORKING)
             .generate(working -> {

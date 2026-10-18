@@ -2,16 +2,15 @@ package com.yogpc.qp.common.data
 
 import com.yogpc.qp.machine.MachineLootFunction
 import com.yogpc.qp.{PlatformAccess, QuarryPlus}
-import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.data.loot.BlockLootSubProvider
+import net.minecraft.data.loot.{BlockLootSubProvider, LootTableSubProvider}
 import net.minecraft.world.flag.FeatureFlags
 import net.minecraft.world.level.block.Block
 
 import scala.jdk.CollectionConverters.{IterableHasAsJava, IterableHasAsScala}
 
-class BlockDropProvider(registries: HolderLookup.Provider) extends BlockLootSubProvider(
-  java.util.Collections.emptySet(), FeatureFlags.DEFAULT_FLAGS, registries
+class BlockDropProvider(context: LootTableSubProvider.Context) extends BlockLootSubProvider(
+  java.util.Collections.emptySet(), FeatureFlags.DEFAULT_FLAGS, context
 ) {
 
   override def generate(): Unit = {
