@@ -1,24 +1,23 @@
 package com.yogpc.qp.neoforge.data
 
 import com.yogpc.qp.data.Recipe
-import net.minecraft.core.HolderLookup
-import net.minecraft.core.registries.Registries
-import net.minecraft.data.PackOutput
-import net.minecraft.data.recipes.{RecipeOutput, RecipeProvider}
+import net.minecraft.advancements.Advancement
+import net.minecraft.core.Registry
+import net.minecraft.core.registries.{MultiRegistryBootstrap, Registries}
+import net.minecraft.resources.ResourceKey
 
-import java.util.concurrent.CompletableFuture
+import java.util.Set as JSet
 
-class RecipeNeoForge(output: PackOutput, registries: CompletableFuture[HolderLookup.Provider]) extends RecipeProvider.Runner(output, registries) {
+object RecipeNeoForge extends MultiRegistryBootstrap {
+  override def requestedRegistries(): JSet[ResourceKey[? <: Registry[?]]] =
+    JSet.of(Registries.RECIPE, Registries.ADVANCEMENT)
 
-  override def createRecipeProvider(provider: HolderLookup.Provider, recipeOutput: RecipeOutput): RecipeProvider = {
-    val ingredientProvider = IngredientProviderNeoForge(provider.lookupOrThrow(Registries.ITEM))
+  override def run(registries: MultiRegistryBootstrap.BootstrapGetter): Unit = {
+    given recipeContext: net.minecraft.data.worldgen.BootstrapContext[net.minecraft.world.item.crafting.Recipe[?]] = registries.get(Registries.RECIPE)
 
-    given HolderLookup.Provider = provider
+    given advancementContext: net.minecraft.data.worldgen.BootstrapContext[Advancement] = registries.get(Registries.ADVANCEMENT)
 
-    given RecipeOutput = recipeOutput
-
-    new Recipe(ingredientProvider)
+    val ingredientProvider = IngredientProviderNeoForge(recipeContext.lookup(Registries.ITEM))
+    new Recipe(ingredientProvider).buildRecipes()
   }
-
-  override def getName: String = getClass.getSimpleName
 }
