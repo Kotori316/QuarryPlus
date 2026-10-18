@@ -26,7 +26,7 @@ public abstract class PowerEntity extends QpEntity {
 
     protected PowerEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
-        this.energyCounter = EnergyCounter.createInstance(PlatformAccess.config().debug(), "%s(%d, %d, %d)".formatted(getClass().getSimpleName(), pos.getX(), pos.getY(), pos.getZ()));
+        this.energyCounter = EnergyCounter.createInstance(PlatformAccess.config().debug(), this.logName());
         setTimeProvider(() -> Objects.requireNonNull(this.level,
             """
                 Level in block entity is null. Are you in test?

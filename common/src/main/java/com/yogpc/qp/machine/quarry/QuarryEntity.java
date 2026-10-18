@@ -2,6 +2,7 @@ package com.yogpc.qp.machine.quarry;
 
 import com.google.common.collect.Sets;
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.QuarryLogger;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.*;
 import com.yogpc.qp.machine.exp.ExpModule;
@@ -45,8 +46,6 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -56,7 +55,6 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 public abstract class QuarryEntity extends PowerEntity implements ClientSync {
-    public static final Marker MARKER = MarkerFactory.getMarker("quarry");
     @NotNull
     public Vec3 head;
     @NotNull
@@ -252,6 +250,9 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                     this.chunkLoader = QuarryChunkLoader.None.INSTANCE;
                 }
             }
+            if (QuarryState.isWorking(state) ^ QuarryState.isWorking(currentState)) {
+                QuarryLogger.LOGGER.debug(QuarryLogger.LOG4J_QUARRY, "{}: Change state to {} from {} with current target {}", logName(), state, currentState, targetPos);
+            }
             this.currentState = state;
             syncToClient();
             level.setBlock(getBlockPos(), blockState.setValue(QpBlockProperty.WORKING, QuarryState.isWorking(state)), Block.UPDATE_ALL);
@@ -437,6 +438,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
     private boolean setNextDigTargetIterator() {
         if (targetPos == null) {
             QuarryPlus.LOGGER.error("setNextDigTargetIterator: targetPos is null. Area: {}, Iterator: {}", this.area, this.targetIterator);
+            QuarryLogger.LOGGER.error(QuarryLogger.LOG4J_QUARRY, "{}: setNextDigTargetIterator: targetPos is null. Area: {}, Iterator: {}", logName(), this.area, this.targetIterator);
             // Finish this invalid work
             setState(QuarryState.FINISHED, getBlockState());
             return true;
@@ -477,9 +479,11 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         }
         var minY = this.digMinY.getMinY(level);
         if (minY < targetPos.getY()) {
+            var skippedSize = skipped.size();
             skipped.removeIf(p -> p.getY() > targetPos.getY());
             // Go next y
             targetIterator = area.quarryDigPosIterator(targetPos.getY() - 1);
+            QuarryLogger.LOGGER.debug(QuarryLogger.LOG4J_QUARRY, "{}: Going to y={} with previousSkipped={}, skipped={}", logName(), targetPos.getY() - 1, skippedSize, skipped.size());
             return false;
         } else {
             // Finish
@@ -586,9 +590,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         // First check event
         var eventResult = checkBreakEvent(serverLevel, player, state, target, blockEntity);
         if (eventResult.canceled()) {
-            if (PlatformAccess.config().debug()) {
-                QuarryPlus.LOGGER.info(MARKER, "An BreakEvent canceled removing block({}) at {} by {}", state, target, getClass().getSimpleName());
-            }
+            QuarryLogger.LOGGER.debug(QuarryLogger.LOG4J_QUARRY, "{}: An BreakEvent canceled removing block({}) at {} by {}", logName(), state, target, getClass().getSimpleName());
             return WorkResult.FAIL_EVENT;
         }
         // Second, check modules
@@ -620,7 +622,8 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
                 }
             } catch (Exception e) {
                 // Sometimes Block.getDrops will throw an exception...
-                QuarryPlus.LOGGER.warn(MARKER, "Error occurred while processing block {} at ({})", state.getBlock(), target.toShortString(), e);
+                QuarryPlus.LOGGER.warn(QuarryLogger.SLF4J_QUARRY, "Error occurred while processing block {} at ({})", state.getBlock(), target.toShortString(), e);
+                QuarryLogger.LOGGER.warn(QuarryLogger.LOG4J_QUARRY, "{}: Error occurred while processing block {} at ({})", logName(), state.getBlock(), target.toShortString(), e);
             }
 
             if (shouldRemoveFluid()) {
@@ -754,6 +757,11 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         // maybe bug
         QuarryPlus.LOGGER.error("Quarry at {} can't find next target. Itr: {}, Pos: {}",
             getBlockPos().toShortString(),
+            targetIterator,
+            targetPos
+        );
+        QuarryLogger.LOGGER.error(QuarryLogger.LOG4J_QUARRY, "{}: Quarry can't find next target. Itr: {}, Pos: {}",
+            logName(),
             targetIterator,
             targetPos
         );

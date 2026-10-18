@@ -1,9 +1,7 @@
 package com.yogpc.qp.machine;
 
-import com.yogpc.qp.QuarryPlus;
-import org.slf4j.Logger;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
+import com.yogpc.qp.QuarryLogger;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,9 +9,7 @@ import java.util.function.LongSupplier;
 import java.util.stream.Collectors;
 
 public abstract class EnergyCounter {
-    private static final Logger LOGGER = QuarryPlus.LOGGER;
-    private static final Marker MARKER_TICK = MarkerFactory.getMarker("TickLog");
-    private static final Marker MARKER_FINAL = MarkerFactory.getMarker("Total");
+    private static final Logger LOGGER = QuarryLogger.LOGGER;
     final String name;
     final long logInterval;
 
@@ -60,7 +56,7 @@ public abstract class EnergyCounter {
                 var use = useCounter.values().stream().collect(Collectors.summarizingLong(Long::longValue));
                 var get = getCounter.values().stream().collect(Collectors.summarizingLong(Long::longValue));
                 if (use.getSum() != 0 && get.getSum() != 0)
-                    LOGGER.info(MARKER_TICK, "{}: Used {} FE in {} ticks({} FE/t). Got {} FE in {} ticks({} FE/t).", name,
+                    LOGGER.info(QuarryLogger.LOG4J_ENERGY_TICK, "{}: Used {} FE in {} ticks({} FE/t). Got {} FE in {} ticks({} FE/t).", name,
                         formatEnergyInFE(use.getSum()), use.getCount(), formatEnergyInFE(use.getAverage() / PowerEntity.ONE_FE),
                         formatEnergyInFE(get.getSum()), get.getCount(), formatEnergyInFE(get.getAverage() / PowerEntity.ONE_FE));
                 useCounter.clear();
@@ -72,7 +68,7 @@ public abstract class EnergyCounter {
         public void logUsageMap() {
             usageMap.entrySet().stream()
                 .map(e -> "%s -> %s".formatted(e.getKey(), formatEnergyInFE(e.getValue())))
-                .forEach(s -> LOGGER.info(MARKER_FINAL, s));
+                .forEach(s -> LOGGER.info(QuarryLogger.LOG4J_ENERGY_TOTAL, s));
             usageMap.clear();
         }
 
@@ -80,7 +76,7 @@ public abstract class EnergyCounter {
             if (lastLogTick == 0) {
                 lastLogTick = time;
             } else if (time - lastLogTick > logInterval) {
-                LOGGER.warn(MARKER_TICK, "The last log time reset? Last: {}, Now({}): {}", lastLogTick, name, time);
+                LOGGER.warn(QuarryLogger.LOG4J_ENERGY_TICK, "The last log time reset? Last: {}, Now({}): {}", lastLogTick, name, time);
             }
         }
 

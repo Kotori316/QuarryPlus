@@ -2,6 +2,7 @@ package com.yogpc.qp.machine.advquarry;
 
 import com.google.common.collect.Sets;
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.QuarryLogger;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.*;
 import com.yogpc.qp.machine.exp.ExpModule;
@@ -44,8 +45,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -54,7 +53,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync {
-    public static final Marker MARKER = MarkerFactory.getMarker("advQuarry");
 
     @NotNull
     AdvQuarryState currentState = AdvQuarryState.FINISHED;
@@ -231,6 +229,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                     this.chunkLoader = QuarryChunkLoader.None.INSTANCE;
                 }
             }
+            QuarryLogger.LOGGER.debug(QuarryLogger.LOG4J_ADV_QUARRY, "{}: Change state to {} from {} with current target {}", logName(), state, currentState, targetPos);
             this.currentState = state;
             syncToClient();
             level.setBlock(getBlockPos(), blockState.setValue(QpBlockProperty.WORKING, AdvQuarryState.isWorking(state)), Block.UPDATE_ALL);
@@ -455,9 +454,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
         // First check event
         var eventResult = checkBreakEvent(serverLevel, player, state, target, blockEntity);
         if (eventResult.canceled()) {
-            if (PlatformAccess.config().debug()) {
-                QuarryPlus.LOGGER.info(MARKER, "An BreakEvent canceled removing block({}) at {} by {}", state, target, getClass().getSimpleName());
-            }
+            QuarryLogger.LOGGER.debug(QuarryLogger.LOG4J_ADV_QUARRY, "{}: An BreakEvent canceled removing block({}) at {} by {}", logName(), state, target, getClass().getSimpleName());
             return WorkResult.FAIL_EVENT;
         }
         // Second, check modules
@@ -559,6 +556,7 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                 // First check event
                 var eventResult = checkBreakEvent(serverLevel, player, state, mutableBlockPos, blockEntity);
                 if (eventResult.canceled()) {
+                    QuarryLogger.LOGGER.debug(QuarryLogger.LOG4J_ADV_QUARRY, "{}: An BreakEvent canceled removing block({}) at {} by {}", logName(), state, mutableBlockPos, getClass().getSimpleName());
                     continue;
                 }
                 // Second, check modules
@@ -622,7 +620,8 @@ public abstract class AdvQuarryEntity extends PowerEntity implements ClientSync 
                 }
             } catch (Exception e) {
                 // Sometimes Block.getDrops will throw an exception...
-                QuarryPlus.LOGGER.warn(MARKER, "Error occurred while processing block {} at ({})", state.getBlock(), target.toShortString(), e);
+                QuarryPlus.LOGGER.warn(QuarryLogger.SLF4J_ADV_QUARRY, "Error occurred while processing block {} at ({})", state.getBlock(), target.toShortString(), e);
+                QuarryLogger.LOGGER.warn(QuarryLogger.LOG4J_ADV_QUARRY, "{}: Error occurred while processing block {} at ({})", logName(), state.getBlock(), target.toShortString(), e);
             }
         }
         // Remove blocks

@@ -1,5 +1,6 @@
 package com.yogpc.qp.machine.quarry;
 
+import com.yogpc.qp.QuarryLogger;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.*;
 import com.yogpc.qp.machine.marker.QuarryMarker;
@@ -38,6 +39,7 @@ import java.util.stream.Stream;
 
 public abstract class QuarryBlock extends QpEntityBlock {
     public static final String NAME = "quarry";
+
 
     protected QuarryBlock(Function<QpBlock, ? extends BlockItem> itemGenerator) {
         super(Properties.of()
@@ -123,7 +125,12 @@ public abstract class QuarryBlock extends QpEntityBlock {
                     var area = Area.assumeY(markerLink.area());
                     if (!area.quarryDigPosIterator(pos.getY()).hasNext()) {
                         // Invalid area
-                        QuarryPlus.LOGGER.warn(QuarryEntity.MARKER,
+                        QuarryPlus.LOGGER.warn(QuarryLogger.SLF4J_QUARRY,
+                            "The area for quarry({}) doesn't have enough space for work. Area: {}",
+                            pos.toShortString(),
+                            area
+                        );
+                        QuarryLogger.LOGGER.warn(QuarryLogger.LOG4J_QUARRY,
                             "The area for quarry({}) doesn't have enough space for work. Area: {}",
                             pos.toShortString(),
                             area

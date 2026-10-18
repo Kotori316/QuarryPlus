@@ -1,6 +1,7 @@
 package com.yogpc.qp.machine.advquarry;
 
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.QuarryLogger;
 import com.yogpc.qp.QuarryPlus;
 import com.yogpc.qp.machine.*;
 import com.yogpc.qp.machine.marker.QuarryMarker;
@@ -42,6 +43,7 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 
 public class AdvQuarryBlock extends QpEntityBlock {
     public static final String NAME = "adv_quarry";
+
 
     public AdvQuarryBlock() {
         super(Properties.of()
@@ -124,6 +126,11 @@ public class AdvQuarryBlock extends QpEntityBlock {
                     if (!area.quarryDigPosIterator(pos.getY()).hasNext()) {
                         // Invalid area
                         QuarryPlus.LOGGER.warn(
+                            "The area for machine({}) doesn't have enough space for work. Area: {}",
+                            pos.toShortString(),
+                            area
+                        );
+                        QuarryLogger.LOGGER.warn(QuarryLogger.LOG4J_ADV_QUARRY,
                             "The area for machine({}) doesn't have enough space for work. Area: {}",
                             pos.toShortString(),
                             area
