@@ -41,7 +41,7 @@ public final class TestInstanceGeneratorForge extends AbstractTestGenerator<Game
             );
         }
 
-        ServiceLoader<GatherGameTest> loader = ServiceLoader.load(GatherGameTest.class);
+        ServiceLoader<GatherGameTest> loader = ServiceLoader.load(GatherGameTest.class, GatherGameTest.class.getClassLoader());
         for (GatherGameTest gatherGameTest : loader) {
             for (var property : gatherGameTest.gather()) {
                 var testData = property.testData().apply(def);

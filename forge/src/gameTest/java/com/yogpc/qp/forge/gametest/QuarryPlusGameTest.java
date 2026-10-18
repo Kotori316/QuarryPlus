@@ -20,7 +20,7 @@ public final class QuarryPlusGameTest {
     }
 
     private static void registerTests(RegisterEvent event) {
-        ServiceLoader<GatherGameTest> loader = ServiceLoader.load(GatherGameTest.class);
+        ServiceLoader<GatherGameTest> loader = ServiceLoader.load(GatherGameTest.class, GatherGameTest.class.getClassLoader());
         int serviceLoaderCount = 0;
         int testCount = 0;
         for (GatherGameTest gatherGameTest : loader) {

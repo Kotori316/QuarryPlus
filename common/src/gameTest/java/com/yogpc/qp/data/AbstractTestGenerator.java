@@ -8,6 +8,7 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.registries.RegistryPatchGenerator;
+import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.NotNull;
@@ -62,7 +63,7 @@ public abstract class AbstractTestGenerator<T> implements DataProvider {
                 valueMap.forEach((identifier, t) -> context.register(ResourceKey.create(targetKey(), identifier), t))
             );
 
-            return RegistryPatchGenerator.createLookup(this.lookupProvider, registrySetBuilder).thenApply(RegistrySetBuilder.PatchedRegistries::full);
+            return RegistryPatchGenerator.createWorldLookup(CompletableFuture.supplyAsync(VanillaRegistries::createWorldLookup), registrySetBuilder).thenApply(RegistrySetBuilder.PatchedRegistries::full);
         });
     }
 
