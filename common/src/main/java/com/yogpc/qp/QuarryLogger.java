@@ -17,6 +17,7 @@ public final class QuarryLogger {
     public static final org.apache.logging.log4j.Marker LOG4J_CONFIG = org.apache.logging.log4j.MarkerManager.getMarker("Config");
     public static final org.apache.logging.log4j.Marker LOG4J_QUARRY = org.apache.logging.log4j.MarkerManager.getMarker("Quarry");
     public static final org.apache.logging.log4j.Marker LOG4J_ADV_QUARRY = org.apache.logging.log4j.MarkerManager.getMarker("AdvQuarry");
+    public static final org.apache.logging.log4j.Marker LOG4J_ADV_PUMP = org.apache.logging.log4j.MarkerManager.getMarker("AdvPump");
     public static final org.apache.logging.log4j.Marker LOG4J_ENERGY_TICK = org.apache.logging.log4j.MarkerManager.getMarker("TickLog");
     public static final org.apache.logging.log4j.Marker LOG4J_ENERGY_TOTAL = org.apache.logging.log4j.MarkerManager.getMarker("Total");
     public static final org.apache.logging.log4j.Marker LOG4J_CHUNK_LOADER = org.apache.logging.log4j.MarkerManager.getMarker("QuarryChunkLoader");
