@@ -16,6 +16,6 @@ Adds some machines to make a big hole in your world.'''
 [[dependencies.quarryplus]]
 modId = "neoforge"
 type = "required"
-versionRange = "[26.2.0.0-beta, 26.3)"
+versionRange = "[26.3.0.0-beta, 26.4)"
 ordering = "NONE"
 side = "BOTH"
