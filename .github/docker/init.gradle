@@ -1,5 +1,0 @@
-gradle.projectsLoaded {
-    rootProject.allprojects {
-        layout.buildDirectory = "/gradle-build/${rootProject.name}/${project.name}"
-    }
-}
