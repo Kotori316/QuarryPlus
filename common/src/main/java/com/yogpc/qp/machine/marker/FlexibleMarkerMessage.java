@@ -45,13 +45,13 @@ public final class FlexibleMarkerMessage implements CustomPacketPayload, OnRecei
     FlexibleMarkerMessage(FriendlyByteBuf buffer) {
         this.pos = buffer.readBlockPos();
         this.dim = ResourceKey.create(Registries.DIMENSION, buffer.readIdentifier());
-        this.movable = buffer.readEnum(FlexibleMarkerEntity.Movable.class);
+        this.movable = FlexibleMarkerEntity.Movable.valueOf(buffer.readUtf(Byte.MAX_VALUE));
         this.amount = buffer.readInt();
     }
 
     void write(FriendlyByteBuf buffer) {
         buffer.writeBlockPos(pos).writeResourceKey(dim);
-        buffer.writeEnum(movable);
+        buffer.writeUtf(movable.name(), Byte.MAX_VALUE);
         buffer.writeInt(amount);
     }
 

@@ -46,12 +46,12 @@ public final class AdvActionActionMessage implements CustomPacketPayload, OnRece
     AdvActionActionMessage(FriendlyByteBuf buffer) {
         this.pos = buffer.readBlockPos();
         this.dim = buffer.readResourceKey(Registries.DIMENSION);
-        this.action = buffer.readEnum(Action.class);
+        this.action = Action.valueOf(buffer.readUtf(Byte.MAX_VALUE));
     }
 
     void write(FriendlyByteBuf buffer) {
         buffer.writeBlockPos(pos).writeResourceKey(dim);
-        buffer.writeEnum(action);
+        buffer.writeUtf(action.name(), Byte.MAX_VALUE);
     }
 
     @Override
