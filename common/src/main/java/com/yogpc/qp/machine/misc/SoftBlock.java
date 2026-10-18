@@ -29,10 +29,10 @@ public final class SoftBlock extends TransparentBlock implements InCreativeTabs 
             .mapColor(MapColor.NONE)
             .noOcclusion()
             .noLootTable()
-            .isValidSpawn((state, world, pos, type) -> false)
-            .isSuffocating((state, world, pos) -> false)
-            .isRedstoneConductor((state, world, pos) -> false)
-            .isViewBlocking((state, world, pos, box) -> false)
+            .isValidSpawn((_, _, _, _) -> false)
+            .isSuffocating((_, _, _) -> false)
+            .isRedstoneConductor((_, _, _) -> false)
+            .isViewBlocking((_, _, _, _) -> false)
             .setId(QuarryPlus.blockKey(NAME))
         );
         blockItem = new BlockItem(this, new Item.Properties().setId(QuarryPlus.itemKey(NAME)).useBlockDescriptionPrefix());
