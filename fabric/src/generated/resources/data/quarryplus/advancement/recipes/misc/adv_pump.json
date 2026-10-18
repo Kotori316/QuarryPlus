@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "quarryplus:adv_pump"
+        "recipes": "quarryplus:adv_pump"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "quarryplus:remove_bedrock_module"
+        "recipes": "quarryplus:remove_bedrock_module"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

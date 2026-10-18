@@ -31,7 +31,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "quarryplus:pump_module"
+        "recipes": "quarryplus:pump_module"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

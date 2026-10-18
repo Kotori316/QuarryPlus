@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "quarryplus:y_setter"
+        "recipes": "quarryplus:y_setter"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

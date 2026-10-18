@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "quarryplus:status_checker"
+        "recipes": "quarryplus:status_checker"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

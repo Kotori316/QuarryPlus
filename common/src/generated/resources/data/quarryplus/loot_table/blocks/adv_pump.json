@@ -1,24 +1,20 @@
 {
   "type": "minecraft:block",
-  "functions": [
-    {
-      "function": "quarryplus:machine_loot_function"
-    }
-  ],
+  "modifier": {
+    "type": "quarryplus:machine_loot_function"
+  },
   "pools": [
     {
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ],
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
       "entries": [
         {
           "type": "minecraft:item",
           "name": "quarryplus:adv_pump"
         }
       ],
-      "rolls": 1.0
+      "rolls": 1
     }
   ],
   "random_sequence": "quarryplus:blocks/adv_pump"

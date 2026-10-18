@@ -21,7 +21,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "quarryplus:exp_module"
+        "recipes": "quarryplus:exp_module"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

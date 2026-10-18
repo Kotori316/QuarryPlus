@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "quarryplus:install_bedrock_module_quarry"
+        "recipes": "quarryplus:install_bedrock_module_quarry"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

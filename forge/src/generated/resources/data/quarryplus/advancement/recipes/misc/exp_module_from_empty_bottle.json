@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "quarryplus:exp_module_from_empty_bottle"
+        "recipes": "quarryplus:exp_module_from_empty_bottle"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

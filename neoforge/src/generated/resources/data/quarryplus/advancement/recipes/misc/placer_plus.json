@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "quarryplus:placer_plus"
+        "recipes": "quarryplus:placer_plus"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -33,7 +33,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "quarryplus:mover"
+        "recipes": "quarryplus:mover"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

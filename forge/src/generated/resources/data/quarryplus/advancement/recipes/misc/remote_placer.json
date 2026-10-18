@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "quarryplus:remote_placer"
+        "recipes": "quarryplus:remote_placer"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

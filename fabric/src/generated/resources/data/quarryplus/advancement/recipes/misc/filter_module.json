@@ -21,7 +21,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "quarryplus:filter_module"
+        "recipes": "quarryplus:filter_module"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

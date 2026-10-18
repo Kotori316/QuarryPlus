@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "quarryplus:flexible_marker_from_chunk_marker"
+        "recipes": "quarryplus:flexible_marker_from_chunk_marker"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
