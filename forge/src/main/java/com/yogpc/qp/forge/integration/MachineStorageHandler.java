@@ -84,7 +84,7 @@ public record MachineStorageHandler<T>(MachineStorageHolder<T> holder, T object)
 
     @Override
     public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-        return storage().extractItemByIndex(slot, amount, simulate);
+        return storage().extractItemByIndex(slot, amount, !simulate);
     }
 
     @Override

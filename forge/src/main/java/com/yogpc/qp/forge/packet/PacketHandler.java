@@ -2,6 +2,8 @@ package com.yogpc.qp.forge.packet;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.advpump.AdvPumpOpenModuleMessage;
+import com.yogpc.qp.machine.advpump.AdvPumpSettingsMessage;
 import com.yogpc.qp.machine.advquarry.AdvActionActionMessage;
 import com.yogpc.qp.machine.advquarry.AdvActionSyncMessage;
 import com.yogpc.qp.machine.advquarry.AdvQuarryInitialAskMessage;
@@ -56,6 +58,10 @@ public final class PacketHandler implements PlatformAccess.Packet {
             .addMain(AdvQuarryInitialAskMessage.class, AdvQuarryInitialAskMessage.STREAM_CODEC, PacketHandler::onReceive)
             // RemotePlacerMessage
             .addMain(RemotePlacerMessage.class, RemotePlacerMessage.STREAM_CODEC, PacketHandler::onReceive)
+            // AdvPumpSettingsMessage
+            .addMain(AdvPumpSettingsMessage.class, AdvPumpSettingsMessage.STREAM_CODEC, PacketHandler::onReceive)
+            // AdvPumpOpenModuleMessage
+            .addMain(AdvPumpOpenModuleMessage.class, AdvPumpOpenModuleMessage.STREAM_CODEC, PacketHandler::onReceive)
             // END
             .build()
         ;

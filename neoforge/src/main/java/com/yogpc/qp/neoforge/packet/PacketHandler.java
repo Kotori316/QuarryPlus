@@ -2,6 +2,8 @@ package com.yogpc.qp.neoforge.packet;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.machine.advpump.AdvPumpOpenModuleMessage;
+import com.yogpc.qp.machine.advpump.AdvPumpSettingsMessage;
 import com.yogpc.qp.machine.advquarry.AdvActionActionMessage;
 import com.yogpc.qp.machine.advquarry.AdvActionSyncMessage;
 import com.yogpc.qp.machine.advquarry.AdvQuarryInitialAskMessage;
@@ -78,6 +80,16 @@ public final class PacketHandler implements PlatformAccess.Packet {
         registrar.playToServer(
             RemotePlacerMessage.TYPE,
             RemotePlacerMessage.STREAM_CODEC,
+            PacketHandler::onReceive
+        );
+        registrar.playToServer(
+            AdvPumpSettingsMessage.TYPE,
+            AdvPumpSettingsMessage.STREAM_CODEC,
+            PacketHandler::onReceive
+        );
+        registrar.playToServer(
+            AdvPumpOpenModuleMessage.TYPE,
+            AdvPumpOpenModuleMessage.STREAM_CODEC,
             PacketHandler::onReceive
         );
     }

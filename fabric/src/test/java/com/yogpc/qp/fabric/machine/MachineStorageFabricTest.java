@@ -6,6 +6,7 @@ import com.yogpc.qp.machine.MachineStorageHolder;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -176,6 +177,84 @@ class MachineStorageFabricTest extends BeforeMC {
             }
 
             assertEquals(FluidConstants.BUCKET * 5, storage.getFluidCount(Fluids.WATER));
+        }
+    }
+
+    @Nested
+    class ExtractOnlyFluidTest {
+        @Test
+        void insertIsRefused() {
+            var storage = new MachineStorageFabric();
+            var holder = new MachineStorageHolder.Constant(storage);
+            var s = new MachineStorageFabric.ExtractOnlyFluidStorageImpl<>(ACCESSOR, holder);
+
+            assertFalse(s.supportsInsertion());
+            try (Transaction transaction = Transaction.openOuter()) {
+                var inserted = s.insert(FluidVariant.of(Fluids.WATER), FluidConstants.BUCKET, transaction);
+                assertEquals(0, inserted, "insert() must always report that nothing was accepted");
+                transaction.commit();
+            }
+
+            assertEquals(0, storage.getFluidCount(Fluids.WATER), "Nothing should have actually been added to storage");
+        }
+
+        @Test
+        void extractSimulate() {
+            var storage = new MachineStorageFabric();
+            storage.addFluid(Fluids.WATER, FluidConstants.BUCKET);
+            var holder = new MachineStorageHolder.Constant(storage);
+            var s = new MachineStorageFabric.ExtractOnlyFluidStorageImpl<>(ACCESSOR, holder);
+
+            assertTrue(s.supportsExtraction());
+            try (Transaction transaction = Transaction.openOuter()) {
+                var extracted = s.extract(FluidVariant.of(Fluids.WATER), FluidConstants.BUCKET, transaction);
+                assertEquals(FluidConstants.BUCKET, extracted);
+                assertEquals(0, storage.getFluidCount(Fluids.WATER));
+            }
+
+            assertEquals(FluidConstants.BUCKET, storage.getFluidCount(Fluids.WATER), "Simulated extraction (no commit) must not actually remove the fluid");
+        }
+
+        @Test
+        void extractExecute() {
+            var storage = new MachineStorageFabric();
+            storage.addFluid(Fluids.WATER, FluidConstants.BUCKET);
+            var holder = new MachineStorageHolder.Constant(storage);
+            var s = new MachineStorageFabric.ExtractOnlyFluidStorageImpl<>(ACCESSOR, holder);
+
+            try (Transaction transaction = Transaction.openOuter()) {
+                var extracted = s.extract(FluidVariant.of(Fluids.WATER), FluidConstants.BUCKET, transaction);
+                assertEquals(FluidConstants.BUCKET, extracted);
+                transaction.commit();
+            }
+
+            assertEquals(0, storage.getFluidCount(Fluids.WATER), "Committed extraction must actually remove the fluid from storage");
+        }
+
+        @Test
+        void iteratorIsEmptyWhenNoFluidHeld() {
+            var storage = new MachineStorageFabric();
+            var holder = new MachineStorageHolder.Constant(storage);
+            var s = new MachineStorageFabric.ExtractOnlyFluidStorageImpl<>(ACCESSOR, holder);
+
+            assertFalse(s.iterator().hasNext());
+        }
+
+        @Test
+        void iteratorEnumeratesHeldFluidsUnlikeInsertableStorage() {
+            var storage = new MachineStorageFabric();
+            storage.addFluid(Fluids.WATER, FluidConstants.BUCKET);
+            var holder = new MachineStorageHolder.Constant(storage);
+            var s = new MachineStorageFabric.ExtractOnlyFluidStorageImpl<>(ACCESSOR, holder);
+
+            var view = s.iterator().next();
+            assertEquals(FluidVariant.of(Fluids.WATER), view.getResource());
+            assertEquals(FluidConstants.BUCKET, view.getAmount());
+
+            // Pipes/hoppers commonly discover extractable content by iterating, not by guessing a resource up
+            // front; StorageUtil.findExtractableResource relies on the same iterator this test just exercised.
+            var found = StorageUtil.findExtractableResource(s, null);
+            assertEquals(FluidVariant.of(Fluids.WATER), found);
         }
     }
 }

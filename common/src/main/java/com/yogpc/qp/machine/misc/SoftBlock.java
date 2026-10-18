@@ -16,10 +16,7 @@ import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 
 public final class SoftBlock extends TransparentBlock implements InCreativeTabs {
@@ -54,39 +51,30 @@ public final class SoftBlock extends TransparentBlock implements InCreativeTabs 
     @Override
     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean isMoving) {
         super.affectNeighborsAfterRemoval(state, level, pos, isMoving);
-        if (!breaking) {
-            breaking = true;
-            breakChain(level, pos);
-            breaking = false;
-        }
-    }
-
-    private void breakChain(Level world, BlockPos first) {
-        if (!world.isClientSide()) {
-            var nextCheck = new ArrayList<BlockPos>();
-            for (var dir : Direction26.DIRECTIONS) {
-                var nPos = first.offset(dir.vec());
-                var nBlock = world.getBlockState(nPos);
-                if (nBlock.getBlock() == this) {
-                    nextCheck.add(nPos);
-                }
-            }
-            if (!nextCheck.isEmpty()) {
-                var server = Objects.requireNonNull(world.getServer());
-                var tickOffset = world.getRandom().nextIntBetweenInclusive(8, 30);
-                server.schedule(new TickTask(server.getTickCount() + tickOffset, new ChainBreakTask(world, nextCheck, 1, b -> this.breaking = b, new HashSet<>(), Predicate.isEqual(this))));
-            }
+        if (!breaking && !level.isClientSide()) {
+            ChainBreakTask.schedule(level, List.of(pos), b -> this.breaking = b, new HashSet<>(), Predicate.isEqual(this));
         }
     }
 
     private record ChainBreakTask(
         Level level,
         Collection<BlockPos> targets,
-        int totalRemoved,
-        BooleanConsumer consumer,
+        BooleanConsumer setBreaking,
         HashSet<BlockPos> checked,
         Predicate<Block> continueChain
     ) implements Runnable {
+
+        /**
+         * Schedules a {@link ChainBreakTask} run 8-30 ticks from now, unless {@code targets} is empty.
+         */
+        static void schedule(Level level, Collection<BlockPos> targets, BooleanConsumer setBreaking, HashSet<BlockPos> checked, Predicate<Block> continueChain) {
+            if (targets.isEmpty()) {
+                return;
+            }
+            var server = Objects.requireNonNull(level.getServer());
+            var tickOffset = level.getRandom().nextIntBetweenInclusive(8, 30);
+            server.schedule(new TickTask(server.getTickCount() + tickOffset, new ChainBreakTask(level, targets, setBreaking, checked, continueChain)));
+        }
 
         @Override
         public void run() {
@@ -118,15 +106,11 @@ public final class SoftBlock extends TransparentBlock implements InCreativeTabs 
                 }
             }
 
-            consumer.accept(true);
+            setBreaking.accept(true);
             removed.forEach(p -> level.removeBlock(p, false));
-            consumer.accept(false);
+            setBreaking.accept(false);
 
-            if (!nextCheck.isEmpty()) {
-                var server = Objects.requireNonNull(level.getServer());
-                var tickOffset = level.getRandom().nextIntBetweenInclusive(8, 30);
-                server.schedule(new TickTask(server.getTickCount() + tickOffset, new ChainBreakTask(level, nextCheck, totalRemoved + removed.size(), consumer, checked, continueChain)));
-            }
+            schedule(level, nextCheck, setBreaking, checked, continueChain);
         }
     }
 }

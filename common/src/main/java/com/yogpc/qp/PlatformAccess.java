@@ -5,6 +5,8 @@ import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpEntity;
+import com.yogpc.qp.machine.advpump.AdvPumpBlock;
+import com.yogpc.qp.machine.advpump.AdvPumpContainer;
 import com.yogpc.qp.machine.advquarry.AdvQuarryBlock;
 import com.yogpc.qp.machine.advquarry.AdvQuarryContainer;
 import com.yogpc.qp.machine.marker.ChunkMarkerBlock;
@@ -83,6 +85,8 @@ public interface PlatformAccess {
 
         Supplier<? extends AdvQuarryBlock> advQuarryBlock();
 
+        Supplier<? extends AdvPumpBlock> advPumpBlock();
+
         Supplier<? extends SoftBlock> softBlock();
 
         Supplier<? extends PlacerBlock> placerBlock();
@@ -119,6 +123,8 @@ public interface PlatformAccess {
         Supplier<MenuType<? extends DebugStorageContainer>> debugStorageContainer();
 
         Supplier<MenuType<? extends AdvQuarryContainer>> advQuarryContainer();
+
+        Supplier<MenuType<? extends AdvPumpContainer>> advPumpContainer();
 
         Supplier<MenuType<? extends FilterModuleContainer>> filterModuleContainer();
 

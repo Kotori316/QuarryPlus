@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "environment": "quarryplus:test",
+  "function": "quarryplus:place_adv_pump_test_drain_water_source_with_delete_fluid",
+  "max_ticks": 100,
+  "setup_ticks": 1,
+  "structure": "quarryplus:empty"
+}

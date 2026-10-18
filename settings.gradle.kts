@@ -5,7 +5,6 @@ pluginManagement {
         maven { url = uri("https://maven.architectury.dev/") }
         maven { url = uri("https://maven.minecraftforge.net/") }
         maven { url = uri("https://maven.neoforged.net/releases/") }
-        maven { url = uri("https://maven.parchmentmc.org") }
         maven { url = uri("https://maven.kotori316.com/") }
         maven { url = uri("https://repo.spongepowered.org/repository/maven-public/") }
     }
@@ -13,7 +12,7 @@ pluginManagement {
 
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version ("1.0.0")
-    id("com.gradle.develocity") version ("4.+")
+    id("com.gradle.develocity") version ("4.6.0")
 }
 
 develocity {

@@ -199,6 +199,18 @@ class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeO
       .unlockedBy(PlatformAccess.getAccess.registerObjects().quarryBlock().get())
       .save(recipeOutput)
 
+    shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().advPumpBlock().get())
+      .define('i', ip.ironIngot)
+      .define('b', Items.BUCKET)
+      .define('r', ip.redStoneDust)
+      .define('d', ip.diamond)
+      .define('m', ip.marker)
+      .pattern("ibi")
+      .pattern("rdr")
+      .pattern("imi")
+      .unlockedBy(ip.markerTag)
+      .save(recipeOutput)
+
     val bookIngredient = Ingredient.of(Items.BOOK, Items.ENCHANTED_BOOK, Items.WRITABLE_BOOK, Items.WRITTEN_BOOK)
     val filterModule = quarryItem(FilterModuleItem.NAME)
     shapeless(RecipeCategory.MISC, filterModule)

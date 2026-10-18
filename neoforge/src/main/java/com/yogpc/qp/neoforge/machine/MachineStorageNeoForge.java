@@ -83,7 +83,7 @@ public final class MachineStorageNeoForge extends MachineStorage {
 
         @Override
         protected Object2LongLinkedOpenHashMap<ItemKey> createSnapshot() {
-            return storage().items;
+            return storage().items.clone();
         }
 
         @Override
@@ -153,7 +153,7 @@ public final class MachineStorageNeoForge extends MachineStorage {
 
         @Override
         protected Object2LongLinkedOpenHashMap<FluidKey> createSnapshot() {
-            return storage().fluids;
+            return storage().fluids.clone();
         }
 
         @Override

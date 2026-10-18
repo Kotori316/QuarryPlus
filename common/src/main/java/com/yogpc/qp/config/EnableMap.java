@@ -1,5 +1,6 @@
 package com.yogpc.qp.config;
 
+import com.mojang.serialization.Codec;
 import com.yogpc.qp.PlatformAccess;
 
 import java.util.HashMap;
@@ -8,6 +9,9 @@ import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 public final class EnableMap {
+    public static final Codec<EnableMap> CODEC = Codec.unboundedMap(Codec.STRING, Codec.BOOL)
+        .xmap(EnableMap::new, EnableMap::getMachinesMap);
+
     private final Map<String, Boolean> machinesMap;
 
     public EnableMap(Map<String, Boolean> machinesMap) {

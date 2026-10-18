@@ -2,3 +2,4 @@ com.yogpc.qp.machine.MachineStorageHolder$ForConstant
 com.yogpc.qp.machine.storage.DebugStorageHolder
 com.yogpc.qp.machine.advquarry.AdvQuarryStorageHolder
 com.yogpc.qp.machine.quarry.QuarryStorageHolder
+com.yogpc.qp.machine.advpump.AdvPumpStorageHolder

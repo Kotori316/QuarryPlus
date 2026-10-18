@@ -15,6 +15,9 @@ public final class StorageIntegration {
         if (event.getObject().getType() == PlatformAccessForge.RegisterObjectsForge.DEBUG_STORAGE_TYPE.get()) {
             MachineStorageHolder.getHolder(event.getObject())
                 .ifPresent(h -> event.addCapability(MACHINE_STORAGE, new MachineStorageHandler<>(h, event.getObject())));
+        } else if (event.getObject().getType() == PlatformAccessForge.RegisterObjectsForge.ADV_PUMP_ENTITY_TYPE.get()) {
+            MachineStorageHolder.getHolder(event.getObject())
+                .ifPresent(h -> event.addCapability(MACHINE_STORAGE, new AdvPumpFluidHandler<>(h, event.getObject())));
         }
     }
 }
