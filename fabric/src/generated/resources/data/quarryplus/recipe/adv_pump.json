@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
     "b": "minecraft:bucket",
     "d": "#c:gems/diamond",
