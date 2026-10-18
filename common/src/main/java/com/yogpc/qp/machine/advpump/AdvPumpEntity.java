@@ -2,6 +2,7 @@ package com.yogpc.qp.machine.advpump;
 
 import com.google.common.collect.Sets;
 import com.yogpc.qp.PlatformAccess;
+import com.yogpc.qp.QuarryLogger;
 import com.yogpc.qp.machine.*;
 import com.yogpc.qp.machine.misc.QuarryChunkLoader;
 import com.yogpc.qp.machine.module.ModuleInventory;
@@ -86,6 +87,7 @@ public abstract class AdvPumpEntity extends PowerEntity implements ClientSync {
             var range = range(level);
             target = AdvPumpTarget.getTarget(level, initPos, AdvPumpTarget.inRangePredicate(initPos, range), this::isReplaceBlock, AdvPumpTarget.areaSizeHint(range), searchDownward);
             level.setBlock(pos, state.setValue(QpBlockProperty.WORKING, true), Block.UPDATE_ALL);
+            QuarryLogger.LOGGER.debug(QuarryLogger.LOG4J_ADV_PUMP, "{}: Start pumping at y={}", logName(), currentY);
         }
         if (target.hasNext()) {
             while (target.hasNext()) {
@@ -106,12 +108,14 @@ public abstract class AdvPumpEntity extends PowerEntity implements ClientSync {
                 currentY -= 1;
                 var nextPos = pos.atY(currentY);
                 if (shouldFinish(level, nextPos)) {
+                    QuarryLogger.LOGGER.debug(QuarryLogger.LOG4J_ADV_PUMP, "{}: Finished pumping at y={}", logName(), currentY);
                     finished = true;
                     target = null;
                     level.setBlock(pos, state.setValue(QpBlockProperty.WORKING, false), Block.UPDATE_ALL);
                     energyCounter.logUsageMap();
                     removeLeftoverPlaceholder(level, pos, currentY);
                 } else {
+                    QuarryLogger.LOGGER.debug(QuarryLogger.LOG4J_ADV_PUMP, "{}: Going to y={}", logName(), currentY);
                     var range = range(level);
                     target = AdvPumpTarget.getTarget(level, nextPos, AdvPumpTarget.inRangePredicate(nextPos, range), this::isReplaceBlock, AdvPumpTarget.areaSizeHint(range), searchDownward);
                 }
@@ -171,6 +175,7 @@ public abstract class AdvPumpEntity extends PowerEntity implements ClientSync {
     }
 
     public void reset() {
+        QuarryLogger.LOGGER.debug(QuarryLogger.LOG4J_ADV_PUMP, "{}: Reset (finished={}, y={})", logName(), finished, currentY);
         target = null;
         finished = false;
         currentY = getBlockPos().getY() - 1;
