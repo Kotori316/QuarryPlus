@@ -3,22 +3,25 @@ package com.yogpc.qp.fabric.data
 import com.yogpc.qp.data.Recipe
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider
+import net.minecraft.advancements.Advancement
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.Registries
-import net.minecraft.data.recipes.{RecipeOutput, RecipeProvider}
+import net.minecraft.data.recipes.RecipeProvider
+import net.minecraft.data.worldgen.BootstrapContext
 import net.minecraft.resources.Identifier
+import net.minecraft.world.item.crafting.Recipe as McRecipe
 
 import java.util.concurrent.CompletableFuture
 
 final class RecipeFabric(output: FabricPackOutput, registries: CompletableFuture[HolderLookup.Provider]) extends FabricRecipeProvider(output, registries) {
   override def getRecipeIdentifier(identifier: Identifier): Identifier = identifier
 
-  override def createRecipeProvider(provider: HolderLookup.Provider, recipeOutput: RecipeOutput): RecipeProvider = {
+  override def createRecipeProvider(provider: HolderLookup.Provider, recipeContext: BootstrapContext[McRecipe[?]], advancementContext: BootstrapContext[Advancement]): RecipeProvider = {
     val ip = new IngredientProviderFabric((o, c) => this.withConditions(o, c *), provider.lookupOrThrow(Registries.ITEM))
 
-    given p: HolderLookup.Provider = provider
+    given r: BootstrapContext[McRecipe[?]] = recipeContext
 
-    given r: RecipeOutput = recipeOutput
+    given a: BootstrapContext[Advancement] = advancementContext
 
     new Recipe(ip)
   }
