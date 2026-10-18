@@ -31,7 +31,7 @@ public class AdvPumpBlock extends QpEntityBlock {
     public AdvPumpBlock() {
         super(Properties.of()
             .mapColor(MapColor.METAL)
-            .pushReaction(PushReaction.BLOCK)
+            .pushReaction(PushReaction.IMMOVEABLE)
             .strength(1.5f, 10f)
             .sound(SoundType.STONE), NAME, AdvPumpItem::new);
         registerDefaultState(getStateDefinition().any()

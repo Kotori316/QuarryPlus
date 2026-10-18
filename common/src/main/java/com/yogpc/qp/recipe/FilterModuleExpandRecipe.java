@@ -137,7 +137,7 @@ public final class FilterModuleExpandRecipe extends NormalCraftingRecipe {
         @Override
         public void save(RecipeOutput recipeOutput, ResourceKey<Recipe<?>> id) {
             Advancement.Builder builder = recipeOutput.advancement()
-                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
+                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(recipeOutput.lookup(Registries.RECIPE).getOrThrow(id)))
                 .rewards(AdvancementRewards.Builder.recipe(id))
                 .requirements(AdvancementRequirements.Strategy.OR);
             this.criteria.forEach(builder::addCriterion);

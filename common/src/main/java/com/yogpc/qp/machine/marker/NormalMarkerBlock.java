@@ -27,7 +27,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
-public class NormalMarkerBlock extends QpEntityBlock {
+public final class NormalMarkerBlock extends QpEntityBlock {
     private static final VoxelShape STANDING_Shape = Shapes.box(.35, 0, .35, .65, .65, .65);
     private static final VoxelShape DOWN_Shape = Shapes.box(.35, .35, .35, .65, 1, .65);
     private static final VoxelShape NORTH_Shape = Shapes.box(.35, .35, .35, .65, .65, 1);
@@ -38,7 +38,7 @@ public class NormalMarkerBlock extends QpEntityBlock {
     public static final String NAME = "marker";
 
     public NormalMarkerBlock() {
-        super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).instabreak().lightLevel(value -> 7).noCollision(),
+        super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.POPPED).instabreak().lightLevel(value -> 7).noCollision(),
             NAME, b -> new QpBlockItem(b, new Item.Properties()));
         this.registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.UP));
     }

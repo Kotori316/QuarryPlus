@@ -45,7 +45,7 @@ public abstract class QuarryBlock extends QpEntityBlock {
     protected QuarryBlock(Function<QpBlock, ? extends QuarryItem> itemGenerator) {
         super(Properties.of()
             .mapColor(MapColor.METAL)
-            .pushReaction(PushReaction.BLOCK)
+            .pushReaction(PushReaction.IMMOVEABLE)
             .strength(1.5f, 10f)
             .sound(SoundType.STONE), NAME, itemGenerator);
         registerDefaultState(getStateDefinition().any()

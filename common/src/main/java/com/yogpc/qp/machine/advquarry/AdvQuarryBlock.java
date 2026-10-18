@@ -50,7 +50,7 @@ public class AdvQuarryBlock extends QpEntityBlock {
     public AdvQuarryBlock() {
         super(Properties.of()
             .mapColor(MapColor.METAL)
-            .pushReaction(PushReaction.BLOCK)
+            .pushReaction(PushReaction.IMMOVEABLE)
             .strength(1.5f, 10f)
             .sound(SoundType.STONE), NAME, AdvQuarryItem::new);
         registerDefaultState(getStateDefinition().any()

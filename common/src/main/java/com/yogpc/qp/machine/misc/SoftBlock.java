@@ -1,6 +1,5 @@
 package com.yogpc.qp.machine.misc;
 
-import com.mojang.serialization.MapCodec;
 import com.yogpc.qp.InCreativeTabs;
 import com.yogpc.qp.QuarryPlus;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
@@ -33,17 +32,10 @@ public final class SoftBlock extends TransparentBlock implements InCreativeTabs 
             .isValidSpawn((state, world, pos, type) -> false)
             .isSuffocating((state, world, pos) -> false)
             .isRedstoneConductor((state, world, pos) -> false)
-            .isViewBlocking((state, world, pos) -> false)
+            .isViewBlocking((state, world, pos, box) -> false)
             .setId(QuarryPlus.blockKey(NAME))
         );
         blockItem = new BlockItem(this, new Item.Properties().setId(QuarryPlus.itemKey(NAME)).useBlockDescriptionPrefix());
-    }
-
-    private static final MapCodec<SoftBlock> CODEC = simpleCodec(p -> new SoftBlock());
-
-    @Override
-    protected MapCodec<SoftBlock> codec() {
-        return CODEC;
     }
 
     private boolean breaking = false;

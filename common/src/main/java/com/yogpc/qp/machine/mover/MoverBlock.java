@@ -32,7 +32,7 @@ public final class MoverBlock extends QpEntityBlock {
     public MoverBlock() {
         super(Properties.of()
             .mapColor(MapColor.METAL)
-            .pushReaction(PushReaction.BLOCK).strength(1.2f), NAME, b -> new QpBlockItem(b, new Item.Properties()));
+            .pushReaction(PushReaction.IMMOVEABLE).strength(1.2f), NAME, b -> new QpBlockItem(b, new Item.Properties()));
     }
 
     @Override

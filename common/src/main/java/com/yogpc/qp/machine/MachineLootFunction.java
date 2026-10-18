@@ -2,6 +2,7 @@ package com.yogpc.qp.machine;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -10,20 +11,20 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.Optional;
 
 public final class MachineLootFunction extends LootItemConditionalFunction {
     public static final String NAME = "machine_loot_function";
     public static final MapCodec<MachineLootFunction> SERIALIZER = RecordCodecBuilder.mapCodec(instance ->
         commonFields(instance).apply(instance, MachineLootFunction::new));
 
-    private MachineLootFunction(List<LootItemCondition> conditions) {
+    private MachineLootFunction(Optional<Holder<LootItemCondition>> conditions) {
         super(conditions);
     }
 
     @Override
     protected ItemStack run(ItemStack stack, LootContext context) {
-        var blockEntity = context.getParameter(LootContextParams.BLOCK_ENTITY);
+        var blockEntity = context.getOptional(LootContextParams.BLOCK_ENTITY);
         process(stack, blockEntity);
         return stack;
     }

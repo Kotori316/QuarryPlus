@@ -37,7 +37,7 @@ public class GeneratorBlock extends QpEntityBlock {
     public GeneratorBlock() {
         super(Properties.of()
             .mapColor(MapColor.METAL)
-            .pushReaction(PushReaction.BLOCK)
+            .pushReaction(PushReaction.IMMOVEABLE)
             .strength(1f, 1f)
             .sound(SoundType.STONE), NAME, block -> new QpBlockItem(block, new Item.Properties().fireResistant()));
         registerDefaultState(getStateDefinition().any()

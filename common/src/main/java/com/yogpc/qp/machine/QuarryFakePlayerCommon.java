@@ -131,7 +131,8 @@ public final class QuarryFakePlayerCommon {
             @Override public void send(Packet<?> packet, @Nullable ChannelFutureListener sendListener) { }
             @Override public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) { }
             @Override public void handleChat(ServerboundChatPacket packet) { }
-            @Override public void handleAnimate(ServerboundSwingPacket packet) { }
+            @Override public void handlePunch(ServerboundPunchPacket packet) { }
+            @Override public void handleAttack(ServerboundAttackPacket packet) { }
             @Override public void handlePlayerCommand(ServerboundPlayerCommandPacket packet) { }
             @Override public void handleInteract(ServerboundInteractPacket packet) { }
             @Override public void handleClientCommand(ServerboundClientCommandPacket packet) { }

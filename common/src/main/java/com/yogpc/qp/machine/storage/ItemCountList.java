@@ -63,7 +63,7 @@ final class ItemCountList extends ObjectSelectionList<ItemCountList.ItemCountRow
             if (hovered != null) {
                 var stack = hovered.stack;
                 var component = stack.getStyledHoverName();
-                guiGraphics.tooltip(minecraft.font, List.of(ClientTooltipComponent.create(component.getVisualOrderText())), mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, stack.get(DataComponents.TOOLTIP_STYLE));
+                guiGraphics.tooltip(minecraft.font, List.of(ClientTooltipComponent.create(component.getVisualOrderText())), mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, stack.get(DataComponents.TOOLTIP_STYLE), false);
             }
         }
     }

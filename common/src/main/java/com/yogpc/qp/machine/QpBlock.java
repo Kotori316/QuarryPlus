@@ -1,6 +1,5 @@
 package com.yogpc.qp.machine;
 
-import com.mojang.serialization.MapCodec;
 import com.yogpc.qp.InCreativeTabs;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.network.chat.Component;
@@ -25,13 +24,6 @@ public abstract class QpBlock extends Block implements InCreativeTabs {
     }
 
     protected abstract QpBlock createBlock(Properties properties);
-
-    private final MapCodec<QpBlock> codec = simpleCodec(this::createBlock);
-
-    @Override
-    protected MapCodec<? extends Block> codec() {
-        return this.codec;
-    }
 
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
     }

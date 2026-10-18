@@ -38,7 +38,7 @@ public abstract class AbstractPlacerBlock extends QpEntityBlock {
         super(
             Properties.of()
                 .mapColor(MapColor.METAL)
-                .pushReaction(PushReaction.BLOCK).strength(1.2f),
+                .pushReaction(PushReaction.IMMOVEABLE).strength(1.2f),
             name,
             b -> new QpBlockItem(b, new Item.Properties())
         );
