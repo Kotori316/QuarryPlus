@@ -1,23 +1,23 @@
 [versions]
-minecraft = "26.2"
-forge = "26.2-65.1.5"
+minecraft = "26.3"
+forge = "26.3-66.0.13"
 eventbus_forge = "7.0.6"
-fabric_api = "0.161.0+26.2"
+fabric_api = "0.163.0+26.3"
 fabric_loader = "0.19.5"
-neoforge = "26.2.0.90"
+neoforge = "26.3.0.90"
 fabric_version_checker = "3.0.2"
 
-du = "26.2.1"
+du = "26.3.2"
 
-scala = "3.8.4"
+scala = "3.9.0"
 
 teamreborn_energy = "5.0.0"
-slp_forge = "5.0.3-mc26.2-3.8.4"
-slp_fabric = "5.0.0"
-slp_neoforge = "5.0.3-mc26.2-3.8.4"
-jei_forge = "19.64.0.454"
-jei_fabric = "30.42.0.236"
-jei_neoforge = "30.42.0.236"
+slp_forge = "6.1.1-mc26.3-3.9.0"
+slp_fabric = "6.0.0"
+slp_neoforge = "6.1.1-mc26.3-3.9.0"
+jei_forge = "31.15.0.82"
+jei_fabric = "31.15.0.82"
+jei_neoforge = "31.15.0.82"
 
 night-config = "3.7.3"
 
@@ -58,14 +58,14 @@ du_fabric = { group = "com.kotori316", name = "debug-utility-fabric", version.re
 fabric_version_checker = { group = "com.kotori316", name = "VersionCheckerMod", version.ref = "fabric_version_checker" }
 slp_fabric = { group = "com.kotori316", name = "scalable-cats-force-fabric", version.ref = "slp_fabric" }
 teamreborn_energy = { group = "teamreborn", name = "energy", version.ref = "teamreborn_energy" }
-jei_fabric = { group = "mezz.jei", name = "jei-26.2-fabric", version.ref = "jei_fabric" }
+jei_fabric = { group = "mezz.jei", name = "jei-26.3-fabric", version.ref = "jei_fabric" }
 config_core = { group = "com.electronwill.night-config", name = "core", version.ref = "night-config" }
 config_toml = { group = "com.electronwill.night-config", name = "toml", version.ref = "night-config" }
 # NeoForge
 neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
 du_neoforge = { group = "com.kotori316", name = "debug-utility-neoforge", version.ref = "du" }
 slp_neoforge = { group = "com.kotori316", name = "scalablecatsforce-neoforge", version.ref = "slp_neoforge" }
-jei_neoforge = { group = "mezz.jei", name = "jei-26.2-neoforge", version.ref = "jei_neoforge" }
+jei_neoforge = { group = "mezz.jei", name = "jei-26.3-neoforge", version.ref = "jei_neoforge" }
 
 [bundles]
 mockito = ["mockito_core", "mockito_inline"]
