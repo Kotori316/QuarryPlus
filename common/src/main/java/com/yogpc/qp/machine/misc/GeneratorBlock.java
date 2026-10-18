@@ -1,6 +1,9 @@
 package com.yogpc.qp.machine.misc;
 
-import com.yogpc.qp.machine.*;
+import com.yogpc.qp.machine.CombinedBlockEntityTicker;
+import com.yogpc.qp.machine.PowerEntity;
+import com.yogpc.qp.machine.QpBlockItem;
+import com.yogpc.qp.machine.QpEntityBlock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -48,11 +51,6 @@ public class GeneratorBlock extends QpEntityBlock {
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(BlockStateProperties.LEVEL);
-    }
-
-    @Override
-    protected QpBlock createBlock(Properties properties) {
-        return new GeneratorBlock();
     }
 
     @Override

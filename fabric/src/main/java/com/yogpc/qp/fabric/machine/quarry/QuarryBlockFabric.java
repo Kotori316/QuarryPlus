@@ -25,11 +25,6 @@ public final class QuarryBlockFabric extends QuarryBlock {
     }
 
     @Override
-    protected QuarryBlockFabric createBlock(Properties properties) {
-        return new QuarryBlockFabric();
-    }
-
-    @Override
     protected void openGui(ServerPlayer player, Level level, BlockPos pos, QuarryEntity quarry) {
         player.openMenu(new ExtendedGeneralScreenHandler<>(new GeneralScreenHandler<>(quarry, QuarryMenuFabric::new)));
     }

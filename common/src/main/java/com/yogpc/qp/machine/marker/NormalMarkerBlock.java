@@ -1,6 +1,5 @@
 package com.yogpc.qp.machine.marker;
 
-import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpBlockItem;
 import com.yogpc.qp.machine.QpEntityBlock;
 import net.minecraft.core.BlockPos;
@@ -41,11 +40,6 @@ public final class NormalMarkerBlock extends QpEntityBlock {
         super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.POPPED).instabreak().lightLevel(value -> 7).noCollision(),
             NAME, b -> new QpBlockItem(b, new Item.Properties()));
         this.registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.UP));
-    }
-
-    @Override
-    protected QpBlock createBlock(Properties properties) {
-        return new NormalMarkerBlock();
     }
 
     @Override

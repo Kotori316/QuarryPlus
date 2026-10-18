@@ -23,8 +23,6 @@ public abstract class QpBlock extends Block implements InCreativeTabs {
         this.blockItem = itemGenerator.apply(this);
     }
 
-    protected abstract QpBlock createBlock(Properties properties);
-
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
     }
 }

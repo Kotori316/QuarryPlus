@@ -135,9 +135,4 @@ public class FrameBlock extends QpBlock {
             world.setBlock(pos, state.setValue(DAMMING, HAS_NEIGHBOUR_LIQUID.test(world, pos)), Block.UPDATE_CLIENTS);
         }
     }
-
-    @Override
-    protected QpBlock createBlock(Properties properties) {
-        return new FrameBlock();
-    }
 }

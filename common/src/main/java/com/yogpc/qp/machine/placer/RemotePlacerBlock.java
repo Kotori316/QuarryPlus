@@ -1,7 +1,6 @@
 package com.yogpc.qp.machine.placer;
 
 import com.yogpc.qp.machine.GeneralScreenHandler;
-import com.yogpc.qp.machine.QpBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -25,10 +24,5 @@ public final class RemotePlacerBlock extends AbstractPlacerBlock {
     @Override
     protected GeneralScreenHandler<?> createScreenHandler(AbstractPlacerTile placer) {
         return new GeneralScreenHandler<>(placer, PlacerContainer::createRemotePlacerContainer);
-    }
-
-    @Override
-    protected QpBlock createBlock(Properties properties) {
-        return new RemotePlacerBlock();
     }
 }

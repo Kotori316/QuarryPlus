@@ -1,8 +1,10 @@
 package com.yogpc.qp.machine.marker;
 
 import com.yogpc.qp.PlatformAccess;
-import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.machine.*;
+import com.yogpc.qp.machine.GeneralScreenHandler;
+import com.yogpc.qp.machine.QpBlockItem;
+import com.yogpc.qp.machine.QpEntity;
+import com.yogpc.qp.machine.QpEntityBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -31,18 +33,6 @@ sealed abstract class ExMarkerBlock extends QpEntityBlock permits FlexibleMarker
 
     public ExMarkerBlock(Properties properties, String name) {
         super(properties, name, b -> new QpBlockItem(b, new Item.Properties()));
-    }
-
-    @Override
-    protected QpBlock createBlock(Properties properties) {
-        try {
-            var constructor = getClass().getConstructor();
-            constructor.setAccessible(true);
-            return constructor.newInstance();
-        } catch (ReflectiveOperationException e) {
-            QuarryPlus.LOGGER.error("Can't get new instance of {}", getClass().getName(), e);
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

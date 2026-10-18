@@ -46,7 +46,6 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 public class AdvQuarryBlock extends QpEntityBlock {
     public static final String NAME = "adv_quarry";
 
-
     public AdvQuarryBlock() {
         super(Properties.of()
             .mapColor(MapColor.METAL)
@@ -56,11 +55,6 @@ public class AdvQuarryBlock extends QpEntityBlock {
         registerDefaultState(getStateDefinition().any()
             .setValue(WORKING, false)
             .setValue(FACING, Direction.NORTH));
-    }
-
-    @Override
-    protected QpBlock createBlock(Properties properties) {
-        return new AdvQuarryBlock();
     }
 
     @Override

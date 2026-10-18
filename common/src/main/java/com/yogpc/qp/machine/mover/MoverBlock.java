@@ -3,7 +3,6 @@ package com.yogpc.qp.machine.mover;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.enchantment.QuarryPickaxeEnchantment;
 import com.yogpc.qp.machine.GeneralScreenHandler;
-import com.yogpc.qp.machine.QpBlock;
 import com.yogpc.qp.machine.QpBlockItem;
 import com.yogpc.qp.machine.QpEntityBlock;
 import net.minecraft.core.BlockPos;
@@ -86,10 +85,5 @@ public final class MoverBlock extends QpEntityBlock {
             super.creativeTabItem(parameters),
             builder.build()
         );
-    }
-
-    @Override
-    protected QpBlock createBlock(Properties properties) {
-        return new MoverBlock();
     }
 }

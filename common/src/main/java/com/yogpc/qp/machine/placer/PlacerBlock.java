@@ -1,7 +1,6 @@
 package com.yogpc.qp.machine.placer;
 
 import com.yogpc.qp.machine.GeneralScreenHandler;
-import com.yogpc.qp.machine.QpBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
@@ -17,11 +16,6 @@ public final class PlacerBlock extends AbstractPlacerBlock {
     public PlacerBlock() {
         super(NAME);
         registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(TRIGGERED, Boolean.FALSE));
-    }
-
-    @Override
-    protected QpBlock createBlock(Properties properties) {
-        return new PlacerBlock();
     }
 
     @Override

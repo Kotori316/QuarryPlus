@@ -39,11 +39,6 @@ public class AdvPumpBlock extends QpEntityBlock {
     }
 
     @Override
-    protected QpBlock createBlock(Properties properties) {
-        return new AdvPumpBlock();
-    }
-
-    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(WORKING);
