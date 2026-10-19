@@ -1,6 +1,7 @@
 package com.yogpc.qp;
 
 import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.config.TestQuarryConfig;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -9,38 +10,25 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Supplier;
 
 public class PlatformAccessDelegate implements PlatformAccess {
     private PlatformAccess access;
     @Nullable
-    private Path configPath;
-    @Nullable
     private QuarryConfig config;
 
     public PlatformAccessDelegate() {
         this.access = new VanillaImpl();
-
-        if (Files.exists(configPath())) {
-            config = QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment);
-        }
     }
 
     public void reset() {
         this.access = new VanillaImpl();
-        this.configPath = null;
         setConfig(null);
     }
 
     public void setAccess(PlatformAccess access) {
         this.access = access;
-    }
-
-    public void setConfigPath(Path configPath) {
-        this.configPath = configPath;
-        this.config = QuarryConfig.load(configPath, this::isInDevelopmentEnvironment);
     }
 
     public void setConfig(@Nullable QuarryConfig config) {
@@ -69,20 +57,13 @@ public class PlatformAccessDelegate implements PlatformAccess {
 
     @Override
     public Path configPath() {
-        if (configPath == null) {
-            return access.configPath();
-        }
-        return configPath;
+        return access.configPath();
     }
 
     @Override
     public Supplier<? extends QuarryConfig> getConfig() {
         if (config == null) {
-            if (configPath == null) {
-                config = QuarryConfig.defaultConfig(this.isInDevelopmentEnvironment());
-            } else {
-                config = QuarryConfig.load(configPath, this::isInDevelopmentEnvironment);
-            }
+            config = TestQuarryConfig.defaults().withDebug(this.isInDevelopmentEnvironment());
         }
         return () -> config;
     }
@@ -145,7 +126,7 @@ public class PlatformAccessDelegate implements PlatformAccess {
 
         @Override
         public Supplier<? extends QuarryConfig> getConfig() {
-            return () -> QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment);
+            return TestQuarryConfig::defaults;
         }
 
         @Override
