@@ -21,12 +21,12 @@ public final class DefinedQuarryConfig implements QuarryConfig {
         this.removeBedrockOnNetherTop = defineBoolean(definer, "removeBedrockOnNetherTop", inDevelop.getAsBoolean(), "Remove bedrock at y=127 in Nether");
         this.enableChunkLoader = defineBoolean(definer, "enableChunkLoader", true, "Enable Chunk Loader in machines");
         this.convertDeepslateOres = defineBoolean(definer, "convertDeepslateOres", false, "Convert Deepslate ores to normal ores");
-        this.removeCommonMaterialsByChunkDestroyer = defineBoolean(definer, "removeCommonMaterialsByChunkDestroyer", true, "Remove common materials(Base blocks in Over world and the Nether) obtained by Chunk Destroyer");
+        this.removeCommonMaterialsByChunkDestroyer = defineBoolean(definer, "removeCommonMaterialsByChunkDestroyer", true, "Remove common materials (Base blocks in Over world and the Nether) obtained by Chunk Destroyer");
         this.customPlayer = defineBoolean(definer, "customPlayer", false, "Enable Custom player mode");
         this.removeMinecartWithChest = defineBoolean(definer, "removeMinecartWithChest", true, "Remove Minecart with Chest when processing blocks");
         this.markerPlusRange = defineInt(definer, "markerPlusRange", 256, 8, 1 << 20, "Range of Marker Plus");
         this.flexibleMarkerRange = defineInt(definer, "flexibleMarkerRange", 256, 16, 1 << 24, "Range of Flexible Marker");
-        this.digFromMaxY = defineBoolean(definer, "digFromMaxY", false, "Whether to start digging from the top of the frame. If false, it starts digging from the bottom of the frame.");
+        this.digFromMaxY = defineBoolean(definer, "digFromMaxY", false, "Whether to start digging from the top of the frame. If false, it starts digging from the bottom of the frame");
 
         definer.push("powerMap");
         this.quarryPowerMap = defineInRecord(definer, "quarry", PowerMap.Default.QUARRY);
