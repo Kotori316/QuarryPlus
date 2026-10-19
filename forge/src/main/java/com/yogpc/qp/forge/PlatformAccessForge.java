@@ -92,7 +92,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         static final List<DeferredRegister<?>> REGISTER_LIST = List.of(
             BLOCK_REGISTER, ITEM_REGISTER, BLOCK_ENTITY_REGISTER, RECIPE_REGISTER, INGREDIENT_REGISTER, CREATIVE_TAB_REGISTER, LOOT_TYPE_REGISTER, DATA_COMPONENT_TYPE_REGISTER, MENU_TYPE_REGISTER
         );
-        private static final Map<Identifier, Supplier<? extends InCreativeTabs>> TAB_ITEMS = new HashMap<>();
+        private static final Map<Identifier, Supplier<? extends InCreativeTabs>> TAB_ITEMS = new LinkedHashMap<>();
         private static final Map<String, EnableMap.EnableOrNot> ENABLE_MAP = new HashMap<>();
 
         // Machine

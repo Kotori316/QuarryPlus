@@ -67,6 +67,7 @@ import org.apache.logging.log4j.util.Lazy;
 
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -127,7 +128,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
 
         public static final MapCodec<MachineLootFunction> MACHINE_LOOT_FUNCTION = MachineLootFunction.SERIALIZER;
 
-        private static final Map<Identifier, InCreativeTabs> TAB_ITEMS = new HashMap<>();
+        private static final Map<Identifier, InCreativeTabs> TAB_ITEMS = new LinkedHashMap<>();
         public static final CreativeModeTab TAB = QuarryPlus.buildCreativeModeTab(FabricCreativeModeTab.builder(), (itemDisplayParameters, output) ->
             PlatformAccess.getAccess().registerObjects().allItems()
                 .map(Map.Entry::getValue)

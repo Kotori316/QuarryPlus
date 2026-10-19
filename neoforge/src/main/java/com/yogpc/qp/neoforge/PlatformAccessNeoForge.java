@@ -58,10 +58,7 @@ import net.neoforged.neoforge.registries.*;
 import org.apache.logging.log4j.util.Lazy;
 
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -88,7 +85,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         static final List<DeferredRegister<?>> REGISTER_LIST = List.of(
             BLOCK_REGISTER, ITEM_REGISTER, BLOCK_ENTITY_REGISTER, RECIPE_REGISTER, INGREDIENT_REGISTER, CREATIVE_TAB_REGISTER, LOOT_TYPE_REGISTER, DATA_COMPONENT_TYPE_REGISTER, MENU_TYPE_REGISTER
         );
-        private static final Map<Identifier, Supplier<? extends InCreativeTabs>> TAB_ITEMS = new HashMap<>();
+        private static final Map<Identifier, Supplier<? extends InCreativeTabs>> TAB_ITEMS = new LinkedHashMap<>();
         private static final Map<String, EnableMap.EnableOrNot> ENABLE_MAP = new HashMap<>();
 
         // Machine
