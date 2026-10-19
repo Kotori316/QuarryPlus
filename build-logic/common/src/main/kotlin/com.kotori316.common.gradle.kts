@@ -94,7 +94,7 @@ repositories {
     }
     maven {
         name = "JEI"
-        url = uri("https://maven.blamejared.com/")
+        url = uri("https://maven.blamejared.com")
         content {
             includeGroup("mezz.jei")
             includeGroup("net.mezzdev.config")
