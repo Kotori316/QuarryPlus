@@ -15,7 +15,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 
 /// [ConfigDefiner] for Night Config.
-/// Call [#correct()] after all values are defined to fix the invalid values and to put the comments.
+/// Call [#correct(Config)] after all values are defined to fix the invalid values and to put the comments.
 public final class NightConfigDefiner implements ConfigDefiner {
     private final Config config;
     private final ConfigSpec spec = new ConfigSpec();
@@ -60,11 +60,11 @@ public final class NightConfigDefiner implements ConfigDefiner {
         return () -> config.<Number>getOrElse(path, defaultValue).intValue();
     }
 
-    public void correct() {
-        spec.correct(config, (action, path, incorrectValue, correctedValue) ->
+    public void correct(Config target) {
+        spec.correct(target, (action, path, incorrectValue, correctedValue) ->
             QuarryPlus.LOGGER.debug("Config corrected '{}' ({}): {} -> {}", path, action, incorrectValue, correctedValue)
         );
-        if (config instanceof CommentedConfig c) {
+        if (target instanceof CommentedConfig c) {
             comments.forEach(c::setComment);
         }
     }
