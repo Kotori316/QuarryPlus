@@ -13,8 +13,6 @@ import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 public final class QuarryConfigNeoForge implements QuarryConfig {
-    public final ModConfigSpec spec;
-
     public QuarryConfigNeoForge(ModConfigSpec.Builder builder, BooleanSupplier inDevelop) {
         this.debug = defineBoolean(builder, "debug", inDevelop.getAsBoolean(), "In debug mode");
         this.noEnergy = defineBoolean(builder, "noEnergy", false, "Enable No Energy mode");
@@ -36,8 +34,6 @@ public final class QuarryConfigNeoForge implements QuarryConfig {
         builder.pop();
 
         this.enableMap = defineEnableMap(builder, "enableMap", inDevelop);
-
-        spec = builder.build();
     }
 
     private final ModConfigSpec.BooleanValue debug;
