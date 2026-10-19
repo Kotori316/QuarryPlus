@@ -15,16 +15,18 @@ public final class QuarryConfigFabric {
     public static QuarryConfig load(Path path, BooleanSupplier inDevelop, PlatformAccess.ModdingPlatform platform) {
         var config = CommentedFileConfig.builder(path)
             .preserveInsertionOrder()
-            .sync()
+            .async()
+            .autosave()
+            .autoreload()
+            .onLoad(() -> QuarryPlus.LOGGER.info("Config loaded from {}", path))
+            .onAutoSave(() -> QuarryPlus.LOGGER.info("Config saved to {}", path))
             .build();
         config.load();
-        QuarryPlus.LOGGER.info("Config loaded from {}", path);
 
         var definer = new NightConfigDefiner(config);
         var quarryConfig = new DefinedQuarryConfig(definer, inDevelop, platform);
-        definer.correct();
-        config.save();
-        QuarryPlus.LOGGER.info("Config saved to {}", path);
+        // Save the file only once after all values are corrected.
+        config.bulkCommentedUpdate(definer::correct);
 
         QuarryLogger.applyLogLevel(quarryConfig.debug());
         return quarryConfig;
