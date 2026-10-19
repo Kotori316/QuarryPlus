@@ -1,6 +1,7 @@
 package com.yogpc.qp.config;
 
 import com.mojang.serialization.JavaOps;
+import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.PowerMap;
 
 import java.lang.reflect.RecordComponent;
@@ -14,10 +15,16 @@ import java.util.stream.Collectors;
 /// [QuarryConfig] whose values are defined via [ConfigDefiner].
 /// Values are read from the suppliers every time, so the changes of the config file are reflected.
 public final class DefinedQuarryConfig implements QuarryConfig {
+    private static final double DEFAULT_REBORN_ENERGY_CONVERSION_COEFFICIENT = 1d / 16d;
+
     public DefinedQuarryConfig(ConfigDefiner definer, BooleanSupplier inDevelop) {
         this.debug = defineBoolean(definer, "debug", inDevelop.getAsBoolean(), "In debug mode");
         this.noEnergy = defineBoolean(definer, "noEnergy", false, "Enable No Energy mode");
 
+        // Reborn Core is available only in Fabric. Other platforms don't need this option.
+        this.rebornEnergyConversionCoefficient = PlatformAccess.getAccess().platformName().isFabric()
+            ? defineDouble(definer, "rebornEnergyConversionCoefficient", DEFAULT_REBORN_ENERGY_CONVERSION_COEFFICIENT, 0d, 1e10, "[Fabric ONLY] 1E = ?FE")
+            : () -> DEFAULT_REBORN_ENERGY_CONVERSION_COEFFICIENT;
         this.removeBedrockOnNetherTop = defineBoolean(definer, "removeBedrockOnNetherTop", inDevelop.getAsBoolean(), "Remove bedrock at y=127 in Nether");
         this.enableChunkLoader = defineBoolean(definer, "enableChunkLoader", true, "Enable Chunk Loader in machines");
         this.convertDeepslateOres = defineBoolean(definer, "convertDeepslateOres", false, "Convert Deepslate ores to normal ores");
@@ -39,6 +46,7 @@ public final class DefinedQuarryConfig implements QuarryConfig {
 
     private final BooleanSupplier debug;
     private final BooleanSupplier noEnergy;
+    private final DoubleSupplier rebornEnergyConversionCoefficient;
     private final BooleanSupplier removeBedrockOnNetherTop;
     private final BooleanSupplier enableChunkLoader;
     private final BooleanSupplier convertDeepslateOres;
@@ -90,8 +98,7 @@ public final class DefinedQuarryConfig implements QuarryConfig {
 
     @Override
     public double rebornEnergyConversionCoefficient() {
-        // Fabric ONLY. Not configurable in other platforms.
-        return 1d / 16d;
+        return rebornEnergyConversionCoefficient.getAsDouble();
     }
 
     @Override
