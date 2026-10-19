@@ -12,9 +12,9 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
+import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.RegisterEvent;
 
@@ -22,12 +22,12 @@ import net.minecraftforge.registries.RegisterEvent;
 public final class QuarryPlusForge {
     static QuarryConfig config;
 
-    public QuarryPlusForge(FMLJavaModLoadingContext context) {
+    public QuarryPlusForge(BusGroup busGroup, ModContainer modContainer) {
         QuarryPlus.LOGGER.info("Initialize Common");
-        PlatformAccessForge.RegisterObjectsForge.REGISTER_LIST.forEach(r -> r.register(context.getModBusGroup()));
+        PlatformAccessForge.RegisterObjectsForge.REGISTER_LIST.forEach(r -> r.register(busGroup));
         PacketHandler.init();
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            callClient(context.getModBusGroup());
+            callClient(busGroup);
         }
         AttachCapabilitiesEvent.BlockEntities.BUS.addListener(EnergyIntegration::attachCapabilities);
         AttachCapabilitiesEvent.BlockEntities.BUS.addListener(StorageIntegration::attachCapabilities);
@@ -36,7 +36,7 @@ public final class QuarryPlusForge {
             var clazz = Class.forName("com.yogpc.qp.forge.gametest.QuarryPlusGameTest", true, QuarryPlusForge.class.getClassLoader());
             var method = clazz.getMethod("register", RegisterEvent.class);
             QuarryPlus.LOGGER.info("Found GameTest class {}", clazz.getName());
-            RegisterEvent.getBus(context.getModBusGroup()).addListener(event -> {
+            RegisterEvent.getBus(busGroup).addListener(event -> {
                 try {
                     method.invoke(null, event);
                 } catch (ReflectiveOperationException e) {
@@ -51,7 +51,7 @@ public final class QuarryPlusForge {
 
         var builder = new ForgeConfigSpec.Builder();
         config = new DefinedQuarryConfig(new ForgeConfigDefiner(builder), PlatformAccess.getAccess()::isInDevelopmentEnvironment);
-        context.registerConfig(ModConfig.Type.COMMON, builder.build());
+        modContainer.addConfig(new ModConfig(ModConfig.Type.COMMON, builder.build(), modContainer));
 
         QuarryPlus.LOGGER.info("Initialize Common finished");
     }
