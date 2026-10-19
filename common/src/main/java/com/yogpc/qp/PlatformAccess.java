@@ -1,5 +1,6 @@
 package com.yogpc.qp;
 
+import com.google.common.base.CaseFormat;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.GeneralScreenHandler;
@@ -62,7 +63,20 @@ public interface PlatformAccess {
         return 0;
     }
 
-    String platformName();
+    ModdingPlatform platformName();
+
+    enum ModdingPlatform {
+        FORGE, FABRIC, NEOFORGE, VANILLA, TEST;
+
+        public boolean isFabric() {
+            return this == FABRIC;
+        }
+
+        @Override
+        public String toString() {
+            return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, name());
+        }
+    }
 
     RegisterObjects registerObjects();
 

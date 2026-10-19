@@ -58,8 +58,8 @@ public class PlatformAccessDelegate implements PlatformAccess {
     }
 
     @Override
-    public String platformName() {
-        return "test";
+    public ModdingPlatform platformName() {
+        return ModdingPlatform.TEST;
     }
 
     @Override
@@ -129,8 +129,8 @@ public class PlatformAccessDelegate implements PlatformAccess {
     static final class VanillaImpl implements PlatformAccess {
 
         @Override
-        public String platformName() {
-            return "vanilla";
+        public ModdingPlatform platformName() {
+            return ModdingPlatform.VANILLA;
         }
 
         @Override

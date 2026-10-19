@@ -167,7 +167,7 @@ public final class LoadRecipeTest {
         var D = Items.DROPPER.getDefaultInstance();
         var R = Items.REDSTONE_BLOCK.getDefaultInstance();
         ItemStack g;
-        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+        if (PlatformAccess.getAccess().platformName().isFabric()) {
             g = Items.GOLDEN_PICKAXE.getDefaultInstance();
         } else {
             g = Items.DIAMOND_PICKAXE.getDefaultInstance();
@@ -251,7 +251,7 @@ public final class LoadRecipeTest {
     public static void createPumpModule(GameTestHelper helper) {
         var name = "pump_module";
         var recipe = findRecipeNullable(helper, name);
-        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+        if (PlatformAccess.getAccess().platformName().isFabric()) {
             assertNull(recipe, "This recipe(%s) must not be loaded in fabric".formatted(name));
             helper.succeed();
             return;
@@ -281,7 +281,7 @@ public final class LoadRecipeTest {
         var recipe = findRecipe(helper, name);
 
         ItemStack d;
-        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+        if (PlatformAccess.getAccess().platformName().isFabric()) {
             d = ItemStack.EMPTY;
         } else {
             d = Items.DIAMOND_BLOCK.getDefaultInstance();
@@ -303,7 +303,7 @@ public final class LoadRecipeTest {
     public static void createExpModule(GameTestHelper helper) {
         var name = "exp_module";
         var recipe = findRecipeNullable(helper, name);
-        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+        if (PlatformAccess.getAccess().platformName().isFabric()) {
             assertNull(recipe, "This recipe(%s) must not be loaded in fabric".formatted(name));
             helper.succeed();
             return;
@@ -332,7 +332,7 @@ public final class LoadRecipeTest {
     public static void createExpModuleFromEmptyBottle(GameTestHelper helper) {
         var name = "exp_module_from_empty_bottle";
         var recipe = findRecipeNullable(helper, name);
-        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+        if (PlatformAccess.getAccess().platformName().isFabric()) {
             assertNull(recipe, "This recipe(%s) must not be loaded in fabric".formatted(name));
             helper.succeed();
             return;
@@ -363,7 +363,7 @@ public final class LoadRecipeTest {
         }
         var name = "install_bedrock_module_quarry";
         var recipe = findRecipeNullable(helper, name);
-        if (!PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+        if (!PlatformAccess.getAccess().platformName().isFabric()) {
             assertNull(recipe, "This recipe(%s) must be loaded only in fabric".formatted(name));
             helper.succeed();
             return;
@@ -389,7 +389,7 @@ public final class LoadRecipeTest {
         }
         var name = "install_bedrock_module_quarry";
         var recipe = findRecipeNullable(helper, name);
-        if (!PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+        if (!PlatformAccess.getAccess().platformName().isFabric()) {
             assertNull(recipe, "This recipe(%s) must be loaded only in fabric".formatted(name));
             helper.succeed();
             return;
@@ -415,7 +415,7 @@ public final class LoadRecipeTest {
     public static void createRepeatTickModule(GameTestHelper helper) {
         var name = RepeatTickModuleItem.NAME;
         var recipe = findRecipeNullable(helper, name);
-        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+        if (PlatformAccess.getAccess().platformName().isFabric()) {
             assertNull(recipe, "This recipe(%s) must not be loaded in fabric".formatted(name));
             helper.succeed();
             return;
@@ -441,7 +441,7 @@ public final class LoadRecipeTest {
     public static void createFilterModule(GameTestHelper helper) {
         var name = FilterModuleItem.NAME;
         var recipe = findRecipeNullable(helper, name);
-        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+        if (PlatformAccess.getAccess().platformName().isFabric()) {
             assertNull(recipe, "This recipe(%s) must not be loaded in fabric".formatted(name));
             helper.succeed();
             return;

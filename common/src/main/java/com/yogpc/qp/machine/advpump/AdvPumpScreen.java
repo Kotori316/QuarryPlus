@@ -41,7 +41,7 @@ public class AdvPumpScreen extends AbstractContainerScreen<AdvPumpContainer> {
         searchDownwardCheckBox = new SmallCheckBox(leftPos + 8, topPos + 42, 140, 10, 10, 10,
             Component.translatable("quarryplus.gui.adv_pump.search_downward"), getMenu().pump.searchDownward, this::checkBoxOnPress);
         this.addRenderableWidget(searchDownwardCheckBox);
-        if (!PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+        if (!PlatformAccess.getAccess().platformName().isFabric()) {
             this.addRenderableWidget(new IndexedButton(0, leftPos + 8, topPos + 56, 50, 12, Component.translatable("quarryplus.gui.adv_pump.modules"), this::openModuleOnPress));
         }
     }

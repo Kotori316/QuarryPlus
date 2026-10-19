@@ -56,7 +56,7 @@ public final class AdvPumpOpenModuleMessage implements CustomPacketPayload, OnRe
         }
         if (level.getBlockEntity(pos) instanceof AdvPumpEntity pump && pump.enabled
             && player instanceof ServerPlayer serverPlayer
-            && !PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+            && !PlatformAccess.getAccess().platformName().isFabric()) {
             PlatformAccess.getAccess().openGui(serverPlayer, new GeneralScreenHandler<>(pump, ModuleContainer::new));
         }
     }

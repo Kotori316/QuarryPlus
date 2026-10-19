@@ -90,7 +90,7 @@ public class AdvQuarryBlock extends QpEntityBlock {
             if (!level.isClientSide()) {
                 if (entity.enabled) {
                     if (player.getMainHandItem().getItem() instanceof QuarryModuleProvider.Item &&
-                        !PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+                        !PlatformAccess.getAccess().platformName().isFabric()) {
                         // Open module screen when player has Module item
                         PlatformAccess.getAccess().openGui((ServerPlayer) player, new GeneralScreenHandler<>(entity, ModuleContainer::new));
                     } else {

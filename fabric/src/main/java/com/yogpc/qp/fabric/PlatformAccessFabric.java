@@ -372,8 +372,8 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
     }
 
     @Override
-    public String platformName() {
-        return "Fabric";
+    public ModdingPlatform platformName() {
+        return ModdingPlatform.FABRIC;
     }
 
     @Override

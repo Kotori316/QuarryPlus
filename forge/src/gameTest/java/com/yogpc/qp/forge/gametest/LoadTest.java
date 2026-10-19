@@ -26,7 +26,7 @@ public final class LoadTest implements GatherGameTest {
     public void load(GameTestHelper helper) {
         helper.assertValueEqual("QuarryPlus".toLowerCase(Locale.ROOT), QuarryPlus.modID, Component.literal("ModId"));
 
-        assertEquals("Forge", new PlatformAccessForge().platformName(), "PlatformName");
+        assertEquals(PlatformAccess.ModdingPlatform.FORGE, new PlatformAccessForge().platformName(), "PlatformName");
         assertInstanceOf(PlatformAccessForge.class, PlatformAccess.getAccess());
 
         helper.succeed();

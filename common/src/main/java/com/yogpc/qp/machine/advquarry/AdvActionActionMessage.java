@@ -63,7 +63,7 @@ public final class AdvActionActionMessage implements CustomPacketPayload, OnRece
         if (entity instanceof AdvQuarryEntity quarry && quarry.enabled) {
             switch (action) {
                 case MODULE_INV -> {
-                    if (player instanceof ServerPlayer serverPlayer && !PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+                    if (player instanceof ServerPlayer serverPlayer && !PlatformAccess.getAccess().platformName().isFabric()) {
                         PlatformAccess.getAccess().openGui(serverPlayer, new GeneralScreenHandler<>(quarry, ModuleContainer::new));
                     }
                 }

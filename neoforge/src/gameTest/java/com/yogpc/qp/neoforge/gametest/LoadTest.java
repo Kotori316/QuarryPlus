@@ -76,7 +76,7 @@ public final class LoadTest {
     static void load(GameTestHelper helper) {
         helper.assertValueEqual("QuarryPlus".toLowerCase(Locale.ROOT), QuarryPlus.modID, Component.literal("ModId"));
 
-        assertEquals("NeoForge", new PlatformAccessNeoForge().platformName(), "PlatformName");
+        assertEquals(PlatformAccess.ModdingPlatform.NEOFORGE, new PlatformAccessNeoForge().platformName(), "PlatformName");
         assertInstanceOf(PlatformAccessNeoForge.class, PlatformAccess.getAccess());
 
         helper.succeed();

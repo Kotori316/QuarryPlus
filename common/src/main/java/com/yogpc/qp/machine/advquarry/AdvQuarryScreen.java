@@ -71,7 +71,7 @@ public class AdvQuarryScreen extends AbstractContainerScreen<AdvQuarryContainer>
         }
 
         this.addRenderableWidget(new IndexedButton(8, leftPos + 118, topPos + 58, 50, 12, Component.translatable("quarryplus.gui.adv_quarry.start"), this::startQuarryOnPress));
-        if (!PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+        if (!PlatformAccess.getAccess().platformName().isFabric()) {
             this.addRenderableWidget(new IndexedButton(9, leftPos + 8, topPos + 58, 50, 12, Component.translatable("quarryplus.gui.adv_quarry.modules"), this::openModuleOnPress));
         }
 

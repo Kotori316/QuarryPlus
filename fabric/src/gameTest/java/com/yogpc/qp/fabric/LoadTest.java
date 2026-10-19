@@ -25,7 +25,7 @@ public final class LoadTest implements ModInitializer {
     public void load(GameTestHelper helper) {
         helper.assertValueEqual("QuarryPlus".toLowerCase(Locale.ROOT), QuarryPlus.modID, Component.literal("ModId"));
 
-        assertEquals("Fabric", new PlatformAccessFabric().platformName(), "PlatformName");
+        assertEquals(PlatformAccess.ModdingPlatform.FABRIC, new PlatformAccessFabric().platformName(), "PlatformName");
         assertInstanceOf(PlatformAccessFabric.class, PlatformAccess.getAccess());
 
         helper.succeed();

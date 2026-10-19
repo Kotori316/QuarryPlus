@@ -349,8 +349,8 @@ public final class PlatformAccessForge implements PlatformAccess {
     }
 
     @Override
-    public String platformName() {
-        return "Forge";
+    public ModdingPlatform platformName() {
+        return ModdingPlatform.FORGE;
     }
 
     @Override

@@ -341,8 +341,8 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
     }
 
     @Override
-    public String platformName() {
-        return "NeoForge";
+    public ModdingPlatform platformName() {
+        return ModdingPlatform.NEOFORGE;
     }
 
     @Override

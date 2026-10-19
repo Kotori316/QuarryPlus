@@ -129,7 +129,7 @@ class Recipe(ingredientProvider: IngredientProvider)(using recipeContext: Bootst
       builder
         .define('o', ip.obsidian)
         .define('m', ip.marker)
-      if (PlatformAccess.getAccess.platformName().equalsIgnoreCase("fabric")) {
+      if (PlatformAccess.getAccess.platformName().isFabric) {
         builder
           .pattern("ooo")
           .pattern(" m ")
