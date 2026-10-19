@@ -2,7 +2,9 @@ package com.yogpc.qp.neoforge;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.neoforge.config.QuarryConfigNeoForge;
+import com.yogpc.qp.config.DefinedQuarryConfig;
+import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.neoforge.config.NeoForgeConfigDefiner;
 import com.yogpc.qp.neoforge.integration.EnergyIntegration;
 import com.yogpc.qp.neoforge.integration.StorageIntegration;
 import com.yogpc.qp.neoforge.packet.PacketHandler;
@@ -16,7 +18,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
 @Mod(QuarryPlus.modID)
 public final class QuarryPlusNeoForge {
-    static QuarryConfigNeoForge config;
+    static QuarryConfig config;
 
     public QuarryPlusNeoForge(IEventBus modBus, ModContainer container) {
         QuarryPlus.LOGGER.info("Initialize {} with {}", container.getModId(), container.getClass().getName());
@@ -24,9 +26,9 @@ public final class QuarryPlusNeoForge {
         modBus.register(this);
         modBus.register(EnergyIntegration.class);
         modBus.register(StorageIntegration.class);
-        var configPair = new ModConfigSpec.Builder().configure(b -> new QuarryConfigNeoForge(b, PlatformAccess.getAccess()::isInDevelopmentEnvironment));
-        config = configPair.getKey();
-        container.registerConfig(ModConfig.Type.SYNCED, configPair.getValue());
+        var builder = new ModConfigSpec.Builder();
+        config = new DefinedQuarryConfig(new NeoForgeConfigDefiner(builder), PlatformAccess.getAccess()::isInDevelopmentEnvironment);
+        container.registerConfig(ModConfig.Type.SYNCED, builder.build());
         QuarryPlus.LOGGER.info("Initialize finished {}", container.getModId());
     }
 

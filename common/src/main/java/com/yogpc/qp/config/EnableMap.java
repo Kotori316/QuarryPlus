@@ -41,11 +41,11 @@ public final class EnableMap {
         machinesMap.put(name, value);
     }
 
-    public Map<String, Boolean> getMachinesMap() {
+    Map<String, Boolean> getMachinesMap() {
         return machinesMap;
     }
 
-    public static EnableMap getDefault(BooleanSupplier inDevelop) {
+    static EnableMap getDefault(BooleanSupplier inDevelop) {
         if (PlatformAccess.getAccess().registerObjects() == null) {
             // In unit test
             return new EnableMap();
