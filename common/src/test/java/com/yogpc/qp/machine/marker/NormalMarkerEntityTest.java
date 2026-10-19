@@ -1,8 +1,8 @@
 package com.yogpc.qp.machine.marker;
 
-import com.electronwill.nightconfig.core.Config;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.PlatformAccessDelegate;
+import com.yogpc.qp.config.TestQuarryConfig;
 import com.yogpc.qp.machine.Area;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -66,9 +66,7 @@ class NormalMarkerEntityTest {
         @Test
         void range128() {
             var delegate = (PlatformAccessDelegate) PlatformAccess.getAccess();
-            var c = Config.inMemory();
-            c.set("markerPlusRange", 128);
-            delegate.setConfig(c, false);
+            delegate.setConfig(TestQuarryConfig.defaults().withMarkerPlusRange(128));
 
             assertEquals(128, PlatformAccess.config().markerPlusRange());
         }

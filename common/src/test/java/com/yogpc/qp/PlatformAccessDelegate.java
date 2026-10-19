@@ -1,6 +1,5 @@
 package com.yogpc.qp;
 
-import com.electronwill.nightconfig.core.Config;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -46,10 +45,6 @@ public class PlatformAccessDelegate implements PlatformAccess {
 
     public void setConfig(@Nullable QuarryConfig config) {
         this.config = config;
-    }
-
-    public void setConfig(Config config, boolean debug) {
-        setConfig(QuarryConfig.fromConfig(config, debug));
     }
 
     @Override
