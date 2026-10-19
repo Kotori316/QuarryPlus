@@ -55,4 +55,8 @@ public record TestQuarryConfig(
     public TestQuarryConfig withFlexibleMarkerRange(int flexibleMarkerRange) {
         return new TestQuarryConfig(debug, noEnergy, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop, enableChunkLoader, convertDeepslateOres, removeCommonMaterialsByChunkDestroyer, customPlayer, removeMinecartWithChest, markerPlusRange, flexibleMarkerRange, digFromMaxY);
     }
+
+    public TestQuarryConfig withRebornEnergyConversionCoefficient(double rebornEnergyConversionCoefficient) {
+        return new TestQuarryConfig(debug, noEnergy, powerMap, enableMap, rebornEnergyConversionCoefficient, removeBedrockOnNetherTop, enableChunkLoader, convertDeepslateOres, removeCommonMaterialsByChunkDestroyer, customPlayer, removeMinecartWithChest, markerPlusRange, flexibleMarkerRange, digFromMaxY);
+    }
 }
