@@ -24,8 +24,9 @@ public final class QuarryPlusNeoForge {
         modBus.register(this);
         modBus.register(EnergyIntegration.class);
         modBus.register(StorageIntegration.class);
-        config = new QuarryConfigNeoForge(new ModConfigSpec.Builder(), PlatformAccess.getAccess()::isInDevelopmentEnvironment);
-        container.registerConfig(ModConfig.Type.SYNCED, config.spec);
+        var configPair = new ModConfigSpec.Builder().configure(b -> new QuarryConfigNeoForge(b, PlatformAccess.getAccess()::isInDevelopmentEnvironment));
+        config = configPair.getKey();
+        container.registerConfig(ModConfig.Type.SYNCED, configPair.getValue());
         QuarryPlus.LOGGER.info("Initialize finished {}", container.getModId());
     }
 
