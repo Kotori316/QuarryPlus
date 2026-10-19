@@ -50,7 +50,7 @@ public final class QuarryPlusForge {
         }
 
         var builder = new ForgeConfigSpec.Builder();
-        config = new DefinedQuarryConfig(new ForgeConfigDefiner(builder), PlatformAccess.getAccess()::isInDevelopmentEnvironment);
+        config = new DefinedQuarryConfig(new ForgeConfigDefiner(builder), PlatformAccess.getAccess()::isInDevelopmentEnvironment, PlatformAccess.getAccess().platformName());
         modContainer.addConfig(new ModConfig(ModConfig.Type.COMMON, builder.build(), modContainer));
 
         QuarryPlus.LOGGER.info("Initialize Common finished");
