@@ -2,7 +2,9 @@ package com.yogpc.qp.forge;
 
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.QuarryPlus;
-import com.yogpc.qp.forge.config.QuarryConfigForge;
+import com.yogpc.qp.config.DefinedQuarryConfig;
+import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.forge.config.ForgeConfigDefiner;
 import com.yogpc.qp.forge.integration.EnergyIntegration;
 import com.yogpc.qp.forge.integration.StorageIntegration;
 import com.yogpc.qp.forge.packet.PacketHandler;
@@ -18,7 +20,7 @@ import net.minecraftforge.registries.RegisterEvent;
 
 @Mod(QuarryPlus.modID)
 public final class QuarryPlusForge {
-    static QuarryConfigForge config;
+    static QuarryConfig config;
 
     public QuarryPlusForge(FMLJavaModLoadingContext context) {
         QuarryPlus.LOGGER.info("Initialize Common");
@@ -47,9 +49,9 @@ public final class QuarryPlusForge {
             QuarryPlus.LOGGER.debug("No GameTest are registered");
         }
 
-        var configPair = new ForgeConfigSpec.Builder().configure(b -> new QuarryConfigForge(b, PlatformAccess.getAccess()::isInDevelopmentEnvironment));
-        config = configPair.getKey();
-        context.registerConfig(ModConfig.Type.COMMON, configPair.getValue());
+        var builder = new ForgeConfigSpec.Builder();
+        config = new DefinedQuarryConfig(new ForgeConfigDefiner(builder), PlatformAccess.getAccess()::isInDevelopmentEnvironment);
+        context.registerConfig(ModConfig.Type.COMMON, builder.build());
 
         QuarryPlus.LOGGER.info("Initialize Common finished");
     }
