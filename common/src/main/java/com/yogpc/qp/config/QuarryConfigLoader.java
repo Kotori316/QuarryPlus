@@ -1,13 +1,9 @@
 package com.yogpc.qp.config;
 
-import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.yogpc.qp.QuarryLogger;
 import com.yogpc.qp.machine.PowerMap;
-import org.jetbrains.annotations.NotNull;
 
 final class QuarryConfigLoader {
     record QuarryConfigImpl(
@@ -45,15 +41,4 @@ final class QuarryConfigLoader {
         Codec.BOOL.fieldOf("digFromMaxY").forGetter(QuarryConfig::digFromMaxY)
     ).apply(i, QuarryConfigImpl::new));
 
-    static void onConfigLoad(@NotNull QuarryConfig newConfig) {
-        QuarryLogger.applyLogLevel(newConfig.debug());
-        QuarryLogger.LOGGER.info(
-            QuarryLogger.LOG4J_CONFIG,
-            CODEC.codec()
-                .encodeStart(JsonOps.INSTANCE, newConfig)
-                .map(JsonElement::toString)
-                .resultOrPartial()
-                .orElse("Failed to convert config to JSON")
-        );
-    }
 }

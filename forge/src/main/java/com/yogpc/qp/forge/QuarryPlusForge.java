@@ -15,6 +15,7 @@ import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.RegisterEvent;
 
@@ -52,6 +53,8 @@ public final class QuarryPlusForge {
         var builder = new ForgeConfigSpec.Builder();
         config = new DefinedQuarryConfig(new ForgeConfigDefiner(builder), PlatformAccess.getAccess()::isInDevelopmentEnvironment, PlatformAccess.getAccess().platformName());
         modContainer.addConfig(new ModConfig(ModConfig.Type.COMMON, builder.build(), modContainer));
+        ModConfigEvent.Loading.getBus(busGroup).addListener(_ -> QuarryConfig.onConfigLoad(config));
+        ModConfigEvent.Reloading.getBus(busGroup).addListener(_ -> QuarryConfig.onConfigLoad(config));
 
         QuarryPlus.LOGGER.info("Initialize Common finished");
     }
