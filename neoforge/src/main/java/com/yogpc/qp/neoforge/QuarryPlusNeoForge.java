@@ -13,6 +13,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
@@ -35,5 +36,15 @@ public final class QuarryPlusNeoForge {
     @SubscribeEvent
     public void setupPacket(RegisterPayloadHandlersEvent event) {
         PacketHandler.init(event);
+    }
+
+    @SubscribeEvent
+    public void onConfigLoad(ModConfigEvent.Loading event) {
+        QuarryConfig.onConfigLoad(config);
+    }
+
+    @SubscribeEvent
+    public void onConfigReload(ModConfigEvent.Reloading event) {
+        QuarryConfig.onConfigLoad(config);
     }
 }

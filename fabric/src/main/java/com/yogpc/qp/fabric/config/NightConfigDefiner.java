@@ -60,6 +60,10 @@ public final class NightConfigDefiner implements ConfigDefiner {
         return () -> config.<Number>getOrElse(path, defaultValue).intValue();
     }
 
+    public boolean isCorrect(Config target) {
+        return spec.isCorrect(target);
+    }
+
     public void correct(Config target) {
         spec.correct(target, (action, path, incorrectValue, correctedValue) ->
             QuarryPlus.LOGGER.debug("Config corrected '{}' ({}): {} -> {}", path, action, incorrectValue, correctedValue)
