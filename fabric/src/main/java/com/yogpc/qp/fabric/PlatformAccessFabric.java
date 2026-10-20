@@ -5,6 +5,7 @@ import com.yogpc.qp.*;
 import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.fabric.config.QuarryConfigFabric;
 import com.yogpc.qp.fabric.machine.advpump.AdvPumpEntityFabric;
 import com.yogpc.qp.fabric.machine.advquarry.AdvQuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.advquarry.AdvQuarryEntityFabric;
@@ -440,6 +441,6 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
     }
 
     private QuarryConfig modified() {
-        return QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment);
+        return QuarryConfigFabric.load(configPath(), this::isInDevelopmentEnvironment, this.platformName());
     }
 }
