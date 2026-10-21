@@ -13,7 +13,11 @@ import net.minecraft.resources.{Identifier, ResourceKey}
 import net.minecraft.world.item.crafting.{Ingredient, Recipe as McRecipe}
 import net.minecraft.world.item.{Item, Items}
 
-class Recipe(ingredientProvider: IngredientProvider)(using recipeContext: BootstrapContext[McRecipe[?]], advancementContext: BootstrapContext[Advancement]) extends RecipeProvider(recipeContext, advancementContext) {
+class Recipe(ingredientProvider: IngredientProvider, recipeContext: BootstrapContext[McRecipe[?]], advancementContext: BootstrapContext[Advancement]) extends RecipeProvider(recipeContext, advancementContext) {
+  given BootstrapContext[McRecipe[?]] = recipeContext
+
+  given BootstrapContext[Advancement] = advancementContext
+
   private val ip = ingredientProvider
 
   override def buildRecipes(): Unit = {

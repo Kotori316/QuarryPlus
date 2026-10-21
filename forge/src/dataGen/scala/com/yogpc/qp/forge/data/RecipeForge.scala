@@ -12,13 +12,12 @@ class RecipeForge extends MultiRegistryBootstrap {
   override def requestedRegistries(): java.util.Set[ResourceKey[? <: Registry[?]]] = java.util.Set.of(Registries.RECIPE, Registries.ADVANCEMENT)
 
   override def run(registries: MultiRegistryBootstrap.BootstrapGetter): Unit = {
-    given recipeContext: BootstrapContext[MCRecipe[?]] = registries.get(Registries.RECIPE)
-
-    given advancementContext: BootstrapContext[Advancement] = registries.get(Registries.ADVANCEMENT)
+    val recipeContext: BootstrapContext[MCRecipe[?]] = registries.get(Registries.RECIPE)
+    val advancementContext: BootstrapContext[Advancement] = registries.get(Registries.ADVANCEMENT)
 
     val itemRegistry = recipeContext.lookup(Registries.ITEM)
     val ingredientProvider = new IngredientProviderForge(itemRegistry)
-    val recipeProvider = new Recipe(ingredientProvider)
+    val recipeProvider = new Recipe(ingredientProvider, recipeContext, advancementContext)
 
     recipeProvider.buildRecipes()
   }

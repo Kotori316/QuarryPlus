@@ -19,11 +19,7 @@ final class RecipeFabric(output: FabricPackOutput, registries: CompletableFuture
   override def createRecipeProvider(provider: HolderLookup.Provider, recipeContext: BootstrapContext[McRecipe[?]], advancementContext: BootstrapContext[Advancement]): RecipeProvider = {
     val ip = new IngredientProviderFabric((o, c) => this.withConditions(o, c *), provider.lookupOrThrow(Registries.ITEM))
 
-    given r: BootstrapContext[McRecipe[?]] = recipeContext
-
-    given a: BootstrapContext[Advancement] = advancementContext
-
-    new Recipe(ip)
+    new Recipe(ip, recipeContext, advancementContext)
   }
 
   override def getName: String = getClass.getSimpleName
