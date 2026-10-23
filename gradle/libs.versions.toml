@@ -4,7 +4,7 @@ forge = "26.3-66.0.13"
 eventbus_forge = "7.0.6"
 fabric_api = "0.164.0+26.3"
 fabric_loader = "0.20.0"
-neoforge = "26.3.0.92"
+neoforge = "26.3.0.95"
 fabric_version_checker = "3.0.2"
 
 du = "26.3.3"
