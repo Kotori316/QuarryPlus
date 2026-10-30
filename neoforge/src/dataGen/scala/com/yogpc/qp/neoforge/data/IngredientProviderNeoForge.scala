@@ -20,19 +20,19 @@ final class IngredientProviderNeoForge(itemRegistry: HolderGetter[Item]) extends
 
   override def goldIngot: Ingredient = Ingredient.of(itemRegistry.getOrThrow(Tags.Items.INGOTS_GOLD))
 
-  override def obsidianTag: TagKey[Item] = Tags.Items.OBSIDIANS
+  override def obsidianTag: TagKey[Item] = Tags.BlockItems.OBSIDIANS.item()
 
-  override def glass: Ingredient = Ingredient.of(itemRegistry.getOrThrow(Tags.Items.GLASS_BLOCKS))
+  override def glass: Ingredient = Ingredient.of(itemRegistry.getOrThrow(Tags.BlockItems.GLASS_BLOCKS.item()))
 
-  override def redStoneBlock: Ingredient = Ingredient.of(itemRegistry.getOrThrow(Tags.Items.STORAGE_BLOCKS_REDSTONE))
+  override def redStoneBlock: Ingredient = Ingredient.of(itemRegistry.getOrThrow(Tags.BlockItems.STORAGE_BLOCKS_REDSTONE.item()))
 
   override def pickaxeForQuarry: Ingredient = Ingredient.of(Items.DIAMOND_PICKAXE)
 
   override def redStoneDust: Ingredient = Ingredient.of(itemRegistry.getOrThrow(Tags.Items.DUSTS_REDSTONE))
 
-  override def goldBlock: Ingredient = Ingredient.of(itemRegistry.getOrThrow(Tags.Items.STORAGE_BLOCKS_GOLD))
+  override def goldBlock: Ingredient = Ingredient.of(itemRegistry.getOrThrow(Tags.BlockItems.STORAGE_BLOCKS_GOLD.item()))
 
-  override def diamondBlock: Ingredient = Ingredient.of(itemRegistry.getOrThrow(Tags.Items.STORAGE_BLOCKS_DIAMOND))
+  override def diamondBlock: Ingredient = Ingredient.of(itemRegistry.getOrThrow(Tags.BlockItems.STORAGE_BLOCKS_DIAMOND.item()))
 
   override def installBedrockModuleQuarryRecipeOutput(original: RecipeOutput): RecipeOutput = {
     original.withConditions(NeverCondition.INSTANCE)
@@ -44,5 +44,5 @@ final class IngredientProviderNeoForge(itemRegistry: HolderGetter[Item]) extends
 
   override def netherStar: Ingredient = Ingredient.of(itemRegistry.getOrThrow(Tags.Items.NETHER_STARS))
 
-  override def emeraldBlock: Ingredient = Ingredient.of(itemRegistry.getOrThrow(Tags.Items.STORAGE_BLOCKS_EMERALD))
+  override def emeraldBlock: Ingredient = Ingredient.of(itemRegistry.getOrThrow(Tags.BlockItems.STORAGE_BLOCKS_EMERALD.item()))
 }
