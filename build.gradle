@@ -94,6 +94,8 @@ minecraft {
 
         register("gameTestServer") {
             workingDir.convention(layout.projectDirectory.dir("game-test"))
+            // JUnit is required by game tests
+            extraLibraries(configurations.game_test)
             systemProperty("forge.enabledGameTestNamespaces", "QuarryPlus".toLowerCase())
             jvmArgs("-EnableAssertions".toLowerCase())
         }

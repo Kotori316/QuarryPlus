@@ -42,7 +42,7 @@ jobs:
         env:
           IGNORE_OTHER_MODS_IN_RUNTIME: true
       - name: GameTest
-        run: chmod +x ./gradlew && ./gradlew runGameTestServer --no-daemon
+        run: chmod +x ./gradlew && ./gradlew runTestGameTestServer --no-daemon
         env:
           TEST_UTILITY_LOG_ALL_TEST: true
           IGNORE_OTHER_MODS_IN_RUNTIME: true
