@@ -38,7 +38,7 @@ jobs:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IGNORE_OTHER_MODS_IN_RUNTIME: true
       - name: Test with runData
-        run: chmod +x ./gradlew && ./gradlew runData --no-daemon
+        run: chmod +x ./gradlew && ./gradlew runTestData --no-daemon
         env:
           IGNORE_OTHER_MODS_IN_RUNTIME: true
       - name: GameTest

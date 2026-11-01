@@ -84,6 +84,11 @@ minecraft {
 
         register("data") {
             workingDir.convention(layout.projectDirectory.dir("run-server"))
+            mods {
+                register("quarryplus") {
+                    sources(sourceSets.main, sourceSets.test)
+                }
+            }
             args("--mod", "quarryplus", "--all", "--output", file("src/generated/resources/"), "--existing", file("src/main/resources/"))
         }
 
