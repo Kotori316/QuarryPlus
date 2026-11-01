@@ -197,7 +197,7 @@ dependencies {
 
     // IC2 Classic
     if (System.getenv("IGNORE_OTHER_MODS_IN_RUNTIME") == null) {
-        implementation(renamer.dependency("curse.maven:ic2-classic-242942:${project.ic2ClassicId}"))
+        compileOnly(renamer.dependency("curse.maven:ic2-classic-242942:${project.ic2ClassicId}"))
     } else {
         compileOnly(renamer.dependency("curse.maven:ic2-classic-242942:${project.ic2ClassicId}"))
         testCompileOnly(renamer.dependency("curse.maven:ic2-classic-242942:${project.ic2ClassicId}"))
