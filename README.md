@@ -1,4 +1,4 @@
-# QuarryPlus for 26.1.x
+# QuarryPlus for 26.3.x
 
 This program is licensed under GNU LESSER GENERAL PUBLIC LICENSE.
 
@@ -29,6 +29,6 @@ repositories {
 dependencies {
     // since 1.20.4 See https://maven.kotori316.com/com/kotori316
     // "AdditionalEnchantedMiner" is for Forge. For fabric and NeoForge, use the version with suffix.
-  implementation(fg.deobf("com.kotori316:AdditionalEnchantedMiner:26.12.x".toLowerCase(Locale.ROOT)))
+  implementation("com.kotori316:AdditionalEnchantedMiner:26.12.x".toLowerCase(Locale.ROOT))
 }
 ```
