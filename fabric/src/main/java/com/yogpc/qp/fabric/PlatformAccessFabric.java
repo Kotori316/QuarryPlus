@@ -441,6 +441,6 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
     }
 
     private QuarryConfig modified() {
-        return QuarryConfigFabric.load(configPath(), this::isInDevelopmentEnvironment, this.platformName());
+        return QuarryConfigFabric.load(configPath(), this::isInDevelopmentEnvironment, this::platformName);
     }
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /// [QuarryConfig] whose values are defined via [ConfigDefiner].
@@ -17,12 +18,12 @@ import java.util.stream.Collectors;
 public final class DefinedQuarryConfig implements QuarryConfig {
     private static final double DEFAULT_REBORN_ENERGY_CONVERSION_COEFFICIENT = 1d / 16d;
 
-    public DefinedQuarryConfig(ConfigDefiner definer, BooleanSupplier inDevelop, PlatformAccess.ModdingPlatform platform) {
+    public DefinedQuarryConfig(ConfigDefiner definer, BooleanSupplier inDevelop, Supplier<PlatformAccess.ModdingPlatform> platform) {
         this.debug = defineBoolean(definer, "debug", inDevelop.getAsBoolean(), "In debug mode");
         this.noEnergy = defineBoolean(definer, "noEnergy", false, "Enable No Energy mode");
 
         // Reborn Core is available only in Fabric. Other platforms don't need this option.
-        this.rebornEnergyConversionCoefficient = platform.isFabric()
+        this.rebornEnergyConversionCoefficient = platform.get().isFabric()
             ? defineDouble(definer, "rebornEnergyConversionCoefficient", DEFAULT_REBORN_ENERGY_CONVERSION_COEFFICIENT, 0d, 1e10, "[Fabric ONLY] 1E = ?FE")
             : () -> DEFAULT_REBORN_ENERGY_CONVERSION_COEFFICIENT;
         this.removeBedrockOnNetherTop = defineBoolean(definer, "removeBedrockOnNetherTop", inDevelop.getAsBoolean(), "Remove bedrock at y=127 in Nether");

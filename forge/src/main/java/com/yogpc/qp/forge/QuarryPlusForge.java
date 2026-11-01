@@ -51,7 +51,7 @@ public final class QuarryPlusForge {
         }
 
         var builder = new ForgeConfigSpec.Builder();
-        config = new DefinedQuarryConfig(new ForgeConfigDefiner(builder), PlatformAccess.getAccess()::isInDevelopmentEnvironment, PlatformAccess.getAccess().platformName());
+        config = new DefinedQuarryConfig(new ForgeConfigDefiner(builder), PlatformAccess.getAccess()::isInDevelopmentEnvironment, PlatformAccess.getAccess()::platformName);
         modContainer.addConfig(new ModConfig(ModConfig.Type.COMMON, builder.build(), modContainer));
         ModConfigEvent.Loading.getBus(busGroup).addListener(_ -> QuarryConfig.onConfigLoad(config));
         ModConfigEvent.Reloading.getBus(busGroup).addListener(_ -> QuarryConfig.onConfigLoad(config));

@@ -9,16 +9,17 @@ import com.yogpc.qp.config.QuarryConfig;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public final class QuarryConfigFabric {
     /// Load the config file. If the file doesn't exist or has invalid values, they are corrected and written to the file.
     /// The file is saved in the background and reloaded automatically when it's modified.
-    public static QuarryConfig load(Path path, BooleanSupplier inDevelop, PlatformAccess.ModdingPlatform platform) {
+    public static QuarryConfig load(Path path, BooleanSupplier inDevelop, Supplier<PlatformAccess.ModdingPlatform> platform) {
         return load(path, inDevelop, platform, true);
     }
 
     /// @param background `false` to save the file synchronously and not to watch the file. It's for tests.
-    static QuarryConfig load(Path path, BooleanSupplier inDevelop, PlatformAccess.ModdingPlatform platform, boolean background) {
+    static QuarryConfig load(Path path, BooleanSupplier inDevelop, Supplier<PlatformAccess.ModdingPlatform> platform, boolean background) {
         // The config doesn't exist yet when the listener is created, so the action is set later.
         var onLoad = new AtomicReference<Runnable>(() -> {
         });
