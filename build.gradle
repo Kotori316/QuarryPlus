@@ -196,11 +196,13 @@ dependencies {
     compileOnly(renamer.dependency("dev.ftb.mods:ftb-teams-forge:${project.ftbTeamsVersion}"))
 
     // IC2 Classic
+    def ic2Classic = renamer.dependency("curse.maven:ic2-classic-242942:${project.ic2ClassicId}")
+    compileOnly(ic2Classic)
     if (System.getenv("IGNORE_OTHER_MODS_IN_RUNTIME") == null) {
-        compileOnly(renamer.dependency("curse.maven:ic2-classic-242942:${project.ic2ClassicId}"))
+        // Load IC2 in tests.
+        testImplementation(ic2Classic)
     } else {
-        compileOnly(renamer.dependency("curse.maven:ic2-classic-242942:${project.ic2ClassicId}"))
-        testCompileOnly(renamer.dependency("curse.maven:ic2-classic-242942:${project.ic2ClassicId}"))
+        testCompileOnly(ic2Classic)
     }
 
     // Test Dependencies.
