@@ -15,5 +15,5 @@ jobs:
     with:
       release_command: 'checkReleaseVersion assemble publishToMavenLocal curseforge modrinth githubRelease registerVersion publish --continue'
       enable_signature_check: true
-      java_version: 17
+      java_version: 25
     secrets: inherit
