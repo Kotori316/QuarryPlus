@@ -13,6 +13,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
@@ -32,71 +33,114 @@ import java.util.stream.Collectors;
 
 public final class TraceQuarryWork {
     public static final boolean enabled;
+    @Nullable
     private static final LoggerContext CONTEXT;
     private static final Logger LOGGER;
     private static final Marker WARNING_MARKER;
+    private static final boolean traceable;
 
     private static class DummyLoader extends SecureClassLoader {
     }
 
     static {
         enabled = QuarryPlus.config.common.logAllQuarryWork.get();
-        CONTEXT = Configurator.initialize("quarryplus-config", new DummyLoader(),
-            URI.create(Objects.requireNonNull(TraceQuarryWork.class.getResource("/quarry-log4j2.xml")).toString())
-        );
-        // temporal variable to set level, as org.apache.logging.log4j.Logger doesn't provide setters.
-        var l = CONTEXT.getLogger("TQW");
-        LOGGER = l;
+        CONTEXT = createContext();
+        if (CONTEXT != null) {
+            // temporal variable to set level, as org.apache.logging.log4j.Logger doesn't provide setters.
+            var l = CONTEXT.getLogger("TQW");
+            LOGGER = l;
+            if (!enabled) {
+                l.setLevel(Level.WARN);
+            }
+            traceable = true;
+        } else {
+            // Configurator.initialize returns null when the logging system is replaced by other mods (e.g. async logger).
+            // Use the default logger, and never change its level, as it affects the others.
+            LOGGER = LogManager.getLogger("TQW");
+            traceable = enabled;
+        }
         WARNING_MARKER = MarkerManager.getMarker("QUARRY_WARNING");
-        if (!enabled) {
-            l.setLevel(Level.WARN);
+    }
+
+    @Nullable
+    private static LoggerContext createContext() {
+        try {
+            return Configurator.initialize("quarryplus-config", new DummyLoader(),
+                URI.create(Objects.requireNonNull(TraceQuarryWork.class.getResource("/quarry-log4j2.xml")).toString())
+            );
+        } catch (RuntimeException e) {
+            return null;
         }
     }
 
     private static final Marker MARKER_START_WORK = MarkerManager.getMarker("startWork");
 
     public static void startWork(PowerTile tile, BlockPos pos, int energyInMachine) {
+        if (!traceable) {
+            return;
+        }
         LOGGER.info(MARKER_START_WORK, "{} Started work with {} FE", header(tile, pos), energyInMachine);
     }
 
     private static final Marker MARKER_CHANGE_TARGET = MarkerManager.getMarker("changeTarget");
 
     public static void changeTarget(PowerTile tile, BlockPos pos, String state, String target) {
+        if (!traceable) {
+            return;
+        }
         LOGGER.debug(MARKER_CHANGE_TARGET, "{} In {} to {}", header(tile, pos), state, target);
     }
 
     private static final Marker MARKER_CHANGE_STATE = MarkerManager.getMarker("changeState");
 
     public static void changeState(PowerTile tile, BlockPos pos, String oldState, String newState) {
+        if (!traceable) {
+            return;
+        }
         LOGGER.debug(MARKER_CHANGE_STATE, "{} From {} to {}", header(tile, pos), oldState, newState);
     }
 
     private static final Marker MARKER_PROGRESS = MarkerManager.getMarker("progress");
 
     public static void progress(PowerTile tile, BlockPos pos, BlockPos targetPos, String reason) {
+        if (!traceable) {
+            return;
+        }
         LOGGER.debug(MARKER_PROGRESS, "{} ({},{},{}) {}", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), reason);
     }
 
     private static final Marker MARKER_CAN_BREAK_CHECK = MarkerManager.getMarker("canBreakCheck");
 
     public static void canBreakCheck(PowerTile tile, BlockPos pos, BlockPos targetPos, BlockState state, String detail) {
+        if (!traceable) {
+            return;
+        }
         LOGGER.info(MARKER_CAN_BREAK_CHECK, "{} ({},{},{}) {} State({})", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), detail, state);
     }
 
     private static final Marker MARKER_BLOCK_REMOVE_FAILED = MarkerManager.getMarker("blockRemoveFailed");
 
     public static void blockRemoveFailed(PowerTile tile, BlockPos pos, BlockPos targetPos, BlockState state, BreakResult breakResult) {
+        if (!traceable) {
+            return;
+        }
         LOGGER.info(MARKER_BLOCK_REMOVE_FAILED, "{} ({},{},{}) {} {}", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), breakResult, state);
     }
 
     private static final Marker MARKER_BLOCK_REMOVE_SUCCEED = MarkerManager.getMarker("removeSuccess");
 
     public static void blockRemoveSucceed(PowerTile tile, BlockPos pos, BlockPos targetPos, BlockState state, List<ItemStack> drops, int exp, long consumedEnergy) {
+        if (!traceable) {
+            return;
+        }
         LOGGER.debug(MARKER_BLOCK_REMOVE_SUCCEED, "{} ({},{},{}) {} FE {} EXP={} ({})", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), consumedEnergy / PowerTile.ONE_FE, state, exp,
             drops.stream().map(s -> "%dx %s".formatted(s.getCount(), ForgeRegistries.ITEMS.getKey(s.getItem()))).collect(Collectors.joining(",")));
     }
 
     public static void blockRemoveSucceed(PowerTile tile, BlockPos pos, BlockPos targetPos, List<BlockState> state, Map<ItemKey, Long> drops, int exp, long consumedEnergy) {
+        if (!traceable) {
+            return;
+        }
         var stateCount = state.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         LOGGER.debug(MARKER_BLOCK_REMOVE_SUCCEED, "{} ({},{},{}) {} FE {} EXP={} ({})", header(tile, pos), targetPos.getX(), targetPos.getY(), targetPos.getZ(), consumedEnergy / PowerTile.ONE_FE, stateCount, exp,
             drops.entrySet().stream().map(s -> "%dx %s".formatted(s.getValue(), s.getKey().getId())).collect(Collectors.joining(",")));
@@ -111,18 +155,27 @@ public final class TraceQuarryWork {
     private static final Marker MARKER_FINISH_WORK = MarkerManager.getMarker("finishWork");
 
     public static void finishWork(PowerTile tile, BlockPos pos, int energyInMachine) {
+        if (!traceable) {
+            return;
+        }
         LOGGER.info(MARKER_FINISH_WORK, "{} Finished work with {} FE", header(tile, pos), energyInMachine);
     }
 
     private static final Marker MARKER_CONVERT_ITEM = MarkerManager.getMarker("convertItem");
 
     public static void convertItem(ItemKey before, ItemKey after) {
+        if (!traceable) {
+            return;
+        }
         LOGGER.debug(MARKER_CONVERT_ITEM, "Convert {} to {}", before, after);
     }
 
     private static final Marker MARKER_TRANSFER_ITEM = MarkerManager.getMarker("transferItem");
 
     public static void transferItem(@Nullable BlockEntity from, @Nullable IItemHandler dest, ItemKey itemKey, int count) {
+        if (!traceable) {
+            return;
+        }
         String header = from != null ? header(from, from.getBlockPos()) : "ItemHandler Extraction";
         LOGGER.debug(MARKER_TRANSFER_ITEM, "{} Transfer {}x {} to {}", header, count, itemKey, dest);
     }
@@ -130,6 +183,9 @@ public final class TraceQuarryWork {
     private static final Marker MARKER_TRANSFER_FLUID = MarkerManager.getMarker("transferFluid");
 
     public static void transferFluid(@Nullable BlockEntity from, @Nullable IFluidHandler dest, FluidKey fluidKey, int amount) {
+        if (!traceable) {
+            return;
+        }
         String header = from != null ? header(from, from.getBlockPos()) : "FluidHandler Extraction";
         LOGGER.debug(MARKER_TRANSFER_FLUID, "{} Transfer {}mB of {} to {}", header, amount, fluidKey, dest);
     }
@@ -137,6 +193,9 @@ public final class TraceQuarryWork {
     private static final Marker MARKER_NO_DROPS = MarkerManager.getMarker("noDrops");
 
     public static void noDrops(BlockState state, BlockPos pos, ItemStack tool) {
+        if (!traceable) {
+            return;
+        }
         LOGGER.debug(MARKER_NO_DROPS, "{} at ({},{},{}) has no drops with {}", state, pos.getX(), pos.getY(), pos.getZ(), tool);
     }
 
