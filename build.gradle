@@ -13,12 +13,12 @@ import java.util.stream.Stream
 plugins {
     id("maven-publish")
     id("scala")
-    id("net.minecraftforge.gradle") version("6.+")
-    id("org.parchmentmc.librarian.forgegradle") version("1.+")
+    id("net.minecraftforge.gradle") version("7.0.40")
+    id("net.minecraftforge.renamer") version("1.1.8")
     id("com.github.breadmoirai.github-release") version("2.4.1")
     id("com.matthewprenger.cursegradle") version("1.4.0")
     id("com.modrinth.minotaur").version("2.+")
-    id("com.kotori316.plugin.cf").version("2.3")
+    id("com.kotori316.plugin.cf").version("4.0")
 }
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
@@ -31,7 +31,7 @@ String createVersion() {
 
 version = createVersion()
 group = "com.kotori316" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "AdditionalEnchantedMiner-" + project.minecraftVersion
+base.archivesName = "AdditionalEnchantedMiner-" + project.minecraftVersion
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -54,111 +54,43 @@ minecraft {
 //    mappings channel: "official", version: (project.minecraftVersion as String)
 
     runs {
-        client {
-            workingDirectory project.file("Minecraft")
-            property("forge.logging.markers", "REGISTRIES")
-            property("mixin.env.remapRefMap", "true")
-            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
-            property("mixin.debug.export", "true")
-            property("forge.logging.console.level", "debug")
-            property("forge.enabledGameTestNamespaces", "QuarryPlus".toLowerCase())
-            // From https://github.com/SlimeKnights/TinkersConstruct/blob/1.18/build.gradle
+        configureEach {
+            systemProperty("forge.logging.markers", "REGISTRIES")
+            systemProperty("mixin.debug.export", "true")
+            systemProperty("forge.logging.console.level", "debug")
+            if (System.getProperty("os.name").startsWith("Mac")) {
+                jvmArgs("-XstartOnFirstThread")
+            }
+        }
+
+        register("client") {
+            workingDir.convention(layout.projectDirectory.dir("Minecraft"))
+            systemProperty("forge.enabledGameTestNamespaces", "QuarryPlus".toLowerCase())
+            // If not set, use "0" to prevent authentication exception.
+            args("--accessToken", project.findProperty("mc_token") ?: "0")
             if (project.hasProperty("mc_uuid")) {
-                // Your uuid without any dashes in the middle
                 args("--uuid", project.getProperty("mc_uuid"))
             }
             if (project.hasProperty("mc_username")) {
-                // Your username/display name, this is the name that shows up in chat
-                // Note: This is not your email, even if you have a Mojang account
                 args("--username", project.getProperty("mc_username"))
             }
-            // Your access token, you can find it in your ".minecraft/launcher_profiles.json" file
-            // If not set, use "0" to prevent authentication exception.
-            args("--accessToken", project.findProperty("mc_token") ?: "0")
             jvmArgs("-EnableAssertions".toLowerCase())
-
-            mods {
-                quarryplus {
-                    source(sourceSets.main)
-                    source(sourceSets.test)
-                }
-            }
-            lazyToken("minecraft_classpath") {
-                configurations.game_test.collect { it.absolutePath }.join(File.pathSeparator)
-            }
         }
 
-        client2 {
-            parent(runs.client)
-            workingDirectory project.file("run-server-client")
-            property("forge.logging.markers", "REGISTRIES")
-            property("mixin.env.remapRefMap", "true")
-            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
-            property("mixin.debug.export", "true")
-            property("forge.logging.console.level", "info")
-            property("forge.enabledGameTestNamespaces", "")
-            property("forge.enableGameTest", "false")
-            mods {
-                quarryplus {
-                    source(sourceSets.main)
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file("run-server")
-
-            // Recommended logging data for a userdev environment
-            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
-            property("mixin.env.remapRefMap", "true")
-            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
-            property("mixin.debug.export", "true")
-            property("forge.logging.console.level", "info")
+        register("server") {
+            workingDir.convention(layout.projectDirectory.dir("run-server"))
             args("--nogui")
-
-            mods {
-                quarryplus {
-                    source(sourceSets.main)
-                }
-            }
         }
 
-        data {
-            workingDirectory project.file("run-server")
-            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
-            property("mixin.env.remapRefMap", "true")
-            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
-            property("mixin.debug.export", "true")
-            property("forge.logging.console.level", "info")
+        register("data") {
+            workingDir.convention(layout.projectDirectory.dir("run-server"))
             args("--mod", "quarryplus", "--all", "--output", file("src/generated/resources/"), "--existing", file("src/main/resources/"))
-
-            mods {
-                quarryplus {
-                    source(sourceSets.main)
-                    source(sourceSets.test)
-                }
-            }
         }
 
-        gameTestServer {
-            workingDirectory project.file("game-test")
-            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
-            property("mixin.env.remapRefMap", "true")
-            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
-            property("mixin.debug.export", "true")
-            property("forge.logging.console.level", "debug")
-            property("forge.enabledGameTestNamespaces", "QuarryPlus".toLowerCase())
+        register("gameTestServer") {
+            workingDir.convention(layout.projectDirectory.dir("game-test"))
+            systemProperty("forge.enabledGameTestNamespaces", "QuarryPlus".toLowerCase())
             jvmArgs("-EnableAssertions".toLowerCase())
-
-            mods {
-                quarryplus {
-                    source(sourceSets.main)
-                    source(sourceSets.test)
-                }
-            }
-            lazyToken("minecraft_classpath") {
-                configurations.game_test.collect { it.absolutePath }.join(File.pathSeparator)
-            }
         }
     }
 }
@@ -168,6 +100,9 @@ processResources {
 }
 
 repositories {
+    minecraft.mavenizer(it)
+    maven(fg.forgeMaven)
+    maven(fg.minecraftLibsMaven)
     /*maven {
         // location of a maven mirror for JEI files, as a fallback
         name = "ModMaven-k-4u.nl"
@@ -185,7 +120,7 @@ repositories {
 
     maven {
         name = "FTB NEW"
-        url = "https://maven.saps.dev/releases/"
+        url = "https://maven.ftb.dev/releases/"
         content {
             includeGroup("dev.ftb.mods")
             includeGroup("dev.latvian.mods")
@@ -229,7 +164,7 @@ configurations {
 
 dependencies {
     String forgeVersion = System.getenv("CI_FORGE") ?: project.forgeVersion
-    minecraft("net.minecraftforge:forge:" + forgeVersion)
+    implementation(minecraft.dependency("net.minecraftforge:forge:" + forgeVersion))
     System.out.println(("Selected version: " + "net.minecraftforge:forge:" + forgeVersion) as String)
     compileOnly(group: "org.scala-lang", name: "scala-library", version: project.scalaVersion)
     compileOnly(group: "org.typelevel", name: "cats-core_2.13", version: project.catsVersion)
@@ -237,46 +172,41 @@ dependencies {
     testImplementation(group: "org.typelevel", name: "cats-core_2.13", version: project.catsVersion)
 
     boolean useREI = Boolean.parseBoolean(System.getenv("USE_REI"))
-    compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-common-api", version: project.jeiVersion))
-    compileOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-forge-api", version: project.jeiVersion))
-    compileOnly(fg.deobf(group: "me.shedaniel", name: "REIPluginCompatibilities-forge-annotations", version: project.reiCompatibilityVersion))
+    compileOnly(renamer.dependency("mezz.jei:jei-1.19.2-common-api:${project.jeiVersion}"))
+    compileOnly(renamer.dependency("mezz.jei:jei-1.19.2-forge-api:${project.jeiVersion}"))
+    compileOnly(renamer.dependency("me.shedaniel:REIPluginCompatibilities-forge-annotations:${project.reiCompatibilityVersion}"))
     if (useREI) {
-        implementation(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
-        implementation(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
-        implementation(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
-        implementation(fg.deobf(group: "me.shedaniel", name: "REIPluginCompatibilities-forge-annotations", version: project.reiCompatibilityVersion))
+        implementation(renamer.dependency("me.shedaniel:RoughlyEnoughItems-forge:${project.reiVersion}"))
+        implementation(renamer.dependency("me.shedaniel.cloth:cloth-config-forge:${project.clothVersion}"))
+        implementation(renamer.dependency("dev.architectury:architectury-forge:${project.architecturyVersion}"))
+        implementation(renamer.dependency("me.shedaniel:REIPluginCompatibilities-forge-annotations:${project.reiCompatibilityVersion}"))
     } else {
-        runtimeOnly(fg.deobf(group: "mezz.jei", name: "jei-1.19.2-forge", version: project.jeiVersion) {
-            transitive(false)
-        })
-        compileOnly(fg.deobf(group: "me.shedaniel", name: "RoughlyEnoughItems-forge", version: project.reiVersion))
-        compileOnly(fg.deobf(group: "me.shedaniel.cloth", name: "cloth-config-forge", version: project.clothVersion))
-        implementation(fg.deobf(group: "dev.architectury", name: "architectury-forge", version: project.architecturyVersion))
+        runtimeOnly(renamer.dependency("mezz.jei:jei-1.19.2-forge:${project.jeiVersion}"))
+        compileOnly(renamer.dependency("me.shedaniel:RoughlyEnoughItems-forge:${project.reiVersion}"))
+        compileOnly(renamer.dependency("me.shedaniel.cloth:cloth-config-forge:${project.clothVersion}"))
+        compileOnly(renamer.dependency("dev.architectury:architectury-forge:${project.architecturyVersion}"))
     }
     runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: project.slpVersion, classifier: "with-library") {
         transitive(false)
     }
 
     // FTB Chunks stuff
-    implementation(fg.deobf(group: "dev.ftb.mods", name: "ftb-chunks-forge", version: project.ftbChunksVersion))
-    // implementation
-    implementation(fg.deobf(group: "dev.ftb.mods", name: "ftb-library-forge", version: project.ftbLibraryVersion))
-    // implementation
-    runtimeOnly(fg.deobf(group: "dev.ftb.mods", name: "ftb-teams-forge", version: project.ftbTeamsVersion))
-    // runtimeOnly
+    compileOnly(renamer.dependency("dev.ftb.mods:ftb-chunks-forge:${project.ftbChunksVersion}"))
+    compileOnly(renamer.dependency("dev.ftb.mods:ftb-library-forge:${project.ftbLibraryVersion}"))
+    compileOnly(renamer.dependency("dev.ftb.mods:ftb-teams-forge:${project.ftbTeamsVersion}"))
 
     // IC2 Classic
     if (System.getenv("IGNORE_OTHER_MODS_IN_RUNTIME") == null) {
-        implementation(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
+        implementation(renamer.dependency("curse.maven:ic2-classic-242942:${project.ic2ClassicId}"))
     } else {
-        compileOnly(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
-        testCompileOnly(fg.deobf(group: "curse.maven", name: "ic2-classic-242942", version: project.ic2ClassicId))
+        compileOnly(renamer.dependency("curse.maven:ic2-classic-242942:${project.ic2ClassicId}"))
+        testCompileOnly(renamer.dependency("curse.maven:ic2-classic-242942:${project.ic2ClassicId}"))
     }
 
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.
-    testImplementation(fg.deobf(group: "com.kotori316", name: "test_utility", version: project.testUtilVersion))
+    testImplementation(renamer.dependency("com.kotori316:test_utility:${project.testUtilVersion}"))
     testImplementation(group: "com.kotori316", name: "test_utility_dependency", version: "1.0-SNAPSHOT")
 
     String JUPITER_VERSION = "5.8.2"
@@ -285,6 +215,9 @@ dependencies {
     game_test(group: "org.junit.jupiter", name: "junit-jupiter-engine", version: JUPITER_VERSION)
     game_test(group: "org.junit.platform", name: "junit-platform-launcher", version: "1.8.2")
 }
+
+// Use the minecraft mappings (Official + Parchment -> SRG) for deobfuscating mod dependencies and reobfuscating the jar.
+renamer.mappings.from(minecraft.dependency.toSrgFile)
 
 // Example for how to get properties into the manifest for reading at runtime.
 def jarAttributeMap = [
@@ -330,18 +263,23 @@ task deobfJar(type: Jar) {
 }
 
 // Tell the artifact system about our extra jars
-artifacts {
-    archives(srcJar, deobfJar)
+// (The `archives` configuration was removed in Gradle 9, so add them to the `assemble` task.)
+tasks.named("assemble") {
+    dependsOn(srcJar, deobfJar)
 }
 
 // Example configuration to allow publishing using the maven-publish plugin
 // This is the preferred method to reobfuscate your jar file
-jar.finalizedBy("reobfJar")
+// Creates a task named `renameJar`, which converts the jar to SRG names.
+renamer.classes(tasks.named("jar", Jar)) {
+    map.from(minecraft.dependency.toSrgFile)
+    archiveClassifier = "srg"
+}
 
 jar.finalizedBy("jksSignJar")
 
 tasks.register("jksSignJar") {
-    dependsOn("reobfJar")
+    dependsOn("renameJar")
     boolean executeCondition = project.hasProperty("jarSign.keyAlias") &&
             project.hasProperty("jarSign.keyLocation") &&
             project.hasProperty("jarSign.storePass")
@@ -540,7 +478,7 @@ publishing {
             }
             artifact jar
             pom {
-                name = archivesBaseName
+                name = base.archivesName.get()
                 description = "QuarryPlus for Minecraft ${project.minecraftVersion} and Forge ${project.forgeVersion}"
                 url = "https://github.com/Kotori316/QuarryPlus"
                 packaging = "jar"
@@ -550,7 +488,7 @@ publishing {
 }
 
 tasks.register("registerVersion", CallVersionFunctionTask.class) {
-    functionEndpoint = readVersionFunctionEndpoint(project)
+    functionEndpoint = CallVersionFunctionTask.readVersionFunctionEndpoint(project)
     gameVersion = project.findProperty("minecraftVersion")
     platform = "forge"
     platformVersion = project.findProperty("forgeVersion") as String

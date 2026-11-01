@@ -1,8 +1,12 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        maven { url = "https://maven.kotori316.com/" }
         maven { url = "https://maven.minecraftforge.net/" }
         maven { url = "https://maven.parchmentmc.org" }
         maven { url = "https://storage.googleapis.com/kotori316-maven-storage/maven/" }
     }
+}
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version("1.0.0")
 }
