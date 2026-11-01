@@ -166,10 +166,10 @@ dependencies {
     String forgeVersion = System.getenv("CI_FORGE") ?: project.forgeVersion
     implementation(minecraft.dependency("net.minecraftforge:forge:" + forgeVersion))
     System.out.println(("Selected version: " + "net.minecraftforge:forge:" + forgeVersion) as String)
-    compileOnly(group: "org.scala-lang", name: "scala-library", version: project.scalaVersion)
-    compileOnly(group: "org.typelevel", name: "cats-core_2.13", version: project.catsVersion)
-    testImplementation(group: "org.scala-lang", name: "scala-library", version: project.scalaVersion)
-    testImplementation(group: "org.typelevel", name: "cats-core_2.13", version: project.catsVersion)
+    compileOnly("org.scala-lang:scala-library:${project.scalaVersion}")
+    compileOnly("org.typelevel:cats-core_2.13:${project.catsVersion}")
+    testImplementation("org.scala-lang:scala-library:${project.scalaVersion}")
+    testImplementation("org.typelevel:cats-core_2.13:${project.catsVersion}")
 
     boolean useREI = Boolean.parseBoolean(System.getenv("USE_REI"))
     compileOnly(renamer.dependency("mezz.jei:jei-1.19.2-common-api:${project.jeiVersion}"))
@@ -186,7 +186,7 @@ dependencies {
         compileOnly(renamer.dependency("me.shedaniel.cloth:cloth-config-forge:${project.clothVersion}"))
         compileOnly(renamer.dependency("dev.architectury:architectury-forge:${project.architecturyVersion}"))
     }
-    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: project.slpVersion, classifier: "with-library") {
+    runtimeOnly("com.kotori316:scalablecatsforce:${project.slpVersion}:with-library") {
         transitive(false)
     }
 
@@ -207,13 +207,13 @@ dependencies {
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.
     testImplementation(renamer.dependency("com.kotori316:test_utility:${project.testUtilVersion}"))
-    testImplementation(group: "com.kotori316", name: "test_utility_dependency", version: "1.0-SNAPSHOT")
+    testImplementation("com.kotori316:test_utility_dependency:1.0-SNAPSHOT")
 
     String JUPITER_VERSION = "5.8.2"
-    game_test(group: "org.junit.jupiter", name: "junit-jupiter-api", version: JUPITER_VERSION)
-    game_test(group: "org.junit.jupiter", name: "junit-jupiter-params", version: JUPITER_VERSION)
-    game_test(group: "org.junit.jupiter", name: "junit-jupiter-engine", version: JUPITER_VERSION)
-    game_test(group: "org.junit.platform", name: "junit-platform-launcher", version: "1.8.2")
+    game_test("org.junit.jupiter:junit-jupiter-api:${JUPITER_VERSION}")
+    game_test("org.junit.jupiter:junit-jupiter-params:${JUPITER_VERSION}")
+    game_test("org.junit.jupiter:junit-jupiter-engine:${JUPITER_VERSION}")
+    game_test("org.junit.platform:junit-platform-launcher:1.8.2")
 }
 
 // Use the minecraft mappings (Official + Parchment -> SRG) for deobfuscating mod dependencies and reobfuscating the jar.
