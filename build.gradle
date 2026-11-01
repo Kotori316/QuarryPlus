@@ -16,8 +16,7 @@ plugins {
     id("net.minecraftforge.gradle") version("7.0.40")
     id("net.minecraftforge.renamer") version("1.1.8")
     id("com.github.breadmoirai.github-release") version("2.4.1")
-    id("com.matthewprenger.cursegradle") version("1.4.0")
-    id("com.modrinth.minotaur").version("2.+")
+    id("me.modmuss50.mod-publish-plugin") version("2.2.1")
     id("com.kotori316.plugin.cf").version("4.0")
 }
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
@@ -242,6 +241,9 @@ def jarAttributeMap = [
 ]
 
 jar {
+    // The jar from this task has names of the development environment, and it is the input of `renameJar`.
+    // The jar for production, which has no classifier, is created by `renameJar`.
+    archiveClassifier = "dev"
     manifest {
         attributes(jarAttributeMap)
     }
@@ -282,7 +284,8 @@ tasks.named("assemble") {
 // Creates a task named `renameJar`, which converts the jar to SRG names.
 renamer.classes(tasks.named("jar", Jar)) {
     map.from(minecraft.dependency.toSrgFile)
-    archiveClassifier = "srg"
+    // No classifier, so the file name is the same as the one users expect.
+    archiveClassifier = ""
 }
 
 jar.finalizedBy("jksSignJar")
@@ -296,7 +299,7 @@ tasks.register("jksSignJar") {
     doLast {
         //noinspection HttpUrlsUsage
         ant.signjar(
-                jar: jar.archiveFile.get(),
+                jar: tasks.named("renameJar").get().output.get().asFile,
                 alias: project.findProperty("jarSign.keyAlias") ?: "",
                 keystore: project.findProperty("jarSign.keyLocation") ?: "",
                 storepass: project.findProperty("jarSign.storePass") ?: "",
@@ -367,45 +370,42 @@ String getShortChangelog(boolean includeVersion) {
     }
 }
 
-curseforge {
-    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: System.getenv("CURSE_TOKEN") ?: ""
-    project {
-        id = "282837"
-        changelogType = "markdown"
-        changelog = combinedLog()
-        releaseType = "release"
-        addGameVersion(project.minecraftVersion)
-        mainArtifact(jar) {
-            displayName = "v" + project.version + "-forge" + " [${project.minecraftVersion}]"
-        }
-        addArtifact(deobfJar)
-        addArtifact(srcJar)
-        relations {
-            requiredDependency "scalable-cats-force"
-        }
-    }
-    options {
-        curseGradleOptions.debug = false // defaults to false
-        curseGradleOptions.javaVersionAutoDetect = false
-    }
-}
+def releaseDebug = Boolean.parseBoolean(System.getenv("RELEASE_DEBUG") ?: "true")
 
-modrinth {
-    token.set((project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String)
-    projectId = "additional-enchanted-miner"
-    versionType = "release"
-    versionName = "${project.version}-forge"
-    uploadFile = tasks.jar
-    getAdditionalFiles().set([
-            tasks.deobfJar,
-            tasks.srcJar,
-    ])
-    getGameVersions().set([project.minecraftVersion])
-    getLoaders().set(["forge"])
-    changelog = project.getChangeLog()
-    debugMode = false
-    dependencies {
-        required.project("scalable-cats-force")
+publishMods {
+    dryRun = releaseDebug
+    type = STABLE
+    modLoaders.add("forge")
+    displayName = "v" + project.version + "-forge" + " [${project.minecraftVersion}]"
+    // The jar for production, whose names are converted to SRG by Renamer.
+    file = tasks.named("renameJar").flatMap { it.output }
+    additionalFiles.from(
+            tasks.named("deobfJar").flatMap { it.archiveFile },
+            tasks.named("srcJar").flatMap { it.archiveFile },
+    )
+    changelog = provider { project.getChangeLog() }
+
+    curseforge {
+        projectId = "282837"
+        projectSlug = "additional-enchanted-miner"
+        accessToken = (project.findProperty("curseforge_additional-enchanted-miner_key") ?: System.getenv("CURSE_TOKEN") ?: "") as String
+        minecraftVersions.add(project.minecraftVersion as String)
+        javaVersions.add(JavaVersion.VERSION_17)
+        clientRequired = true
+        serverRequired = true
+        requires {
+            slug = "scalable-cats-force"
+        }
+        changelog = provider { combinedLog() }
+    }
+
+    modrinth {
+        projectId = "jhxX1zVW"
+        accessToken = (project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String
+        minecraftVersions.add(project.minecraftVersion as String)
+        requires {
+            slug = "scalable-cats-force"
+        }
     }
 }
 
@@ -416,7 +416,7 @@ githubRelease {
     prerelease.set(project.version.toString().contains("SNAPSHOT"))
     body.set(getChangeLog())
     releaseAssets = files(
-            tasks.jar,
+            tasks.named("renameJar").flatMap { it.output },
             tasks.deobfJar,
             tasks.srcJar,
     )
@@ -443,7 +443,7 @@ task CheckCompileOption() {
 task copyToDrive(type: Copy, dependsOn: "build") {
     description = "Copy jar files to directory specified in environmental value of `drive_path`"
     def PATH_NAME = "drive_path"
-    from(jar.getArchiveFile(), deobfJar.getArchiveFile(), srcJar.getArchiveFile())
+    from(tasks.named("renameJar").flatMap { it.output }, deobfJar.getArchiveFile(), srcJar.getArchiveFile())
     into(file(java.util.Optional.ofNullable(System.getenv(PATH_NAME)).orElse(".")))
     onlyIf {
         System.getenv(PATH_NAME) != null &&
@@ -485,7 +485,7 @@ publishing {
                 getArchiveClassifier().set("deobf")
                 getArchiveExtension().set("jar")
             }
-            artifact jar
+            artifact renameJar
             pom {
                 name = base.archivesName.get()
                 description = "QuarryPlus for Minecraft ${project.minecraftVersion} and Forge ${project.forgeVersion}"
