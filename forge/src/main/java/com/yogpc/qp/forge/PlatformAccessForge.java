@@ -2,7 +2,6 @@ package com.yogpc.qp.forge;
 
 import com.mojang.serialization.MapCodec;
 import com.yogpc.qp.*;
-import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.forge.machine.advpump.AdvPumpEntityForge;
@@ -55,7 +54,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraftforge.common.crafting.ingredients.IIngredientSerializer;
 import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -74,9 +72,7 @@ public final class PlatformAccessForge implements PlatformAccess {
     private final Lazy<RegisterObjects> itemsLazy = Lazy.lazy(RegisterObjectsForge::new);
     private final Lazy<PacketHandler> packetHandlerLazy = Lazy.lazy(PacketHandler::new);
     private final Lazy<TransferForge> transferLazy = Lazy.lazy(TransferForge::new);
-    private final ConfigHolder configLazy = new ConfigHolder(() ->
-        QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment)
-    );
+    private final Lazy<QuarryConfig> configLazy = Lazy.lazy(() -> QuarryPlusForge.config);
     private final Lazy<Mining> miningLazy = Lazy.lazy(MiningForge::new);
 
     public static class RegisterObjectsForge implements PlatformAccess.RegisterObjects {
@@ -405,13 +401,5 @@ public final class PlatformAccessForge implements PlatformAccess {
     @Override
     public Mining mining() {
         return miningLazy.get();
-    }
-
-    {
-        ServerStoppedEvent.BUS.addListener(this::onWorldUnload);
-    }
-
-    public void onWorldUnload(ServerStoppedEvent event) {
-        configLazy.reset();
     }
 }

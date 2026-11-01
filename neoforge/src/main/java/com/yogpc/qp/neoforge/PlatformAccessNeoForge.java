@@ -2,7 +2,6 @@ package com.yogpc.qp.neoforge;
 
 import com.mojang.serialization.MapCodec;
 import com.yogpc.qp.*;
-import com.yogpc.qp.config.ConfigHolder;
 import com.yogpc.qp.config.EnableMap;
 import com.yogpc.qp.config.QuarryConfig;
 import com.yogpc.qp.machine.GeneralScreenHandler;
@@ -47,12 +46,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.registries.*;
 import org.apache.logging.log4j.util.Lazy;
@@ -67,9 +64,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
     private final Lazy<RegisterObjects> itemsLazy = Lazy.lazy(RegisterObjectsNeoForge::new);
     private final Lazy<PacketHandler> packetHandlerLazy = Lazy.lazy(PacketHandler::new);
     private final Lazy<TransferNeoForge> transferLazy = Lazy.lazy(TransferNeoForge::new);
-    private final ConfigHolder configLazy = new ConfigHolder(() ->
-        QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment)
-    );
+    private final Lazy<QuarryConfig> configLazy = Lazy.lazy(() -> QuarryPlusNeoForge.config);
     private final Lazy<Mining> miningLazy = Lazy.lazy(MiningNeoForge::new);
 
     public static class RegisterObjectsNeoForge implements PlatformAccess.RegisterObjects {
@@ -397,10 +392,5 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
     @Override
     public Mining mining() {
         return miningLazy.get();
-    }
-
-    @SubscribeEvent
-    public void onWorldUnload(ServerStoppedEvent event) {
-        configLazy.reset();
     }
 }

@@ -1,9 +1,9 @@
 package com.yogpc.qp.machine;
 
-import com.electronwill.nightconfig.core.Config;
 import com.yogpc.qp.BeforeMC;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.PlatformAccessDelegate;
+import com.yogpc.qp.config.TestQuarryConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -59,9 +59,7 @@ class PowerEntityTest extends BeforeMC {
     @Test
     void noEnergyOff() {
         var delegate = (PlatformAccessDelegate) PlatformAccess.getAccess();
-        var c = Config.inMemory();
-        c.set("noEnergy", false);
-        delegate.setConfig(c, false);
+        delegate.setConfig(TestQuarryConfig.defaults().withNoEnergy(false));
         PlatformAccess.config().enableMap().set("test", true);
 
         var e = instance();
@@ -79,9 +77,7 @@ class PowerEntityTest extends BeforeMC {
     @Test
     void noEnergyOn() {
         var delegate = (PlatformAccessDelegate) PlatformAccess.getAccess();
-        var c = Config.inMemory();
-        c.set("noEnergy", true);
-        delegate.setConfig(c, false);
+        delegate.setConfig(TestQuarryConfig.defaults().withNoEnergy(true));
         PlatformAccess.config().enableMap().set("test", true);
 
         var e = instance();

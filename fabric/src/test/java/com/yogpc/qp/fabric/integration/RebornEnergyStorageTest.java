@@ -1,10 +1,9 @@
 package com.yogpc.qp.fabric.integration;
 
-import com.electronwill.nightconfig.core.Config;
 import com.yogpc.qp.BeforeMC;
 import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.PlatformAccessDelegate;
-import com.yogpc.qp.config.QuarryConfig;
+import com.yogpc.qp.config.TestQuarryConfig;
 import com.yogpc.qp.fabric.PlatformAccessFabric;
 import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
 import com.yogpc.qp.machine.PowerEntity;
@@ -12,9 +11,6 @@ import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
-import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,17 +23,13 @@ class RebornEnergyStorageTest extends BeforeMC {
 
     static RebornEnergyStorage createInstance() {
         var entity = createEntity();
-        return new RebornEnergyStorage(entity, QuarryConfig.defaultConfig(false));
+        return new RebornEnergyStorage(entity, TestQuarryConfig.defaults());
     }
-
-    @TempDir
-    Path configDir;
 
     @BeforeEach
     void setUp() {
         PlatformAccessDelegate delegate = (PlatformAccessDelegate) PlatformAccess.getAccess();
         delegate.setAccess(new PlatformAccessFabric());
-        delegate.setConfigPath(configDir.resolve("RebornEnergyStorageTest.toml"));
     }
 
     @Test
@@ -48,7 +40,7 @@ class RebornEnergyStorageTest extends BeforeMC {
     @Test
     void getEnergy() {
         var entity = createEntity();
-        var instance = new RebornEnergyStorage(entity, QuarryConfig.defaultConfig(false));
+        var instance = new RebornEnergyStorage(entity, TestQuarryConfig.defaults());
         entity.addEnergy(PowerEntity.ONE_FE * 16, false);
 
         assertEquals(256, instance.getAmount());
@@ -57,10 +49,9 @@ class RebornEnergyStorageTest extends BeforeMC {
     @Test
     void getEnergy2() {
         var entity = createEntity();
-        var config = Config.inMemory();
-        config.set("rebornEnergyConversionCoefficient", 1d / 4d);
+        var config = TestQuarryConfig.defaults().withRebornEnergyConversionCoefficient(1d / 4d);
 
-        var instance = new RebornEnergyStorage(entity, QuarryConfig.fromConfig(config, false));
+        var instance = new RebornEnergyStorage(entity, config);
         entity.addEnergy(PowerEntity.ONE_FE * 16, false);
 
         assertEquals(64, instance.getAmount());
@@ -77,9 +68,7 @@ class RebornEnergyStorageTest extends BeforeMC {
     @Test
     void getMaxEnergy2() {
         var entity = createEntity();
-        var c = Config.inMemory();
-        c.set("rebornEnergyConversionCoefficient", 1d / 4d);
-        var config = QuarryConfig.fromConfig(c, false);
+        var config = TestQuarryConfig.defaults().withRebornEnergyConversionCoefficient(1d / 4d);
         var instance = new RebornEnergyStorage(entity, config);
 
         assertEquals(config.powerMap().quarry().maxEnergy() * 4, instance.getCapacity());

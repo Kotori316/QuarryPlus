@@ -1,13 +1,10 @@
 package com.yogpc.qp.config;
 
-import com.electronwill.nightconfig.core.Config;
-import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import com.yogpc.qp.QuarryPlus;
+import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
+import com.yogpc.qp.QuarryLogger;
 import com.yogpc.qp.machine.PowerMap;
-import org.jetbrains.annotations.VisibleForTesting;
-
-import java.nio.file.Path;
-import java.util.function.BooleanSupplier;
+import org.jetbrains.annotations.NotNull;
 
 public interface QuarryConfig {
     boolean debug();
@@ -38,27 +35,15 @@ public interface QuarryConfig {
 
     boolean digFromMaxY();
 
-    static QuarryConfig load(Path path, BooleanSupplier inDevelop) {
-        try (var config = CommentedFileConfig.builder(path)
-            .preserveInsertionOrder()
-            .sync()
-            .autosave()
-            .onLoad(() -> QuarryPlus.LOGGER.info("Config loaded from {}", path))
-            .onAutoSave(() -> QuarryPlus.LOGGER.info("Config saved to {}", path))
-            .build()
-        ) {
-            config.load();
-            return QuarryConfigLoader.load(config, inDevelop);
-        }
-    }
-
-    @VisibleForTesting
-    static QuarryConfig defaultConfig(boolean debug) {
-        return fromConfig(Config.inMemory(), debug);
-    }
-
-    @VisibleForTesting
-    static QuarryConfig fromConfig(Config config, boolean debug) {
-        return QuarryConfigLoader.load(config, () -> debug);
+    static void onConfigLoad(@NotNull QuarryConfig newConfig) {
+        QuarryLogger.applyLogLevel(newConfig.debug());
+        QuarryLogger.LOGGER.info(
+            QuarryLogger.LOG4J_CONFIG,
+            QuarryConfigLoader.CODEC.codec()
+                .encodeStart(JsonOps.INSTANCE, newConfig)
+                .map(JsonElement::toString)
+                .resultOrPartial()
+                .orElse("Failed to convert config to JSON")
+        );
     }
 }

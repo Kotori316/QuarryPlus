@@ -38,9 +38,6 @@ dependencies {
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader
     runtimeOnly(libs.fabric.loader)
-    compileOnly(libs.config.core)
-    testImplementation(libs.config.core)
-    testRuntimeOnly(libs.config.toml)
 
     testImplementation(platform(libs.junit))
     testImplementation(libs.jupiter.core)
