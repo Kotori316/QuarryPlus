@@ -62,7 +62,7 @@ final class StateAndModelProvider extends BlockStateProvider {
         workDirectionalBlockAndItem(holder.quarryBlock().get(), "quarryplus");
         workDirectionalBlockAndItem(holder.advQuarryBlock().get());
         // workDirectionalBlockAndItem(Holder.BLOCK_MINI_QUARRY);
-        // workDirectionalBlockAndItem(Holder.BLOCK_SOLID_FUEL_QUARRY);
+        workDirectionalBlockAndItem(holder.solidFuelQuarryBlock().get());
 
         // Items
         simpleItem(PlatformAccessNeoForge.RegisterObjectsNeoForge.ITEM_EXP_MODULE.get(), "block/exp_pump_side");
