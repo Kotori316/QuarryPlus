@@ -21,16 +21,19 @@ import java.util.stream.Stream;
 
 public abstract class SolidFuelQuarryEntity extends QuarryEntity {
     /**
-     * Generating speed. Energy in FE generated in a tick while the machine has fuel.
+     * Speed of generation. Energy in FE generated in a tick while the machine has fuel.
+     * It limits the speed of mining.
+     * Changing this value only changes how long a fuel runs, and never changes the total energy of the fuel. See {@link #TOTAL_FE_PER_BURN_TICK}.
      * TODO: make it configurable
      */
-    static final double GENERATE_FE_PER_TICK = 2d;
+    static final double GENERATION_SPEED_FE_PER_TICK = 2d;
     /**
-     * Fuel efficiency. Total energy in FE which a fuel has per 1 tick of its burn time. (e.g. Coal: 1600 ticks -> 6400 FE)
-     * The running time of a fuel is {@code burnTime * FUEL_FE_PER_BURN_TIME / GENERATE_FE_PER_TICK} ticks.
-     * TODO: make it configurable
+     * Total energy in FE per 1 tick of burn time of a fuel. (e.g. Coal: 1600 ticks -> 6400 FE)
+     * It is 10 FE, same as general thermal generators, multiplied by 0.4, the efficiency of this machine.
+     * This value is independent of {@link #GENERATION_SPEED_FE_PER_TICK}, so the total energy of a fuel is fixed even if the speed is changed.
+     * The running time of a fuel is {@code burnTime * TOTAL_FE_PER_BURN_TICK / GENERATION_SPEED_FE_PER_TICK} ticks.
      */
-    static final double FUEL_FE_PER_BURN_TIME = 4d;
+    static final double TOTAL_FE_PER_BURN_TICK = 10d * 0.4d;
     final SimpleContainer fuelContainer;
     int fuelCount;
 
@@ -103,12 +106,13 @@ public abstract class SolidFuelQuarryEntity extends QuarryEntity {
     @SuppressWarnings("unused")
     static void tickFuel(Level level, BlockPos pos, BlockState state, SolidFuelQuarryEntity quarry) {
         if (level.isClientSide || !quarry.enabled) return;
-        var tickEnergy = (long) (GENERATE_FE_PER_TICK * ONE_FE);
+        var tickEnergy = (long) (GENERATION_SPEED_FE_PER_TICK * ONE_FE);
         if (quarry.fuelCount <= 0) {
             var fuel = quarry.fuelContainer.getItem(0);
             int burnTime = quarry.getBurnTime(fuel);
             if (burnTime > 0) {
-                quarry.fuelCount += (int) (burnTime * FUEL_FE_PER_BURN_TIME / GENERATE_FE_PER_TICK);
+                // fuelCount is the number of ticks to generate energy: (total energy of the fuel) / (energy generated in a tick)
+                quarry.fuelCount += (int) (burnTime * TOTAL_FE_PER_BURN_TICK / GENERATION_SPEED_FE_PER_TICK);
                 var remaining = fuel.getItem().getCraftingRemainingItem();
                 if (remaining != null && fuel.getCount() == 1) {
                     // e.g. Lava bucket -> Bucket

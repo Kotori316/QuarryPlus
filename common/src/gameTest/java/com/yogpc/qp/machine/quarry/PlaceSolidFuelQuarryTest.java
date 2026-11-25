@@ -72,9 +72,9 @@ public final class PlaceSolidFuelQuarryTest {
 
         SolidFuelQuarryEntity.tickFuel(helper.getLevel(), quarry.getBlockPos(), quarry.getBlockState(), quarry);
         assertEquals(1, quarry.fuelContainer.getItem(0).getCount());
-        // 1600 ticks * 4 / 2 FE per tick - 1 tick
+        // Coal burns 1600 ticks. Total energy is 1600 * 4 FE and it is generated at 2 FE/tick, so 3200 ticks. - 1 tick
         assertEquals(3200 - 1, quarry.getFuelCount());
-        assertEquals((long) (SolidFuelQuarryEntity.GENERATE_FE_PER_TICK * PowerEntity.ONE_FE), quarry.getEnergy());
+        assertEquals(2 * PowerEntity.ONE_FE, quarry.getEnergy());
         helper.succeed();
     }
 
