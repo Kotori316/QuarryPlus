@@ -116,6 +116,10 @@ public abstract class SolidFuelQuarryEntity extends QuarryEntity {
                 } else {
                     fuel.shrink(1);
                     quarry.fuelContainer.setChanged();
+                    if (remaining != null) {
+                        // The slot is still used by the fuel, so the remaining item has no place to go. Store it as the last resort.
+                        quarry.storage.addItem(new ItemStack(remaining));
+                    }
                 }
             }
         }
