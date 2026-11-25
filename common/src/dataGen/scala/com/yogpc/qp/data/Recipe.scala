@@ -3,6 +3,7 @@ package com.yogpc.qp.data
 import com.yogpc.qp.machine.exp.ExpModuleItem
 import com.yogpc.qp.machine.marker.{ChunkMarkerBlock, FlexibleMarkerBlock}
 import com.yogpc.qp.machine.module.{FilterModuleItem, RepeatTickModuleItem}
+import com.yogpc.qp.machine.quarry.{QuarryBlock, SolidFuelQuarryBlock}
 import com.yogpc.qp.recipe.{FilterModuleExpandRecipe, InstallBedrockModuleRecipe}
 import com.yogpc.qp.{PlatformAccess, QuarryPlus}
 import net.minecraft.core.HolderLookup
@@ -92,6 +93,18 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .pattern("iRm")
       .unlockedBy(ip.markerTag)
       .save(recipeOutput)
+
+    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().quarryBlock().get())
+      .define('Q', PlatformAccess.getAccess.registerObjects().solidFuelQuarryBlock().get())
+      .define('D', Items.DROPPER)
+      .define('R', ip.redStoneBlock)
+      .define('r', ip.redStoneDust)
+      .define('o', ip.obsidian)
+      .pattern("RQR")
+      .pattern("oDo")
+      .pattern("RrR")
+      .unlockedBy(PlatformAccess.getAccess.registerObjects().solidFuelQuarryBlock().get())
+      .save(recipeOutput, modLoc(QuarryBlock.NAME + "_from_" + SolidFuelQuarryBlock.NAME))
 
     ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().solidFuelQuarryBlock().get())
       .define('D', Items.FURNACE)
