@@ -1,7 +1,7 @@
 [versions]
 minecraft = "26.3"
 forge = "26.3-66.1.9"
-eventbus_forge = "7.0.6"
+eventbus_forge = "7.0.7"
 fabric_api = "0.166.2+26.3"
 fabric_loader = "0.20.1"
 neoforge = "26.3.0.115"
