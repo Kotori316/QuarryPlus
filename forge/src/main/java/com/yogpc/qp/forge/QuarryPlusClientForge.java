@@ -11,6 +11,7 @@ import com.yogpc.qp.machine.module.ModuleScreen;
 import com.yogpc.qp.machine.mover.MoverScreen;
 import com.yogpc.qp.machine.placer.PlacerScreen;
 import com.yogpc.qp.machine.placer.RemotePlacerScreen;
+import com.yogpc.qp.machine.quarry.SolidFuelQuarryScreen;
 import com.yogpc.qp.machine.storage.DebugStorageScreen;
 import com.yogpc.qp.render.*;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -28,6 +29,7 @@ public final class QuarryPlusClientForge {
     public static void clientInit(FMLClientSetupEvent event) {
         QuarryPlus.LOGGER.info("Initialize Client");
         BlockEntityRenderers.register(PlatformAccessForge.RegisterObjectsForge.QUARRY_ENTITY_TYPE.get(), RenderQuarry::new);
+        BlockEntityRenderers.register(PlatformAccessForge.RegisterObjectsForge.SOLID_FUEL_QUARRY_ENTITY_TYPE.get(), RenderSolidFuelQuarry::new);
         BlockEntityRenderers.register(PlatformAccessForge.RegisterObjectsForge.MARKER_ENTITY_TYPE.get(), RenderMarker::new);
         BlockEntityRenderers.register(PlatformAccessForge.RegisterObjectsForge.FLEXIBLE_MARKER_ENTITY_TYPE.get(), RenderFlexibleMarker::new);
         BlockEntityRenderers.register(PlatformAccessForge.RegisterObjectsForge.CHUNK_MARKER_ENTITY_TYPE.get(), RenderChunkMarker::new);
@@ -38,6 +40,7 @@ public final class QuarryPlusClientForge {
         MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.FLEXIBLE_MARKER_MENU_TYPE.get(), FlexibleMarkerScreen::new);
         MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.CHUNK_MARKER_MENU_TYPE.get(), ChunkMarkerScreen::new);
         MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.DEBUG_STORAGE_MENU_TYPE.get(), DebugStorageScreen::new);
+        MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.SOLID_FUEL_QUARRY_MENU_TYPE.get(), SolidFuelQuarryScreen::new);
         MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.ADV_QUARRY_MENU_TYPE.get(), AdvQuarryScreen::new);
         MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.ADV_PUMP_MENU_TYPE.get(), AdvPumpScreen::new);
         MenuScreens.register(PlatformAccessForge.RegisterObjectsForge.FILTER_MODULE_MENU_TYPE.get(), FilterModuleScreen::new);
