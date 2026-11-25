@@ -106,7 +106,13 @@ dependencies {
     runtimeOnly(variantOf(libs.slp.forge) { classifier("with-library") }) {
         isTransitive = false
     }
-    runtimeOnly(libs.jei.forge)
+    // JEI forge jar bundles its sub modules (lib, gui, config-api, ...). Resolving them as separate jars causes split package errors.
+    runtimeOnly(libs.jei.forge) {
+        isTransitive = false
+    }
+    runtimeOnly(libs.mezz.config.forge) {
+        isTransitive = false
+    }
     implementation(libs.du.forge) {
         isTransitive = false
     }
