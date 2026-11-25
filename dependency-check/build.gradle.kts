@@ -10,4 +10,5 @@ dependencies {
         version = project.property("parchment.mapping").toString(),
         ext = "zip",
     )*/
+    implementation(libs.scala)
 }
