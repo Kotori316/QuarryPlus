@@ -25,6 +25,8 @@ import com.yogpc.qp.machine.placer.PlacerBlock;
 import com.yogpc.qp.machine.placer.PlacerContainer;
 import com.yogpc.qp.machine.placer.RemotePlacerBlock;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
+import com.yogpc.qp.machine.quarry.SolidFuelQuarryBlock;
+import com.yogpc.qp.machine.quarry.SolidFuelQuarryMenu;
 import com.yogpc.qp.machine.storage.DebugStorageBlock;
 import com.yogpc.qp.machine.storage.DebugStorageContainer;
 import net.minecraft.core.BlockPos;
@@ -84,6 +86,8 @@ public interface PlatformAccess {
 
         Supplier<? extends DebugStorageBlock> debugStorageBlock();
 
+        Supplier<? extends SolidFuelQuarryBlock> solidFuelQuarryBlock();
+
         Supplier<? extends AdvQuarryBlock> advQuarryBlock();
 
         Supplier<? extends AdvPumpBlock> advPumpBlock();
@@ -122,6 +126,8 @@ public interface PlatformAccess {
         Supplier<MenuType<? extends MarkerContainer>> chunkMarkerContainer();
 
         Supplier<MenuType<? extends DebugStorageContainer>> debugStorageContainer();
+
+        Supplier<MenuType<? extends SolidFuelQuarryMenu>> solidFuelQuarryContainer();
 
         Supplier<MenuType<? extends AdvQuarryContainer>> advQuarryContainer();
 
