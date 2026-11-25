@@ -8,7 +8,7 @@ import com.yogpc.qp.{PlatformAccess, QuarryPlus}
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.data.PackOutput
-import net.minecraft.data.recipes.{RecipeCategory, RecipeOutput, RecipeProvider, ShapedRecipeBuilder, ShapelessRecipeBuilder}
+import net.minecraft.data.recipes.*
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.crafting.Ingredient
 import net.minecraft.world.item.{Item, Items}
@@ -91,6 +91,20 @@ class Recipe(ingredientProvider: IngredientProvider, output: PackOutput, registr
       .pattern("gDg")
       .pattern("iRm")
       .unlockedBy(ip.markerTag)
+      .save(recipeOutput)
+
+    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().solidFuelQuarryBlock().get())
+      .define('D', Items.FURNACE)
+      .define('R', ip.redStoneDust)
+      .define('g', ip.pickaxeForQuarry)
+      .define('i', ip.ironIngot)
+      .define('o', Items.REDSTONE_TORCH)
+      .define('m', ip.marker)
+      .pattern("ioi")
+      .pattern("gDg")
+      .pattern("iRm")
+      .unlockedBy(ip.markerTag)
+      .unlockedBy(Items.FURNACE)
       .save(recipeOutput)
 
     ShapedRecipeBuilder.shaped(RecipeCategory.MISC, quarryItem("status_checker"))
