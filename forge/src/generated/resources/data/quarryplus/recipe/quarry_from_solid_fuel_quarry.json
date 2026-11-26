@@ -11,6 +11,9 @@
     "R": {
       "tag": "c:storage_blocks/redstone"
     },
+    "g": {
+      "item": "minecraft:diamond_pickaxe"
+    },
     "o": {
       "tag": "c:obsidians"
     },
@@ -19,8 +22,8 @@
     }
   },
   "pattern": [
-    "RQR",
-    "oDo",
+    "DgD",
+    "oQo",
     "RrR"
   ],
   "result": {
