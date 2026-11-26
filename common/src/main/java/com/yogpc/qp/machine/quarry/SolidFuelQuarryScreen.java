@@ -29,6 +29,8 @@ public class SolidFuelQuarryScreen extends AbstractContainerScreen<SolidFuelQuar
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         super.renderLabels(graphics, mouseX, mouseY);
         graphics.drawString(font, "FuelCount: " + getMenu().fuelCountData.get(), titleLabelX, titleLabelY + 10, 0x404040, false);
-        graphics.drawString(font, "Energy: " + getMenu().energyData.get() + " FE", titleLabelX, titleLabelY + 20, 0x404040, false);
+        // Align to the right edge, so that the position of "FE" doesn't move when the number of digits changes. The position is out of the fuel slot.
+        String energy = getMenu().energyData.get() + " FE";
+        graphics.drawString(font, energy, imageWidth - titleLabelX - font.width(energy), titleLabelY, 0x404040, false);
     }
 }
