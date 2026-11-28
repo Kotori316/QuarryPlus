@@ -13,6 +13,8 @@ import com.yogpc.qp.forge.machine.misc.CheckerItemForge;
 import com.yogpc.qp.forge.machine.misc.YSetterItemForge;
 import com.yogpc.qp.forge.machine.quarry.QuarryBlockForge;
 import com.yogpc.qp.forge.machine.quarry.QuarryEntityForge;
+import com.yogpc.qp.forge.machine.quarry.SolidFuelQuarryBlockForge;
+import com.yogpc.qp.forge.machine.quarry.SolidFuelQuarryEntityForge;
 import com.yogpc.qp.forge.packet.PacketHandler;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
@@ -33,6 +35,8 @@ import com.yogpc.qp.machine.mover.MoverContainer;
 import com.yogpc.qp.machine.mover.MoverEntity;
 import com.yogpc.qp.machine.placer.*;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
+import com.yogpc.qp.machine.quarry.SolidFuelQuarryBlock;
+import com.yogpc.qp.machine.quarry.SolidFuelQuarryMenu;
 import com.yogpc.qp.machine.storage.DebugStorageBlock;
 import com.yogpc.qp.machine.storage.DebugStorageContainer;
 import com.yogpc.qp.machine.storage.DebugStorageEntity;
@@ -73,6 +77,7 @@ public final class PlatformAccessForge implements PlatformAccess {
     private final Lazy<RegisterObjects> itemsLazy = Lazy.lazy(RegisterObjectsForge::new);
     private final Lazy<PacketHandler> packetHandlerLazy = Lazy.lazy(PacketHandler::new);
     private final Lazy<TransferForge> transferLazy = Lazy.lazy(TransferForge::new);
+    private final Lazy<ItemAccessForge> itemAccessLazy = Lazy.lazy(ItemAccessForge::new);
     private final ConfigHolder configLazy = new ConfigHolder(() ->
         QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment)
     );
@@ -96,6 +101,7 @@ public final class PlatformAccessForge implements PlatformAccess {
 
         // Machine
         public static final RegistryObject<QuarryBlockForge> BLOCK_QUARRY = registerBlock(QuarryBlockForge.NAME, QuarryBlockForge::new);
+        public static final RegistryObject<SolidFuelQuarryBlockForge> BLOCK_SOLID_FUEL_QUARRY = registerBlock(SolidFuelQuarryBlock.NAME, SolidFuelQuarryBlockForge::new);
         public static final RegistryObject<AdvQuarryBlock> BLOCK_ADV_QUARRY = registerBlock(AdvQuarryBlock.NAME, AdvQuarryBlock::new);
         public static final RegistryObject<AdvPumpBlock> BLOCK_ADV_PUMP = registerBlock(AdvPumpBlock.NAME, AdvPumpBlock::new);
         public static final RegistryObject<GeneratorBlock> BLOCK_GENERATOR = registerBlock(GeneratorBlock.NAME, GeneratorBlock::new);
@@ -127,6 +133,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<BlockEntityType<FlexibleMarkerEntityForge>> FLEXIBLE_MARKER_ENTITY_TYPE = registerBlockEntity(FlexibleMarkerBlock.NAME, BLOCK_FLEXIBLE_MARKER, FlexibleMarkerEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final RegistryObject<BlockEntityType<ChunkMarkerEntityForge>> CHUNK_MARKER_ENTITY_TYPE = registerBlockEntity(ChunkMarkerBlock.NAME, BLOCK_CHUNK_MARKER, ChunkMarkerEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final RegistryObject<BlockEntityType<DebugStorageEntity>> DEBUG_STORAGE_TYPE = registerBlockEntity(DebugStorageBlock.NAME, BLOCK_DEBUG_STORAGE, DebugStorageEntity::new, EnableMap.EnableOrNot.ALWAYS_ON);
+        public static final RegistryObject<BlockEntityType<SolidFuelQuarryEntityForge>> SOLID_FUEL_QUARRY_ENTITY_TYPE = registerBlockEntity(SolidFuelQuarryBlock.NAME, BLOCK_SOLID_FUEL_QUARRY, SolidFuelQuarryEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final RegistryObject<BlockEntityType<AdvQuarryEntityForge>> ADV_QUARRY_ENTITY_TYPE = registerBlockEntity(AdvQuarryBlock.NAME, BLOCK_ADV_QUARRY, AdvQuarryEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final RegistryObject<BlockEntityType<AdvPumpEntityForge>> ADV_PUMP_ENTITY_TYPE = registerBlockEntity(AdvPumpBlock.NAME, BLOCK_ADV_PUMP, AdvPumpEntityForge::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final RegistryObject<BlockEntityType<PlacerEntity>> PLACER_ENTITY_TYPE = registerBlockEntity(PlacerBlock.NAME, BLOCK_PLACER, PlacerEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
@@ -138,6 +145,7 @@ public final class PlatformAccessForge implements PlatformAccess {
         public static final RegistryObject<MenuType<? extends MarkerContainer>> FLEXIBLE_MARKER_MENU_TYPE = registerMenu(MarkerContainer.FLEXIBLE_NAME, MarkerContainer::createFlexibleMarkerContainer);
         public static final RegistryObject<MenuType<? extends MarkerContainer>> CHUNK_MARKER_MENU_TYPE = registerMenu(MarkerContainer.CHUNK_NAME, MarkerContainer::createChunkMarkerContainer);
         public static final RegistryObject<MenuType<? extends DebugStorageContainer>> DEBUG_STORAGE_MENU_TYPE = registerMenu(DebugStorageContainer.NAME, DebugStorageContainer::new);
+        public static final RegistryObject<MenuType<? extends SolidFuelQuarryMenu>> SOLID_FUEL_QUARRY_MENU_TYPE = registerMenu(SolidFuelQuarryMenu.NAME, SolidFuelQuarryMenu::new);
         public static final RegistryObject<MenuType<? extends AdvQuarryContainer>> ADV_QUARRY_MENU_TYPE = registerMenu(AdvQuarryContainer.NAME, AdvQuarryContainer::new);
         public static final RegistryObject<MenuType<? extends AdvPumpContainer>> ADV_PUMP_MENU_TYPE = registerMenu(AdvPumpContainer.NAME, AdvPumpContainer::new);
         public static final RegistryObject<MenuType<? extends FilterModuleContainer>> FILTER_MODULE_MENU_TYPE = MENU_TYPE_REGISTER.register(FilterModuleContainer.NAME, () ->
@@ -231,6 +239,11 @@ public final class PlatformAccessForge implements PlatformAccess {
         }
 
         @Override
+        public Supplier<? extends SolidFuelQuarryBlock> solidFuelQuarryBlock() {
+            return BLOCK_SOLID_FUEL_QUARRY;
+        }
+
+        @Override
         public Supplier<? extends AdvQuarryBlock> advQuarryBlock() {
             return BLOCK_ADV_QUARRY;
         }
@@ -316,6 +329,11 @@ public final class PlatformAccessForge implements PlatformAccess {
         }
 
         @Override
+        public Supplier<MenuType<? extends SolidFuelQuarryMenu>> solidFuelQuarryContainer() {
+            return SOLID_FUEL_QUARRY_MENU_TYPE;
+        }
+
+        @Override
         public Supplier<MenuType<? extends AdvQuarryContainer>> advQuarryContainer() {
             return ADV_QUARRY_MENU_TYPE;
         }
@@ -379,6 +397,11 @@ public final class PlatformAccessForge implements PlatformAccess {
     @Override
     public Transfer transfer() {
         return transferLazy.get();
+    }
+
+    @Override
+    public ItemAccess itemAccess() {
+        return itemAccessLazy.get();
     }
 
     @Override

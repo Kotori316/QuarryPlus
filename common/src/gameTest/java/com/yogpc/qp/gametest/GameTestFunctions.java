@@ -10,6 +10,7 @@ import com.yogpc.qp.machine.mover.PlaceMoverTest;
 import com.yogpc.qp.machine.placer.PlacerTest;
 import com.yogpc.qp.machine.placer.RemotePlacerTest;
 import com.yogpc.qp.machine.quarry.PlaceQuarryTest;
+import com.yogpc.qp.machine.quarry.PlaceSolidFuelQuarryTest;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -48,6 +49,7 @@ public final class GameTestFunctions {
     public static List<TestFunction> createTestFunctionsPlace(String batchName, String structureName) {
         List<Class<?>> classes = List.of(
             PlaceQuarryTest.class,
+            PlaceSolidFuelQuarryTest.class,
             PlaceMoverTest.class,
             DebugStorageTest.class,
             PlaceAdvQuarryTest.class,

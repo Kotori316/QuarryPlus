@@ -9,9 +9,7 @@ import com.yogpc.qp.fabric.machine.advquarry.AdvQuarryBlockFabric;
 import com.yogpc.qp.fabric.machine.advquarry.AdvQuarryEntityFabric;
 import com.yogpc.qp.fabric.machine.misc.CheckerItemFabric;
 import com.yogpc.qp.fabric.machine.misc.YSetterItemFabric;
-import com.yogpc.qp.fabric.machine.quarry.QuarryBlockFabric;
-import com.yogpc.qp.fabric.machine.quarry.QuarryEntityFabric;
-import com.yogpc.qp.fabric.machine.quarry.QuarryMenuFabric;
+import com.yogpc.qp.fabric.machine.quarry.*;
 import com.yogpc.qp.fabric.packet.PacketHandler;
 import com.yogpc.qp.machine.GeneralScreenHandler;
 import com.yogpc.qp.machine.MachineLootFunction;
@@ -30,6 +28,8 @@ import com.yogpc.qp.machine.mover.MoverContainer;
 import com.yogpc.qp.machine.mover.MoverEntity;
 import com.yogpc.qp.machine.placer.*;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
+import com.yogpc.qp.machine.quarry.SolidFuelQuarryBlock;
+import com.yogpc.qp.machine.quarry.SolidFuelQuarryMenu;
 import com.yogpc.qp.machine.storage.DebugStorageBlock;
 import com.yogpc.qp.machine.storage.DebugStorageContainer;
 import com.yogpc.qp.machine.storage.DebugStorageEntity;
@@ -77,6 +77,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
     private final Lazy<RegisterObjects> itemsLazy = Lazy.lazy(RegisterObjectsFabric::new);
     private final Lazy<PacketHandler> packetHandlerLazy = Lazy.lazy(PacketHandler::new);
     private final Lazy<TransferFabric> transferLazy = Lazy.lazy(TransferFabric::new);
+    private final Lazy<ItemAccessFabric> itemAccessLazy = Lazy.lazy(ItemAccessFabric::new);
     private final ConfigHolder configLazy = new ConfigHolder(this::modified);
     private final Lazy<Mining> miningLazy = Lazy.lazy(MiningFabric::new);
 
@@ -84,6 +85,9 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final QuarryBlockFabric QUARRY_BLOCK = new QuarryBlockFabric();
         public static final BlockEntityType<QuarryEntityFabric> QUARRY_ENTITY_TYPE = FabricBlockEntityTypeBuilder.create(QuarryEntityFabric::new, QUARRY_BLOCK).build();
         public static final MenuType<QuarryMenuFabric> QUARRY_MENU = new ExtendedScreenHandlerType<>(QuarryMenuFabric::new, BlockPos.STREAM_CODEC);
+        public static final SolidFuelQuarryBlockFabric SOLID_FUEL_QUARRY_BLOCK = new SolidFuelQuarryBlockFabric();
+        public static final BlockEntityType<SolidFuelQuarryEntityFabric> SOLID_FUEL_QUARRY_ENTITY_TYPE = BlockEntityType.Builder.of(SolidFuelQuarryEntityFabric::new, SOLID_FUEL_QUARRY_BLOCK).build(DSL.emptyPartType());
+        public static final MenuType<SolidFuelQuarryMenu> SOLID_FUEL_QUARRY_MENU = new ExtendedScreenHandlerType<>(SolidFuelQuarryMenu::new, BlockPos.STREAM_CODEC);
         public static final AdvQuarryBlockFabric ADV_QUARRY_BLOCK = new AdvQuarryBlockFabric();
         public static final BlockEntityType<AdvQuarryEntityFabric> ADV_QUARRY_ENTITY_TYPE = FabricBlockEntityTypeBuilder.create(AdvQuarryEntityFabric::new, ADV_QUARRY_BLOCK).build();
         public static final MenuType<AdvQuarryContainer> ADV_QUARRY_MENU = new ExtendedScreenHandlerType<>(AdvQuarryContainer::new, BlockPos.STREAM_CODEC);
@@ -135,6 +139,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         static void registerAll() {
             // Machine
             registerEntityBlock(QUARRY_BLOCK, QUARRY_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
+            registerEntityBlock(SOLID_FUEL_QUARRY_BLOCK, SOLID_FUEL_QUARRY_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             registerEntityBlock(ADV_QUARRY_BLOCK, ADV_QUARRY_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             registerEntityBlock(ADV_PUMP_BLOCK, ADV_PUMP_ENTITY_TYPE, EnableMap.EnableOrNot.CONFIG_ON);
             registerEntityBlock(GENERATOR_BLOCK, GENERATOR_ENTITY_TYPE, EnableMap.EnableOrNot.ALWAYS_ON);
@@ -164,6 +169,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
             Registry.register(BuiltInRegistries.MENU, Identifier.fromNamespaceAndPath(QuarryPlus.modID, MarkerContainer.FLEXIBLE_NAME), FLEXIBLE_MARKER_MENU);
             Registry.register(BuiltInRegistries.MENU, Identifier.fromNamespaceAndPath(QuarryPlus.modID, MarkerContainer.CHUNK_NAME), CHUNK_MARKER_MENU);
             Registry.register(BuiltInRegistries.MENU, Identifier.fromNamespaceAndPath(QuarryPlus.modID, DebugStorageContainer.NAME), DEBUG_STORAGE_MENU);
+            Registry.register(BuiltInRegistries.MENU, SolidFuelQuarryMenu.GUI_ID, SOLID_FUEL_QUARRY_MENU);
             Registry.register(BuiltInRegistries.MENU, AdvQuarryContainer.GUI_ID, ADV_QUARRY_MENU);
             Registry.register(BuiltInRegistries.MENU, AdvPumpContainer.GUI_ID, ADV_PUMP_MENU);
             Registry.register(BuiltInRegistries.MENU, FilterModuleContainer.GUI_ID, FILTER_MODULE_MENU);
@@ -254,6 +260,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         }
 
         @Override
+        public Supplier<? extends SolidFuelQuarryBlock> solidFuelQuarryBlock() {
+            return Lazy.value(SOLID_FUEL_QUARRY_BLOCK);
+        }
+
+        @Override
         public Supplier<? extends AdvQuarryBlock> advQuarryBlock() {
             return Lazy.value(ADV_QUARRY_BLOCK);
         }
@@ -339,6 +350,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         }
 
         @Override
+        public Supplier<MenuType<? extends SolidFuelQuarryMenu>> solidFuelQuarryContainer() {
+            return Lazy.value(SOLID_FUEL_QUARRY_MENU);
+        }
+
+        @Override
         public Supplier<MenuType<? extends AdvQuarryContainer>> advQuarryContainer() {
             return Lazy.value(ADV_QUARRY_MENU);
         }
@@ -402,6 +418,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
     @Override
     public Transfer transfer() {
         return transferLazy.get();
+    }
+
+    @Override
+    public ItemAccess itemAccess() {
+        return itemAccessLazy.get();
     }
 
     @Override

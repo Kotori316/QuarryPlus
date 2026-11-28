@@ -103,6 +103,11 @@ public class PlatformAccessDelegate implements PlatformAccess {
     }
 
     @Override
+    public ItemAccess itemAccess() {
+        return access.itemAccess();
+    }
+
+    @Override
     public FluidStackLike getFluidInItem(ItemStack stack) {
         return access.getFluidInItem(stack);
     }
@@ -160,6 +165,11 @@ public class PlatformAccessDelegate implements PlatformAccess {
 
         @Override
         public Transfer transfer() {
+            return null;
+        }
+
+        @Override
+        public ItemAccess itemAccess() {
             return null;
         }
 

@@ -11,6 +11,8 @@ import com.yogpc.qp.machine.module.FilterModuleItem;
 import com.yogpc.qp.machine.module.RepeatTickModuleItem;
 import com.yogpc.qp.machine.placer.PlacerBlock;
 import com.yogpc.qp.machine.placer.RemotePlacerBlock;
+import com.yogpc.qp.machine.quarry.QuarryBlock;
+import com.yogpc.qp.machine.quarry.SolidFuelQuarryBlock;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -180,6 +182,64 @@ public final class LoadRecipeTest {
             i, o, i,
             g, D, g,
             i, R, m
+        ));
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        assertEquals(
+            PlatformAccess.getAccess().registerObjects().quarryBlock().get().blockItem,
+            result.getItem()
+        );
+
+        helper.succeed();
+    }
+
+    private static ItemStack pickaxeForQuarry() {
+        if (PlatformAccess.getAccess().platformName().equalsIgnoreCase("fabric")) {
+            return Items.GOLDEN_PICKAXE.getDefaultInstance();
+        } else {
+            return Items.DIAMOND_PICKAXE.getDefaultInstance();
+        }
+    }
+
+    public static void createSolidFuelQuarry(GameTestHelper helper) {
+        var recipe = findRecipe(helper, SolidFuelQuarryBlock.NAME);
+
+        var i = Items.IRON_INGOT.getDefaultInstance();
+        var g = pickaxeForQuarry();
+        var o = Items.REDSTONE_TORCH.getDefaultInstance();
+        var D = Items.FURNACE.getDefaultInstance();
+        var R = Items.REDSTONE.getDefaultInstance();
+        var m = PlatformAccess.getAccess().registerObjects().markerBlock().get().blockItem.getDefaultInstance();
+
+        var input = CraftingInput.of(3, 3, List.of(
+            i, g, i,
+            o, D, o,
+            i, R, m
+        ));
+        assertTrue(recipe.matches(input, helper.getLevel()));
+        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        assertEquals(
+            PlatformAccess.getAccess().registerObjects().solidFuelQuarryBlock().get().blockItem,
+            result.getItem()
+        );
+
+        helper.succeed();
+    }
+
+    public static void createQuarryFromSolidFuelQuarry(GameTestHelper helper) {
+        var recipe = findRecipe(helper, QuarryBlock.NAME + "_from_" + SolidFuelQuarryBlock.NAME);
+
+        var D = Items.DROPPER.getDefaultInstance();
+        var g = pickaxeForQuarry();
+        var o = Items.OBSIDIAN.getDefaultInstance();
+        var Q = PlatformAccess.getAccess().registerObjects().solidFuelQuarryBlock().get().blockItem.getDefaultInstance();
+        var R = Items.REDSTONE_BLOCK.getDefaultInstance();
+        var r = Items.REDSTONE.getDefaultInstance();
+
+        var input = CraftingInput.of(3, 3, List.of(
+            D, g, D,
+            o, Q, o,
+            R, r, R
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
         var result = recipe.assemble(input, helper.getLevel().registryAccess());

@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "minecraft:dropper"
+    },
+    "Q": {
+      "item": "quarryplus:solid_fuel_quarry"
+    },
+    "R": {
+      "tag": "c:storage_blocks/redstone"
+    },
+    "g": {
+      "item": "minecraft:diamond_pickaxe"
+    },
+    "o": {
+      "tag": "c:obsidians"
+    },
+    "r": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "pattern": [
+    "DgD",
+    "oQo",
+    "RrR"
+  ],
+  "result": {
+    "count": 1,
+    "id": "quarryplus:quarry"
+  }
+}
