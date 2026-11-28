@@ -3,12 +3,13 @@ package com.yogpc.qp.machine.quarry;
 import com.yogpc.qp.QuarryPlus;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 public class SolidFuelQuarryScreen extends AbstractContainerScreen<SolidFuelQuarryMenu> {
-    private static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/solid_fuel_quarry.png");
+    private static final Identifier LOCATION = Identifier.fromNamespaceAndPath(QuarryPlus.modID, "textures/gui/solid_fuel_quarry.png");
 
     public SolidFuelQuarryScreen(SolidFuelQuarryMenu menu, Inventory inventory, Component component) {
         super(menu, inventory, component);
@@ -16,7 +17,7 @@ public class SolidFuelQuarryScreen extends AbstractContainerScreen<SolidFuelQuar
 
     @Override
     protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
-        graphics.blit(LOCATION, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
     }
 
     @Override

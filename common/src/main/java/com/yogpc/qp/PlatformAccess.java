@@ -174,7 +174,7 @@ public interface PlatformAccess {
         /**
          * @return the burn time in tick of the stack as fuel of furnaces. 0 if the stack is not a fuel.
          */
-        int getBurnTime(ItemStack stack);
+        int getBurnTime(ItemStack stack, Level level);
 
         @NotNull
         ItemStack getCraftingRemainingItem(ItemStack stack);

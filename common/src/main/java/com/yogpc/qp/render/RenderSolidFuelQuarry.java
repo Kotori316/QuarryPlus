@@ -1,8 +1,7 @@
 package com.yogpc.qp.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
 public class RenderSolidFuelQuarry extends RenderQuarry {
@@ -13,7 +12,7 @@ public class RenderSolidFuelQuarry extends RenderQuarry {
     }
 
     @Override
-    Buffer getBuffer(MultiBufferSource vertexConsumers, PoseStack matrices) {
-        return new Buffer(vertexConsumers.getBuffer(RenderType.cutout()), matrices, color);
+    Buffer getBuffer(VertexConsumer vertexConsumer, PoseStack.Pose matrices) {
+        return new Buffer(vertexConsumer, matrices, color);
     }
 }

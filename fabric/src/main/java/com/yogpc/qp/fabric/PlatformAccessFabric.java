@@ -86,7 +86,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
         public static final BlockEntityType<QuarryEntityFabric> QUARRY_ENTITY_TYPE = FabricBlockEntityTypeBuilder.create(QuarryEntityFabric::new, QUARRY_BLOCK).build();
         public static final MenuType<QuarryMenuFabric> QUARRY_MENU = new ExtendedScreenHandlerType<>(QuarryMenuFabric::new, BlockPos.STREAM_CODEC);
         public static final SolidFuelQuarryBlockFabric SOLID_FUEL_QUARRY_BLOCK = new SolidFuelQuarryBlockFabric();
-        public static final BlockEntityType<SolidFuelQuarryEntityFabric> SOLID_FUEL_QUARRY_ENTITY_TYPE = BlockEntityType.Builder.of(SolidFuelQuarryEntityFabric::new, SOLID_FUEL_QUARRY_BLOCK).build(DSL.emptyPartType());
+        public static final BlockEntityType<SolidFuelQuarryEntityFabric> SOLID_FUEL_QUARRY_ENTITY_TYPE = FabricBlockEntityTypeBuilder.create(SolidFuelQuarryEntityFabric::new, SOLID_FUEL_QUARRY_BLOCK).build();
         public static final MenuType<SolidFuelQuarryMenu> SOLID_FUEL_QUARRY_MENU = new ExtendedScreenHandlerType<>(SolidFuelQuarryMenu::new, BlockPos.STREAM_CODEC);
         public static final AdvQuarryBlockFabric ADV_QUARRY_BLOCK = new AdvQuarryBlockFabric();
         public static final BlockEntityType<AdvQuarryEntityFabric> ADV_QUARRY_ENTITY_TYPE = FabricBlockEntityTypeBuilder.create(AdvQuarryEntityFabric::new, ADV_QUARRY_BLOCK).build();

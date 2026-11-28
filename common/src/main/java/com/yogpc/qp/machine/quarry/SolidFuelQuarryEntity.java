@@ -4,16 +4,16 @@ import com.yogpc.qp.PlatformAccess;
 import com.yogpc.qp.machine.PowerMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
@@ -31,7 +31,7 @@ public abstract class SolidFuelQuarryEntity extends QuarryEntity {
 
     protected SolidFuelQuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
-        this.fuelContainer = new FuelContainer(1);
+        this.fuelContainer = new FuelContainer(1, this);
         this.fuelContainer.addListener(c -> this.setChanged());
     }
 
@@ -45,17 +45,28 @@ public abstract class SolidFuelQuarryEntity extends QuarryEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.put("fuelContainer", fuelContainer.createTag(registries));
-        tag.putInt("fuelCount", fuelCount);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        fuelContainer.storeAsItemList(output.list("fuelContainer", ItemStack.CODEC));
+        output.putInt("fuelCount", fuelCount);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        fuelContainer.fromTag(tag.getList("fuelContainer", Tag.TAG_COMPOUND), registries);
-        fuelCount = tag.getInt("fuelCount");
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        fuelContainer.fromItemList(input.listOrEmpty("fuelContainer", ItemStack.CODEC));
+        fuelCount = input.getIntOr("fuelCount", 0);
+    }
+
+    /**
+     * To drop items in fuel slots
+     */
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState blockState) {
+        super.preRemoveSideEffects(pos, blockState);
+        if (level != null) {
+            Containers.dropContents(level, pos, fuelContainer);
+        }
     }
 
     @Override
@@ -88,13 +99,13 @@ public abstract class SolidFuelQuarryEntity extends QuarryEntity {
 
     @SuppressWarnings("unused")
     static void tickFuel(Level level, BlockPos pos, BlockState state, SolidFuelQuarryEntity quarry) {
-        if (level.isClientSide || !quarry.enabled) return;
+        if (level.isClientSide() || !quarry.enabled) return;
         var generationSpeed = quarry.powerMap().generationSpeed();
         if (generationSpeed <= 0) return;
         var tickEnergy = (long) (generationSpeed * ONE_FE);
         if (quarry.fuelCount <= 0) {
             var fuel = quarry.fuelContainer.getItem(0);
-            int burnTime = PlatformAccess.getAccess().itemAccess().getBurnTime(fuel);
+            int burnTime = PlatformAccess.getAccess().itemAccess().getBurnTime(fuel, level);
             if (burnTime > 0) {
                 // fuelCount is the number of ticks to generate energy: (total energy of the fuel) / (energy generated in a tick)
                 quarry.fuelCount += (int) (burnTime * TOTAL_FE_PER_BURN_TICK / generationSpeed);
@@ -120,13 +131,16 @@ public abstract class SolidFuelQuarryEntity extends QuarryEntity {
     }
 
     private static class FuelContainer extends SimpleContainer {
-        FuelContainer(int size) {
+        private final SolidFuelQuarryEntity entity;
+
+        FuelContainer(int size, SolidFuelQuarryEntity entity) {
             super(size);
+            this.entity = entity;
         }
 
         @Override
         public boolean canPlaceItem(int slot, ItemStack stack) {
-            return PlatformAccess.getAccess().itemAccess().getBurnTime(stack) > 0;
+            return entity.level != null && PlatformAccess.getAccess().itemAccess().getBurnTime(stack, entity.level) > 0;
         }
     }
 }

@@ -16,6 +16,7 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,13 +27,13 @@ public final class PlaceSolidFuelQuarryTest {
     public static void place(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().solidFuelQuarryBlock().get());
         assertInstanceOf(SolidFuelQuarryBlock.class, helper.getBlockState(base).getBlock());
-        assertInstanceOf(SolidFuelQuarryEntity.class, helper.getBlockEntity(base));
+        assertInstanceOf(SolidFuelQuarryEntity.class, helper.getBlockEntity(base, BlockEntity.class));
         helper.succeed();
     }
 
     public static void checkDrop(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().solidFuelQuarryBlock().get());
-        var drop = Block.getDrops(helper.getBlockState(base), helper.getLevel(), helper.absolutePos(base), helper.getBlockEntity(base));
+        var drop = Block.getDrops(helper.getBlockState(base), helper.getLevel(), helper.absolutePos(base), helper.getBlockEntity(base, BlockEntity.class));
         assertFalse(drop.isEmpty());
         assertInstanceOf(QuarryItem.class, drop.getFirst().getItem());
         assertFalse(drop.getFirst().isEnchanted());
@@ -48,7 +49,7 @@ public final class PlaceSolidFuelQuarryTest {
         helper.placeAt(player, stack, base.below(), Direction.UP);
         helper.assertBlockPresent(PlatformAccess.getAccess().registerObjects().solidFuelQuarryBlock().get(), base);
 
-        SolidFuelQuarryEntity quarry = helper.getBlockEntity(base);
+        SolidFuelQuarryEntity quarry = helper.getBlockEntity(base, SolidFuelQuarryEntity.class);
         assertTrue(quarry.getEnchantments().isEmpty());
         assertEquals(PlatformAccess.config().powerMap().solidFuelQuarry().maxEnergy() * PowerEntity.ONE_FE, quarry.getMaxEnergy());
 
@@ -58,7 +59,7 @@ public final class PlaceSolidFuelQuarryTest {
 
     public static void doesNotAcceptEnergy(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().solidFuelQuarryBlock().get());
-        SolidFuelQuarryEntity quarry = helper.getBlockEntity(base);
+        SolidFuelQuarryEntity quarry = helper.getBlockEntity(base, SolidFuelQuarryEntity.class);
         assertEquals(0, quarry.addEnergy(PowerEntity.ONE_FE * 100, false));
         assertEquals(0, quarry.getEnergy());
         helper.succeed();
@@ -66,7 +67,7 @@ public final class PlaceSolidFuelQuarryTest {
 
     public static void generateEnergyFromFuel(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().solidFuelQuarryBlock().get());
-        SolidFuelQuarryEntity quarry = helper.getBlockEntity(base);
+        SolidFuelQuarryEntity quarry = helper.getBlockEntity(base, SolidFuelQuarryEntity.class);
         quarry.fuelContainer.setItem(0, new ItemStack(Items.COAL, 2));
         assertEquals(0, quarry.getFuelCount());
 
@@ -81,7 +82,7 @@ public final class PlaceSolidFuelQuarryTest {
 
     public static void onlyFuelCanBePlaced(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().solidFuelQuarryBlock().get());
-        SolidFuelQuarryEntity quarry = helper.getBlockEntity(base);
+        SolidFuelQuarryEntity quarry = helper.getBlockEntity(base, SolidFuelQuarryEntity.class);
         assertTrue(quarry.fuelContainer.canPlaceItem(0, new ItemStack(Items.COAL)));
         assertFalse(quarry.fuelContainer.canPlaceItem(0, new ItemStack(Items.DIAMOND)));
         helper.succeed();
@@ -89,7 +90,7 @@ public final class PlaceSolidFuelQuarryTest {
 
     public static void dropFuelWhenRemoved(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().solidFuelQuarryBlock().get());
-        SolidFuelQuarryEntity quarry = helper.getBlockEntity(base);
+        SolidFuelQuarryEntity quarry = helper.getBlockEntity(base, SolidFuelQuarryEntity.class);
         quarry.fuelContainer.setItem(0, new ItemStack(Items.COAL, 5));
 
         helper.setBlock(base, Blocks.AIR);
@@ -102,7 +103,7 @@ public final class PlaceSolidFuelQuarryTest {
 
     public static void fuelWithRemainingItemSingle(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().solidFuelQuarryBlock().get());
-        SolidFuelQuarryEntity quarry = helper.getBlockEntity(base);
+        SolidFuelQuarryEntity quarry = helper.getBlockEntity(base, SolidFuelQuarryEntity.class);
         quarry.fuelContainer.setItem(0, new ItemStack(Items.LAVA_BUCKET));
 
         SolidFuelQuarryEntity.tickFuel(helper.getLevel(), quarry.getBlockPos(), quarry.getBlockState(), quarry);
@@ -116,7 +117,7 @@ public final class PlaceSolidFuelQuarryTest {
 
     public static void fuelWithRemainingItemStacked(GameTestHelper helper) {
         helper.setBlock(base, PlatformAccess.getAccess().registerObjects().solidFuelQuarryBlock().get());
-        SolidFuelQuarryEntity quarry = helper.getBlockEntity(base);
+        SolidFuelQuarryEntity quarry = helper.getBlockEntity(base, SolidFuelQuarryEntity.class);
         // Container.setItem limits the stack size to the max size of the item (1 for Lava bucket), so change the count after setting.
         var stack = new ItemStack(Items.LAVA_BUCKET);
         quarry.fuelContainer.setItem(0, stack);

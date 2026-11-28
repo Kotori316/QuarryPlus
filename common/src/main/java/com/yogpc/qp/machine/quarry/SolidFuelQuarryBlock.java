@@ -4,9 +4,6 @@ import com.yogpc.qp.machine.CombinedBlockEntityTicker;
 import com.yogpc.qp.machine.MachineStorage;
 import com.yogpc.qp.machine.PowerEntity;
 import com.yogpc.qp.machine.QpBlock;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.Containers;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -22,14 +19,14 @@ import java.util.stream.Stream;
 public abstract class SolidFuelQuarryBlock extends QuarryBlock {
     public static final String NAME = "solid_fuel_quarry";
 
-    protected SolidFuelQuarryBlock(Function<QpBlock, ? extends BlockItem> itemGenerator) {
+    protected SolidFuelQuarryBlock(Function<QpBlock, ? extends QuarryItem> itemGenerator) {
         super(NAME, itemGenerator);
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return createTickerHelper(blockEntityType, this.<SolidFuelQuarryEntity>getBlockEntityType().orElse(null), CombinedBlockEntityTicker.of(this, level,
                 QuarryEntity::clientTick
             ));
@@ -41,19 +38,6 @@ public abstract class SolidFuelQuarryBlock extends QuarryBlock {
             MachineStorage.pushItemTicker(),
             MachineStorage.pushFluidTicker()
         ));
-    }
-
-    /**
-     * To drop items in fuel slots
-     */
-    @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
-            if (level.getBlockEntity(pos) instanceof SolidFuelQuarryEntity entity) {
-                Containers.dropContents(level, pos, entity.fuelContainer);
-            }
-        }
-        super.onRemove(state, level, pos, newState, isMoving);
     }
 
     /**
