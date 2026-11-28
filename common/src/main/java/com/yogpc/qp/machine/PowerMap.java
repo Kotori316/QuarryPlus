@@ -7,13 +7,28 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 /**
  * Unit is FE, not microFE, so I use double in this class
  */
-public record PowerMap(Quarry quarry, Quarry solidFuelQuarry, AdvQuarry advQuarry, AdvPump advPump) {
+public record PowerMap(Quarry quarry, SolidFuelQuarry solidFuelQuarry, AdvQuarry advQuarry, AdvPump advPump) {
     public static final MapCodec<PowerMap> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
         PowerMap.Quarry.CODEC.fieldOf("quarry").forGetter(PowerMap::quarry),
-        PowerMap.Quarry.CODEC.fieldOf("solidFuelQuarry").forGetter(PowerMap::solidFuelQuarry),
+        PowerMap.SolidFuelQuarry.CODEC.fieldOf("solidFuelQuarry").forGetter(PowerMap::solidFuelQuarry),
         PowerMap.AdvQuarry.CODEC.fieldOf("advQuarry").forGetter(PowerMap::advQuarry),
         PowerMap.AdvPump.CODEC.fieldOf("advPump").forGetter(PowerMap::advPump)
     ).apply(i, PowerMap::new));
+
+    /**
+     * The values required by {@link com.yogpc.qp.machine.quarry.QuarryEntity} and its subclasses.
+     */
+    public interface QuarryPower {
+        double maxEnergy();
+
+        double makeFrame();
+
+        double breakBlockFluid();
+
+        double moveHeadBase();
+
+        long getBreakEnergy(float hardness, int efficiency, int unbreaking, int fortune, boolean silktouch);
+    }
 
     public record Quarry(
         double maxEnergy,
@@ -26,7 +41,7 @@ public record PowerMap(Quarry quarry, Quarry solidFuelQuarry, AdvQuarry advQuarr
         double breakEfficiencyCoefficient,
         double breakFortuneCoefficient,
         double breakSilktouchCoefficient
-    ) {
+    ) implements QuarryPower {
         public static final MapCodec<Quarry> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             Codec.DOUBLE.fieldOf("maxEnergy").forGetter(Quarry::maxEnergy),
             Codec.DOUBLE.fieldOf("makeFrame").forGetter(Quarry::makeFrame),
@@ -40,8 +55,36 @@ public record PowerMap(Quarry quarry, Quarry solidFuelQuarry, AdvQuarry advQuarr
             Codec.DOUBLE.fieldOf("breakSilktouchCoefficient").forGetter(Quarry::breakSilktouchCoefficient)
         ).apply(i, Quarry::new));
 
+        @Override
         public long getBreakEnergy(float hardness, int efficiency, int unbreaking, int fortune, boolean silktouch) {
             return PowerMap.getBreakEnergy(hardness, efficiency, unbreaking, fortune, silktouch, breakBlockBase, breakFortuneCoefficient, breakEfficiencyCoefficient, breakSilktouchCoefficient);
+        }
+    }
+
+    /**
+     * @param generationSpeed Energy in FE generated in a tick while the machine has fuel. It limits the speed of mining.
+     *                        Changing this value only changes how long a fuel runs, and never changes the total energy of the fuel.
+     */
+    public record SolidFuelQuarry(
+        double maxEnergy,
+        double generationSpeed,
+        double makeFrame,
+        double breakBlockBase,
+        double breakBlockFluid,
+        double moveHeadBase
+    ) implements QuarryPower {
+        public static final MapCodec<SolidFuelQuarry> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+            Codec.DOUBLE.fieldOf("maxEnergy").forGetter(SolidFuelQuarry::maxEnergy),
+            Codec.DOUBLE.fieldOf("generationSpeed").forGetter(SolidFuelQuarry::generationSpeed),
+            Codec.DOUBLE.fieldOf("makeFrame").forGetter(SolidFuelQuarry::makeFrame),
+            Codec.DOUBLE.fieldOf("breakBlockBase").forGetter(SolidFuelQuarry::breakBlockBase),
+            Codec.DOUBLE.fieldOf("breakBlockFluid").forGetter(SolidFuelQuarry::breakBlockFluid),
+            Codec.DOUBLE.fieldOf("moveHeadBase").forGetter(SolidFuelQuarry::moveHeadBase)
+        ).apply(i, SolidFuelQuarry::new));
+
+        @Override
+        public long getBreakEnergy(float hardness, int efficiency, int unbreaking, int fortune, boolean silktouch) {
+            return PowerMap.getBreakEnergy(hardness, 0, 0, 0, false, breakBlockBase, 1, 1, 1);
         }
     }
 
@@ -131,17 +174,13 @@ public record PowerMap(Quarry quarry, Quarry solidFuelQuarry, AdvQuarry advQuarr
             1.5874010519681996,
             4.0
         );
-        Quarry SOLID_FUEL_QUARRY = new Quarry(
+        SolidFuelQuarry SOLID_FUEL_QUARRY = new SolidFuelQuarry(
             1000.0,
+            2.0,
             15.0,
             25.0,
             125.0,
-            1.0,
-            2.5,
-            1.5848931924611136,
-            1.379729661461215,
-            1.5874010519681996,
-            4.0
+            1.0
         );
         AdvQuarry ADV_QUARRY = new AdvQuarry(
             50000,

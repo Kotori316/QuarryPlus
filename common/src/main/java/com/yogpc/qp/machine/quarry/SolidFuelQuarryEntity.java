@@ -20,17 +20,10 @@ import java.util.stream.Stream;
 
 public abstract class SolidFuelQuarryEntity extends QuarryEntity {
     /**
-     * Speed of generation. Energy in FE generated in a tick while the machine has fuel.
-     * It limits the speed of mining.
-     * Changing this value only changes how long a fuel runs, and never changes the total energy of the fuel. See {@link #TOTAL_FE_PER_BURN_TICK}.
-     * TODO: make it configurable
-     */
-    static final double GENERATION_SPEED_FE_PER_TICK = 2d;
-    /**
      * Total energy in FE per 1 tick of burn time of a fuel. (e.g. Coal: 1600 ticks -> 6400 FE)
      * It is 10 FE, same as general thermal generators, multiplied by 0.4, the efficiency of this machine.
-     * This value is independent of {@link #GENERATION_SPEED_FE_PER_TICK}, so the total energy of a fuel is fixed even if the speed is changed.
-     * The running time of a fuel is {@code burnTime * TOTAL_FE_PER_BURN_TICK / GENERATION_SPEED_FE_PER_TICK} ticks.
+     * This value is independent of {@link PowerMap.SolidFuelQuarry#generationSpeed()}, so the total energy of a fuel is fixed even if the speed is changed.
+     * The running time of a fuel is {@code burnTime * TOTAL_FE_PER_BURN_TICK / generationSpeed} ticks.
      */
     static final double TOTAL_FE_PER_BURN_TICK = 10d * 0.4d;
     final SimpleContainer fuelContainer;
@@ -43,7 +36,7 @@ public abstract class SolidFuelQuarryEntity extends QuarryEntity {
     }
 
     @Override
-    protected PowerMap.Quarry powerMap() {
+    protected PowerMap.SolidFuelQuarry powerMap() {
         return PlatformAccess.config().powerMap().solidFuelQuarry();
     }
 
@@ -96,13 +89,15 @@ public abstract class SolidFuelQuarryEntity extends QuarryEntity {
     @SuppressWarnings("unused")
     static void tickFuel(Level level, BlockPos pos, BlockState state, SolidFuelQuarryEntity quarry) {
         if (level.isClientSide || !quarry.enabled) return;
-        var tickEnergy = (long) (GENERATION_SPEED_FE_PER_TICK * ONE_FE);
+        var generationSpeed = quarry.powerMap().generationSpeed();
+        if (generationSpeed <= 0) return;
+        var tickEnergy = (long) (generationSpeed * ONE_FE);
         if (quarry.fuelCount <= 0) {
             var fuel = quarry.fuelContainer.getItem(0);
             int burnTime = PlatformAccess.getAccess().itemAccess().getBurnTime(fuel);
             if (burnTime > 0) {
                 // fuelCount is the number of ticks to generate energy: (total energy of the fuel) / (energy generated in a tick)
-                quarry.fuelCount += (int) (burnTime * TOTAL_FE_PER_BURN_TICK / GENERATION_SPEED_FE_PER_TICK);
+                quarry.fuelCount += (int) (burnTime * TOTAL_FE_PER_BURN_TICK / generationSpeed);
                 var remaining = PlatformAccess.getAccess().itemAccess().getCraftingRemainingItem(fuel);
                 if (!remaining.isEmpty() && fuel.getCount() == 1) {
                     // e.g. Lava bucket -> Bucket

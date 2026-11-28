@@ -38,7 +38,7 @@ final class QuarryConfigLoader {
         var debug = config.<Boolean>get("debug");
         var noEnergy = config.<Boolean>get("noEnergy");
         var quarry = PowerMap.Quarry.CODEC.codec().parse(JavaOps.INSTANCE, config.<Config>get("powerMap.quarry").valueMap()).getOrThrow();
-        var solidFuelQuarry = PowerMap.Quarry.CODEC.codec().parse(JavaOps.INSTANCE, config.<Config>get("powerMap.solidFuelQuarry").valueMap()).getOrThrow();
+        var solidFuelQuarry = PowerMap.SolidFuelQuarry.CODEC.codec().parse(JavaOps.INSTANCE, config.<Config>get("powerMap.solidFuelQuarry").valueMap()).getOrThrow();
         var advQuarry = PowerMap.AdvQuarry.CODEC.codec().parse(JavaOps.INSTANCE, config.<Config>get("powerMap.advQuarry").valueMap()).getOrThrow();
         var advPump = PowerMap.AdvPump.CODEC.codec().parse(JavaOps.INSTANCE, config.<Config>get("powerMap.advPump").valueMap()).getOrThrow();
         var powerMap = new PowerMap(quarry, solidFuelQuarry, advQuarry, advPump);

@@ -94,7 +94,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         moduleInventory.addListener(container -> setChanged());
     }
 
-    protected PowerMap.Quarry powerMap() {
+    protected PowerMap.QuarryPower powerMap() {
         return PlatformAccess.config().powerMap().quarry();
     }
 
