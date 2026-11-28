@@ -21,6 +21,8 @@ import com.yogpc.qp.machine.mover.MoverContainer;
 import com.yogpc.qp.machine.mover.MoverEntity;
 import com.yogpc.qp.machine.placer.*;
 import com.yogpc.qp.machine.quarry.QuarryBlock;
+import com.yogpc.qp.machine.quarry.SolidFuelQuarryBlock;
+import com.yogpc.qp.machine.quarry.SolidFuelQuarryMenu;
 import com.yogpc.qp.machine.storage.DebugStorageBlock;
 import com.yogpc.qp.machine.storage.DebugStorageContainer;
 import com.yogpc.qp.machine.storage.DebugStorageEntity;
@@ -30,6 +32,8 @@ import com.yogpc.qp.neoforge.machine.misc.CheckerItemNeoForge;
 import com.yogpc.qp.neoforge.machine.misc.YSetterItemNeoForge;
 import com.yogpc.qp.neoforge.machine.quarry.QuarryBlockNeoForge;
 import com.yogpc.qp.neoforge.machine.quarry.QuarryEntityNeoForge;
+import com.yogpc.qp.neoforge.machine.quarry.SolidFuelQuarryBlockNeoForge;
+import com.yogpc.qp.neoforge.machine.quarry.SolidFuelQuarryEntityNeoForge;
 import com.yogpc.qp.neoforge.packet.PacketHandler;
 import com.yogpc.qp.recipe.FilterModuleExpandRecipe;
 import com.yogpc.qp.recipe.InstallBedrockModuleRecipe;
@@ -90,6 +94,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
 
         // Machine
         public static final DeferredBlock<QuarryBlockNeoForge> BLOCK_QUARRY = registerBlock(QuarryBlockNeoForge.NAME, QuarryBlockNeoForge::new);
+        public static final DeferredBlock<SolidFuelQuarryBlockNeoForge> BLOCK_SOLID_FUEL_QUARRY = registerBlock(SolidFuelQuarryBlock.NAME, SolidFuelQuarryBlockNeoForge::new);
         public static final DeferredBlock<AdvQuarryBlock> BLOCK_ADV_QUARRY = registerBlock(AdvQuarryBlock.NAME, AdvQuarryBlock::new);
         public static final DeferredBlock<AdvPumpBlock> BLOCK_ADV_PUMP = registerBlock(AdvPumpBlock.NAME, AdvPumpBlock::new);
         public static final DeferredBlock<GeneratorBlock> BLOCK_GENERATOR = registerBlock(GeneratorBlock.NAME, GeneratorBlock::new);
@@ -121,6 +126,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FlexibleMarkerEntity>> FLEXIBLE_MARKER_ENTITY_TYPE = registerBlockEntity(FlexibleMarkerBlock.NAME, BLOCK_FLEXIBLE_MARKER, FlexibleMarkerEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ChunkMarkerEntity>> CHUNK_MARKER_ENTITY_TYPE = registerBlockEntity(ChunkMarkerBlock.NAME, BLOCK_CHUNK_MARKER, ChunkMarkerEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DebugStorageEntity>> DEBUG_STORAGE_TYPE = registerBlockEntity(DebugStorageBlock.NAME, BLOCK_DEBUG_STORAGE, DebugStorageEntity::new, EnableMap.EnableOrNot.ALWAYS_ON);
+        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SolidFuelQuarryEntityNeoForge>> SOLID_FUEL_QUARRY_ENTITY_TYPE = registerBlockEntity(SolidFuelQuarryBlock.NAME, BLOCK_SOLID_FUEL_QUARRY, SolidFuelQuarryEntityNeoForge::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AdvQuarryEntityNeoForge>> ADV_QUARRY_ENTITY_TYPE = registerBlockEntity(AdvQuarryBlock.NAME, BLOCK_ADV_QUARRY, AdvQuarryEntityNeoForge::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AdvPumpEntityNeoForge>> ADV_PUMP_ENTITY_TYPE = registerBlockEntity(AdvPumpBlock.NAME, BLOCK_ADV_PUMP, AdvPumpEntityNeoForge::new, EnableMap.EnableOrNot.CONFIG_ON);
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PlacerEntity>> PLACER_ENTITY_TYPE = registerBlockEntity(PlacerBlock.NAME, BLOCK_PLACER, PlacerEntity::new, EnableMap.EnableOrNot.CONFIG_ON);
@@ -133,6 +139,7 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         public static final DeferredHolder<MenuType<?>, MenuType<? extends MarkerContainer>> FLEXIBLE_MARKER_MENU_TYPE = registerMenu(MarkerContainer.FLEXIBLE_NAME, MarkerContainer::createFlexibleMarkerContainer);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends MarkerContainer>> CHUNK_MARKER_MENU_TYPE = registerMenu(MarkerContainer.CHUNK_NAME, MarkerContainer::createChunkMarkerContainer);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends DebugStorageContainer>> DEBUG_STORAGE_MENU_TYPE = registerMenu(DebugStorageContainer.NAME, DebugStorageContainer::new);
+        public static final DeferredHolder<MenuType<?>, MenuType<? extends SolidFuelQuarryMenu>> SOLID_FUEL_QUARRY_MENU_TYPE = registerMenu(SolidFuelQuarryMenu.NAME, SolidFuelQuarryMenu::new);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends AdvQuarryContainer>> ADV_QUARRY_MENU_TYPE = registerMenu(AdvQuarryContainer.NAME, AdvQuarryContainer::new);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends AdvPumpContainer>> ADV_PUMP_MENU_TYPE = registerMenu(AdvPumpContainer.NAME, AdvPumpContainer::new);
         public static final DeferredHolder<MenuType<?>, MenuType<? extends FilterModuleContainer>> FILTER_MODULE_MENU_TYPE = MENU_TYPE_REGISTER.register(FilterModuleContainer.NAME, () ->
@@ -224,6 +231,11 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         }
 
         @Override
+        public Supplier<? extends SolidFuelQuarryBlock> solidFuelQuarryBlock() {
+            return BLOCK_SOLID_FUEL_QUARRY;
+        }
+
+        @Override
         public Supplier<? extends AdvQuarryBlock> advQuarryBlock() {
             return BLOCK_ADV_QUARRY;
         }
@@ -306,6 +318,11 @@ public final class PlatformAccessNeoForge implements PlatformAccess {
         @Override
         public Supplier<MenuType<? extends DebugStorageContainer>> debugStorageContainer() {
             return DEBUG_STORAGE_MENU_TYPE;
+        }
+
+        @Override
+        public Supplier<MenuType<? extends SolidFuelQuarryMenu>> solidFuelQuarryContainer() {
+            return SOLID_FUEL_QUARRY_MENU_TYPE;
         }
 
         @Override

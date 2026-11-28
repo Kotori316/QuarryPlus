@@ -7,9 +7,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 /**
  * Unit is FE, not microFE, so I use double in this class
  */
-public record PowerMap(Quarry quarry, AdvQuarry advQuarry, AdvPump advPump) {
+public record PowerMap(Quarry quarry, Quarry solidFuelQuarry, AdvQuarry advQuarry, AdvPump advPump) {
     public static final MapCodec<PowerMap> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
         PowerMap.Quarry.CODEC.fieldOf("quarry").forGetter(PowerMap::quarry),
+        PowerMap.Quarry.CODEC.fieldOf("solidFuelQuarry").forGetter(PowerMap::solidFuelQuarry),
         PowerMap.AdvQuarry.CODEC.fieldOf("advQuarry").forGetter(PowerMap::advQuarry),
         PowerMap.AdvPump.CODEC.fieldOf("advPump").forGetter(PowerMap::advPump)
     ).apply(i, PowerMap::new));
@@ -120,6 +121,18 @@ public record PowerMap(Quarry quarry, AdvQuarry advQuarry, AdvPump advPump) {
     public interface Default {
         Quarry QUARRY = new Quarry(
             10000.0,
+            15.0,
+            25.0,
+            125.0,
+            1.0,
+            2.5,
+            1.5848931924611136,
+            1.379729661461215,
+            1.5874010519681996,
+            4.0
+        );
+        Quarry SOLID_FUEL_QUARRY = new Quarry(
+            1000.0,
             15.0,
             25.0,
             125.0,

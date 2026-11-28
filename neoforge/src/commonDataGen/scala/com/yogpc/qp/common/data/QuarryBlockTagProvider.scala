@@ -16,6 +16,7 @@ class QuarryBlockTagProvider(output: PackOutput, lookupProvider: CompletableFutu
 
     tag(BlockTags.MINEABLE_WITH_PICKAXE)
       .add(holder.quarryBlock().get())
+      .add(holder.solidFuelQuarryBlock().get())
       .add(holder.advQuarryBlock().get())
       .add(holder.advPumpBlock().get())
 

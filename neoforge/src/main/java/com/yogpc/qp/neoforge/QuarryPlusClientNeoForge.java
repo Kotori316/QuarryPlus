@@ -11,11 +11,9 @@ import com.yogpc.qp.machine.module.ModuleScreen;
 import com.yogpc.qp.machine.mover.MoverScreen;
 import com.yogpc.qp.machine.placer.PlacerScreen;
 import com.yogpc.qp.machine.placer.RemotePlacerScreen;
+import com.yogpc.qp.machine.quarry.SolidFuelQuarryScreen;
 import com.yogpc.qp.machine.storage.DebugStorageScreen;
-import com.yogpc.qp.neoforge.render.RenderChunkMarkerNeoForge;
-import com.yogpc.qp.neoforge.render.RenderFlexibleMarkerNeoForge;
-import com.yogpc.qp.neoforge.render.RenderMarkerNeoForge;
-import com.yogpc.qp.neoforge.render.RenderQuarryNeoForge;
+import com.yogpc.qp.neoforge.render.*;
 import com.yogpc.qp.render.RenderAdvQuarry;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -27,6 +25,7 @@ public final class QuarryPlusClientNeoForge {
     public static void clientInit(FMLClientSetupEvent event) {
         QuarryPlus.LOGGER.info("Initialize Client({})", event.description());
         BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.QUARRY_ENTITY_TYPE.get(), RenderQuarryNeoForge::new);
+        BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.SOLID_FUEL_QUARRY_ENTITY_TYPE.get(), RenderSolidFuelQuarryNeoForge::new);
         BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.MARKER_ENTITY_TYPE.get(), RenderMarkerNeoForge::new);
         BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.FLEXIBLE_MARKER_ENTITY_TYPE.get(), RenderFlexibleMarkerNeoForge::new);
         BlockEntityRenderers.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.CHUNK_MARKER_ENTITY_TYPE.get(), RenderChunkMarkerNeoForge::new);
@@ -42,6 +41,7 @@ public final class QuarryPlusClientNeoForge {
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.FLEXIBLE_MARKER_MENU_TYPE.get(), FlexibleMarkerScreen::new);
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.CHUNK_MARKER_MENU_TYPE.get(), ChunkMarkerScreen::new);
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.DEBUG_STORAGE_MENU_TYPE.get(), DebugStorageScreen::new);
+        event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.SOLID_FUEL_QUARRY_MENU_TYPE.get(), SolidFuelQuarryScreen::new);
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.ADV_QUARRY_MENU_TYPE.get(), AdvQuarryScreen::new);
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.ADV_PUMP_MENU_TYPE.get(), AdvPumpScreen::new);
         event.register(PlatformAccessNeoForge.RegisterObjectsNeoForge.FILTER_MODULE_MENU_TYPE.get(), FilterModuleScreen::new);
