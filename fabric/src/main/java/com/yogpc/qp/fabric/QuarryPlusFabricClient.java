@@ -13,6 +13,7 @@ import com.yogpc.qp.machine.module.ModuleScreen;
 import com.yogpc.qp.machine.mover.MoverScreen;
 import com.yogpc.qp.machine.placer.PlacerScreen;
 import com.yogpc.qp.machine.placer.RemotePlacerScreen;
+import com.yogpc.qp.machine.quarry.SolidFuelQuarryScreen;
 import com.yogpc.qp.machine.storage.DebugStorageScreen;
 import com.yogpc.qp.render.*;
 import net.fabricmc.api.ClientModInitializer;
@@ -25,6 +26,7 @@ public final class QuarryPlusFabricClient implements ClientModInitializer {
         QuarryPlus.LOGGER.info("Initialize Client");
         PacketHandler.Client.initClient();
         BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.QUARRY_ENTITY_TYPE, RenderQuarry::new);
+        BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.SOLID_FUEL_QUARRY_ENTITY_TYPE, RenderSolidFuelQuarry::new);
         BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.MARKER_ENTITY_TYPE, RenderMarker::new);
         BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.FLEXIBLE_MARKER_ENTITY_TYPE, RenderFlexibleMarker::new);
         BlockEntityRenderers.register(PlatformAccessFabric.RegisterObjectsFabric.CHUNK_MARKER_ENTITY_TYPE, RenderChunkMarker::new);
@@ -36,6 +38,7 @@ public final class QuarryPlusFabricClient implements ClientModInitializer {
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.FLEXIBLE_MARKER_MENU, FlexibleMarkerScreen::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.CHUNK_MARKER_MENU, ChunkMarkerScreen::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.DEBUG_STORAGE_MENU, DebugStorageScreen::new);
+        MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.SOLID_FUEL_QUARRY_MENU, SolidFuelQuarryScreen::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.ADV_QUARRY_MENU, AdvQuarryScreen::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.ADV_PUMP_MENU, AdvPumpScreen::new);
         MenuScreens.register(PlatformAccessFabric.RegisterObjectsFabric.FILTER_MODULE_MENU, FilterModuleScreen::new);

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": "minecraft:furnace",
+    "R": "#c:dusts/redstone",
+    "g": "minecraft:diamond_pickaxe",
+    "i": "#c:ingots/iron",
+    "m": "#quarryplus:markers",
+    "o": "minecraft:redstone_torch"
+  },
+  "pattern": [
+    "igi",
+    "oDo",
+    "iRm"
+  ],
+  "result": {
+    "id": "quarryplus:solid_fuel_quarry"
+  }
+}

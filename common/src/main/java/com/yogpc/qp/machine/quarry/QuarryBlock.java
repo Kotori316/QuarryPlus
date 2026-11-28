@@ -43,11 +43,15 @@ public abstract class QuarryBlock extends QpEntityBlock {
     public static final String NAME = "quarry";
 
     protected QuarryBlock(Function<QpBlock, ? extends QuarryItem> itemGenerator) {
+        this(NAME, itemGenerator);
+    }
+
+    protected QuarryBlock(String name, Function<QpBlock, ? extends QuarryItem> itemGenerator) {
         super(Properties.of()
             .mapColor(MapColor.METAL)
             .pushReaction(PushReaction.BLOCK)
             .strength(1.5f, 10f)
-            .sound(SoundType.STONE), NAME, itemGenerator);
+            .sound(SoundType.STONE), name, itemGenerator);
         registerDefaultState(getStateDefinition().any()
             .setValue(QpBlockProperty.WORKING, false)
             .setValue(BlockStateProperties.FACING, Direction.NORTH));

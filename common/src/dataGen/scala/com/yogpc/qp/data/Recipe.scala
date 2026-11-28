@@ -3,6 +3,7 @@ package com.yogpc.qp.data
 import com.yogpc.qp.machine.exp.ExpModuleItem
 import com.yogpc.qp.machine.marker.{ChunkMarkerBlock, FlexibleMarkerBlock}
 import com.yogpc.qp.machine.module.{FilterModuleItem, RepeatTickModuleItem}
+import com.yogpc.qp.machine.quarry.{QuarryBlock, SolidFuelQuarryBlock}
 import com.yogpc.qp.recipe.{FilterModuleExpandRecipe, InstallBedrockModuleRecipe}
 import com.yogpc.qp.{PlatformAccess, QuarryPlus}
 import net.minecraft.core.HolderLookup
@@ -88,6 +89,33 @@ class Recipe(ingredientProvider: IngredientProvider)(using recipeOutput: RecipeO
       .pattern("gDg")
       .pattern("iRm")
       .unlockedBy(ip.markerTag)
+      .save(recipeOutput)
+
+    shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().quarryBlock().get())
+      .define('Q', PlatformAccess.getAccess.registerObjects().solidFuelQuarryBlock().get())
+      .define('D', Items.DROPPER)
+      .define('g', ip.pickaxeForQuarry)
+      .define('R', ip.redStoneBlock)
+      .define('r', ip.redStoneDust)
+      .define('o', ip.obsidian)
+      .pattern("DgD")
+      .pattern("oQo")
+      .pattern("RrR")
+      .unlockedBy(PlatformAccess.getAccess.registerObjects().solidFuelQuarryBlock().get())
+      .save(recipeOutput, modLocKey(QuarryBlock.NAME + "_from_" + SolidFuelQuarryBlock.NAME))
+
+    shaped(RecipeCategory.MISC, PlatformAccess.getAccess.registerObjects().solidFuelQuarryBlock().get())
+      .define('D', Items.FURNACE)
+      .define('R', ip.redStoneDust)
+      .define('g', ip.pickaxeForQuarry)
+      .define('i', ip.ironIngot)
+      .define('o', Items.REDSTONE_TORCH)
+      .define('m', ip.marker)
+      .pattern("igi")
+      .pattern("oDo")
+      .pattern("iRm")
+      .unlockedBy(ip.markerTag)
+      .unlockedBy(Items.FURNACE)
       .save(recipeOutput)
 
     shaped(RecipeCategory.MISC, quarryItem("status_checker"))

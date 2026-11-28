@@ -92,7 +92,7 @@ public abstract class QuarryEntity extends PowerEntity implements ClientSync {
         storage = MachineStorage.of();
     }
 
-    static PowerMap.Quarry powerMap() {
+    protected PowerMap.QuarryPower powerMap() {
         return PlatformAccess.config().powerMap().quarry();
     }
 

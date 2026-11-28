@@ -1,6 +1,7 @@
 {
   "values": [
     "quarryplus:quarry",
+    "quarryplus:solid_fuel_quarry",
     "quarryplus:adv_quarry",
     "quarryplus:adv_pump"
   ]
