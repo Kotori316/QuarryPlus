@@ -31,7 +31,7 @@ base {
     val mcVersionSplit = minecraft.split(".").drop(1)
     val major = mcVersionSplit[0]
     val minor = mcVersionSplit.getOrElse(1) { _ -> "0" }
-    val versionMinor: String? by project
+    val versionMinor = project.findProperty("versionMinor") as String?
     val patch = System.getenv("GITHUB_RUN_NUMBER") ?: versionMinor ?: "0"
     version = "${major}.${minor}.${patch}"
 }

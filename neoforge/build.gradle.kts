@@ -44,6 +44,7 @@ tasks.named("processCommonDataGenResources", ProcessResources::class) {
 // End Common data gen
 
 runs {
+    val gameTestRuntime = project.configurations.gameTestRuntime.get()
     configureEach {
         systemProperty("neoforge.enabledGameTestNamespaces", modId)
         systemProperty("mixin.debug.export", "true")
@@ -56,7 +57,7 @@ runs {
         arguments("--username", "Kotori")
         modSources.add(modId, sourceSets["gameTest"])
         dependencies {
-            runtime(project.configurations.gameTestRuntime.get())
+            runtime(gameTestRuntime)
         }
         isClient = true
     }
@@ -68,7 +69,7 @@ runs {
         jvmArguments("-ea")
         modSources.add(modId, sourceSets["gameTest"])
         dependencies {
-            runtime(project.configurations.gameTestRuntime.get())
+            runtime(gameTestRuntime)
         }
         isGameTest = true
     }
@@ -142,8 +143,17 @@ tasks.named("jar", Jar::class) {
 }
 
 tasks.register("jksSignJar", com.kotori316.common.JarSignTask::class) {
+    description = "Add jks signature to NeoForge jar"
     dependsOn(tasks.jar)
-    jarTask = tasks.jar
+    onlyIf {
+        project.hasProperty("jarSign.keyAlias") &&
+                project.hasProperty("jarSign.keyLocation") &&
+                project.hasProperty("jarSign.storePass")
+    }
+    jarFile = tasks.jar.flatMap { it.archiveFile }
+    keyAlias = project.findProperty("jarSign.keyAlias") as? String ?: ""
+    keyStore = project.findProperty("jarSign.keyLocation") as? String ?: ""
+    storePass = project.findProperty("jarSign.storePass") as? String ?: ""
 }
 
 ext {
