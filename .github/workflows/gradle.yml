@@ -19,8 +19,8 @@ jobs:
   assemble:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: 'temurin'
           java-version: '25'
@@ -50,8 +50,8 @@ jobs:
       DISABLE_FABRIC: ${{ matrix.platform != 'fabric' }}
       DISABLE_NEOFORGE: ${{ matrix.platform != 'neoforge' }}
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: 'temurin'
           java-version: '25'
@@ -110,7 +110,7 @@ jobs:
           ! test -d "${{ matrix.platform }}/game-test/crash-reports"
       - name: Upload failed test report
         if: failure()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           path: |
             ${{ matrix.platform }}/build/reports/tests/*
@@ -122,6 +122,6 @@ jobs:
     needs:
       - assemble
       - platforms
-    uses: 'Kotori316/common-script/.github/workflows/merge-checker.yaml@cc63e8610e21a91ed102150d078b10d216e02b76' # v2.0.3
+    uses: 'Kotori316/common-script/.github/workflows/merge-checker.yaml@f68c456ce9aa44130e67f05234bc68db848e9a54' # v2.0.5
     with:
       needs: ${{ toJSON(needs) }}
