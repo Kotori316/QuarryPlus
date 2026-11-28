@@ -169,6 +169,18 @@ public interface PlatformAccess {
 
     Transfer transfer();
 
+    interface ItemAccess {
+        /**
+         * @return the burn time in tick of the stack as fuel of furnaces. 0 if the stack is not a fuel.
+         */
+        int getBurnTime(ItemStack stack);
+
+        @NotNull
+        ItemStack getCraftingRemainingItem(ItemStack stack);
+    }
+
+    ItemAccess itemAccess();
+
     FluidStackLike getFluidInItem(ItemStack stack);
 
     Component getFluidName(FluidStackLike stack);

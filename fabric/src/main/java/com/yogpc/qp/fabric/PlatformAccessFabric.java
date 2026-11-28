@@ -74,6 +74,7 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
     private final Lazy<RegisterObjects> itemsLazy = Lazy.lazy(RegisterObjectsFabric::new);
     private final Lazy<PacketHandler> packetHandlerLazy = Lazy.lazy(PacketHandler::new);
     private final Lazy<TransferFabric> transferLazy = Lazy.lazy(TransferFabric::new);
+    private final Lazy<ItemAccessFabric> itemAccessLazy = Lazy.lazy(ItemAccessFabric::new);
     private final ConfigHolder configLazy = new ConfigHolder(this::modified);
     private final Lazy<Mining> miningLazy = Lazy.lazy(MiningFabric::new);
 
@@ -415,6 +416,11 @@ public final class PlatformAccessFabric implements PlatformAccess, ServerLifecyc
     @Override
     public Transfer transfer() {
         return transferLazy.get();
+    }
+
+    @Override
+    public ItemAccess itemAccess() {
+        return itemAccessLazy.get();
     }
 
     @Override
