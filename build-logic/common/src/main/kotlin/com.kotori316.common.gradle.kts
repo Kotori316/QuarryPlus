@@ -93,10 +93,11 @@ repositories {
         }
     }
     maven {
-        name = "CraftTweaker and JEI"
-        url = uri("https://modmaven.dev")
+        name = "JEI"
+        url = uri("https://maven.blamejared.com")
         content {
             includeGroup("mezz.jei")
+            includeGroup("net.mezzdev.config")
         }
     }
     maven {
