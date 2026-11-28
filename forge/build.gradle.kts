@@ -79,7 +79,7 @@ minecraft {
         }
 
         create("data") {
-            with("dataGen") {
+            with("genData") {
                 workingDir.convention(layout.projectDirectory.dir("run-server"))
                 args(
                     "--mod",
