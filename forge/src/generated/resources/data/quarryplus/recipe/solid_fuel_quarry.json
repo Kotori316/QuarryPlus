@@ -2,24 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "D": {
-      "item": "minecraft:furnace"
-    },
-    "R": {
-      "tag": "c:dusts/redstone"
-    },
-    "g": {
-      "item": "minecraft:diamond_pickaxe"
-    },
-    "i": {
-      "tag": "c:ingots/iron"
-    },
-    "m": {
-      "tag": "quarryplus:markers"
-    },
-    "o": {
-      "item": "minecraft:redstone_torch"
-    }
+    "D": "minecraft:furnace",
+    "R": "#c:dusts/redstone",
+    "g": "minecraft:diamond_pickaxe",
+    "i": "#c:ingots/iron",
+    "m": "#quarryplus:markers",
+    "o": "minecraft:redstone_torch"
   },
   "pattern": [
     "igi",
