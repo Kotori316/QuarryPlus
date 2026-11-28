@@ -79,6 +79,7 @@ public final class PlatformAccessForge implements PlatformAccess {
     private final Lazy<RegisterObjects> itemsLazy = Lazy.lazy(RegisterObjectsForge::new);
     private final Lazy<PacketHandler> packetHandlerLazy = Lazy.lazy(PacketHandler::new);
     private final Lazy<TransferForge> transferLazy = Lazy.lazy(TransferForge::new);
+    private final Lazy<ItemAccessForge> itemAccessLazy = Lazy.lazy(ItemAccessForge::new);
     private final ConfigHolder configLazy = new ConfigHolder(() ->
         QuarryConfig.load(configPath(), this::isInDevelopmentEnvironment)
     );
@@ -398,6 +399,11 @@ public final class PlatformAccessForge implements PlatformAccess {
     @Override
     public Transfer transfer() {
         return transferLazy.get();
+    }
+
+    @Override
+    public ItemAccess itemAccess() {
+        return itemAccessLazy.get();
     }
 
     @Override

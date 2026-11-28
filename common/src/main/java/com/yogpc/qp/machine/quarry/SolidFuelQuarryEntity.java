@@ -12,7 +12,6 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
@@ -46,15 +45,6 @@ public abstract class SolidFuelQuarryEntity extends QuarryEntity {
     @Override
     protected PowerMap.Quarry powerMap() {
         return PlatformAccess.config().powerMap().solidFuelQuarry();
-    }
-
-    /**
-     * @return the burn time in tick of the stack. 0 if the stack is not fuel.
-     */
-    protected int getBurnTime(ItemStack stack) {
-        // TODO: Mock implementation. Use platform dependent value (e.g. IItemExtension#getBurnTime in NeoForge)
-        if (stack.isEmpty()) return 0;
-        return AbstractFurnaceBlockEntity.getFuel().getOrDefault(stack.getItem(), 0);
     }
 
     public int getFuelCount() {
@@ -109,20 +99,20 @@ public abstract class SolidFuelQuarryEntity extends QuarryEntity {
         var tickEnergy = (long) (GENERATION_SPEED_FE_PER_TICK * ONE_FE);
         if (quarry.fuelCount <= 0) {
             var fuel = quarry.fuelContainer.getItem(0);
-            int burnTime = quarry.getBurnTime(fuel);
+            int burnTime = PlatformAccess.getAccess().itemAccess().getBurnTime(fuel);
             if (burnTime > 0) {
                 // fuelCount is the number of ticks to generate energy: (total energy of the fuel) / (energy generated in a tick)
                 quarry.fuelCount += (int) (burnTime * TOTAL_FE_PER_BURN_TICK / GENERATION_SPEED_FE_PER_TICK);
-                var remaining = fuel.getItem().getCraftingRemainingItem();
-                if (remaining != null && fuel.getCount() == 1) {
+                var remaining = PlatformAccess.getAccess().itemAccess().getCraftingRemainingItem(fuel);
+                if (!remaining.isEmpty() && fuel.getCount() == 1) {
                     // e.g. Lava bucket -> Bucket
-                    quarry.fuelContainer.setItem(0, new ItemStack(remaining));
+                    quarry.fuelContainer.setItem(0, remaining);
                 } else {
                     fuel.shrink(1);
                     quarry.fuelContainer.setChanged();
-                    if (remaining != null) {
+                    if (!remaining.isEmpty()) {
                         // The slot is still used by the fuel, so the remaining item has no place to go. Store it as the last resort.
-                        quarry.storage.addItem(new ItemStack(remaining));
+                        quarry.storage.addItem(remaining);
                     }
                 }
             }
@@ -134,14 +124,14 @@ public abstract class SolidFuelQuarryEntity extends QuarryEntity {
         }
     }
 
-    private final class FuelContainer extends SimpleContainer {
+    private static class FuelContainer extends SimpleContainer {
         FuelContainer(int size) {
             super(size);
         }
 
         @Override
         public boolean canPlaceItem(int slot, ItemStack stack) {
-            return getBurnTime(stack) > 0;
+            return PlatformAccess.getAccess().itemAccess().getBurnTime(stack) > 0;
         }
     }
 }
