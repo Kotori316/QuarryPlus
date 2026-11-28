@@ -19,12 +19,12 @@ jobs:
   assemble:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           distribution: 'temurin'
           java-version: '25'
-      - uses: gradle/actions/wrapper-validation@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+      - uses: gradle/actions/wrapper-validation@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
       - run: chmod +x ./gradlew
       - run: ./gradlew assemble --scan
       - run: ./gradlew data checkReleaseVersion --no-parallel
@@ -50,16 +50,16 @@ jobs:
       DISABLE_FABRIC: ${{ matrix.platform != 'fabric' }}
       DISABLE_NEOFORGE: ${{ matrix.platform != 'neoforge' }}
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           distribution: 'temurin'
           java-version: '25'
-      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
         with:
           add-job-summary: 'never'
           cache-read-only: 'false'
-      - uses: gradle/actions/wrapper-validation@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+      - uses: gradle/actions/wrapper-validation@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
       - run: ls -al && whoami
       - name: Compile main ${{ matrix.platform }}
         run: ./gradlew :${{ matrix.platform }}:classes
@@ -110,7 +110,7 @@ jobs:
           ! test -d "${{ matrix.platform }}/game-test/crash-reports"
       - name: Upload failed test report
         if: failure()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           path: |
             ${{ matrix.platform }}/build/reports/tests/*
@@ -122,6 +122,6 @@ jobs:
     needs:
       - assemble
       - platforms
-    uses: 'Kotori316/common-script/.github/workflows/merge-checker.yaml@cc63e8610e21a91ed102150d078b10d216e02b76' # v2.0.3
+    uses: 'Kotori316/common-script/.github/workflows/merge-checker.yaml@f68c456ce9aa44130e67f05234bc68db848e9a54' # v2.0.5
     with:
       needs: ${{ toJSON(needs) }}
