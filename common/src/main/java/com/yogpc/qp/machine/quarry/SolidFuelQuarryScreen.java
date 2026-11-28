@@ -1,11 +1,12 @@
 package com.yogpc.qp.machine.quarry;
 
 import com.yogpc.qp.QuarryPlus;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
 
 public class SolidFuelQuarryScreen extends AbstractContainerScreen<SolidFuelQuarryMenu> {
@@ -16,22 +17,17 @@ public class SolidFuelQuarryScreen extends AbstractContainerScreen<SolidFuelQuar
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        super.extractBackground(graphics, mouseX, mouseY, delta);
         graphics.blit(RenderPipelines.GUI_TEXTURED, LOCATION, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.render(graphics, mouseX, mouseY, delta);
-        this.renderTooltip(graphics, mouseX, mouseY);
-    }
-
-    @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        super.renderLabels(graphics, mouseX, mouseY);
-        graphics.drawString(font, "FuelCount: " + getMenu().fuelCountData.get(), titleLabelX, titleLabelY + 10, 0x404040, false);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractLabels(graphics, mouseX, mouseY);
+        graphics.text(font, "FuelCount: " + getMenu().fuelCountData.get(), titleLabelX, titleLabelY + 10, ARGB.opaque(0x404040), false);
         // Align to the right edge, so that the position of "FE" doesn't move when the number of digits changes. The position is out of the fuel slot.
         String energy = getMenu().energyData.get() + " FE";
-        graphics.drawString(font, energy, imageWidth - titleLabelX - font.width(energy), titleLabelY, 0x404040, false);
+        graphics.text(font, energy, imageWidth - titleLabelX - font.width(energy), titleLabelY, ARGB.opaque(0x404040), false);
     }
 }

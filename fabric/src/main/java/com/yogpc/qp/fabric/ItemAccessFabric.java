@@ -15,6 +15,7 @@ public final class ItemAccessFabric implements PlatformAccess.ItemAccess {
     @Override
     @NotNull
     public ItemStack getCraftingRemainingItem(ItemStack stack) {
-        return stack.getItem().getCraftingRemainder();
+        var remainder = stack.getItem().getCraftingRemainder();
+        return remainder == null ? ItemStack.EMPTY : remainder.create();
     }
 }

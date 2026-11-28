@@ -15,6 +15,7 @@ public final class ItemAccessNeoForge implements PlatformAccess.ItemAccess {
     @Override
     @NotNull
     public ItemStack getCraftingRemainingItem(ItemStack stack) {
-        return stack.getCraftingRemainder();
+        var remainder = stack.getCraftingRemainder();
+        return remainder == null ? ItemStack.EMPTY : remainder.create();
     }
 }

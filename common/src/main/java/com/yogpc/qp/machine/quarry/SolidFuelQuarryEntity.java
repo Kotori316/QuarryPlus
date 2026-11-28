@@ -32,7 +32,6 @@ public abstract class SolidFuelQuarryEntity extends QuarryEntity {
     protected SolidFuelQuarryEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
         this.fuelContainer = new FuelContainer(1, this);
-        this.fuelContainer.addListener(c -> this.setChanged());
     }
 
     @Override
@@ -136,6 +135,12 @@ public abstract class SolidFuelQuarryEntity extends QuarryEntity {
         FuelContainer(int size, SolidFuelQuarryEntity entity) {
             super(size);
             this.entity = entity;
+        }
+
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            entity.setChanged();
         }
 
         @Override

@@ -217,7 +217,7 @@ public final class LoadRecipeTest {
             i, R, m
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals(
             PlatformAccess.getAccess().registerObjects().solidFuelQuarryBlock().get().blockItem,
             result.getItem()
@@ -242,7 +242,7 @@ public final class LoadRecipeTest {
             R, r, R
         ));
         assertTrue(recipe.matches(input, helper.getLevel()));
-        var result = recipe.assemble(input, helper.getLevel().registryAccess());
+        var result = recipe.assemble(input);
         assertEquals(
             PlatformAccess.getAccess().registerObjects().quarryBlock().get().blockItem,
             result.getItem()
