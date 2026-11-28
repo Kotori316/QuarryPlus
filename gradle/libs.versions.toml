@@ -1,10 +1,10 @@
 [versions]
 minecraft = "26.2"
-forge = "26.2-65.1.5"
+forge = "26.2-65.1.6"
 eventbus_forge = "7.0.7"
 fabric_api = "0.161.0+26.2"
 fabric_loader = "0.20.1"
-neoforge = "26.2.0.93"
+neoforge = "26.2.0.95"
 fabric_version_checker = "3.0.2"
 
 du = "26.2.1"
