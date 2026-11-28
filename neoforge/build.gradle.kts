@@ -64,6 +64,7 @@ tasks.named("processGameTestMergedResources", ProcessResources::class) {
 // End Game test merged
 
 runs {
+    val gameTestRuntime = project.configurations.gameTestRuntime.get()
     configureEach {
         systemProperty("neoforge.enabledGameTestNamespaces", modId)
         systemProperty("mixin.debug.export", "true")
@@ -77,7 +78,7 @@ runs {
         modSources.add(modId, sourceSets["main"])
         modSources.add(modId, sourceSets["gameTest"])
         dependencies {
-            runtime(project.configurations.gameTestRuntime.get())
+            runtime(gameTestRuntime)
         }
         isClient = true
     }
@@ -90,7 +91,7 @@ runs {
         jvmArguments("-ea")
         modSources.add(modId, sourceSets["gameTestMerged"])
         dependencies {
-            runtime(project.configurations.gameTestRuntime.get())
+            runtime(gameTestRuntime)
         }
         isGameTest = true
     }
